@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#f5f0e8"/>
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#4a6741" stroke-width="16"/>
+  <circle cx="256" cy="256" r="16" fill="#4a6741"/>
+  <path d="M256 100 L282 256 L256 412 L230 256 Z" fill="#4a6741" opacity="0.85"/>
+  <path d="M100 256 L256 230 L412 256 L256 282 Z" fill="#8b7355" opacity="0.55"/>
+  <text x="256" y="478" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="36" fill="#5a5a5a">N</text>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="asky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c4d0db"/>
+      <stop offset="1" stop-color="#dde3eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#asky)"/>
+  <circle cx="260" cy="180" r="45" fill="#eef1f4" opacity="0.85"/>
+  <polygon points="0,540 200,400 350,470 500,360 700,460 850,380 1000,440 1200,400 1200,600 0,600" fill="#9aabbc" opacity="0.7"/>
+  <polygon points="0,560 150,490 350,520 500,470 700,510 900,480 1100,520 1200,500 1200,600 0,600" fill="#7d92a4" opacity="0.75"/>
+  <rect y="555" width="1200" height="45" fill="#eaf0f5" opacity="0.9"/>
+  <!-- Perspective snow path -->
+  <polygon points="585,470 615,470 870,600 330,600" fill="#dbe5ee" opacity="0.95"/>
+  <polygon points="593,470 607,470 720,600 480,600" fill="#c4d2dd" opacity="0.9"/>
+  <line x1="600" y1="485" x2="600" y2="600" stroke="#7d92a4" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.7"/>
+</svg>

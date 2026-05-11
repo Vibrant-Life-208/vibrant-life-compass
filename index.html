@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#4a6741">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Hero's Compass</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Scene stage: two-layer landscape that pans when sessions change.
+       Layered behind all content via z-index: -1. -->
+  <div id="scene-stage" aria-hidden="true">
+    <div class="scene-layer" id="scene-current"></div>
+    <div class="scene-layer" id="scene-next"></div>
+  </div>
+
+  <!-- Bearing Screen (calm-first) -->
+  <div id="bearing-screen" class="screen active">
+    <div class="bearing-container">
+      <div class="bearing-circle">
+        <span class="bearing-text">Find your bearing</span>
+      </div>
+      <button id="skip-bearing" class="skip-btn">Begin</button>
+    </div>
+  </div>
+
+  <!-- Sign-In Screen -->
+  <div id="signin-screen" class="screen">
+    <div class="signin-container">
+      <h1 class="signin-title">Hero's Compass</h1>
+      <p class="signin-sub">Find your way. One step. Then the next.</p>
+      <form id="signin-form" class="signin-form">
+        <div class="form-field">
+          <label for="signin-email">Your email</label>
+          <input type="email" id="signin-email" placeholder="you@vibrantlife.local (optional in skeleton)" autocomplete="email">
+        </div>
+        <div class="form-field">
+          <label for="signin-password">Password</label>
+          <input type="password" id="signin-password" placeholder="anything for the skeleton" autocomplete="current-password">
+        </div>
+        <div class="signin-roles">
+          <button type="button" class="role-btn" data-role="learner">I'm a learner</button>
+          <button type="button" class="role-btn" data-role="parent">I'm a parent</button>
+          <button type="button" class="role-btn" data-role="guide">I'm a guide</button>
+        </div>
+      </form>
+      <p class="signin-note">Test login. Password is ignored in the skeleton. Real Google sign-in wires in next session.</p>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app-screen" class="screen">
+    <header>
+      <h1 id="app-title">Compass</h1>
+      <div class="header-meta">
+        <span id="position-breadcrumb" class="position-breadcrumb"></span>
+        <div id="role-switcher" class="role-switcher" title="Skeleton: flip between roles to preview each view">
+          <button type="button" class="role-switch-btn" data-switch-role="learner">L</button>
+          <button type="button" class="role-switch-btn" data-switch-role="parent">P</button>
+          <button type="button" class="role-switch-btn" data-switch-role="guide">G</button>
+        </div>
+        <span id="who-label" class="who-label"></span>
+        <button id="stillness-trigger" class="header-btn" aria-label="Stillness">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"/>
+            <line x1="12" y1="5" x2="12" y2="19"/>
+          </svg>
+        </button>
+        <button id="bearing-again" class="header-btn" aria-label="Reset bearing">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </button>
+        <button id="signout-btn" class="header-btn-text">Sign out</button>
+      </div>
+    </header>
+
+    <nav class="tab-nav" id="tab-nav"></nav>
+
+    <!-- North View (dashboard) -->
+    <main id="north-view" class="tab-content active">
+      <div class="north-greeting">
+        <h2 id="north-greeting-text">North</h2>
+        <p id="north-date" class="north-date"></p>
+      </div>
+
+      <section id="north-quote-section" class="north-quote-section">
+        <blockquote id="north-quote" class="north-quote">
+          <p id="north-quote-text" class="north-quote-text"></p>
+          <footer id="north-quote-footer" class="north-quote-footer">Your anchor until Session 7</footer>
+        </blockquote>
+      </section>
+
+      <section class="north-section">
+        <h3 class="north-section-title">Your year</h3>
+        <div id="north-year-map" class="north-year-map"></div>
+      </section>
+
+      <section class="north-section north-today-section">
+        <h3 class="north-section-title">Today</h3>
+        <div id="north-today-overflow" class="north-today-overflow" style="display:none"></div>
+        <div id="north-today" class="north-today-list"></div>
+        <button type="button" id="today-add" class="today-add-btn">+ Add a task for today</button>
+      </section>
+
+      <section class="north-section">
+        <h3 class="north-section-title">Game Plan - this week</h3>
+        <p class="north-section-sub">Tap any task to move it to a different day. No auto-rescheduling.</p>
+        <div id="north-week-summary" class="north-week-summary"></div>
+      </section>
+
+      <section class="north-section">
+        <h3 class="north-section-title">Year vision</h3>
+        <p class="north-section-sub">Where you're heading. The whole map at a glance.</p>
+        <div id="north-vision" class="north-vision-grid"></div>
+      </section>
+    </main>
+
+    <!-- Compass (Year View) -->
+    <main id="year-view" class="tab-content">
+      <div class="year-quote">
+        <p class="quote-label">Your motivational quote for the year</p>
+        <p id="year-quote-text" class="quote-text">Tap to set</p>
+      </div>
+      <div class="year-traits">
+        <p class="quote-label">Character traits you're anchoring on</p>
+        <p id="year-traits-text" class="traits-text">Tap to set</p>
+      </div>
+      <div id="year-categories" class="category-list"></div>
+    </main>
+
+    <!-- Passwords View -->
+    <main id="passwords-view" class="tab-content">
+      <div class="logins-header">
+        <h2>Your passwords</h2>
+        <p class="logins-sub">Khan, Lexia, Google, anything for your Pathway projects. Visible only to you, your parents, and your guide.</p>
+      </div>
+      <div class="passwords-filter">
+        <label for="passwords-filter-select">Show:</label>
+        <select id="passwords-filter-select">
+          <option value="all">All</option>
+          <option value="core">Core work</option>
+          <option value="passion">Passion projects</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div id="logins-list" class="logins-list">
+        <p class="learners-empty">No passwords saved yet. Tap + to add one.</p>
+      </div>
+      <button id="logins-add" class="fab" aria-label="Add password">+</button>
+    </main>
+
+    <!-- Session View -->
+    <main id="session-view" class="tab-content">
+      <div class="session-header">
+        <button id="session-prev" class="session-nav-btn">←</button>
+        <h2 id="session-title">Session 1 of 7</h2>
+        <button id="session-next" class="session-nav-btn">→</button>
+      </div>
+      <div id="session-meta" class="session-meta"></div>
+      <div id="session-goals" class="category-list"></div>
+    </main>
+
+    <!-- Patterns View -->
+    <main id="patterns-view" class="tab-content">
+      <div class="patterns-intro">
+        <p>Patterns from your compass. Observations, not scores.</p>
+      </div>
+      <div id="patterns-list" class="pattern-list">
+        <p class="patterns-empty">Patterns appear as you check in across sessions.</p>
+      </div>
+    </main>
+
+    <!-- Everyone Page -->
+    <main id="everyone-view" class="tab-content">
+      <div class="everyone-header">
+        <h2>Everyone</h2>
+        <p class="everyone-sub">Celebrations and announcements from Vibrant Life.</p>
+      </div>
+      <div id="everyone-list" class="everyone-list">
+        <p class="everyone-empty">No posts yet.</p>
+      </div>
+      <button id="everyone-add" class="fab" aria-label="Add post" style="display:none">+</button>
+    </main>
+
+    <!-- Guide Dashboard -->
+    <main id="guide-view" class="tab-content">
+      <section id="guide-quote-section" class="north-quote-section" style="display:none">
+        <blockquote class="north-quote">
+          <p id="guide-quote-text" class="north-quote-text"></p>
+          <footer class="north-quote-footer">Your anchor until Session 7</footer>
+        </blockquote>
+      </section>
+      <h2>Your learners</h2>
+      <div id="guide-learners" class="learner-list">
+        <p class="learners-empty">No learners assigned yet. Once a learner signs in, you'll see them here.</p>
+      </div>
+    </main>
+
+    <!-- Parent View -->
+    <main id="parent-view" class="tab-content">
+      <h2>Your learner</h2>
+      <div id="parent-learner" class="learner-list">
+        <p class="learners-empty">No learner linked yet. Once your learner signs in and is connected to you, you'll see their compass here.</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Set goal</h2>
+        <button id="modal-close" class="modal-close-btn">&times;</button>
+      </div>
+      <form id="goal-form">
+        <div id="form-fields"></div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Stillness overlay - a place to be, accessible from every tab -->
+  <div id="stillness-overlay" class="stillness-overlay" role="dialog" aria-label="Stillness">
+    <div class="stillness-needle">
+      <span class="stillness-text">Stillness</span>
+    </div>
+    <p class="stillness-helper">Tap anywhere to return when you're ready.</p>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

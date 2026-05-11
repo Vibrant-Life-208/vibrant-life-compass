@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="csky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c4bfb6"/>
+      <stop offset="1" stop-color="#d8d4cc"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#csky)"/>
+  <g fill="#8b7355" opacity="0.7">
+    <rect x="0" y="450" width="80" height="150"/>
+    <rect x="90" y="400" width="60" height="200"/>
+    <rect x="160" y="430" width="100" height="170"/>
+    <rect x="270" y="380" width="70" height="220"/>
+    <rect x="350" y="420" width="90" height="180"/>
+    <rect x="800" y="410" width="60" height="190"/>
+    <rect x="870" y="390" width="90" height="210"/>
+    <rect x="970" y="430" width="70" height="170"/>
+    <rect x="1050" y="410" width="80" height="190"/>
+    <rect x="1140" y="440" width="60" height="160"/>
+  </g>
+  <g fill="#5a4a36" opacity="0.85">
+    <rect x="100" y="450" width="50" height="150"/>
+    <rect x="300" y="430" width="50" height="170"/>
+    <rect x="900" y="440" width="50" height="160"/>
+    <rect x="1080" y="460" width="50" height="140"/>
+  </g>
+  <!-- Perspective city street -->
+  <polygon points="585,440 615,440 880,600 320,600" fill="#4a3f33" opacity="0.95"/>
+  <polygon points="593,440 607,440 730,600 470,600" fill="#3a3128" opacity="0.85"/>
+  <!-- Yellow center line (city street) -->
+  <line x1="600" y1="455" x2="600" y2="600" stroke="#f4d690" stroke-width="3" stroke-dasharray="18,16" opacity="0.95"/>
+  <!-- Window lights on sides -->
+  <g fill="#f4e8c8" opacity="0.6">
+    <rect x="110" y="460" width="6" height="10"/>
+    <rect x="125" y="460" width="6" height="10"/>
+    <rect x="320" y="450" width="6" height="10"/>
+    <rect x="915" y="460" width="6" height="10"/>
+    <rect x="1095" y="475" width="6" height="10"/>
+  </g>
+</svg>

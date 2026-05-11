@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="osky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a8c2cb"/>
+      <stop offset="1" stop-color="#c8d6db"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#osky)"/>
+  <circle cx="900" cy="170" r="55" fill="#f4d690" opacity="0.6"/>
+  <!-- horizon line -->
+  <rect x="0" y="420" width="1200" height="3" fill="#5d7a85" opacity="0.4"/>
+  <!-- waves -->
+  <path d="M0 460 Q150 440 300 460 T600 460 T900 460 T1200 460 L1200 600 L0 600 Z" fill="#7395a3" opacity="0.7"/>
+  <path d="M0 500 Q200 480 400 500 T800 500 T1200 500 L1200 600 L0 600 Z" fill="#5a7c8a" opacity="0.7"/>
+  <path d="M0 540 Q150 525 300 540 T600 540 T900 540 T1200 540 L1200 600 L0 600 Z" fill="#476773" opacity="0.75"/>
+  <!-- Perspective wooden dock pier extending into the water -->
+  <polygon points="585,422 615,422 870,600 330,600" fill="#8a6f4f" opacity="0.95"/>
+  <polygon points="593,422 607,422 720,600 480,600" fill="#6b5440" opacity="0.85"/>
+  <!-- Plank lines across the dock -->
+  <line x1="540" y1="460" x2="660" y2="460" stroke="#5a4534" stroke-width="2" opacity="0.7"/>
+  <line x1="490" y1="510" x2="710" y2="510" stroke="#5a4534" stroke-width="2" opacity="0.75"/>
+  <line x1="425" y1="560" x2="775" y2="560" stroke="#5a4534" stroke-width="2.5" opacity="0.8"/>
+  <line x1="600" y1="440" x2="600" y2="600" stroke="#f0e8d0" stroke-width="2" stroke-dasharray="10,12" opacity="0.6"/>
+</svg>

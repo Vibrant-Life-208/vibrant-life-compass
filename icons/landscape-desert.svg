@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="dsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e8c48a"/>
+      <stop offset="1" stop-color="#f0d9a8"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#dsky)"/>
+  <circle cx="940" cy="200" r="60" fill="#f4d690" opacity="0.85"/>
+  <path d="M0 480 Q200 420 400 460 T800 450 T1200 480 L1200 600 L0 600 Z" fill="#c9a567" opacity="0.85"/>
+  <path d="M0 540 Q300 500 600 530 T1200 520 L1200 600 L0 600 Z" fill="#b08a4e" opacity="0.85"/>
+  <!-- Perspective road: vanishing point at horizon center, widening to bottom -->
+  <polygon points="585,460 615,460 880,600 320,600" fill="#d4b283" opacity="0.9"/>
+  <polygon points="592,460 608,460 720,600 480,600" fill="#c49968" opacity="0.7"/>
+  <!-- Center dashed stripe -->
+  <line x1="600" y1="475" x2="600" y2="600" stroke="#f4e8c8" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
+</svg>
