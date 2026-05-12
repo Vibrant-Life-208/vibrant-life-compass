@@ -3,7 +3,11 @@
 // set age + studio, filled at least 5 year goals, and starred top 3
 // priorities. Then partner approval (Phase 5) ships everything off.
 
-import { getLearner, saveLearner, getGoals, submitYearPlan, getActivePartnerOf } from './store.js';
+import {
+  getLearner, saveLearner, getGoals, submitYearPlan,
+  getActivePartnerOf, getPendingProposalsFor, getLearners, getPartnerLinks,
+  proposePartner, respondToPartnerProposal,
+} from './store.js';
 import { STUDIOS, getCategoriesForStudio } from './studios.js';
 import { openYearGoalModal, openConfirmModal } from './modals.js';
 
@@ -29,7 +33,48 @@ export async function renderSetupView(learnerId) {
   const filledGoals = yearGoals.filter((g) => g.text && g.text.trim().length > 0);
   const priorityIds = Array.isArray(learner.priorityGoalIds) ? learner.priorityGoalIds : [];
 
+  // Day-1 partner gate: pre-setup learners can also receive + accept proposals
+  // and propose to others, so partnerships can form before anyone has finished
+  // setup. Otherwise on opening day nobody can pair up.
+  const pendingProposals = await getPendingProposalsFor(learner.id);
+  const myActivePartnerLink = await getActivePartnerOf(learner.id);
+  const allLinks = await getPartnerLinks();
+  const outboundProposed = allLinks.find(
+    (l) => l.status === 'proposed' && l.proposerId === learner.id
+  );
+
+  let inboundProposerName = '';
+  let inboundLinkId = '';
+  if (pendingProposals.length > 0) {
+    const inboundLink = pendingProposals[0];
+    inboundLinkId = inboundLink.id;
+    const proposer = await getLearner(inboundLink.proposerId);
+    inboundProposerName = proposer?.name || proposer?.heroName || 'Someone';
+  }
+  let myActivePartnerName = '';
+  if (myActivePartnerLink) {
+    const partner = await getLearner(myActivePartnerLink.partnerId);
+    myActivePartnerName = partner?.name || partner?.heroName || 'your partner';
+  }
+  let outboundPartnerName = '';
+  if (outboundProposed) {
+    const target = await getLearner(outboundProposed.partnerId);
+    outboundPartnerName = target?.name || target?.heroName || 'them';
+  }
+
   container.innerHTML = `
+    ${inboundProposerName ? `
+      <div class="setup-partner-banner">
+        <p class="setup-partner-banner-text">
+          <strong>${escapeHtml(inboundProposerName)}</strong> wants you as their accountability partner. You can answer now, before finishing the rest of setup.
+        </p>
+        <div class="setup-partner-banner-actions">
+          <button type="button" class="btn btn-text" data-partner-action="decline" data-link-id="${escapeAttr(inboundLinkId)}">Decline</button>
+          <button type="button" class="btn btn-primary" data-partner-action="accept" data-link-id="${escapeAttr(inboundLinkId)}">Accept</button>
+        </div>
+      </div>
+    ` : ''}
+
     <div class="setup-header">
       <h2 class="setup-title">Welcome, ${escapeHtml(learner.name || learner.heroName || 'Hero')}.</h2>
       <p class="setup-sub">A few things to set before you sit down at the Compass. Your year plan is yours to shape.</p>
@@ -74,6 +119,12 @@ export async function renderSetupView(learnerId) {
       <div id="setup-priority-list" class="setup-priority-list"></div>
     </section>
 
+    <section class="setup-section">
+      <h3 class="setup-section-title">4. Your accountability partner</h3>
+      <p class="setup-hint">Optional now — you can pick one any time from the Partner tab. But picking now means your year plan gets signed off as soon as setup is done.</p>
+      <div id="setup-partner-zone" class="setup-partner-zone"></div>
+    </section>
+
     <div class="setup-footer">
       <button type="button" id="setup-continue" class="btn btn-primary setup-continue-btn"
         ${filledGoals.length >= MIN_GOALS ? '' : 'disabled'}>
@@ -91,6 +142,23 @@ export async function renderSetupView(learnerId) {
 
   renderGoalsGrid(learner, filledGoals);
   renderPriorityList(learner, filledGoals, priorityIds);
+  await renderPartnerZoneInSetup(learner, {
+    myActivePartnerLink,
+    myActivePartnerName,
+    outboundProposed,
+    outboundPartnerName,
+  });
+
+  // Wire the inbound-proposal banner buttons (top of view)
+  container.querySelectorAll('[data-partner-action]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const linkId = btn.dataset.linkId;
+      const accepted = btn.dataset.partnerAction === 'accept';
+      await respondToPartnerProposal(linkId, accepted);
+      document.dispatchEvent(new CustomEvent('hc:partner-changed'));
+      await renderSetupView(learnerId);
+    });
+  });
 
   // Wire the about-you save
   document.getElementById('setup-save-about')?.addEventListener('click', async () => {
@@ -246,4 +314,88 @@ function escapeHtml(s) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(s) {
+  return escapeHtml(s);
+}
+
+// Renders the "4. Your accountability partner" zone inside the setup view.
+// Three states:
+//   - Active partnership: shows "Walking with X" (purely informational)
+//   - Outbound proposal pending: shows "Waiting for X to accept"
+//   - Otherwise: shows candidate list with propose buttons
+// The "inbound proposal" case is handled by a top-of-view banner, not here.
+async function renderPartnerZoneInSetup(learner, ctx) {
+  const zone = document.getElementById('setup-partner-zone');
+  if (!zone) return;
+
+  if (ctx.myActivePartnerLink) {
+    zone.innerHTML = `
+      <div class="setup-partner-state">
+        <span class="setup-partner-state-label">Walking with</span>
+        <strong>${escapeHtml(ctx.myActivePartnerName)}</strong>
+        <p class="setup-partner-state-note">They'll sign off on your year plan after setup. You can manage this from the Partner tab anytime.</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (ctx.outboundProposed) {
+    zone.innerHTML = `
+      <div class="setup-partner-state">
+        <span class="setup-partner-state-label">Waiting for</span>
+        <strong>${escapeHtml(ctx.outboundPartnerName)}</strong>
+        <p class="setup-partner-state-note">They'll see your request when they sign in. You can keep working on the rest of setup while they decide.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Pick a partner. Same filter as the main partner page: same studio, no active partner.
+  const allLearners = await getLearners();
+  const candidates = [];
+  for (const l of allLearners) {
+    if (l.id === learner.id) continue;
+    if (l.studio !== learner.studio) continue;
+    const theirPartner = await getActivePartnerOf(l.id);
+    if (theirPartner) continue;
+    candidates.push(l);
+  }
+
+  if (candidates.length === 0) {
+    zone.innerHTML = `
+      <p class="learners-empty">Nobody in your studio is available to pair with yet. You can come back to this anytime from the Partner tab.</p>
+    `;
+    return;
+  }
+
+  zone.innerHTML = `
+    <div class="setup-partner-candidates">
+      ${candidates.map((c) => `
+        <button type="button" class="setup-partner-candidate" data-candidate-id="${escapeAttr(c.id)}">
+          <span class="setup-partner-candidate-name">${escapeHtml(c.name || c.heroName)}</span>
+          <span class="setup-partner-candidate-studio">${escapeHtml(c.studio)}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  zone.querySelectorAll('[data-candidate-id]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const targetId = btn.dataset.candidateId;
+      const target = candidates.find((c) => c.id === targetId);
+      openConfirmModal({
+        title: `Propose ${target?.name || target?.heroName || 'them'} as your partner?`,
+        body: `They'll get a request to accept. Until they accept, you don't have an accountability partner yet.`,
+        confirmLabel: 'Send proposal',
+        cancelLabel: 'Not yet',
+        onConfirm: async () => {
+          await proposePartner(learner.id, targetId);
+          document.dispatchEvent(new CustomEvent('hc:partner-changed'));
+          await renderSetupView(learner.id);
+        },
+      });
+    });
+  });
 }

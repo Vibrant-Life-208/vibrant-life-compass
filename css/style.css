@@ -1232,6 +1232,76 @@ header h1 {
   line-height: 1.4;
 }
 
+/* Day-1 partner gate: inline partner flow inside the setup view. */
+.setup-partner-banner {
+  background: var(--warm-white);
+  border: 2px solid var(--sage, #4a6741);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.setup-partner-banner-text {
+  margin: 0 0 0.75rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+.setup-partner-banner-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+.setup-partner-zone {
+  margin-top: 0.5rem;
+}
+.setup-partner-state {
+  background: var(--warm-white);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+}
+.setup-partner-state-label {
+  display: inline-block;
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-right: 0.5rem;
+}
+.setup-partner-state-note {
+  margin: 0.5rem 0 0;
+  color: var(--text-soft);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.setup-partner-candidates {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+.setup-partner-candidate {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--warm-white);
+  border: 1px solid var(--sage-soft, #cdd4c4);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+.setup-partner-candidate:hover {
+  border-color: var(--sage, #4a6741);
+}
+.setup-partner-candidate-name {
+  color: var(--text);
+  font-weight: 500;
+}
+.setup-partner-candidate-studio {
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  text-transform: capitalize;
+}
+
 /* Parent view */
 .parent-kid-switcher {
   display: flex;
