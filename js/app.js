@@ -12,6 +12,7 @@ import { getLandscapeForSession } from './studios.js';
 import { renderPatterns } from './patterns.js';
 import { renderPartnerPage } from './partner.js';
 import { renderAdminAccounts, initAdmin } from './admin.js';
+import { renderSetupView } from './setup.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal } from './modals.js';
 import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession, getPartnerNotificationCount } from './store.js';
@@ -104,6 +105,18 @@ async function onSignedIn() {
   if (!session) return;
 
   document.getElementById('who-label').textContent = `${session.name} · ${session.role}`;
+
+  // First-run gate: learner role without setupCompletedAt sees ONLY the
+  // setup view until they finish (age + studio + 5 goals + top 3).
+  if (session.role === 'learner' && session.learnerId) {
+    const { getLearner } = await import('./store.js');
+    const learner = await getLearner(session.learnerId);
+    if (learner && !learner.setupCompletedAt) {
+      await showSetupView(session.learnerId);
+      return;
+    }
+  }
+
   await buildTabs(session.role);
   wireRoleSwitcher();
 
@@ -159,6 +172,15 @@ async function resolveLearnerId(session) {
   if (session.learnerId) return session.learnerId;
   const learners = await getLearners();
   return learners[0]?.id || null;
+}
+
+async function showSetupView(learnerId) {
+  // Hide tab nav + all other tab content; show only the setup view
+  const nav = document.getElementById('tab-nav');
+  if (nav) nav.innerHTML = '';
+  document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
+  document.getElementById('setup-view')?.classList.add('active');
+  await renderSetupView(learnerId);
 }
 
 async function buildTabs(role) {

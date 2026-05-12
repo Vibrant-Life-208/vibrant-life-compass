@@ -98,6 +98,8 @@ async function signInAs(role, email) {
         studio: 'adventure',
         guideEmail: '',
         parentEmail: '',
+        setupCompletedAt: null, // gates first-run setup view
+        priorityGoalIds: [],
       });
       learner = learners[learners.length - 1];
     }

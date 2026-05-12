@@ -746,6 +746,175 @@ header h1 {
 .partner-dissolve-btn { font-size: 0.78rem; color: var(--text-muted); }
 .partner-dissolve-btn:hover { color: var(--danger); }
 
+/* First-run setup view (gated until age + studio + 5 goals + top 3) */
+#setup-view { max-width: 720px; margin: 0 auto; }
+
+.setup-header { margin-bottom: 2rem; }
+.setup-title {
+  color: var(--sage);
+  font-size: 1.6rem;
+  font-weight: 500;
+  margin: 0 0 0.4rem;
+}
+.setup-sub {
+  color: var(--text-soft);
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+.setup-section {
+  background: var(--warm-white);
+  border: 1px solid var(--earth-pale);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.setup-section.is-disabled { opacity: 0.5; pointer-events: none; }
+.setup-section-title {
+  color: var(--sage);
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin: 0 0 0.6rem;
+}
+.setup-hint {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0 0 1rem;
+}
+.setup-form { display: flex; flex-direction: column; gap: 0.8rem; }
+.setup-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.4rem;
+}
+.setup-count {
+  font-size: 0.8rem;
+  color: var(--earth);
+  background: var(--earth-pale);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 500;
+}
+.setup-count.is-met { color: var(--sage); background: var(--sage-pale); }
+
+.setup-goals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.8rem;
+}
+.setup-goal-card {
+  background: var(--cream);
+  border: 1px solid var(--earth-light);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.setup-goal-card:hover { border-color: var(--sage); background: var(--sage-pale); }
+.setup-goal-card.is-filled {
+  background: var(--sage-pale);
+  border-color: var(--sage);
+}
+.setup-goal-cat {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--sage);
+}
+.setup-goal-kind {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.setup-goal-text {
+  margin: 0.2rem 0 0;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+.setup-goal-card:not(.is-filled) .setup-goal-text { color: var(--text-muted); font-style: italic; }
+.setup-goal-eos3 {
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--earth);
+  background: var(--earth-pale);
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+.setup-priority-list { display: flex; flex-direction: column; gap: 0.4rem; }
+.setup-priority-item {
+  background: var(--cream);
+  border: 1px solid var(--earth-light);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 0.65rem;
+  align-items: center;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+.setup-priority-item:hover:not(:disabled) { border-color: var(--sage); }
+.setup-priority-item:disabled { opacity: 0.5; cursor: not-allowed; }
+.setup-priority-item.is-starred {
+  background: var(--sage-pale);
+  border-color: var(--sage);
+}
+.setup-priority-star {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+.setup-priority-item.is-starred .setup-priority-star { color: var(--sage); }
+.setup-priority-cat {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.setup-priority-text {
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.setup-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+.setup-continue-btn {
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+}
+.setup-continue-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.setup-footer-hint {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin: 0.6rem 0 0;
+}
+
+/* Priority star on Year Vision tiles */
+.vision-tile.is-priority {
+  border-color: var(--sage);
+  background: var(--sage-pale);
+}
+.vision-tile.is-priority .vision-tile-name { color: var(--sage); font-weight: 600; }
+
 /* Admin section - guide-only account creation tool */
 .admin-section {
   margin-top: 2rem;

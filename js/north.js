@@ -72,15 +72,17 @@ async function renderVision(learnerId, learner) {
   const categories = getCategoriesForStudio(learner.studio);
   const allGoals = await getGoals(learnerId);
   const yearGoals = allGoals.filter((g) => g.scope === 'year');
+  const priorityIds = Array.isArray(learner.priorityGoalIds) ? learner.priorityGoalIds : [];
 
   el.innerHTML = '';
   categories.forEach((cat) => {
     const goal = yearGoals.find((g) => g.categoryId === cat.id);
+    const isPriority = goal && priorityIds.includes(goal.id);
     const tile = document.createElement('div');
-    tile.className = 'vision-tile' + (goal ? ' has-goal' : '');
+    tile.className = 'vision-tile' + (goal ? ' has-goal' : '') + (isPriority ? ' is-priority' : '');
     tile.innerHTML = `
       <div class="vision-tile-header">
-        <span class="vision-tile-name">${escapeHtml(cat.name)}</span>
+        <span class="vision-tile-name">${isPriority ? '★ ' : ''}${escapeHtml(cat.name)}</span>
         <span class="vision-tile-kind">${cat.kind}</span>
       </div>
       <p class="vision-tile-goal">${goal ? escapeHtml(goal.text) : 'Not yet set'}</p>
