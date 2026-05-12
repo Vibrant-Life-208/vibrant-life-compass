@@ -1,128 +1,135 @@
 # Supabase activation - Hero's Compass
 
-Per Decision 5 of the 2026-05-11 fleet meeting. The skeleton runs on localStorage by default. When Vibrant Life is ready for shared backend (cross-device persistence + multi-learner studio), follow these steps. No code rewrite is required - only configuration.
+The app runs on browser localStorage by default. To activate Supabase as the shared backend (cross-device, multi-learner), follow these steps. No code changes required - everything is runtime-configurable.
 
 ---
 
-## What's already built
+## What's wired
 
-- `schema.sql` - tables, indexes, RLS policies, triggers
-- `../js/backend/supabase-adapter.js` - same API as `store.js`, async via Supabase JS client
-- `../js/backend/config.js` - the switch (`BACKEND_TYPE = 'local' | 'supabase'`)
-- `../js/backend/migrate.js` - localStorage export + SQL generator for one-time migration
+- `schema.sql` - all 14 tables + RLS policies + triggers
+- `../js/backend/local-store.js` - localStorage backend (default)
+- `../js/backend/supabase-adapter.js` - Supabase backend, same 57-function API
+- `../js/backend/config.js` - the switch, reads from `window.__HC_RUNTIME_CONFIG__`
+- `../js/store.js` - thin dispatcher; flips backends at module init
 
----
-
-## Step 1 - Provision the Supabase project
-
-1. Create a new Supabase project at https://supabase.com (free tier is fine for Vibrant Life scale)
-2. In the SQL editor, paste and run `supabase/schema.sql`
-3. Verify tables: `select tablename from pg_tables where schemaname = 'public'`
-4. Note the project URL and the public anon key from Project Settings -> API
+To activate Supabase: drop a `config.runtime.js` at the repo root containing the URL + anon key. That's it. Vercel deploys generate this file from env vars at build time. Locally, create the file by hand.
 
 ---
 
-## Step 2 - Wire up the client
+## Step 1 - Create the Supabase project
 
-In `js/backend/config.js`:
+1. Sign up at https://supabase.com (free tier covers 80+ users easily)
+2. Create a project, name it `vibrant-life-compass`
+3. Pick a region close to your users (West US 1 is fine for Idaho)
+4. **CRITICAL:** Go to Authentication -> Providers -> Email and **uncheck "Confirm email"**. Hero's Compass uses synthetic emails (`heroname@vibrantlife.local`) that nobody can confirm. Without this setting, sign-up will fail.
+5. Wait ~2 minutes for provisioning to finish
+
+## Step 2 - Run the schema
+
+1. In the Supabase dashboard, open SQL Editor (left sidebar)
+2. Paste the contents of `supabase/schema.sql`
+3. Click **Run**. Should complete in ~2 seconds.
+4. Verify by running:
+   ```sql
+   select tablename from pg_tables where schemaname = 'public' order by tablename;
+   ```
+   You should see 14 tables.
+
+## Step 3 - Seed the founding guide account
+
+The first sign-in needs to work on a fresh deploy. Since no accounts exist yet, you cannot use the in-app bulk import to create the first guide. So we create it manually.
+
+1. In the Supabase dashboard, go to **Authentication -> Users -> Add User**
+2. Email: pick the hero name you want for the founding guide. Use the synthetic-email format: `<heroname>@vibrantlife.local`. For example: `captain-vl@vibrantlife.local`
+3. Password: pick a strong one. **Write it down.** This is what you'll use to sign in to the deployed app.
+4. Check **Auto Confirm User** (skip email verification)
+5. Click Create User. The new user's UUID will appear in the user list.
+6. Copy that UUID.
+7. Open SQL Editor and run:
+   ```sql
+   insert into profiles (id, role, name, email)
+   values (
+     '<paste-the-uuid-here>',
+     'guide',
+     'Vibrant Life Captain',
+     'captain-vl@vibrantlife.local'
+   );
+   ```
+   Replace `'captain-vl'` and `'Vibrant Life Captain'` with whatever values you used.
+
+Now you have one guide account. The first deployed page-load can sign in as this guide and bulk-import the full Vibrant Life roster.
+
+## Step 4 - Note your project credentials
+
+In Supabase dashboard: **Settings -> API**
+
+Copy these two values:
+- **Project URL** - looks like `https://abcdefgh.supabase.co`
+- **anon public** key - long JWT starting with `eyJ...`
+
+These get plugged into the Vercel deploy in Step 6. The `service_role` key on this page is **never** for the app - keep it private.
+
+## Step 5 - Test locally (optional but recommended)
+
+Before deploying, verify the wiring locally. Create a file `config.runtime.js` at the repo root (gitignored, never commit):
 
 ```js
-export const BACKEND_TYPE = 'supabase';
-export const SUPABASE_CONFIG = {
-  url: 'https://YOURPROJECT.supabase.co',
-  anonKey: 'YOUR_PUBLIC_ANON_KEY',
+window.__HC_RUNTIME_CONFIG__ = {
+  BACKEND_TYPE: 'supabase',
+  SUPABASE_URL: 'https://abcdefgh.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJ...',
 };
 ```
 
-The anon key is safe to commit; RLS policies protect the data. Never put the service-role key in client code.
+Reload the local dev server. The app should:
+- Default-role L/P/G buttons should be hidden (production mode)
+- Sign in as `captain-vl` with the password you set in Step 3
+- Land on the guide dashboard with admin tools
 
-In `index.html`, add the Supabase JS client before the app module:
+If sign-in fails: double-check the email confirmation setting (Step 1.4) and the profile row insert (Step 3.7).
 
-```html
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-  window.__supabaseCreateClient = createClient;
-</script>
-<script type="module" src="js/app.js"></script>
-```
+Delete `config.runtime.js` after testing if you want the local dev server to go back to localStorage mode.
 
----
+## Step 6 - Deploy to Vercel
 
-## Step 3 - Wire auth
+On the Vercel project for Vibrant Life:
 
-Real Google sign-in replaces the test-login form. In Supabase Auth settings, enable Google as a provider with the OAuth client ID + secret from Google Cloud Console (the parents' Gmails work as expected).
-
-Update `js/auth.js` to call `getClient().auth.signInWithOAuth({ provider: 'google' })` instead of the role buttons. The skeleton's role buttons can stay as a fallback for offline review.
-
----
-
-## Step 4 - Provision learner profiles
-
-Each learner needs a row in `profiles` (auto-created on first auth.users insert via a trigger you can add, or via app-layer signup flow) plus a row in `learners` with their studio.
-
-For Vibrant Life staff: a guide creates a learner's invitation, the parent accepts via email, Supabase creates the auth.users row, the app reads the `profiles` row and creates the `learners` row on first sign-in.
-
-Parent-learner and guide-learner links live in `parent_learner_link` and `guide_learner_assignment`. A guide assigns themselves to a learner via an admin tool (TBD) or by direct SQL.
-
----
-
-## Step 5 - Migrate existing data
-
-If you've been using the skeleton with real data in localStorage and want to bring it over:
-
-1. While running on `BACKEND_TYPE = 'local'`, open the browser console and run:
-
-   ```js
-   import('/js/backend/migrate.js').then(m => m.exportToJSON());
+1. In Vercel project settings -> Environment Variables, add:
+   - `BACKEND_TYPE` = `supabase`
+   - `SUPABASE_URL` = your project URL
+   - `SUPABASE_ANON_KEY` = your anon key
+2. Add a build step that writes `config.runtime.js` from these env vars. In Vercel project settings -> Build & Output, set the **Build Command** to:
+   ```sh
+   echo "window.__HC_RUNTIME_CONFIG__ = { BACKEND_TYPE: '$BACKEND_TYPE', SUPABASE_URL: '$SUPABASE_URL', SUPABASE_ANON_KEY: '$SUPABASE_ANON_KEY' };" > config.runtime.js
    ```
+3. Trigger a deploy. The build output should include `config.runtime.js` alongside `index.html`.
 
-   This downloads `heros-compass-export-YYYY-MM-DD.json`.
+## Step 7 - Bulk-import the roster
 
-2. To convert to SQL inserts:
+After deploy:
 
-   ```js
-   import('/js/backend/migrate.js').then(async m => {
-     const payload = await m.exportToJSON();
-     const sql = m.exportToSQL(payload);
-     console.log(sql);
-   });
-   ```
+1. Open the deployed URL
+2. Sign in as `captain-vl` (or whatever founding guide you created)
+3. Open the Guide dashboard -> Bulk import (CSV)
+4. Paste the roster CSV (the format is documented in the import modal)
+5. Submit. The app creates each account via the `adminCreateAccount` path: signUp + profile + learner/parent insert + signOut, in a loop. For ~70 rows, this takes ~30 seconds.
+6. Capture the displayed temp passwords (they're shown once). Save them to hand out on paper.
 
-   Run the resulting SQL in Supabase SQL editor. Make sure `auth.users` and `profiles` rows for each learner exist first (or temporarily disable RLS for the bulk import).
+## Step 8 - Verify multi-device
 
-3. Flip `BACKEND_TYPE = 'supabase'` in config.js. The app now reads/writes from Supabase.
+After the import:
+1. On Device A (your phone): sign in as a learner (e.g., `kyra-j` with her temp password)
+2. Add a task to Today
+3. On Device B (your laptop): sign in as that learner's parent (e.g., `jenna-j`)
+4. Verify the parent view shows that learner
 
-**Encrypted passwords:** the per-learner AES-GCM key lives in IndexedDB, browser-only. Encrypted password records (`{ ct, iv }`) come along in the export, but they can only be decrypted in the browser that holds the key. If a learner switches to a new device, they re-enter their passwords - this is the cost (and feature) of client-only encryption. The boundary holds without a server seeing plaintext.
-
----
-
-## Step 6 - Verify
-
-After activation:
-
-1. Sign in as a learner. Verify North loads from Supabase (network tab shows `https://YOURPROJECT.supabase.co/rest/v1/...` requests).
-2. Add a task. Verify it appears in the Supabase Table Editor under `tasks`.
-3. Sign in on a second device with the same learner email. Verify the task appears.
-4. Sign in as a parent linked to that learner. Verify they see the task (but cannot edit it).
-5. Sign in as a peer learner. Verify they do **not** see the task (RLS in action).
-
-If verification fails at step 4 or 5, RLS policies are misconfigured. Check the policies in the SQL editor.
+Confirms data is persisting in Supabase and visible across devices.
 
 ---
 
-## Runtime refactor still owed
+## Notes
 
-The current `store.js` exposes a mix of sync and async functions (sync for getters, async for `saveLogin` after Decision 4). For Supabase activation, every getter must become async, and every renderer must await its data.
-
-This refactor is scoped as **post-activation** rather than pre-activation:
-
-- The skeleton stays usable today on local.
-- When Vibrant Life provides Supabase keys, do the full async refactor + activation together (estimate: 1-2 days, per Geordi's meeting estimate).
-
-The Supabase adapter in `supabase-adapter.js` exposes the async shape every renderer will eventually consume. Use it as the spec for the refactor.
-
----
-
-*Wire-up scaffolding shipped 2026-05-11. Activation gated on Vibrant Life's Supabase project + the runtime async refactor.*
-
-*"The best infrastructure is invisible until you need it, then obvious when you look." - Lux*
+- **Encrypted passwords stay client-side.** Logins (Khan, Lexia, etc.) are encrypted with a per-learner AES-GCM key that lives in the device's IndexedDB. Switching devices means re-entering those external service passwords. This is intentional - the server never sees plaintext.
+- **The anon key is safe in source.** It's designed to be public; all access is enforced by RLS. The service_role key is what must stay secret.
+- **RLS depends on Supabase Auth.** Every profile row has `id` matching an `auth.users` UUID. Without that, `auth.uid()` returns null and policies deny all access.
+- **Migration from localStorage data:** if you've used the localStorage backend with real data and need to bring it across, `js/backend/migrate.js` can export the localStorage state as JSON or SQL inserts. Run those in the Supabase SQL editor *with RLS temporarily disabled*, then flip BACKEND_TYPE.

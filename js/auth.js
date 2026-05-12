@@ -4,11 +4,22 @@
 
 import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides, findAccountByHeroName, getParentLearnerLinks } from './store.js';
 import { verifyPassword } from './crypto.js';
+import { BACKEND_TYPE } from './backend/config.js';
 
 const ROLES = ['learner', 'parent', 'guide'];
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes - studio iPads are shared
 
 export function initAuth(onSignedIn) {
+  // Skeleton-only sign-in shortcuts (L/P/G default-role buttons) are hidden
+  // in production. Real Supabase deploys must use real hero-name + password.
+  const isProd = BACKEND_TYPE === 'supabase';
+  document.querySelectorAll('.skeleton-only').forEach((el) => {
+    el.hidden = isProd;
+  });
+  document.querySelectorAll('.production-only').forEach((el) => {
+    el.hidden = !isProd;
+  });
+
   // Hero-name + password sign-in.
   const submitBtn = document.getElementById('signin-submit');
   if (submitBtn && !submitBtn.dataset.wired) {

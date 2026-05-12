@@ -52,14 +52,15 @@
         </div>
         <button type="button" id="signin-submit" class="btn btn-primary signin-submit">Sign in</button>
         <p id="signin-error" class="signin-error" style="display:none"></p>
-        <p class="signin-divider">or jump in as a default account</p>
-        <div class="signin-roles">
+        <p class="signin-divider skeleton-only">or jump in as a default account</p>
+        <div class="signin-roles skeleton-only">
           <button type="button" class="role-btn" data-role="learner">I'm a learner</button>
           <button type="button" class="role-btn" data-role="parent">I'm a parent</button>
           <button type="button" class="role-btn" data-role="guide">I'm a guide</button>
         </div>
       </form>
-      <p class="signin-note">Real sign-in checks your hero name against accounts a guide has created. The default-account buttons are for skeleton review only. Passwords are not verified yet - they wire in when Supabase activates.</p>
+      <p class="signin-note skeleton-only">Real sign-in checks your hero name against accounts a guide has created. The default-account buttons are for skeleton review only. Passwords are not verified yet - they wire in when Supabase activates.</p>
+      <p class="signin-note production-only" hidden>Forgotten your password? Ask a guide to reset it for you.</p>
     </div>
   </div>
 
