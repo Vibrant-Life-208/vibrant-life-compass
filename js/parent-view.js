@@ -1,19 +1,39 @@
 // Parent view - scoped to session-level visibility only.
 
-import { getLearners, getGoals, getSession, getNotifications, markNotificationRead, getParents } from './store.js';
+import { getLearners, getGoals, getSession, getNotifications, markNotificationRead, getParents, getParentLearnerLinks } from './store.js';
 import { getCategoriesForStudio, PARENT_SUPPORT_HINTS } from './studios.js';
 import { computeYearPosition } from './year-map.js';
+
+// Which kid this parent is currently viewing (per-session, in-memory).
+// Reset on every renderParentView call if not set.
+let activeKidIndex = 0;
 
 export async function renderParentView() {
   const container = document.getElementById('parent-learner');
   if (!container) return;
 
-  const learners = await getLearners();
-  if (!learners.length) {
-    container.innerHTML = '<p class="learners-empty">No learner linked yet.</p>';
+  // CRITICAL: scope to ONLY this parent's linked kids.
+  // Reading learners[0] for everyone (the prior implementation) leaks the first
+  // learner's data to any signed-in parent.
+  const session = await getSession();
+  if (!session?.parentId) {
+    container.innerHTML = '<p class="learners-empty">No parent session active.</p>';
     return;
   }
-  const learner = learners[0];
+  const [allLearners, allLinks] = await Promise.all([getLearners(), getParentLearnerLinks()]);
+  const myLinks = allLinks.filter((l) => l.parentId === session.parentId);
+  const myKids = myLinks
+    .map((l) => allLearners.find((x) => x.id === l.learnerId))
+    .filter(Boolean);
+
+  if (myKids.length === 0) {
+    container.innerHTML = '<p class="learners-empty">No learner linked to your account yet. Ask a guide to link your account.</p>';
+    return;
+  }
+
+  // Clamp the active index in case the link list changed since last render.
+  if (activeKidIndex >= myKids.length) activeKidIndex = 0;
+  const learner = myKids[activeKidIndex];
   const goals = await getGoals(learner.id);
   const position = computeYearPosition();
   const currentSession = position.beforeYearStart ? 1 : position.sessionIndex;
@@ -22,27 +42,43 @@ export async function renderParentView() {
   container.innerHTML = '';
 
   // Notifications surface for the parent (year-plan-approved + milestone-shared)
-  const session = await getSession();
-  if (session?.parentId) {
-    const notifs = await getNotifications(session.parentId);
-    const unread = notifs.filter((n) => !n.readAt).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-    if (unread.length > 0) {
-      const notifBox = document.createElement('div');
-      notifBox.className = 'parent-notif-card';
-      notifBox.innerHTML = unread.slice(0, 5).map((n) => `
-        <div class="parent-notif-item" data-notif="${n.id}">
-          <span class="parent-notif-title">${escapeHtml(n.title)}</span>
-          <p class="parent-notif-body">${escapeHtml(n.body)}</p>
-        </div>
-      `).join('');
-      container.appendChild(notifBox);
-      notifBox.querySelectorAll('[data-notif]').forEach((el) => {
-        el.addEventListener('click', async () => {
-          await markNotificationRead(el.dataset.notif);
-          el.classList.add('parent-notif-read');
-        });
+  const notifs = await getNotifications(session.parentId);
+  const unread = notifs.filter((n) => !n.readAt).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  if (unread.length > 0) {
+    const notifBox = document.createElement('div');
+    notifBox.className = 'parent-notif-card';
+    notifBox.innerHTML = unread.slice(0, 5).map((n) => `
+      <div class="parent-notif-item" data-notif="${n.id}">
+        <span class="parent-notif-title">${escapeHtml(n.title)}</span>
+        <p class="parent-notif-body">${escapeHtml(n.body)}</p>
+      </div>
+    `).join('');
+    container.appendChild(notifBox);
+    notifBox.querySelectorAll('[data-notif]').forEach((el) => {
+      el.addEventListener('click', async () => {
+        await markNotificationRead(el.dataset.notif);
+        el.classList.add('parent-notif-read');
       });
-    }
+    });
+  }
+
+  // Kid switcher - shown only when this parent has multiple linked kids.
+  // For single-kid families this stays hidden.
+  if (myKids.length > 1) {
+    const switcher = document.createElement('div');
+    switcher.className = 'parent-kid-switcher';
+    switcher.innerHTML = myKids.map((k, i) => `
+      <button type="button" class="parent-kid-tab${i === activeKidIndex ? ' is-active' : ''}" data-kid-index="${i}">
+        ${escapeHtml(k.name)}
+      </button>
+    `).join('');
+    container.appendChild(switcher);
+    switcher.querySelectorAll('[data-kid-index]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        activeKidIndex = Number(btn.dataset.kidIndex);
+        await renderParentView();
+      });
+    });
   }
 
   const header = document.createElement('div');

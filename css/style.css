@@ -1233,6 +1233,27 @@ header h1 {
 }
 
 /* Parent view */
+.parent-kid-switcher {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.parent-kid-tab {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--sage-soft, #cdd4c4);
+  background: var(--warm-white);
+  color: var(--text);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.parent-kid-tab.is-active {
+  background: var(--sage, #4a6741);
+  color: white;
+  border-color: var(--sage, #4a6741);
+}
 .parent-header {
   background: var(--warm-white);
   border-radius: var(--radius);

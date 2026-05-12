@@ -66,12 +66,15 @@ export async function getLearner(id) {
 }
 
 export async function saveLearner(data) {
+  // Destructure id out so `id: undefined` from callers cannot wipe the
+  // freshly generated id via spread. Same fix shape as saveGoal/saveTask.
+  const { id, ...rest } = data;
   const learners = await getLearners();
-  if (data.id) {
-    const idx = learners.findIndex((l) => l.id === data.id);
-    if (idx >= 0) learners[idx] = { ...learners[idx], ...data, updatedAt: new Date().toISOString() };
+  if (id) {
+    const idx = learners.findIndex((l) => l.id === id);
+    if (idx >= 0) learners[idx] = { ...learners[idx], ...rest, id, updatedAt: new Date().toISOString() };
   } else {
-    learners.push({ id: generateId(), createdAt: new Date().toISOString(), ...data });
+    learners.push({ id: generateId(), createdAt: new Date().toISOString(), ...rest });
   }
   write(KEYS.learners, learners);
   return learners;
@@ -85,12 +88,13 @@ export async function getParents() {
 }
 
 export async function saveParent(data) {
+  const { id, ...rest } = data;
   const parents = await getParents();
-  if (data.id) {
-    const idx = parents.findIndex((p) => p.id === data.id);
-    if (idx >= 0) parents[idx] = { ...parents[idx], ...data, updatedAt: new Date().toISOString() };
+  if (id) {
+    const idx = parents.findIndex((p) => p.id === id);
+    if (idx >= 0) parents[idx] = { ...parents[idx], ...rest, id, updatedAt: new Date().toISOString() };
   } else {
-    parents.push({ id: generateId(), createdAt: new Date().toISOString(), ...data });
+    parents.push({ id: generateId(), createdAt: new Date().toISOString(), ...rest });
   }
   write(KEYS.parents, parents);
   return parents;
@@ -142,12 +146,13 @@ export async function getGuide(id) {
 }
 
 export async function saveGuide(data) {
+  const { id, ...rest } = data;
   const guides = await getGuides();
-  if (data.id) {
-    const idx = guides.findIndex((g) => g.id === data.id);
-    if (idx >= 0) guides[idx] = { ...guides[idx], ...data, updatedAt: new Date().toISOString() };
+  if (id) {
+    const idx = guides.findIndex((g) => g.id === id);
+    if (idx >= 0) guides[idx] = { ...guides[idx], ...rest, id, updatedAt: new Date().toISOString() };
   } else {
-    guides.push({ id: generateId(), createdAt: new Date().toISOString(), ...data });
+    guides.push({ id: generateId(), createdAt: new Date().toISOString(), ...rest });
   }
   write(KEYS.guides, guides);
   return guides;
@@ -194,7 +199,8 @@ export async function getCheckIns(learnerId) {
 
 export async function addCheckIn(checkIn) {
   const all = read(KEYS.checkIns) || [];
-  const record = { id: generateId(), createdAt: new Date().toISOString(), ...checkIn };
+  const { id: _ignored, ...rest } = checkIn;
+  const record = { id: generateId(), createdAt: new Date().toISOString(), ...rest };
   all.push(record);
   write(KEYS.checkIns, all);
   return record;
@@ -209,7 +215,8 @@ export async function getPosts() {
 
 export async function addPost(post) {
   const all = await getPosts();
-  const record = { id: generateId(), createdAt: new Date().toISOString(), ...post };
+  const { id: _ignored, ...rest } = post;
+  const record = { id: generateId(), createdAt: new Date().toISOString(), ...rest };
   all.unshift(record);
   write(KEYS.posts, all);
   return record;
@@ -266,11 +273,12 @@ export async function saveLogin(learnerId, login) {
     passwordField = { ct: '', iv: '' };
   }
 
-  const sanitized = { ...login, password: passwordField };
+  const { id, ...loginRest } = login;
+  const sanitized = { ...loginRest, password: passwordField };
 
-  if (login.id) {
-    const idx = list.findIndex((l) => l.id === login.id);
-    if (idx >= 0) list[idx] = { ...list[idx], ...sanitized, updatedAt: new Date().toISOString() };
+  if (id) {
+    const idx = list.findIndex((l) => l.id === id);
+    if (idx >= 0) list[idx] = { ...list[idx], ...sanitized, id, updatedAt: new Date().toISOString() };
   } else {
     list.push({ id: generateId(), createdAt: new Date().toISOString(), ...sanitized });
   }
@@ -503,11 +511,12 @@ export async function getNotifications(recipientId) {
 
 export async function addNotification(notif) {
   const all = read(KEYS.notifications) || [];
+  const { id: _ignored, ...rest } = notif;
   const record = {
     id: generateId(),
     createdAt: new Date().toISOString(),
     readAt: null,
-    ...notif,
+    ...rest,
   };
   all.push(record);
   write(KEYS.notifications, all);
@@ -547,18 +556,22 @@ export async function getTasksForRange(learnerId, startISO, endISO) {
 }
 
 export async function saveTask(learnerId, task) {
+  // Destructure id out so an explicit `id: undefined` from openTaskModal
+  // (when creating a new task) cannot wipe a freshly generated id via spread.
+  // Same fix shape as saveGoal.
+  const { id, ...rest } = task;
   const all = read(KEYS.tasks) || {};
   const list = all[learnerId] || [];
-  if (task.id) {
-    const idx = list.findIndex((t) => t.id === task.id);
-    if (idx >= 0) list[idx] = { ...list[idx], ...task, updatedAt: new Date().toISOString() };
-    else list.push({ ...task, createdAt: new Date().toISOString() });
+  if (id) {
+    const idx = list.findIndex((t) => t.id === id);
+    if (idx >= 0) list[idx] = { ...list[idx], ...rest, id, updatedAt: new Date().toISOString() };
+    else list.push({ id, status: 'open', createdAt: new Date().toISOString(), ...rest });
   } else {
     list.push({
       id: generateId(),
       status: 'open',
       createdAt: new Date().toISOString(),
-      ...task,
+      ...rest,
     });
   }
   all[learnerId] = list;
