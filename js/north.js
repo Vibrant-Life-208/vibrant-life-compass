@@ -8,6 +8,7 @@ import { getCategoriesForStudio } from './studios.js';
 import { renderYearMap } from './year-map.js';
 import { renderToday, initTodayFab } from './tasks.js';
 import { renderGamePlan } from './game-plan.js';
+import { renderPartnerSection, renderPartnerApprovals } from './partner.js';
 
 let yearMapClickHandler = null;
 
@@ -25,6 +26,8 @@ export function renderNorth(learnerId) {
 
   renderQuoteSection(learnerId);
   renderYearMapSection(learner);
+  renderPartnerSection(learnerId);
+  renderPartnerApprovals(learnerId);
   renderToday(learnerId);
   initTodayFab(learnerId);
   renderGamePlan(learnerId);

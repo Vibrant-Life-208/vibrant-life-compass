@@ -1,9 +1,9 @@
 // Compass (year view). Shows year-goal per category for the learner's studio,
 // plus motivational quote and character traits at the top.
 
-import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getYearTraits, setYearTraits } from './store.js';
+import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval } from './store.js';
 import { getCategoriesForStudio, getStudioName } from './studios.js';
-import { openGoalModal, openQuoteModal, openTraitsModal, openConfirmModal } from './modals.js';
+import { openGoalModal, openQuoteModal, openTraitsModal, openConfirmModal, openYearGoalModal } from './modals.js';
 
 let wired = false;
 
@@ -68,36 +68,110 @@ export function renderYearView(learnerId) {
   studioHeader.textContent = `${getStudioName(learner.studio)} studio · ${learner.name}`;
   list.appendChild(studioHeader);
 
+  const partner = getActivePartnerOf(learnerId);
+
   categories.forEach((cat) => {
     const goal = goals.find((g) => g.categoryId === cat.id);
     const card = document.createElement('div');
-    card.className = 'category-card';
+    const status = goal?.status || (goal ? 'active' : null);
+    card.className = 'category-card' + (status ? ` goal-${status}` : '');
     const placeholder = `Example: ${cat.example}`;
+
+    let statusBadge = '';
+    if (status === 'pending-approval') {
+      statusBadge = '<span class="goal-status goal-status-pending">Awaiting partner</span>';
+    } else if (status === 'approved') {
+      statusBadge = '<span class="goal-status goal-status-approved">Approved ✓</span>';
+    }
+
+    const checkOffButton = (goal && status === 'active')
+      ? `<button type="button" class="btn btn-text goal-checkoff" data-id="${goal.id}">Ready for check-off</button>`
+      : '';
+
     card.innerHTML = `
       <div class="category-header">
-        <span class="category-name">${cat.name}</span>
+        <span class="category-name">${cat.name}${statusBadge}</span>
         <span class="category-kind">${cat.kind}</span>
       </div>
       <p class="category-goal ${goal ? '' : 'empty'}">${goal ? escapeHtml(goal.text) : escapeHtml(placeholder)}</p>
+      ${goal?.baseline ? `<p class="goal-meta"><span class="goal-meta-label">Starting line:</span> ${escapeHtml(goal.baseline)}</p>` : ''}
+      ${goal?.halfwayPoint ? `<p class="goal-meta"><span class="goal-meta-label">Halfway:</span> ${escapeHtml(goal.halfwayPoint)}</p>` : ''}
+      ${checkOffButton}
     `;
-    card.addEventListener('click', () => {
-      openGoalModal({
-        title: `${cat.name} - year goal`,
+
+    // Card click opens the 3-stage year goal modal
+    card.addEventListener('click', (e) => {
+      if (e.target.classList.contains('goal-checkoff')) return; // handled separately
+      openYearGoalModal({
+        category: cat,
         existing: goal,
-        example: cat.example,
-        onSave: (text) => {
-          saveGoal({
+        onSave: ({ text, baseline, halfwayPoint }) => {
+          const saved = saveGoal({
             id: goal?.id,
             learnerId,
             categoryId: cat.id,
             scope: 'year',
             text,
-            status: 'active',
+            baseline,
+            halfwayPoint,
+            targetSession: 6, // default per captain
+            status: goal?.status || 'active',
           });
+          // Auto-populate Session 3 goal with the halfway point if it doesn't
+          // exist yet, OR update if it does. The learner can edit it.
+          if (halfwayPoint) {
+            const existingS3 = goals.find(
+              (g) => g.scope === 'session' && g.sessionIndex === 3 && g.categoryId === cat.id
+            );
+            if (!existingS3) {
+              saveGoal({
+                learnerId,
+                categoryId: cat.id,
+                scope: 'session',
+                sessionIndex: 3,
+                text: halfwayPoint,
+                status: 'active',
+              });
+            }
+            // If S3 exists but is just the auto-populated text, refresh it;
+            // otherwise leave the learner's edit alone.
+            else if (existingS3.autoPopulated) {
+              saveGoal({ ...existingS3, text: halfwayPoint });
+            }
+          }
           renderYearView(learnerId);
         },
       });
     });
+
+    // Wire the check-off button
+    const checkoffBtn = card.querySelector('.goal-checkoff');
+    if (checkoffBtn) {
+      checkoffBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!partner) {
+          openConfirmModal({
+            title: 'No partner yet',
+            body: 'You need an accountability partner to check off year goals. Set one up on North first.',
+            confirmLabel: 'OK',
+            cancelLabel: 'Cancel',
+            onConfirm: () => {},
+          });
+          return;
+        }
+        openConfirmModal({
+          title: 'Ready for check-off?',
+          body: 'Your partner will see this goal and confirm it. Are you ready to send it for approval?',
+          confirmLabel: 'Send for approval',
+          cancelLabel: 'Not yet',
+          onConfirm: () => {
+            markYearGoalPendingApproval(goal.id);
+            renderYearView(learnerId);
+          },
+        });
+      });
+    }
+
     list.appendChild(card);
   });
 }

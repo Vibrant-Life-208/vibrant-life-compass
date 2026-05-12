@@ -106,7 +106,16 @@ export function renderYearMap(container, learner, opts = {}) {
 
     const label = document.createElement('div');
     label.className = 'year-map-session-label';
-    label.textContent = density === 'compressed' ? `S${sessionNumber}` : `Session ${sessionNumber}`;
+    let labelText = density === 'compressed' ? `S${sessionNumber}` : `Session ${sessionNumber}`;
+    // Per captain decision 2026-05-11: Session 6 is the finish line, Session 7 is harvest
+    if (sessionNumber === 6) {
+      labelText += density === 'compressed' ? ' 🏁' : ' · finish';
+      session.classList.add('year-map-finish');
+    } else if (sessionNumber === 7) {
+      labelText += density === 'compressed' ? ' ✦' : ' · harvest';
+      session.classList.add('year-map-harvest');
+    }
+    label.textContent = labelText;
     session.appendChild(label);
 
     // Weeks

@@ -33,6 +33,94 @@ export function openGoalModal({ title, existing, example, onSave }) {
   setTimeout(() => document.getElementById('goal-text')?.focus(), 50);
 }
 
+// 3-stage year-goal modal: (1) the goal itself, (2) where you are now,
+// (3) the halfway point. Auto-populates Session 3 goal in the same category.
+// Per captain decision 2026-05-11.
+export function openYearGoalModal({ category, existing, onSave }) {
+  setModalTitle(`${category.name} - year goal`);
+  const fields = document.getElementById('form-fields');
+  fields.innerHTML = `
+    <div class="onb-stages">
+      <span class="stage-dot is-active" data-stage="1">1</span>
+      <span class="stage-dot" data-stage="2">2</span>
+      <span class="stage-dot" data-stage="3">3</span>
+    </div>
+
+    <div class="stage-panel" data-stage="1">
+      <div class="form-field">
+        <label for="yg-text">Stage 1 - Your year goal</label>
+        <p class="form-hint">What does success look like by Session 6? Make it specific. Make it real.</p>
+        <textarea id="yg-text" rows="3" placeholder="What does success look like?">${existing?.text ? escapeAttr(existing.text) : ''}</textarea>
+      </div>
+      ${category.example ? `<div class="form-example"><span class="form-example-label">Example</span><p>${escapeHtml(category.example)}</p></div>` : ''}
+      <div class="stage-actions">
+        <button type="button" class="btn btn-primary" data-action="next">Next</button>
+      </div>
+    </div>
+
+    <div class="stage-panel" data-stage="2" hidden>
+      <div class="form-field">
+        <label for="yg-baseline">Stage 2 - Where you are now</label>
+        <p class="form-hint">The honest starting line. Your partner will see this for context.</p>
+        <textarea id="yg-baseline" rows="3" placeholder="What's true today about this goal?">${existing?.baseline ? escapeAttr(existing.baseline) : ''}</textarea>
+      </div>
+      <div class="stage-actions">
+        <button type="button" class="btn btn-text" data-action="back">Back</button>
+        <button type="button" class="btn btn-primary" data-action="next">Next</button>
+      </div>
+    </div>
+
+    <div class="stage-panel" data-stage="3" hidden>
+      <div class="form-field">
+        <label for="yg-halfway">Stage 3 - The halfway point</label>
+        <p class="form-hint">What will be true by the end of Session 3? This becomes your Session 3 goal automatically.</p>
+        <textarea id="yg-halfway" rows="3" placeholder="What does the midpoint look like?">${existing?.halfwayPoint ? escapeAttr(existing.halfwayPoint) : ''}</textarea>
+      </div>
+      <div class="stage-actions">
+        <button type="button" class="btn btn-text" data-action="back">Back</button>
+        <button type="button" class="btn btn-primary" data-action="save">Save year goal</button>
+      </div>
+    </div>
+  `;
+
+  const showStage = (n) => {
+    fields.querySelectorAll('.stage-dot').forEach((d) => {
+      d.classList.toggle('is-active', Number(d.dataset.stage) <= n);
+    });
+    fields.querySelectorAll('.stage-panel').forEach((p) => {
+      p.hidden = Number(p.dataset.stage) !== n;
+    });
+    const focusEl = fields.querySelector(`.stage-panel[data-stage="${n}"] textarea`);
+    focusEl?.focus();
+  };
+
+  fields.querySelectorAll('[data-action]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const action = btn.dataset.action;
+      const stage = Number(btn.closest('.stage-panel').dataset.stage);
+      if (action === 'next') {
+        // Validate current stage has content
+        const ta = fields.querySelector(`.stage-panel[data-stage="${stage}"] textarea`);
+        if (!ta.value.trim()) { ta.focus(); return; }
+        showStage(stage + 1);
+      } else if (action === 'back') {
+        showStage(stage - 1);
+      } else if (action === 'save') {
+        const text = document.getElementById('yg-text').value.trim();
+        const baseline = document.getElementById('yg-baseline').value.trim();
+        const halfwayPoint = document.getElementById('yg-halfway').value.trim();
+        if (!text || !halfwayPoint) return;
+        onSave({ text, baseline, halfwayPoint });
+        closeModal();
+      }
+    });
+  });
+
+  activeSubmit = null; // multi-stage; use the explicit buttons
+  openModal();
+  setTimeout(() => document.getElementById('yg-text')?.focus(), 50);
+}
+
 export function openQuoteModal(existing, onSave) {
   setModalTitle('Your motivational quote');
   document.getElementById('form-fields').innerHTML = `

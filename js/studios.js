@@ -193,6 +193,23 @@ export const OVERFLOW_COPY = {
   launchpad: 'Today is full. Re-plan?',
 };
 
+// Per-category support hints shown to parents on the Parent view.
+// Acton-aligned: "Don't help unless asked. Help by listening, not by doing."
+// Captain decision 2026-05-11.
+export const PARENT_SUPPORT_HINTS = {
+  khan: 'Ask them to teach you one skill they\'re learning. Teaching is mastery.',
+  lexia: 'Read alongside them for ten minutes a day. Not their level - your own.',
+  deepBook: 'Ask one open question about their Deep Book. No quizzing.',
+  civ: 'Watch a documentary or read a short article together on the civilization they\'re studying.',
+  characterTrait: 'Notice once a week when you see them practicing it. Tell them you noticed.',
+  reading: 'Visit the library together. Let them pick. Read your own book at the same time.',
+  pathway: 'Ask what\'s hard right now in their Pathway. Then just listen.',
+  quest: 'Offer to be in the audience at the exhibition. That\'s the support.',
+  apprenticeship: 'Ask about the person they\'re apprenticing with, not just the work. Mentorship is the gift.',
+  noRedInk: 'No support needed here. They\'ve got this one.',
+  thresholds: 'Ask one question about their Threshold project that you\'d want answered. Be a real audience.',
+};
+
 export function getStudio(studioId) {
   return STUDIOS[studioId] || null;
 }

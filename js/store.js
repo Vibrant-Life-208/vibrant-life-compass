@@ -12,6 +12,7 @@ const KEYS = {
   yearTraits: 'hc_year_traits',  // same
   logins: 'hc_logins',
   tasks: 'hc_tasks',
+  partnerLinks: 'hc_partner_links', // accountability-partner relationships
 };
 
 function read(key) {
@@ -217,6 +218,126 @@ export function deleteLogin(learnerId, id) {
   all[learnerId] = list;
   write(KEYS.logins, all);
   return list;
+}
+
+// Accountability partners. Self-chosen with partner approval (mutual opt-in).
+// Captain decision 2026-05-11. One active partnership at a time per learner.
+//
+// Shape:
+//   { id, proposerId, partnerId, status: 'proposed'|'accepted'|'declined'|'dissolved',
+//     proposedAt, respondedAt }
+//
+// A learner's "current partner" is the most recent accepted link they appear in.
+export function getPartnerLinks() {
+  return read(KEYS.partnerLinks) || [];
+}
+
+export function getActivePartnerOf(learnerId) {
+  const all = getPartnerLinks().filter((l) => l.status === 'accepted');
+  const mine = all.find((l) => l.proposerId === learnerId || l.partnerId === learnerId);
+  if (!mine) return null;
+  const partnerId = mine.proposerId === learnerId ? mine.partnerId : mine.proposerId;
+  return { partnerId, linkId: mine.id };
+}
+
+export function getPendingProposalsFor(learnerId) {
+  return getPartnerLinks().filter(
+    (l) => l.partnerId === learnerId && l.status === 'proposed'
+  );
+}
+
+export function proposePartner(proposerId, partnerId) {
+  if (proposerId === partnerId) return null;
+  // Block if either side has an active partnership
+  if (getActivePartnerOf(proposerId) || getActivePartnerOf(partnerId)) return null;
+  const links = getPartnerLinks();
+  // Block duplicate proposals
+  const existing = links.find(
+    (l) => l.status === 'proposed'
+      && ((l.proposerId === proposerId && l.partnerId === partnerId)
+        || (l.proposerId === partnerId && l.partnerId === proposerId))
+  );
+  if (existing) return existing;
+  const link = {
+    id: generateId(),
+    proposerId,
+    partnerId,
+    status: 'proposed',
+    proposedAt: new Date().toISOString(),
+  };
+  links.push(link);
+  write(KEYS.partnerLinks, links);
+  return link;
+}
+
+export function respondToPartnerProposal(linkId, accepted) {
+  const links = getPartnerLinks();
+  const link = links.find((l) => l.id === linkId);
+  if (!link || link.status !== 'proposed') return null;
+  link.status = accepted ? 'accepted' : 'declined';
+  link.respondedAt = new Date().toISOString();
+  write(KEYS.partnerLinks, links);
+  return link;
+}
+
+export function dissolvePartnership(linkId) {
+  const links = getPartnerLinks();
+  const link = links.find((l) => l.id === linkId);
+  if (!link) return null;
+  link.status = 'dissolved';
+  link.dissolvedAt = new Date().toISOString();
+  write(KEYS.partnerLinks, links);
+  return link;
+}
+
+// Year-goal check-off flow. The learner marks the year goal as ready
+// to be approved; their partner approves (or rejects with a note).
+export function getYearGoalPendingApprovals(partnerId) {
+  // Goals whose learner has partner=partnerId AND status='pending-approval'
+  const goals = read(KEYS.goals) || [];
+  return goals.filter((g) => {
+    if (g.scope !== 'year' || g.status !== 'pending-approval') return false;
+    const learnerPartner = getActivePartnerOf(g.learnerId);
+    return learnerPartner?.partnerId === partnerId;
+  });
+}
+
+export function markYearGoalPendingApproval(goalId) {
+  const all = read(KEYS.goals) || [];
+  const idx = all.findIndex((g) => g.id === goalId);
+  if (idx < 0) return null;
+  all[idx].status = 'pending-approval';
+  all[idx].pendingApprovalAt = new Date().toISOString();
+  write(KEYS.goals, all);
+  return all[idx];
+}
+
+export function approveYearGoal(goalId, approverId, note = '') {
+  const all = read(KEYS.goals) || [];
+  const idx = all.findIndex((g) => g.id === goalId);
+  if (idx < 0) return null;
+  all[idx].status = 'approved';
+  all[idx].approval = {
+    partnerId: approverId,
+    approvedAt: new Date().toISOString(),
+    note,
+  };
+  write(KEYS.goals, all);
+  return all[idx];
+}
+
+export function rejectYearGoal(goalId, approverId, note = '') {
+  const all = read(KEYS.goals) || [];
+  const idx = all.findIndex((g) => g.id === goalId);
+  if (idx < 0) return null;
+  all[idx].status = 'active';
+  all[idx].lastRejection = {
+    partnerId: approverId,
+    rejectedAt: new Date().toISOString(),
+    note,
+  };
+  write(KEYS.goals, all);
+  return all[idx];
 }
 
 // Tasks - per-learner, per-day. Shape:

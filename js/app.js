@@ -25,13 +25,11 @@ const TABS_BY_ROLE = {
     { id: 'passwords-view', label: 'Passwords' },
     { id: 'everyone-view', label: 'Everyone' },
   ],
+  // Captain decision 2026-05-11: parents only see session goals + end-of-session
+  // recap. No year goals, no daily tasks, no passwords. Everyone Page is
+  // readable but not postable.
   parent: [
     { id: 'parent-view', label: 'My learner' },
-    { id: 'north-view', label: 'North' },
-    { id: 'year-view', label: 'Compass' },
-    { id: 'session-view', label: 'Session' },
-    { id: 'patterns-view', label: 'Patterns' },
-    { id: 'passwords-view', label: 'Passwords' },
     { id: 'everyone-view', label: 'Everyone' },
   ],
   guide: [
@@ -203,24 +201,7 @@ function renderRoleView(role, learnerId) {
     });
   }
   if (role === 'parent') {
-    const list = document.getElementById('parent-learner');
-    const learners = getLearners();
-    if (!learners.length) {
-      list.innerHTML = '<p class="learners-empty">No learner linked yet.</p>';
-      return;
-    }
-    list.innerHTML = '';
-    const l = learners[0];
-    const card = document.createElement('div');
-    card.className = 'category-card';
-    card.innerHTML = `
-      <div class="category-header">
-        <span class="category-name">${escapeHtml(l.name)}</span>
-        <span class="category-kind">${escapeHtml(l.studio)}</span>
-      </div>
-      <p class="category-goal">Open their compass to see year + session goals.</p>
-    `;
-    list.appendChild(card);
+    import('./parent-view.js').then(m => m.renderParentView());
   }
 }
 
