@@ -108,7 +108,9 @@ export async function renderYearView(learnerId) {
       </div>
       <p class="category-goal ${goal ? '' : 'empty'}">${goal ? escapeHtml(goal.text) : escapeHtml(placeholder)}</p>
       ${goal?.baseline ? `<p class="goal-meta"><span class="goal-meta-label">Starting line:</span> ${escapeHtml(goal.baseline)}</p>` : ''}
-      ${goal?.halfwayPoint ? `<p class="goal-meta"><span class="goal-meta-label">Halfway:</span> ${escapeHtml(goal.halfwayPoint)}</p>` : ''}
+      ${goal?.eos1Point ? `<p class="goal-meta"><span class="goal-meta-label">EOS 1:</span> ${escapeHtml(goal.eos1Point)}</p>` : ''}
+      ${goal?.quarterPoint ? `<p class="goal-meta"><span class="goal-meta-label">EOS 2:</span> ${escapeHtml(goal.quarterPoint)}</p>` : ''}
+      ${goal?.halfwayPoint ? `<p class="goal-meta"><span class="goal-meta-label">EOS 3 · locked:</span> ${escapeHtml(goal.halfwayPoint)}</p>` : ''}
       ${checkOffButton}
     `;
 
@@ -117,7 +119,7 @@ export async function renderYearView(learnerId) {
       openYearGoalModal({
         category: cat,
         existing: goal,
-        onSave: async ({ text, baseline, halfwayPoint, quarterPoint }) => {
+        onSave: async ({ text, baseline, halfwayPoint, quarterPoint, eos1Point }) => {
           await saveGoal({
             id: goal?.id,
             learnerId,
@@ -127,10 +129,12 @@ export async function renderYearView(learnerId) {
             baseline,
             halfwayPoint,
             quarterPoint,
+            eos1Point,
             targetSession: 6,
             status: goal?.status || 'active',
           });
-          // Auto-populate Session 3 and Session 2 goals (recursive halving)
+          // Auto-populate Session 1, 2, 3 goals (recursive halving + foundation).
+          // EOS 3 -> Session 3, EOS 2 -> Session 2, EOS 1 -> Session 1.
           const seedSession = async (sessionIndex, seedText) => {
             if (!seedText) return;
             const existingS = allGoals.find(
@@ -152,6 +156,7 @@ export async function renderYearView(learnerId) {
           };
           await seedSession(3, halfwayPoint);
           await seedSession(2, quarterPoint);
+          await seedSession(1, eos1Point);
           await renderYearView(learnerId);
         },
       });
