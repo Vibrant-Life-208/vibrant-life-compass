@@ -351,6 +351,17 @@ export async function dissolvePartnership(linkId) {
   return link;
 }
 
+// Count items that need a learner's attention on the Partner page.
+// Returns total of: pending proposals for them + year goals waiting for
+// their approval. Used to drive the Partner tab's notification bell.
+export async function getPartnerNotificationCount(learnerId) {
+  const [pendingProposals, pendingApprovals] = await Promise.all([
+    getPendingProposalsFor(learnerId),
+    getYearGoalPendingApprovals(learnerId),
+  ]);
+  return pendingProposals.length + pendingApprovals.length;
+}
+
 // ============================================================================
 // Year-goal check-off flow
 // ============================================================================

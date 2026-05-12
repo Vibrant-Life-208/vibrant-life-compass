@@ -112,6 +112,8 @@ export function renderYearMap(container, learner, opts = {}) {
   const thread = document.createElement('div');
   thread.className = 'year-map-thread';
 
+  const totalWeeksInYear = YEAR_CALENDAR.sessionWeeks.reduce((a, b) => a + b, 0);
+
   YEAR_CALENDAR.sessionWeeks.forEach((weeksInSession, sIdx) => {
     const sessionNumber = sIdx + 1;
     const isCurrent = sessionNumber === position.sessionIndex;
@@ -124,6 +126,8 @@ export function renderYearMap(container, learner, opts = {}) {
       + (isPast ? ' is-past' : '')
       + (isFuture ? ' is-future' : '');
     session.dataset.sessionIndex = String(sessionNumber);
+    // Width proportional to week count - longer sessions (6, 7) get more space
+    session.style.flex = `${weeksInSession} ${weeksInSession} 0`;
 
     const label = document.createElement('div');
     label.className = 'year-map-session-label';

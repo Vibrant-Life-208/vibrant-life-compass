@@ -121,11 +121,13 @@ export async function renderPartnerApprovals(learnerId) {
     card.querySelector('[data-action="approve"]').addEventListener('click', async () => {
       await approveYearGoal(goal.id, learnerId, '');
       await renderPartnerApprovals(learnerId);
+    document.dispatchEvent(new CustomEvent('hc:partner-changed'));
     });
     card.querySelector('[data-action="reject"]').addEventListener('click', async () => {
       const note = prompt('Brief note for your partner (optional):') || '';
       await rejectYearGoal(goal.id, learnerId, note);
       await renderPartnerApprovals(learnerId);
+    document.dispatchEvent(new CustomEvent('hc:partner-changed'));
     });
 
     container.appendChild(card);
@@ -137,12 +139,14 @@ function wireSectionActions(container, learnerId) {
     btn.addEventListener('click', async () => {
       await respondToPartnerProposal(btn.dataset.link, true);
       await renderPartnerSection(learnerId);
+    document.dispatchEvent(new CustomEvent('hc:partner-changed'));
     });
   });
   container.querySelectorAll('[data-action="decline"]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       await respondToPartnerProposal(btn.dataset.link, false);
       await renderPartnerSection(learnerId);
+    document.dispatchEvent(new CustomEvent('hc:partner-changed'));
     });
   });
   container.querySelectorAll('.partner-dissolve-btn').forEach((btn) => {
@@ -155,6 +159,7 @@ function wireSectionActions(container, learnerId) {
         onConfirm: async () => {
           await dissolvePartnership(btn.dataset.link);
           await renderPartnerSection(learnerId);
+    document.dispatchEvent(new CustomEvent('hc:partner-changed'));
         },
       });
     });
@@ -171,6 +176,7 @@ function wireSectionActions(container, learnerId) {
         onConfirm: async () => {
           await proposePartner(learnerId, targetId);
           await renderPartnerSection(learnerId);
+    document.dispatchEvent(new CustomEvent('hc:partner-changed'));
         },
       });
     });

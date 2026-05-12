@@ -309,6 +309,24 @@ header h1 {
   border-bottom-color: var(--sage);
 }
 
+/* Notification badge on tabs (used for Partner pending items) */
+.tab-notif-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.35rem;
+  background: var(--earth);
+  color: var(--warm-white);
+  font-size: 0.65rem;
+  font-weight: 600;
+  border-radius: 999px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 0.4rem;
+  line-height: 1;
+}
+.tab.active .tab-notif-dot { background: var(--sage); }
+
 .tab-content {
   display: none;
   padding: 1.25rem;

@@ -14,7 +14,7 @@ import { renderPartnerPage } from './partner.js';
 import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal } from './modals.js';
-import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession } from './store.js';
+import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession, getPartnerNotificationCount } from './store.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -104,8 +104,16 @@ async function onSignedIn() {
   if (!session) return;
 
   document.getElementById('who-label').textContent = `${session.name} · ${session.role}`;
-  buildTabs(session.role);
+  await buildTabs(session.role);
   wireRoleSwitcher();
+
+  // Refresh the Partner tab badge whenever partnership or approval state changes.
+  if (!document._hcPartnerListener) {
+    document._hcPartnerListener = true;
+    document.addEventListener('hc:partner-changed', async () => {
+      await buildTabs(session.role);
+    });
+  }
 
   const learnerId = await resolveLearnerId(session);
   initSessionNav(learnerId);
@@ -157,15 +165,31 @@ async function buildTabs(role) {
   const nav = document.getElementById('tab-nav');
   nav.innerHTML = '';
   const tabs = TABS_BY_ROLE[role] || TABS_BY_ROLE.learner;
+  const session = await requireSession();
+  const learnerId = await resolveLearnerId(session);
+
+  // Compute notification count for the Partner tab (learners only).
+  let partnerNotifCount = 0;
+  if (role === 'learner' && learnerId) {
+    partnerNotifCount = await getPartnerNotificationCount(learnerId);
+  }
+
   tabs.forEach((t, i) => {
     const btn = document.createElement('button');
     btn.className = 'tab' + (i === 0 ? ' active' : '');
     btn.dataset.tab = t.id;
-    btn.textContent = t.label;
+    btn.innerHTML = escapeHtml(t.label);
+    if (t.id === 'partner-view' && partnerNotifCount > 0) {
+      const dot = document.createElement('span');
+      dot.className = 'tab-notif-dot';
+      dot.title = `${partnerNotifCount} item${partnerNotifCount === 1 ? '' : 's'} waiting`;
+      dot.textContent = String(partnerNotifCount);
+      btn.appendChild(dot);
+    }
     btn.addEventListener('click', async () => {
-      const session = await requireSession();
-      const learnerId = await resolveLearnerId(session);
-      await showTab(t.id, learnerId);
+      const sess = await requireSession();
+      const lid = await resolveLearnerId(sess);
+      await showTab(t.id, lid);
     });
     nav.appendChild(btn);
   });

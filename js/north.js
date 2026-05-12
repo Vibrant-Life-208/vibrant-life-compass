@@ -2,16 +2,13 @@
 
 import { getLearner, getGoals, getYearQuote } from './store.js';
 import { getCategoriesForStudio } from './studios.js';
-import { renderYearMap } from './year-map.js';
 import { renderToday, initTodayFab } from './tasks.js';
 import { renderGamePlan } from './game-plan.js';
-import { renderPartnerSection, renderPartnerApprovals } from './partner.js';
 
+// Year-map click handler is still needed (Compass page sets it).
 let yearMapClickHandler = null;
-
-export function setYearMapClickHandler(fn) {
-  yearMapClickHandler = fn;
-}
+export function setYearMapClickHandler(fn) { yearMapClickHandler = fn; }
+export function getYearMapClickHandler() { return yearMapClickHandler; }
 
 export async function renderNorth(learnerId) {
   const learner = await getLearner(learnerId);
@@ -23,9 +20,6 @@ export async function renderNorth(learnerId) {
 
   await Promise.all([
     renderQuoteSection(learnerId),
-    renderYearMapSection(learner),
-    renderPartnerSection(learnerId),
-    renderPartnerApprovals(learnerId),
     renderToday(learnerId),
     renderGamePlan(learnerId),
     renderVision(learnerId, learner),
@@ -59,20 +53,6 @@ async function renderQuoteSection(learnerId) {
   section.style.display = 'block';
   text.textContent = `“${quote}”`;
   if (footer) footer.textContent = 'Your anchor until Session 7';
-}
-
-async function renderYearMapSection(learner) {
-  const container = document.getElementById('north-year-map');
-  if (!container) return;
-  if (!learner) {
-    container.innerHTML = '<p class="learners-empty">Sign in to see your year.</p>';
-    return;
-  }
-  renderYearMap(container, learner, {
-    onSessionClick: (sessionNumber) => {
-      if (yearMapClickHandler) yearMapClickHandler(sessionNumber);
-    },
-  });
 }
 
 function formatToday() {

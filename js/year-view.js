@@ -3,6 +3,8 @@
 import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval } from './store.js';
 import { getCategoriesForStudio, getStudioName } from './studios.js';
 import { openGoalModal, openQuoteModal, openTraitsModal, openConfirmModal, openYearGoalModal } from './modals.js';
+import { renderYearMap } from './year-map.js';
+import { getYearMapClickHandler } from './north.js';
 
 let wired = false;
 
@@ -12,6 +14,17 @@ export async function renderYearView(learnerId) {
   if (!learner) {
     list.innerHTML = '<p class="learners-empty">No learner profile yet.</p>';
     return;
+  }
+
+  // Year Map at top of Compass page (moved from North per captain 2026-05-12).
+  const yearMapEl = document.getElementById('compass-year-map');
+  if (yearMapEl) {
+    renderYearMap(yearMapEl, learner, {
+      onSessionClick: (sessionNumber) => {
+        const h = getYearMapClickHandler();
+        if (h) h(sessionNumber);
+      },
+    });
   }
 
   const categories = getCategoriesForStudio(learner.studio);
@@ -166,6 +179,7 @@ export async function renderYearView(learnerId) {
           onConfirm: async () => {
             await markYearGoalPendingApproval(goal.id);
             await renderYearView(learnerId);
+            document.dispatchEvent(new CustomEvent('hc:partner-changed'));
           },
         });
       });
