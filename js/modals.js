@@ -163,6 +163,9 @@ export function openYearGoalModal({ category, existing, onSave }) {
   });
 
   activeSubmit = null;
+  // Hide the default form's Save button - we use stage-specific Next/Save buttons
+  const defaultActions = document.querySelector('#goal-form .modal-actions');
+  if (defaultActions) defaultActions.style.display = 'none';
   openModal();
   setTimeout(() => document.getElementById('yg-text')?.focus(), 50);
 }
