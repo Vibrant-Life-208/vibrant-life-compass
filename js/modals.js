@@ -33,7 +33,21 @@ export function openGoalModal({ title, existing, example, onSave }) {
   setTimeout(() => document.getElementById('goal-text')?.focus(), 50);
 }
 
-// 5-stage year-goal modal with recursive halving + EOS 1 foundation.
+// Helper - format the date range for a given session-week (Mon-Fri).
+// Used in the weekly-breakdown stages (6-8) and the review (9).
+async function weekDateLabel(sessionIndex, weekIndex) {
+  const { YEAR_CALENDAR } = await import('./studios.js');
+  const sessionStart = YEAR_CALENDAR.sessionStarts[sessionIndex - 1];
+  if (!sessionStart) return `Week ${weekIndex}`;
+  const start = new Date(sessionStart + 'T00:00:00');
+  start.setDate(start.getDate() + (weekIndex - 1) * 7);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 4);
+  const opts = { month: 'short', day: 'numeric' };
+  return `${start.toLocaleDateString(undefined, opts)} - ${end.toLocaleDateString(undefined, opts)}`;
+}
+
+// 9-stage year-goal modal: 5 milestones + 3 weekly breakdowns + review.
 // Per captain decisions 2026-05-11 and 2026-05-12:
 //   Stage 1: EOS 6 - end goal (where you want to be by end of Session 6)
 //   Stage 2: Baseline - where you are now
@@ -50,16 +64,33 @@ export function openGoalModal({ title, existing, example, onSave }) {
 // On save, seeds Session 1, 2, 3 goals automatically with EOS 1, 2, 3
 // respectively. Each tagged autoPopulated=true so learner-edited
 // session goals are preserved on re-save.
-export function openYearGoalModal({ category, existing, onSave }) {
+export async function openYearGoalModal({ category, existing, onSave }) {
   setModalTitle(`${category.name} - year goal`);
+  // Pre-compute date labels for the weekly inputs
+  const s1Dates = await Promise.all([1,2,3,4].map(w => weekDateLabel(1, w)));
+  const s2Dates = await Promise.all([1,2,3,4,5].map(w => weekDateLabel(2, w)));
+  const s3Dates = await Promise.all([1,2,3].map(w => weekDateLabel(3, w)));
+  const existingS1 = existing?.weeklySteps?.[1] || [];
+  const existingS2 = existing?.weeklySteps?.[2] || [];
+  const existingS3 = existing?.weeklySteps?.[3] || [];
   const fields = document.getElementById('form-fields');
+  const weeklyRow = (sessionIndex, week, dateLabel, value, max) =>
+    `<div class="week-row">
+       <span class="week-row-label">S${sessionIndex} W${week} <span class="week-row-date">${escapeHtml(dateLabel)}</span></span>
+       <input type="text" class="week-row-input" data-session="${sessionIndex}" data-week="${week}" placeholder="One step for this week" value="${value ? escapeAttr(value) : ''}">
+     </div>`;
+
   fields.innerHTML = `
-    <div class="onb-stages">
+    <div class="onb-stages onb-stages-compact">
       <span class="stage-dot is-active" data-stage="1">1</span>
       <span class="stage-dot" data-stage="2">2</span>
       <span class="stage-dot" data-stage="3">3</span>
       <span class="stage-dot" data-stage="4">4</span>
       <span class="stage-dot" data-stage="5">5</span>
+      <span class="stage-dot" data-stage="6">6</span>
+      <span class="stage-dot" data-stage="7">7</span>
+      <span class="stage-dot" data-stage="8">8</span>
+      <span class="stage-dot stage-dot-review" data-stage="9">✓</span>
     </div>
 
     <div class="stage-panel" data-stage="1">
@@ -133,28 +164,169 @@ export function openYearGoalModal({ category, existing, onSave }) {
       </div>
       <div class="form-field">
         <label for="yg-eos1">Stage 5 · EOS 1 — Setting up + quick wins</label>
-        <p class="form-hint">What's the marker that proves you've <strong>started</strong>? Achievable in Session 1's four weeks. Foundation, not finish line. This becomes your Session 1 goal automatically.</p>
+        <p class="form-hint">What's the marker that proves you've <strong>started</strong>? Achievable in Session 1's four weeks. Foundation, not finish line.</p>
         <textarea id="yg-eos1" rows="3" placeholder="What proves you're on the path by end of Session 1?">${existing?.eos1Point ? escapeAttr(existing.eos1Point) : ''}</textarea>
       </div>
       <div class="stage-actions">
         <button type="button" class="btn btn-text" data-action="back">Back</button>
-        <button type="button" class="btn btn-primary" data-action="save">Save year goal</button>
+        <button type="button" class="btn btn-primary" data-action="next">Next — break it down</button>
+      </div>
+    </div>
+
+    <div class="stage-panel" data-stage="6" hidden>
+      <div class="endpoint-card endpoint-card-promoted">
+        <span class="endpoint-label">Session 1 leads to EOS 1</span>
+        <span class="endpoint-value" id="endpoint-5"></span>
+      </div>
+      <div class="form-field">
+        <label>Stage 6 · Session 1 — 4 weeks, one step per week</label>
+        <p class="form-hint">Session 1 has four weeks (Aug 17 - Sept 11). How do you break your work into one step per week, building toward EOS 1?</p>
+        <div class="week-rows">
+          ${weeklyRow(1, 1, s1Dates[0], existingS1[0])}
+          ${weeklyRow(1, 2, s1Dates[1], existingS1[1])}
+          ${weeklyRow(1, 3, s1Dates[2], existingS1[2])}
+          ${weeklyRow(1, 4, s1Dates[3], existingS1[3])}
+        </div>
+      </div>
+      <div class="stage-actions">
+        <button type="button" class="btn btn-text" data-action="back">Back</button>
+        <button type="button" class="btn btn-primary" data-action="next">Next — Session 2</button>
+      </div>
+    </div>
+
+    <div class="stage-panel" data-stage="7" hidden>
+      <div class="endpoint-card endpoint-card-promoted">
+        <span class="endpoint-label">Session 2 leads to EOS 2</span>
+        <span class="endpoint-value" id="endpoint-6"></span>
+      </div>
+      <div class="form-field">
+        <label>Stage 7 · Session 2 — 5 weeks</label>
+        <p class="form-hint">Picking up from end of Session 1, how do you get to EOS 2 in 5 weekly steps?</p>
+        <div class="week-rows">
+          ${weeklyRow(2, 1, s2Dates[0], existingS2[0])}
+          ${weeklyRow(2, 2, s2Dates[1], existingS2[1])}
+          ${weeklyRow(2, 3, s2Dates[2], existingS2[2])}
+          ${weeklyRow(2, 4, s2Dates[3], existingS2[3])}
+          ${weeklyRow(2, 5, s2Dates[4], existingS2[4])}
+        </div>
+      </div>
+      <div class="stage-actions">
+        <button type="button" class="btn btn-text" data-action="back">Back</button>
+        <button type="button" class="btn btn-primary" data-action="next">Next — Session 3</button>
+      </div>
+    </div>
+
+    <div class="stage-panel" data-stage="8" hidden>
+      <div class="endpoint-card endpoint-card-promoted">
+        <span class="endpoint-label">Session 3 leads to EOS 3 (locked)</span>
+        <span class="endpoint-value" id="endpoint-7"></span>
+      </div>
+      <div class="form-field">
+        <label>Stage 8 · Session 3 — only 3 weeks</label>
+        <p class="form-hint">The final stretch to your locked EOS 3. Only 3 weeks. If this feels tight, the next screen lets you rebalance back into Sessions 1 or 2.</p>
+        <div class="week-rows">
+          ${weeklyRow(3, 1, s3Dates[0], existingS3[0])}
+          ${weeklyRow(3, 2, s3Dates[1], existingS3[1])}
+          ${weeklyRow(3, 3, s3Dates[2], existingS3[2])}
+        </div>
+      </div>
+      <div class="stage-actions">
+        <button type="button" class="btn btn-text" data-action="back">Back</button>
+        <button type="button" class="btn btn-primary" data-action="next">Next — review & rebalance</button>
+      </div>
+    </div>
+
+    <div class="stage-panel" data-stage="9" hidden>
+      <div class="form-field">
+        <label>Stage 9 · Review &amp; rebalance</label>
+        <p class="form-hint">Your full plan to EOS 3 is below. Everything is editable <strong>except EOS 3</strong> (your commitment anchor). If Session 3 feels heavy, move work into Sessions 1 or 2. Save when it feels honest.</p>
+      </div>
+      <div id="review-surface" class="review-surface"></div>
+      <div class="stage-actions">
+        <button type="button" class="btn btn-text" data-action="back">Back</button>
+        <button type="button" class="btn btn-primary" data-action="save">Save full plan</button>
       </div>
     </div>
   `;
 
+  const collectWeeklySteps = () => ({
+    1: [1,2,3,4].map(w => fields.querySelector(`input[data-session="1"][data-week="${w}"]`)?.value.trim() || ''),
+    2: [1,2,3,4,5].map(w => fields.querySelector(`input[data-session="2"][data-week="${w}"]`)?.value.trim() || ''),
+    3: [1,2,3].map(w => fields.querySelector(`input[data-session="3"][data-week="${w}"]`)?.value.trim() || ''),
+  });
+
+  const currentValues = () => ({
+    text: document.getElementById('yg-text')?.value.trim() || '',
+    baseline: document.getElementById('yg-baseline')?.value.trim() || '',
+    halfwayPoint: document.getElementById('yg-halfway')?.value.trim() || '',
+    quarterPoint: document.getElementById('yg-quarter')?.value.trim() || '',
+    eos1Point: document.getElementById('yg-eos1')?.value.trim() || '',
+    weeklySteps: collectWeeklySteps(),
+  });
+
   const updateEndpoints = () => {
-    const yearGoal = document.getElementById('yg-text')?.value.trim() || existing?.text || '';
-    const halfway = document.getElementById('yg-halfway')?.value.trim() || existing?.halfwayPoint || '';
-    const quarter = document.getElementById('yg-quarter')?.value.trim() || existing?.quarterPoint || '';
-    const e1 = document.getElementById('endpoint-1');
-    const e2 = document.getElementById('endpoint-2');
-    const e3 = document.getElementById('endpoint-3');
-    const e4 = document.getElementById('endpoint-4');
-    if (e1) e1.textContent = yearGoal || '(set your year goal)';
-    if (e2) e2.textContent = yearGoal || '(set your year goal)';
-    if (e3) e3.textContent = halfway || '(set your EOS 3 midpoint)';
-    if (e4) e4.textContent = quarter || '(set your EOS 2 milestone)';
+    const v = currentValues();
+    const eos6 = v.text || existing?.text || '';
+    const eos3 = v.halfwayPoint || existing?.halfwayPoint || '';
+    const eos2 = v.quarterPoint || existing?.quarterPoint || '';
+    const eos1 = v.eos1Point || existing?.eos1Point || '';
+    const setText = (id, val, placeholder) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val || placeholder;
+    };
+    setText('endpoint-1', eos6, '(set your year goal)');
+    setText('endpoint-2', eos6, '(set your year goal)');
+    setText('endpoint-3', eos3, '(set your EOS 3 midpoint)');
+    setText('endpoint-4', eos2, '(set your EOS 2 milestone)');
+    setText('endpoint-5', eos1, '(set EOS 1 first)');
+    setText('endpoint-6', eos2, '(set EOS 2 first)');
+    setText('endpoint-7', eos3, '(set EOS 3 first)');
+  };
+
+  const renderReview = () => {
+    const v = currentValues();
+    const review = document.getElementById('review-surface');
+    if (!review) return;
+    const rowHtml = (sessionIndex, week, dateLabel, value) =>
+      `<div class="review-week-row">
+         <span class="review-week-label">S${sessionIndex} W${week} · ${escapeHtml(dateLabel)}</span>
+         <input type="text" class="review-week-input" data-review-session="${sessionIndex}" data-review-week="${week}" value="${value ? escapeAttr(value) : ''}">
+       </div>`;
+    review.innerHTML = `
+      <div class="review-section">
+        <span class="review-section-label">EOS 6 — Year goal</span>
+        <input type="text" id="review-text" class="review-milestone-input" value="${escapeAttr(v.text)}">
+      </div>
+      <div class="review-section">
+        <span class="review-section-label">Baseline</span>
+        <input type="text" id="review-baseline" class="review-milestone-input" value="${escapeAttr(v.baseline)}">
+      </div>
+      <div class="review-section review-locked">
+        <span class="review-section-label">EOS 3 — Midpoint · LOCKED</span>
+        <input type="text" class="review-milestone-input" value="${escapeAttr(v.halfwayPoint)}" disabled>
+        <p class="review-locked-note">This is the commitment your partner approves. Edit only at end of Session 3.</p>
+      </div>
+      <div class="review-section">
+        <span class="review-section-label">EOS 2 — Session 2 milestone</span>
+        <input type="text" id="review-quarter" class="review-milestone-input" value="${escapeAttr(v.quarterPoint)}">
+      </div>
+      <div class="review-section">
+        <span class="review-section-label">EOS 1 — Quick wins (end of Session 1)</span>
+        <input type="text" id="review-eos1" class="review-milestone-input" value="${escapeAttr(v.eos1Point)}">
+      </div>
+      <div class="review-section">
+        <span class="review-section-label">Session 1 — 4 weeks</span>
+        ${s1Dates.map((d, i) => rowHtml(1, i + 1, d, v.weeklySteps[1][i])).join('')}
+      </div>
+      <div class="review-section">
+        <span class="review-section-label">Session 2 — 5 weeks</span>
+        ${s2Dates.map((d, i) => rowHtml(2, i + 1, d, v.weeklySteps[2][i])).join('')}
+      </div>
+      <div class="review-section review-section-tight">
+        <span class="review-section-label">Session 3 — 3 weeks (tight)</span>
+        ${s3Dates.map((d, i) => rowHtml(3, i + 1, d, v.weeklySteps[3][i])).join('')}
+      </div>
+    `;
   };
 
   const showStage = (n) => {
@@ -165,7 +337,8 @@ export function openYearGoalModal({ category, existing, onSave }) {
       p.hidden = Number(p.dataset.stage) !== n;
     });
     updateEndpoints();
-    const focusEl = fields.querySelector(`.stage-panel[data-stage="${n}"] textarea`);
+    if (n === 9) renderReview();
+    const focusEl = fields.querySelector(`.stage-panel[data-stage="${n}"] textarea, .stage-panel[data-stage="${n}"] input.week-row-input`);
     focusEl?.focus();
   };
 
@@ -174,19 +347,39 @@ export function openYearGoalModal({ category, existing, onSave }) {
       const action = btn.dataset.action;
       const stage = Number(btn.closest('.stage-panel').dataset.stage);
       if (action === 'next') {
+        // For milestone stages (1-5), require the textarea to be filled
         const ta = fields.querySelector(`.stage-panel[data-stage="${stage}"] textarea`);
-        if (!ta.value.trim()) { ta.focus(); return; }
+        if (ta && !ta.value.trim()) { ta.focus(); return; }
         showStage(stage + 1);
       } else if (action === 'back') {
         showStage(stage - 1);
       } else if (action === 'save') {
-        const text = document.getElementById('yg-text').value.trim();
-        const baseline = document.getElementById('yg-baseline').value.trim();
-        const halfwayPoint = document.getElementById('yg-halfway').value.trim();
-        const quarterPoint = document.getElementById('yg-quarter').value.trim();
-        const eos1Point = document.getElementById('yg-eos1').value.trim();
+        // Final save - collect from the review surface (which holds the
+        // edit-after-rebalance values), falling back to staged values.
+        const reviewText = document.getElementById('review-text')?.value.trim();
+        const reviewBaseline = document.getElementById('review-baseline')?.value.trim();
+        const reviewQuarter = document.getElementById('review-quarter')?.value.trim();
+        const reviewEos1 = document.getElementById('review-eos1')?.value.trim();
+        const v = currentValues();
+        // Pull weekly steps from the review inputs if present (they may have
+        // been edited during rebalance), else fall back to stage 6/7/8.
+        const reviewWeekly = { 1: [], 2: [], 3: [] };
+        fields.querySelectorAll('[data-review-session]').forEach((inp) => {
+          const s = Number(inp.dataset.reviewSession);
+          const w = Number(inp.dataset.reviewWeek);
+          if (!reviewWeekly[s]) reviewWeekly[s] = [];
+          reviewWeekly[s][w - 1] = inp.value.trim();
+        });
+        const weeklySteps = (reviewWeekly[1].length || reviewWeekly[2].length || reviewWeekly[3].length)
+          ? reviewWeekly
+          : v.weeklySteps;
+        const text = reviewText || v.text;
+        const baseline = reviewBaseline || v.baseline;
+        const halfwayPoint = v.halfwayPoint; // EOS 3 is locked - never read from review surface
+        const quarterPoint = reviewQuarter || v.quarterPoint;
+        const eos1Point = reviewEos1 || v.eos1Point;
         if (!text || !halfwayPoint) return;
-        onSave({ text, baseline, halfwayPoint, quarterPoint, eos1Point });
+        onSave({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps });
         closeModal();
       }
     });

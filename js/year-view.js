@@ -119,7 +119,7 @@ export async function renderYearView(learnerId) {
       openYearGoalModal({
         category: cat,
         existing: goal,
-        onSave: async ({ text, baseline, halfwayPoint, quarterPoint, eos1Point }) => {
+        onSave: async ({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps }) => {
           await saveGoal({
             id: goal?.id,
             learnerId,
@@ -130,6 +130,7 @@ export async function renderYearView(learnerId) {
             halfwayPoint,
             quarterPoint,
             eos1Point,
+            weeklySteps: weeklySteps || goal?.weeklySteps || {},
             targetSession: 6,
             status: goal?.status || 'active',
           });

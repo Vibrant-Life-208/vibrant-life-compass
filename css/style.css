@@ -430,6 +430,126 @@ header h1 {
   margin-top: 0.5rem;
 }
 
+/* Weekly breakdown rows (stages 6-8) */
+.week-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.4rem;
+}
+.week-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 0.6rem;
+  align-items: center;
+}
+.week-row-label {
+  font-size: 0.78rem;
+  color: var(--sage);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.week-row-date {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 0.7rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.week-row-input {
+  background: var(--cream);
+  border: 1px solid var(--earth-light);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+.week-row-input:focus { outline: none; border-color: var(--sage); }
+
+/* Review surface (stage 9) */
+.review-surface {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0.75rem 0;
+}
+.review-section {
+  background: var(--cream);
+  border: 1px solid var(--earth-pale);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.75rem;
+}
+.review-section-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--sage);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+.review-milestone-input {
+  width: 100%;
+  background: var(--warm-white);
+  border: 1px solid var(--earth-light);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+.review-milestone-input:focus { outline: none; border-color: var(--sage); }
+.review-milestone-input:disabled {
+  background: var(--earth-pale);
+  color: var(--text-soft);
+  cursor: not-allowed;
+}
+.review-locked {
+  background: var(--earth-pale);
+  border-left: 3px solid var(--earth);
+}
+.review-locked .review-section-label { color: var(--earth); }
+.review-locked-note {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-style: italic;
+}
+.review-section-tight {
+  border-left: 3px solid var(--earth-light);
+}
+.review-week-row {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.3rem;
+}
+.review-week-label {
+  font-size: 0.72rem;
+  color: var(--text-soft);
+  font-weight: 500;
+}
+.review-week-input {
+  background: var(--warm-white);
+  border: 1px solid var(--earth-light);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.6rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.review-week-input:focus { outline: none; border-color: var(--sage); }
+
+.onb-stages-compact { gap: 0.4rem; flex-wrap: wrap; }
+.onb-stages-compact .stage-dot { width: 22px; height: 22px; font-size: 0.7rem; }
+.stage-dot-review.is-active { background: var(--earth); }
+
 /* Year-goal endpoint card - shows the current "destination" at each stage,
    making the halving visually clear. At Stage 4, the Session 3 halfway has
    been promoted into the endpoint position. */
