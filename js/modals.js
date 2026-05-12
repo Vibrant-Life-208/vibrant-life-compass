@@ -318,6 +318,74 @@ export function openMoveTaskModal(task, onMove) {
   openModal();
 }
 
+export async function openCreateAccountModal({ studios, onCreate }) {
+  const { getLearners } = await import('./store.js');
+  const learners = await getLearners();
+  setModalTitle('Create an account');
+  const studioOptions = Object.entries(studios)
+    .map(([id, s]) => `<option value="${id}">${escapeHtml(s.name)} (${escapeHtml(s.ageRange || '')})</option>`)
+    .join('');
+  const learnerOptions = learners
+    .map((l) => `<option value="${l.id}">${escapeHtml(l.heroName || l.name)}</option>`)
+    .join('');
+
+  document.getElementById('form-fields').innerHTML = `
+    <p style="color: var(--text-soft); line-height: 1.5; margin: 0 0 1rem; font-size: 0.9rem;">
+      Creates an account inside Vibrant Life only. No email is collected. Hand the temporary password to the user on paper.
+    </p>
+    <div class="form-field">
+      <label for="account-type">Account type</label>
+      <select id="account-type">
+        <option value="learner">Hero genius (learner)</option>
+        <option value="parent">Parent</option>
+        <option value="guide">Guide</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label for="account-hero-name">Hero name</label>
+      <input type="text" id="account-hero-name" placeholder="e.g. liam-discovery" required pattern="[a-z0-9-_]+" title="lowercase letters, numbers, hyphens, underscores">
+      <p class="form-hint">Lowercase. No spaces. Hyphens and underscores OK. This is how they'll sign in.</p>
+    </div>
+    <div class="form-field" id="account-studio-field">
+      <label for="account-studio">Studio (learners only)</label>
+      <select id="account-studio">${studioOptions}</select>
+    </div>
+    <div class="form-field" id="account-link-field" style="display:none">
+      <label for="account-link-learner">Link to learner (parents only)</label>
+      <select id="account-link-learner">
+        <option value="">(none yet)</option>
+        ${learnerOptions}
+      </select>
+    </div>
+  `;
+
+  // Show/hide conditional fields based on type
+  const typeEl = document.getElementById('account-type');
+  const studioField = document.getElementById('account-studio-field');
+  const linkField = document.getElementById('account-link-field');
+  const updateConditional = () => {
+    const t = typeEl.value;
+    studioField.style.display = t === 'learner' ? 'block' : 'none';
+    linkField.style.display = t === 'parent' ? 'block' : 'none';
+  };
+  typeEl.addEventListener('change', updateConditional);
+  updateConditional();
+
+  activeSubmit = () => {
+    const heroName = document.getElementById('account-hero-name').value.trim().toLowerCase();
+    if (!heroName) return;
+    onCreate({
+      type: typeEl.value,
+      heroName,
+      studio: document.getElementById('account-studio')?.value,
+      linkedLearnerId: document.getElementById('account-link-learner')?.value || null,
+    });
+    closeModal();
+  };
+  openModal();
+  setTimeout(() => document.getElementById('account-hero-name')?.focus(), 50);
+}
+
 export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabel = 'Cancel', onConfirm, onCancel }) {
   setModalTitle(title);
   document.getElementById('form-fields').innerHTML = `

@@ -19,6 +19,8 @@ const KEYS = {
   logins: 'hc_logins',
   tasks: 'hc_tasks',
   partnerLinks: 'hc_partner_links',
+  parents: 'hc_parents',
+  parentLearnerLinks: 'hc_parent_learner_links',
 };
 
 function read(key) {
@@ -71,6 +73,58 @@ export async function saveLearner(data) {
   }
   write(KEYS.learners, learners);
   return learners;
+}
+
+// ============================================================================
+// Parents (separate from learners + guides; tracked for admin tool)
+// ============================================================================
+export async function getParents() {
+  return read(KEYS.parents) || [];
+}
+
+export async function saveParent(data) {
+  const parents = await getParents();
+  if (data.id) {
+    const idx = parents.findIndex((p) => p.id === data.id);
+    if (idx >= 0) parents[idx] = { ...parents[idx], ...data, updatedAt: new Date().toISOString() };
+  } else {
+    parents.push({ id: generateId(), createdAt: new Date().toISOString(), ...data });
+  }
+  write(KEYS.parents, parents);
+  return parents;
+}
+
+export async function getParentLearnerLinks() {
+  return read(KEYS.parentLearnerLinks) || [];
+}
+
+export async function linkParentToLearner(parentId, learnerId) {
+  const links = await getParentLearnerLinks();
+  const exists = links.find((l) => l.parentId === parentId && l.learnerId === learnerId);
+  if (exists) return links;
+  links.push({ parentId, learnerId, createdAt: new Date().toISOString() });
+  write(KEYS.parentLearnerLinks, links);
+  return links;
+}
+
+// ============================================================================
+// Account lookup by hero name (the username in the local-auth model).
+// Searches learners, parents, and guides. Returns the matched account
+// with its role, or null.
+// ============================================================================
+export async function findAccountByHeroName(heroName) {
+  const name = String(heroName).trim().toLowerCase();
+  if (!name) return null;
+  const [learners, parents, guides] = await Promise.all([
+    getLearners(), getParents(), getGuides(),
+  ]);
+  const l = learners.find((x) => (x.heroName || x.name)?.toLowerCase() === name);
+  if (l) return { ...l, role: 'learner' };
+  const p = parents.find((x) => (x.heroName || x.name)?.toLowerCase() === name);
+  if (p) return { ...p, role: 'parent' };
+  const g = guides.find((x) => (x.heroName || x.name)?.toLowerCase() === name);
+  if (g) return { ...g, role: 'guide' };
+  return null;
 }
 
 // ============================================================================

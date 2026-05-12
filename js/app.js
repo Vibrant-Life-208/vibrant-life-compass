@@ -11,6 +11,7 @@ import { initStillness } from './stillness.js';
 import { getLandscapeForSession } from './studios.js';
 import { renderPatterns } from './patterns.js';
 import { renderPartnerPage } from './partner.js';
+import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal } from './modals.js';
 import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession } from './store.js';
@@ -205,6 +206,10 @@ async function renderRoleView(role, learnerId) {
         quoteSection.style.display = 'none';
       }
     }
+    // Admin account-creation tool
+    await renderAdminAccounts();
+    initAdmin();
+
     const list = document.getElementById('guide-learners');
     const learners = await getLearners();
     if (!learners.length) {

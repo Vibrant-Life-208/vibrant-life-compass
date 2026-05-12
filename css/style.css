@@ -608,6 +608,79 @@ header h1 {
 .partner-dissolve-btn { font-size: 0.78rem; color: var(--text-muted); }
 .partner-dissolve-btn:hover { color: var(--danger); }
 
+/* Admin section - guide-only account creation tool */
+.admin-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--earth-pale);
+}
+.admin-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.admin-title {
+  margin: 0;
+  color: var(--sage);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.admin-sub {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+.admin-group { margin-bottom: 1.25rem; }
+.admin-group-title {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0 0 0.4rem;
+  font-weight: 500;
+}
+.admin-account-list { list-style: none; padding: 0; margin: 0; }
+.admin-account-row {
+  background: var(--warm-white);
+  border: 1px solid var(--earth-pale);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+  margin-bottom: 0.4rem;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+.admin-account-name { color: var(--text); font-weight: 500; }
+.admin-account-sub { color: var(--text-muted); font-size: 0.85rem; }
+.admin-reset-btn { font-size: 0.8rem; color: var(--sage); }
+
+/* Sign-in extras */
+.signin-submit {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+.signin-error {
+  background: var(--danger-pale, #f5e0e0);
+  color: var(--danger, #b04a4a);
+  padding: 0.55rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  margin: 0.65rem 0 0;
+}
+.signin-divider {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 1.5rem 0 0.75rem;
+}
+
 /* Partner page (dedicated tab, replaces Everyone) */
 .partner-page-header { margin-bottom: 1.5rem; }
 .partner-page-title { color: var(--sage); margin: 0 0 0.25rem; font-weight: 500; }

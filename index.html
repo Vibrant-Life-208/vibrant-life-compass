@@ -39,20 +39,23 @@
       <p class="signin-sub">Find your way. One step. Then the next.</p>
       <form id="signin-form" class="signin-form">
         <div class="form-field">
-          <label for="signin-email">Your email</label>
-          <input type="email" id="signin-email" placeholder="you@vibrantlife.local (optional in skeleton)" autocomplete="email">
+          <label for="signin-hero">Your hero name</label>
+          <input type="text" id="signin-hero" placeholder="e.g. liam-discovery" autocomplete="username">
         </div>
         <div class="form-field">
           <label for="signin-password">Password</label>
           <input type="password" id="signin-password" placeholder="anything for the skeleton" autocomplete="current-password">
         </div>
+        <button type="button" id="signin-submit" class="btn btn-primary signin-submit">Sign in</button>
+        <p id="signin-error" class="signin-error" style="display:none"></p>
+        <p class="signin-divider">or jump in as a default account</p>
         <div class="signin-roles">
           <button type="button" class="role-btn" data-role="learner">I'm a learner</button>
           <button type="button" class="role-btn" data-role="parent">I'm a parent</button>
           <button type="button" class="role-btn" data-role="guide">I'm a guide</button>
         </div>
       </form>
-      <p class="signin-note">Test login. Password is ignored in the skeleton. Real Google sign-in wires in next session.</p>
+      <p class="signin-note">Real sign-in checks your hero name against accounts a guide has created. The default-account buttons are for skeleton review only. Passwords are not verified yet - they wire in when Supabase activates.</p>
     </div>
   </div>
 
@@ -205,8 +208,16 @@
       </section>
       <h2>Your learners</h2>
       <div id="guide-learners" class="learner-list">
-        <p class="learners-empty">No learners assigned yet. Once a learner signs in, you'll see them here.</p>
+        <p class="learners-empty">No learners assigned yet.</p>
       </div>
+      <section class="admin-section">
+        <div class="admin-header">
+          <h3 class="admin-title">Account administration</h3>
+          <button type="button" id="admin-create-btn" class="btn btn-primary">+ Create account</button>
+        </div>
+        <p class="admin-sub">Vibrant Life staff only. Create accounts for hero geniuses, parents, and fellow guides. No emails are collected; identity stays inside Vibrant Life.</p>
+        <div id="admin-accounts" class="admin-accounts"></div>
+      </section>
     </main>
 
     <!-- Parent View -->

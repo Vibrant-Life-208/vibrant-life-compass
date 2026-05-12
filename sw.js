@@ -1,4 +1,4 @@
-const CACHE = 'heros-compass-v18';
+const CACHE = 'heros-compass-v19';
 const CORE = [
   '/',
   '/index.html',
@@ -22,6 +22,7 @@ const CORE = [
   '/js/game-plan.js',
   '/js/partner.js',
   '/js/parent-view.js',
+  '/js/admin.js',
 ];
 
 self.addEventListener('install', (event) => {

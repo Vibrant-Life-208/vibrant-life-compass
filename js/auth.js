@@ -2,25 +2,42 @@
 // Google OAuth) wires in next session per captain decision 2026-05-12.
 // Skeleton accepts any email + any password; password is never compared.
 
-import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides } from './store.js';
+import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides, findAccountByHeroName, getParentLearnerLinks } from './store.js';
 
 const ROLES = ['learner', 'parent', 'guide'];
 
 export function initAuth(onSignedIn) {
+  // Hero-name sign-in - validates against accounts a guide has created.
+  const submitBtn = document.getElementById('signin-submit');
+  if (submitBtn && !submitBtn.dataset.wired) {
+    submitBtn.dataset.wired = '1';
+    submitBtn.addEventListener('click', async () => {
+      const heroNameEl = document.getElementById('signin-hero');
+      const errorEl = document.getElementById('signin-error');
+      const heroName = heroNameEl?.value?.trim().toLowerCase() || '';
+      if (!heroName) {
+        showSigninError('Enter your hero name.');
+        return;
+      }
+      const account = await findAccountByHeroName(heroName);
+      if (!account) {
+        showSigninError(`No account found for "${heroName}". A guide can create one for you.`);
+        return;
+      }
+      if (errorEl) errorEl.style.display = 'none';
+      // Password is not verified in skeleton mode; Supabase Auth handles it later.
+      await signInWithAccount(account);
+      onSignedIn();
+    });
+  }
+
+  // Default-account role buttons (skeleton review only).
   const roleButtons = document.querySelectorAll('.role-btn');
   roleButtons.forEach((btn) => {
     btn.addEventListener('click', async () => {
       const role = btn.dataset.role;
       if (!ROLES.includes(role)) return;
-
-      const emailEl = document.getElementById('signin-email');
-      const raw = emailEl?.value?.trim() || '';
-      if (raw && emailEl && typeof emailEl.checkValidity === 'function' && !emailEl.checkValidity()) {
-        emailEl.reportValidity();
-        return;
-      }
-      const email = raw || `${role}@vibrantlife.local`;
-
+      const email = `${role}@vibrantlife.local`;
       await signInAs(role, email);
       onSignedIn();
     });
@@ -33,6 +50,33 @@ export function initAuth(onSignedIn) {
       location.reload();
     });
   }
+}
+
+function showSigninError(msg) {
+  const el = document.getElementById('signin-error');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+async function signInWithAccount(account) {
+  const session = {
+    role: account.role,
+    name: account.name || account.heroName,
+    heroName: account.heroName,
+    email: account.email || `${account.heroName}@vibrantlife.local`,
+    signedInAt: new Date().toISOString(),
+  };
+  if (account.role === 'learner') session.learnerId = account.id;
+  if (account.role === 'guide') session.guideId = account.id;
+  if (account.role === 'parent') {
+    session.parentId = account.id;
+    // Find the linked learner so parent view can show the right child
+    const links = await getParentLearnerLinks();
+    const link = links.find((l) => l.parentId === account.id);
+    if (link) session.learnerId = link.learnerId;
+  }
+  await setSession(session);
 }
 
 async function signInAs(role, email) {
