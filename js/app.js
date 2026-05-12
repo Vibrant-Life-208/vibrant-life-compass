@@ -10,28 +10,30 @@ import { breadcrumbLabel, computeYearPosition } from './year-map.js';
 import { initStillness } from './stillness.js';
 import { getLandscapeForSession } from './studios.js';
 import { renderPatterns } from './patterns.js';
-import { renderEveryone, initEveryone } from './everyone.js';
+import { renderPartnerPage } from './partner.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal } from './modals.js';
 import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession } from './store.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
+  // Captain decision 2026-05-12: Everyone tab removed entirely. No broadcast
+  // surface between learners. Accountability is 1:1 via the Partner tab.
   learner: [
     { id: 'north-view', label: 'North' },
     { id: 'year-view', label: 'Compass' },
     { id: 'session-view', label: 'Session' },
+    { id: 'partner-view', label: 'Partner' },
     { id: 'patterns-view', label: 'Patterns' },
     { id: 'passwords-view', label: 'Passwords' },
-    { id: 'everyone-view', label: 'Everyone' },
   ],
   // Captain decision 2026-05-11: parents only see session goals + end-of-session
-  // recap. No year goals, no daily tasks, no passwords. Everyone Page is
-  // readable but not postable.
+  // recap. No year goals, no daily tasks, no passwords.
   parent: [
     { id: 'parent-view', label: 'My learner' },
-    { id: 'everyone-view', label: 'Everyone' },
   ],
+  // Guides don't have learner-style accountability partners (different
+  // accountability model). No Partner tab here.
   guide: [
     { id: 'guide-view', label: 'My learners' },
     { id: 'north-view', label: 'North' },
@@ -39,7 +41,6 @@ const TABS_BY_ROLE = {
     { id: 'session-view', label: 'Session' },
     { id: 'patterns-view', label: 'Patterns' },
     { id: 'passwords-view', label: 'Passwords' },
-    { id: 'everyone-view', label: 'Everyone' },
   ],
 };
 
@@ -79,7 +80,6 @@ function onSignedIn() {
 
   const learnerId = resolveLearnerId(session);
   initSessionNav(learnerId);
-  initEveryone();
   initLogins(learnerId);
   initStillness();
   wireBearingAgain();
@@ -160,7 +160,7 @@ function showTab(tabId, learnerId) {
   }
   if (tabId === 'patterns-view') renderPatterns(learnerId);
   if (tabId === 'passwords-view') renderLogins(learnerId);
-  if (tabId === 'everyone-view') renderEveryone();
+  if (tabId === 'partner-view') renderPartnerPage(learnerId);
   if (tabId === 'guide-view') renderRoleView('guide', learnerId);
   if (tabId === 'parent-view') renderRoleView('parent', learnerId);
 }

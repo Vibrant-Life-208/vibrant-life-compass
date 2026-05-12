@@ -608,6 +608,76 @@ header h1 {
 .partner-dissolve-btn { font-size: 0.78rem; color: var(--text-muted); }
 .partner-dissolve-btn:hover { color: var(--danger); }
 
+/* Partner page (dedicated tab, replaces Everyone) */
+.partner-page-header { margin-bottom: 1.5rem; }
+.partner-page-title { color: var(--sage); margin: 0 0 0.25rem; font-weight: 500; }
+.partner-page-sub {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.95rem;
+  margin: 0 0 1rem;
+}
+.partner-active-page-card {
+  background: var(--warm-white);
+  border: 1px solid var(--earth-pale);
+  border-left: 3px solid var(--sage);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.partner-page-section {
+  margin-bottom: 1.75rem;
+}
+.partner-section-title {
+  color: var(--sage);
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 0 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.my-pending-card {
+  background: var(--earth-pale);
+  border-left: 3px solid var(--earth);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+}
+.my-pending-text { margin: 0; color: var(--text); }
+.my-pending-meta {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--earth);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.partner-wins-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.partner-win-item {
+  background: var(--sage-pale);
+  border-left: 3px solid var(--sage);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+.partner-win-text { color: var(--text); flex: 1; }
+.partner-win-date {
+  color: var(--sage);
+  font-size: 0.78rem;
+  font-style: italic;
+  white-space: nowrap;
+}
+
 /* Approval cards */
 .approval-card {
   background: var(--warm-white);

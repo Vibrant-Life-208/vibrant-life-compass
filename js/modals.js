@@ -318,39 +318,6 @@ export function openMoveTaskModal(task, onMove) {
   openModal();
 }
 
-export function openPostModal({ role, onSave }) {
-  setModalTitle('Share with everyone');
-  const reviewNote = role === 'guide'
-    ? `Your post will be published right away.`
-    : `Your post will be visible after a guide reviews it.`;
-  document.getElementById('form-fields').innerHTML = `
-    <p style="color: var(--text-soft); line-height: 1.5; margin: 0 0 1rem; font-size: 0.9rem;">
-      ${escapeHtml(reviewNote)}
-    </p>
-    <div class="form-field">
-      <label for="post-kind">What kind of post?</label>
-      <select id="post-kind">
-        <option value="celebration">Celebration</option>
-        <option value="announcement">Announcement</option>
-        <option value="question">Question</option>
-      </select>
-    </div>
-    <div class="form-field">
-      <label for="post-body">Your post</label>
-      <textarea id="post-body" rows="4" placeholder="Keep it kind. Keep it true." required></textarea>
-    </div>
-  `;
-  activeSubmit = () => {
-    const body = document.getElementById('post-body').value.trim();
-    if (!body) return;
-    const kind = document.getElementById('post-kind').value;
-    onSave({ body, kind });
-    closeModal();
-  };
-  openModal();
-  setTimeout(() => document.getElementById('post-body')?.focus(), 50);
-}
-
 export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabel = 'Cancel', onConfirm, onCancel }) {
   setModalTitle(title);
   document.getElementById('form-fields').innerHTML = `
