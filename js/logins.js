@@ -15,13 +15,13 @@ let currentFilter = 'all';
 
 const KIND_LABEL = { core: 'Core work', passion: 'Passion project', other: 'Other' };
 
-export function renderLogins(learnerId) {
+export async function renderLogins(learnerId) {
   const list = document.getElementById('logins-list');
   if (!learnerId) {
     list.innerHTML = '<p class="learners-empty">No learner selected.</p>';
     return;
   }
-  let items = getLogins(learnerId);
+  let items = await getLogins(learnerId);
   if (currentFilter !== 'all') {
     items = items.filter((l) => (l.kind || 'core') === currentFilter);
   }
@@ -76,11 +76,9 @@ function renderLoginCard(learnerId, login) {
       const id = e.currentTarget.dataset.id;
       if (action === 'reveal') {
         if (revealed.has(id) && revealed.get(id).hideAt > Date.now()) {
-          // Already revealed - hide immediately.
           revealed.delete(id);
-          renderLogins(learnerId);
+          await renderLogins(learnerId);
         } else {
-          // Default-hidden + per-reveal confirmation per Tutela's spec.
           openConfirmModal({
             title: 'Reveal this password?',
             body: 'The password will be visible for 10 seconds, then auto-hidden. Make sure no one is looking over your shoulder.',
@@ -89,28 +87,28 @@ function renderLoginCard(learnerId, login) {
             onConfirm: async () => {
               const plaintext = await revealLoginPassword(learnerId, id);
               revealed.set(id, { plaintext, hideAt: Date.now() + REVEAL_DURATION_MS });
-              renderLogins(learnerId);
+              await renderLogins(learnerId);
               startCountdown(id, learnerId);
             },
           });
         }
       }
       if (action === 'edit') {
-        const existing = getLogins(learnerId).find((l) => l.id === id);
-        // Decrypt password for editing so the learner sees their current value
+        const items = await getLogins(learnerId);
+        const existing = items.find((l) => l.id === id);
         const plaintext = await revealLoginPassword(learnerId, id);
         const editable = { ...existing, password: plaintext };
         openLoginModal({ existing: editable, onSave: async (data) => {
           await saveLogin(learnerId, { id, ...data });
           revealed.delete(id);
-          renderLogins(learnerId);
+          await renderLogins(learnerId);
         }});
       }
       if (action === 'delete') {
         if (confirm('Delete this login?')) {
-          deleteLogin(learnerId, id);
+          await deleteLogin(learnerId, id);
           revealed.delete(id);
-          renderLogins(learnerId);
+          await renderLogins(learnerId);
         }
       }
     });
@@ -120,13 +118,13 @@ function renderLoginCard(learnerId, login) {
 
 function startCountdown(id, learnerId) {
   let secondsLeft = REVEAL_DURATION_MS / 1000;
-  const tick = setInterval(() => {
+  const tick = setInterval(async () => {
     secondsLeft--;
     const entry = revealed.get(id);
     if (!entry || entry.hideAt <= Date.now()) {
       clearInterval(tick);
       revealed.delete(id);
-      renderLogins(learnerId);
+      await renderLogins(learnerId);
       return;
     }
     const el = document.querySelector(`.reveal-countdown[data-id="${id}"]`);
@@ -143,7 +141,7 @@ export function initLogins(learnerId) {
       openLoginModal({
         onSave: async (data) => {
           await saveLogin(learnerId, data);
-          renderLogins(learnerId);
+          await renderLogins(learnerId);
         },
       });
     });
@@ -151,9 +149,9 @@ export function initLogins(learnerId) {
   const filter = document.getElementById('passwords-filter-select');
   if (filter && !filter.dataset.wired) {
     filter.dataset.wired = '1';
-    filter.addEventListener('change', (e) => {
+    filter.addEventListener('change', async (e) => {
       currentFilter = e.target.value;
-      renderLogins(learnerId);
+      await renderLogins(learnerId);
     });
   }
 }

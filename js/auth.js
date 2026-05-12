@@ -1,6 +1,6 @@
-// Sign-in placeholder. Google OAuth wires in next session.
-// Skeleton accepts any email + any password; password is never stored or compared.
-// Role is chosen explicitly via the three buttons.
+// Sign-in placeholder. Real Supabase auth (local username + password, no
+// Google OAuth) wires in next session per captain decision 2026-05-12.
+// Skeleton accepts any email + any password; password is never compared.
 
 import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides } from './store.js';
 
@@ -9,35 +9,33 @@ const ROLES = ['learner', 'parent', 'guide'];
 export function initAuth(onSignedIn) {
   const roleButtons = document.querySelectorAll('.role-btn');
   roleButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const role = btn.dataset.role;
       if (!ROLES.includes(role)) return;
 
       const emailEl = document.getElementById('signin-email');
       const raw = emailEl?.value?.trim() || '';
-      // Email is optional in skeleton mode - default to a role-keyed address.
-      // Only validate if the user actually typed something.
       if (raw && emailEl && typeof emailEl.checkValidity === 'function' && !emailEl.checkValidity()) {
         emailEl.reportValidity();
         return;
       }
       const email = raw || `${role}@vibrantlife.local`;
 
-      signInAs(role, email);
+      await signInAs(role, email);
       onSignedIn();
     });
   });
 
   const signOutBtn = document.getElementById('signout-btn');
   if (signOutBtn) {
-    signOutBtn.addEventListener('click', () => {
-      clearSession();
+    signOutBtn.addEventListener('click', async () => {
+      await clearSession();
       location.reload();
     });
   }
 }
 
-function signInAs(role, email) {
+async function signInAs(role, email) {
   const name = nameFromEmail(email, role);
   const session = {
     role,
@@ -47,10 +45,10 @@ function signInAs(role, email) {
   };
 
   if (role === 'learner') {
-    let learners = getLearners();
+    let learners = await getLearners();
     let learner = learners.find((l) => l.email === email);
     if (!learner) {
-      learners = saveLearner({
+      learners = await saveLearner({
         name,
         email,
         studio: 'adventure',
@@ -63,23 +61,22 @@ function signInAs(role, email) {
   }
 
   if (role === 'guide') {
-    let guides = getGuides();
+    let guides = await getGuides();
     let guide = guides.find((g) => g.email === email);
     if (!guide) {
-      guides = saveGuide({ name, email });
+      guides = await saveGuide({ name, email });
       guide = guides[guides.length - 1];
     }
     session.guideId = guide.id;
   }
 
-  setSession(session);
+  await setSession(session);
 }
 
 function nameFromEmail(email, role) {
   if (!email) return capitalize(role);
   const local = email.split('@')[0];
   if (!local) return capitalize(role);
-  // "erin.stanley358" -> "Erin Stanley"
   return local
     .replace(/\d+/g, '')
     .split(/[._-]+/)
@@ -92,8 +89,8 @@ function capitalize(s) {
   return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }
 
-export function requireSession() {
-  return getSession();
+export async function requireSession() {
+  return await getSession();
 }
 
 export function showSignIn() {
@@ -106,15 +103,11 @@ export function showApp() {
   document.getElementById('app-screen')?.classList.add('active');
 }
 
-// Skeleton-only: flip the active role without signing out, so the captain
-// can preview learner / parent / guide views in one session. Reuses the
-// signed-in email; creates the appropriate profile record (learner/guide)
-// on demand.
-export function switchRole(newRole, onSwitched) {
+export async function switchRole(newRole, onSwitched) {
   if (!ROLES.includes(newRole)) return;
-  const current = getSession();
+  const current = await getSession();
   if (!current) return;
   const email = current.email || `${newRole}@vibrantlife.local`;
-  signInAs(newRole, email);
+  await signInAs(newRole, email);
   if (onSwitched) onSwitched();
 }

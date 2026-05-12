@@ -1,5 +1,11 @@
-// Local storage wrapper. Supabase-ready interface.
-// When shared backend is added, only this file changes.
+// Storage facade. Async by design so the runtime is Supabase-ready.
+// All exported functions return Promises; renderers must await them.
+// When BACKEND_TYPE flips to 'supabase' in config.js, this file's internals
+// swap to call the Supabase adapter without changing any caller.
+//
+// For now, the underlying storage is browser localStorage (synchronous).
+// We wrap it in async wrappers so the async contract is real even when the
+// data lives locally.
 
 const KEYS = {
   session: 'hc_session',
@@ -12,7 +18,7 @@ const KEYS = {
   yearTraits: 'hc_year_traits',  // same
   logins: 'hc_logins',
   tasks: 'hc_tasks',
-  partnerLinks: 'hc_partner_links', // accountability-partner relationships
+  partnerLinks: 'hc_partner_links',
 };
 
 function read(key) {
@@ -28,30 +34,35 @@ function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-// Session (currently signed-in user, placeholder until OAuth wires in)
-export function getSession() {
+// ============================================================================
+// Session
+// ============================================================================
+export async function getSession() {
   return read(KEYS.session);
 }
 
-export function setSession(session) {
+export async function setSession(session) {
   write(KEYS.session, session);
 }
 
-export function clearSession() {
+export async function clearSession() {
   localStorage.removeItem(KEYS.session);
 }
 
+// ============================================================================
 // Learners
-export function getLearners() {
+// ============================================================================
+export async function getLearners() {
   return read(KEYS.learners) || [];
 }
 
-export function getLearner(id) {
-  return getLearners().find((l) => l.id === id) || null;
+export async function getLearner(id) {
+  const learners = await getLearners();
+  return learners.find((l) => l.id === id) || null;
 }
 
-export function saveLearner(data) {
-  const learners = getLearners();
+export async function saveLearner(data) {
+  const learners = await getLearners();
   if (data.id) {
     const idx = learners.findIndex((l) => l.id === data.id);
     if (idx >= 0) learners[idx] = { ...learners[idx], ...data, updatedAt: new Date().toISOString() };
@@ -62,19 +73,20 @@ export function saveLearner(data) {
   return learners;
 }
 
-// Guides - mirror shape of learners. Guides have their own quote + traits,
-// stored in yearQuotes / yearTraits by guide.id (same map as learners; UUIDs
-// don't collide).
-export function getGuides() {
+// ============================================================================
+// Guides
+// ============================================================================
+export async function getGuides() {
   return read(KEYS.guides) || [];
 }
 
-export function getGuide(id) {
-  return getGuides().find((g) => g.id === id) || null;
+export async function getGuide(id) {
+  const guides = await getGuides();
+  return guides.find((g) => g.id === id) || null;
 }
 
-export function saveGuide(data) {
-  const guides = getGuides();
+export async function saveGuide(data) {
+  const guides = await getGuides();
   if (data.id) {
     const idx = guides.findIndex((g) => g.id === data.id);
     if (idx >= 0) guides[idx] = { ...guides[idx], ...data, updatedAt: new Date().toISOString() };
@@ -85,14 +97,18 @@ export function saveGuide(data) {
   return guides;
 }
 
+// ============================================================================
 // Goals (year + per-session)
-// Goal shape: { id, learnerId, categoryId, scope: 'year' | 'session', sessionIndex?, text, breakdown?, status, createdAt }
-export function getGoals(learnerId) {
+// Shape: { id, learnerId, categoryId, scope: 'year'|'session', sessionIndex?,
+//          text, baseline?, halfwayPoint?, quarterPoint?, targetSession?,
+//          status, autoPopulated?, approval? }
+// ============================================================================
+export async function getGoals(learnerId) {
   const all = read(KEYS.goals) || [];
   return all.filter((g) => g.learnerId === learnerId);
 }
 
-export function saveGoal(goal) {
+export async function saveGoal(goal) {
   const all = read(KEYS.goals) || [];
   if (goal.id) {
     const idx = all.findIndex((g) => g.id === goal.id);
@@ -104,14 +120,15 @@ export function saveGoal(goal) {
   return all.find((g) => g.id === goal.id) || all[all.length - 1];
 }
 
+// ============================================================================
 // Check-ins
-// Shape: { id, learnerId, goalId, sessionIndex, date, note, mark }
-export function getCheckIns(learnerId) {
+// ============================================================================
+export async function getCheckIns(learnerId) {
   const all = read(KEYS.checkIns) || [];
   return all.filter((c) => c.learnerId === learnerId);
 }
 
-export function addCheckIn(checkIn) {
+export async function addCheckIn(checkIn) {
   const all = read(KEYS.checkIns) || [];
   const record = { id: generateId(), createdAt: new Date().toISOString(), ...checkIn };
   all.push(record);
@@ -119,60 +136,60 @@ export function addCheckIn(checkIn) {
   return record;
 }
 
-// Everyone Page posts
-// Shape: { id, authorRole, authorName, body, createdAt }
-export function getPosts() {
+// ============================================================================
+// Everyone Page posts (deprecated 2026-05-12; kept for migration only)
+// ============================================================================
+export async function getPosts() {
   return read(KEYS.posts) || [];
 }
 
-export function addPost(post) {
-  const all = getPosts();
+export async function addPost(post) {
+  const all = await getPosts();
   const record = { id: generateId(), createdAt: new Date().toISOString(), ...post };
   all.unshift(record);
   write(KEYS.posts, all);
   return record;
 }
 
-// Year quote per learner
-export function getYearQuote(learnerId) {
+// ============================================================================
+// Year quote per identity (learner.id or guide.id)
+// ============================================================================
+export async function getYearQuote(identityId) {
   const all = read(KEYS.yearQuotes) || {};
-  return all[learnerId] || '';
+  return all[identityId] || '';
 }
 
-export function setYearQuote(learnerId, text) {
+export async function setYearQuote(identityId, text) {
   const all = read(KEYS.yearQuotes) || {};
-  all[learnerId] = text;
+  all[identityId] = text;
   write(KEYS.yearQuotes, all);
 }
 
-// Year character traits per learner (3-5 traits the learner is anchoring on)
-export function getYearTraits(learnerId) {
+// ============================================================================
+// Year traits per identity
+// ============================================================================
+export async function getYearTraits(identityId) {
   const all = read(KEYS.yearTraits) || {};
-  return all[learnerId] || [];
+  return all[identityId] || [];
 }
 
-export function setYearTraits(learnerId, traits) {
+export async function setYearTraits(identityId, traits) {
   const all = read(KEYS.yearTraits) || {};
-  all[learnerId] = traits;
+  all[identityId] = traits;
   write(KEYS.yearTraits, all);
 }
 
-// External-service logins per learner.
-// Shape: { id, kind, service, username, password: { ct, iv }, url, note }
-// Password is stored as an AES-GCM envelope (Decision 4). Decryption only
-// happens at reveal-time via decryptString() in crypto.js.
-//
-// Stored in localStorage with the same privacy scope as goals: learner +
-// parents + guides only.
+// ============================================================================
+// External-service logins (passwords for Khan, Lexia, etc.)
+// Password is encrypted at rest via crypto.js (AES-GCM 256).
+// ============================================================================
 import { getOrCreateLearnerKey, encryptString, decryptString, isEnvelope } from './crypto.js';
 
-export function getLogins(learnerId) {
+export async function getLogins(learnerId) {
   const all = read(KEYS.logins) || {};
   return all[learnerId] || [];
 }
 
-// Save a login. If `login.password` is a plain string, encrypt it before
-// writing. If it's already an envelope, keep it. Empty password stays empty.
 export async function saveLogin(learnerId, login) {
   const all = read(KEYS.logins) || {};
   const list = all[learnerId] || [];
@@ -198,21 +215,18 @@ export async function saveLogin(learnerId, login) {
   return list;
 }
 
-// Reveal a single password. Called only on explicit per-reveal action.
 export async function revealLoginPassword(learnerId, id) {
-  const list = getLogins(learnerId);
+  const list = await getLogins(learnerId);
   const login = list.find((l) => l.id === id);
   if (!login) return '';
   if (!isEnvelope(login.password)) {
-    // Backward-compat: pre-encryption skeleton may have stored plaintext.
-    // Return as-is and flag for migration on next edit.
     return typeof login.password === 'string' ? login.password : '';
   }
   const key = await getOrCreateLearnerKey(learnerId);
   return decryptString(login.password, key);
 }
 
-export function deleteLogin(learnerId, id) {
+export async function deleteLogin(learnerId, id) {
   const all = read(KEYS.logins) || {};
   const list = (all[learnerId] || []).filter((l) => l.id !== id);
   all[learnerId] = list;
@@ -220,38 +234,31 @@ export function deleteLogin(learnerId, id) {
   return list;
 }
 
-// Accountability partners. Self-chosen with partner approval (mutual opt-in).
-// Captain decision 2026-05-11. One active partnership at a time per learner.
-//
-// Shape:
-//   { id, proposerId, partnerId, status: 'proposed'|'accepted'|'declined'|'dissolved',
-//     proposedAt, respondedAt }
-//
-// A learner's "current partner" is the most recent accepted link they appear in.
-export function getPartnerLinks() {
+// ============================================================================
+// Accountability partners
+// ============================================================================
+export async function getPartnerLinks() {
   return read(KEYS.partnerLinks) || [];
 }
 
-export function getActivePartnerOf(learnerId) {
-  const all = getPartnerLinks().filter((l) => l.status === 'accepted');
+export async function getActivePartnerOf(learnerId) {
+  const all = (await getPartnerLinks()).filter((l) => l.status === 'accepted');
   const mine = all.find((l) => l.proposerId === learnerId || l.partnerId === learnerId);
   if (!mine) return null;
   const partnerId = mine.proposerId === learnerId ? mine.partnerId : mine.proposerId;
   return { partnerId, linkId: mine.id };
 }
 
-export function getPendingProposalsFor(learnerId) {
-  return getPartnerLinks().filter(
-    (l) => l.partnerId === learnerId && l.status === 'proposed'
-  );
+export async function getPendingProposalsFor(learnerId) {
+  const all = await getPartnerLinks();
+  return all.filter((l) => l.partnerId === learnerId && l.status === 'proposed');
 }
 
-export function proposePartner(proposerId, partnerId) {
+export async function proposePartner(proposerId, partnerId) {
   if (proposerId === partnerId) return null;
-  // Block if either side has an active partnership
-  if (getActivePartnerOf(proposerId) || getActivePartnerOf(partnerId)) return null;
-  const links = getPartnerLinks();
-  // Block duplicate proposals
+  if (await getActivePartnerOf(proposerId)) return null;
+  if (await getActivePartnerOf(partnerId)) return null;
+  const links = await getPartnerLinks();
   const existing = links.find(
     (l) => l.status === 'proposed'
       && ((l.proposerId === proposerId && l.partnerId === partnerId)
@@ -270,8 +277,8 @@ export function proposePartner(proposerId, partnerId) {
   return link;
 }
 
-export function respondToPartnerProposal(linkId, accepted) {
-  const links = getPartnerLinks();
+export async function respondToPartnerProposal(linkId, accepted) {
+  const links = await getPartnerLinks();
   const link = links.find((l) => l.id === linkId);
   if (!link || link.status !== 'proposed') return null;
   link.status = accepted ? 'accepted' : 'declined';
@@ -280,8 +287,8 @@ export function respondToPartnerProposal(linkId, accepted) {
   return link;
 }
 
-export function dissolvePartnership(linkId) {
-  const links = getPartnerLinks();
+export async function dissolvePartnership(linkId) {
+  const links = await getPartnerLinks();
   const link = links.find((l) => l.id === linkId);
   if (!link) return null;
   link.status = 'dissolved';
@@ -290,19 +297,21 @@ export function dissolvePartnership(linkId) {
   return link;
 }
 
-// Year-goal check-off flow. The learner marks the year goal as ready
-// to be approved; their partner approves (or rejects with a note).
-export function getYearGoalPendingApprovals(partnerId) {
-  // Goals whose learner has partner=partnerId AND status='pending-approval'
+// ============================================================================
+// Year-goal check-off flow
+// ============================================================================
+export async function getYearGoalPendingApprovals(partnerId) {
   const goals = read(KEYS.goals) || [];
-  return goals.filter((g) => {
-    if (g.scope !== 'year' || g.status !== 'pending-approval') return false;
-    const learnerPartner = getActivePartnerOf(g.learnerId);
-    return learnerPartner?.partnerId === partnerId;
-  });
+  const result = [];
+  for (const g of goals) {
+    if (g.scope !== 'year' || g.status !== 'pending-approval') continue;
+    const learnerPartner = await getActivePartnerOf(g.learnerId);
+    if (learnerPartner?.partnerId === partnerId) result.push(g);
+  }
+  return result;
 }
 
-export function markYearGoalPendingApproval(goalId) {
+export async function markYearGoalPendingApproval(goalId) {
   const all = read(KEYS.goals) || [];
   const idx = all.findIndex((g) => g.id === goalId);
   if (idx < 0) return null;
@@ -312,7 +321,7 @@ export function markYearGoalPendingApproval(goalId) {
   return all[idx];
 }
 
-export function approveYearGoal(goalId, approverId, note = '') {
+export async function approveYearGoal(goalId, approverId, note = '') {
   const all = read(KEYS.goals) || [];
   const idx = all.findIndex((g) => g.id === goalId);
   if (idx < 0) return null;
@@ -326,7 +335,7 @@ export function approveYearGoal(goalId, approverId, note = '') {
   return all[idx];
 }
 
-export function rejectYearGoal(goalId, approverId, note = '') {
+export async function rejectYearGoal(goalId, approverId, note = '') {
   const all = read(KEYS.goals) || [];
   const idx = all.findIndex((g) => g.id === goalId);
   if (idx < 0) return null;
@@ -340,22 +349,25 @@ export function rejectYearGoal(goalId, approverId, note = '') {
   return all[idx];
 }
 
-// Tasks - per-learner, per-day. Shape:
-// { id, text, plannedFor: 'YYYY-MM-DD', goalId?, categoryId?, status: 'open'|'done', createdAt, completedAt? }
-export function getTasks(learnerId) {
+// ============================================================================
+// Tasks - per-learner, per-day
+// ============================================================================
+export async function getTasks(learnerId) {
   const all = read(KEYS.tasks) || {};
   return all[learnerId] || [];
 }
 
-export function getTasksForDate(learnerId, isoDate) {
-  return getTasks(learnerId).filter((t) => t.plannedFor === isoDate);
+export async function getTasksForDate(learnerId, isoDate) {
+  const list = await getTasks(learnerId);
+  return list.filter((t) => t.plannedFor === isoDate);
 }
 
-export function getTasksForRange(learnerId, startISO, endISO) {
-  return getTasks(learnerId).filter((t) => t.plannedFor >= startISO && t.plannedFor <= endISO);
+export async function getTasksForRange(learnerId, startISO, endISO) {
+  const list = await getTasks(learnerId);
+  return list.filter((t) => t.plannedFor >= startISO && t.plannedFor <= endISO);
 }
 
-export function saveTask(learnerId, task) {
+export async function saveTask(learnerId, task) {
   const all = read(KEYS.tasks) || {};
   const list = all[learnerId] || [];
   if (task.id) {
@@ -375,7 +387,7 @@ export function saveTask(learnerId, task) {
   return list;
 }
 
-export function moveTask(learnerId, id, newPlannedFor) {
+export async function moveTask(learnerId, id, newPlannedFor) {
   const all = read(KEYS.tasks) || {};
   const list = all[learnerId] || [];
   const idx = list.findIndex((t) => t.id === id);
@@ -388,7 +400,7 @@ export function moveTask(learnerId, id, newPlannedFor) {
   return list;
 }
 
-export function toggleTaskDone(learnerId, id) {
+export async function toggleTaskDone(learnerId, id) {
   const all = read(KEYS.tasks) || {};
   const list = all[learnerId] || [];
   const idx = list.findIndex((t) => t.id === id);
@@ -402,7 +414,7 @@ export function toggleTaskDone(learnerId, id) {
   return list;
 }
 
-export function deleteTask(learnerId, id) {
+export async function deleteTask(learnerId, id) {
   const all = read(KEYS.tasks) || {};
   const list = (all[learnerId] || []).filter((t) => t.id !== id);
   all[learnerId] = list;

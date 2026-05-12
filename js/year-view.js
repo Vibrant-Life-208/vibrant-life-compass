@@ -1,5 +1,4 @@
-// Compass (year view). Shows year-goal per category for the learner's studio,
-// plus motivational quote and character traits at the top.
+// Compass (year view).
 
 import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval } from './store.js';
 import { getCategoriesForStudio, getStudioName } from './studios.js';
@@ -7,8 +6,8 @@ import { openGoalModal, openQuoteModal, openTraitsModal, openConfirmModal, openY
 
 let wired = false;
 
-export function renderYearView(learnerId) {
-  const learner = getLearner(learnerId);
+export async function renderYearView(learnerId) {
+  const learner = await getLearner(learnerId);
   const list = document.getElementById('year-categories');
   if (!learner) {
     list.innerHTML = '<p class="learners-empty">No learner profile yet.</p>';
@@ -16,29 +15,31 @@ export function renderYearView(learnerId) {
   }
 
   const categories = getCategoriesForStudio(learner.studio);
-  const goals = getGoals(learnerId).filter((g) => g.scope === 'year');
+  const [allGoals, quoteText, traits, partner] = await Promise.all([
+    getGoals(learnerId),
+    getYearQuote(learnerId),
+    getYearTraits(learnerId),
+    getActivePartnerOf(learnerId),
+  ]);
+  const goals = allGoals.filter((g) => g.scope === 'year');
 
   // Quote
-  const quoteText = getYearQuote(learnerId);
   const quoteEl = document.getElementById('year-quote-text');
   quoteEl.textContent = quoteText || 'Tap to set';
   quoteEl.classList.toggle('empty', !quoteText);
 
   // Traits
-  const traits = getYearTraits(learnerId);
   const traitsEl = document.getElementById('year-traits-text');
   traitsEl.textContent = traits.length ? traits.join(' · ') : 'Tap to set';
   traitsEl.classList.toggle('empty', !traits.length);
 
-  // Wire quote + traits banners only once.
   if (!wired) {
-    document.querySelector('.year-quote')?.addEventListener('click', () => {
-      const existing = getYearQuote(learnerId);
-      const editFlow = () => openQuoteModal(getYearQuote(learnerId), (next) => {
-        setYearQuote(learnerId, next);
-        renderYearView(learnerId);
+    document.querySelector('.year-quote')?.addEventListener('click', async () => {
+      const existing = await getYearQuote(learnerId);
+      const editFlow = async () => openQuoteModal(existing, async (next) => {
+        await setYearQuote(learnerId, next);
+        await renderYearView(learnerId);
       });
-      // First-time set: no friction. Change to an existing quote: confirm first.
       if (existing) {
         openConfirmModal({
           title: 'Change your motivational quote?',
@@ -51,10 +52,11 @@ export function renderYearView(learnerId) {
         editFlow();
       }
     });
-    document.querySelector('.year-traits')?.addEventListener('click', () => {
-      openTraitsModal(getYearTraits(learnerId), (next) => {
-        setYearTraits(learnerId, next);
-        renderYearView(learnerId);
+    document.querySelector('.year-traits')?.addEventListener('click', async () => {
+      const existing = await getYearTraits(learnerId);
+      openTraitsModal(existing, async (next) => {
+        await setYearTraits(learnerId, next);
+        await renderYearView(learnerId);
       });
     });
     wired = true;
@@ -68,14 +70,11 @@ export function renderYearView(learnerId) {
   studioHeader.textContent = `${getStudioName(learner.studio)} studio · ${learner.name}`;
   list.appendChild(studioHeader);
 
-  const partner = getActivePartnerOf(learnerId);
-
   categories.forEach((cat) => {
     const goal = goals.find((g) => g.categoryId === cat.id);
     const card = document.createElement('div');
     const status = goal?.status || (goal ? 'active' : null);
     card.className = 'category-card' + (status ? ` goal-${status}` : '');
-    const placeholder = `Example: ${cat.example}`;
 
     let statusBadge = '';
     if (status === 'pending-approval') {
@@ -88,6 +87,7 @@ export function renderYearView(learnerId) {
       ? `<button type="button" class="btn btn-text goal-checkoff" data-id="${goal.id}">Ready for check-off</button>`
       : '';
 
+    const placeholder = `Example: ${cat.example}`;
     card.innerHTML = `
       <div class="category-header">
         <span class="category-name">${cat.name}${statusBadge}</span>
@@ -99,14 +99,13 @@ export function renderYearView(learnerId) {
       ${checkOffButton}
     `;
 
-    // Card click opens the 3-stage year goal modal
     card.addEventListener('click', (e) => {
-      if (e.target.classList.contains('goal-checkoff')) return; // handled separately
+      if (e.target.classList.contains('goal-checkoff')) return;
       openYearGoalModal({
         category: cat,
         existing: goal,
-        onSave: ({ text, baseline, halfwayPoint, quarterPoint }) => {
-          saveGoal({
+        onSave: async ({ text, baseline, halfwayPoint, quarterPoint }) => {
+          await saveGoal({
             id: goal?.id,
             learnerId,
             categoryId: cat.id,
@@ -115,19 +114,17 @@ export function renderYearView(learnerId) {
             baseline,
             halfwayPoint,
             quarterPoint,
-            targetSession: 6, // default per captain
+            targetSession: 6,
             status: goal?.status || 'active',
           });
-          // Auto-populate Session 3 goal with the halfway point, and
-          // Session 2 goal with the quarter point (halfway of the halfway).
-          // Per captain refinement: recursive halving.
-          const seedSession = (sessionIndex, seedText) => {
+          // Auto-populate Session 3 and Session 2 goals (recursive halving)
+          const seedSession = async (sessionIndex, seedText) => {
             if (!seedText) return;
-            const existingS = goals.find(
+            const existingS = allGoals.find(
               (g) => g.scope === 'session' && g.sessionIndex === sessionIndex && g.categoryId === cat.id
             );
             if (!existingS) {
-              saveGoal({
+              await saveGoal({
                 learnerId,
                 categoryId: cat.id,
                 scope: 'session',
@@ -137,20 +134,19 @@ export function renderYearView(learnerId) {
                 status: 'active',
               });
             } else if (existingS.autoPopulated) {
-              saveGoal({ ...existingS, text: seedText, autoPopulated: true });
+              await saveGoal({ ...existingS, text: seedText, autoPopulated: true });
             }
           };
-          seedSession(3, halfwayPoint);
-          seedSession(2, quarterPoint);
-          renderYearView(learnerId);
+          await seedSession(3, halfwayPoint);
+          await seedSession(2, quarterPoint);
+          await renderYearView(learnerId);
         },
       });
     });
 
-    // Wire the check-off button
     const checkoffBtn = card.querySelector('.goal-checkoff');
     if (checkoffBtn) {
-      checkoffBtn.addEventListener('click', (e) => {
+      checkoffBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
         if (!partner) {
           openConfirmModal({
@@ -167,9 +163,9 @@ export function renderYearView(learnerId) {
           body: 'Your partner will see this goal and confirm it. Are you ready to send it for approval?',
           confirmLabel: 'Send for approval',
           cancelLabel: 'Not yet',
-          onConfirm: () => {
-            markYearGoalPendingApproval(goal.id);
-            renderYearView(learnerId);
+          onConfirm: async () => {
+            await markYearGoalPendingApproval(goal.id);
+            await renderYearView(learnerId);
           },
         });
       });

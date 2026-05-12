@@ -1,9 +1,5 @@
 // Today's tasks - per-day learner journal.
-// Per Decision 8 of the 2026-05-11 fleet meeting (Lux + Praesens + Troi):
-// - No auto-move; learner always confirms
-// - Framed as care, not failure
-// - Studio-tuned overflow threshold + copy
-// - No score-shaped feedback
+// Per Decision 8 of the 2026-05-11 fleet meeting (Lux + Praesens + Troi).
 
 import { getTasksForDate, saveTask, toggleTaskDone, deleteTask, moveTask, getLearner } from './store.js';
 import { getStudio, OVERFLOW_COPY } from './studios.js';
@@ -14,23 +10,23 @@ export function todayISO() {
   return d.toISOString().slice(0, 10);
 }
 
-export function renderToday(learnerId) {
+export async function renderToday(learnerId) {
   const container = document.getElementById('north-today');
   const overflowBanner = document.getElementById('north-today-overflow');
   if (!container) return;
-
   if (!learnerId) {
     container.innerHTML = '<p class="learners-empty">No learner selected.</p>';
     return;
   }
 
   const today = todayISO();
-  const tasks = getTasksForDate(learnerId, today);
+  const [tasks, learner] = await Promise.all([
+    getTasksForDate(learnerId, today),
+    getLearner(learnerId),
+  ]);
   const openTasks = tasks.filter((t) => t.status !== 'done');
 
-  // Overflow banner (gentle, never blocking)
   if (overflowBanner) {
-    const learner = getLearner(learnerId);
     const studio = getStudio(learner?.studio);
     const threshold = studio?.dailyTaskThreshold || 5;
     if (openTasks.length > threshold) {
@@ -73,21 +69,21 @@ function renderTaskCard(learnerId, task) {
       <button type="button" class="btn-text task-action-btn" data-action="delete">Delete</button>
     </div>
   `;
-  card.addEventListener('click', (e) => {
+  card.addEventListener('click', async (e) => {
     const action = e.target.closest('[data-action]')?.dataset?.action;
     if (action === 'toggle') {
-      toggleTaskDone(learnerId, task.id);
-      renderToday(learnerId);
+      await toggleTaskDone(learnerId, task.id);
+      await renderToday(learnerId);
     } else if (action === 'move') {
-      openMoveTaskModal(task, (newDate) => {
-        moveTask(learnerId, task.id, newDate);
-        renderToday(learnerId);
+      openMoveTaskModal(task, async (newDate) => {
+        await moveTask(learnerId, task.id, newDate);
+        await renderToday(learnerId);
         document.dispatchEvent(new CustomEvent('hc:tasks-changed'));
       });
     } else if (action === 'delete') {
       if (confirm('Delete this task?')) {
-        deleteTask(learnerId, task.id);
-        renderToday(learnerId);
+        await deleteTask(learnerId, task.id);
+        await renderToday(learnerId);
         document.dispatchEvent(new CustomEvent('hc:tasks-changed'));
       }
     }
@@ -103,9 +99,9 @@ export function initTodayFab(learnerId) {
   fresh.addEventListener('click', () => {
     openTaskModal({
       defaultDate: todayISO(),
-      onSave: (taskData) => {
-        saveTask(learnerId, taskData);
-        renderToday(learnerId);
+      onSave: async (taskData) => {
+        await saveTask(learnerId, taskData);
+        await renderToday(learnerId);
         document.dispatchEvent(new CustomEvent('hc:tasks-changed'));
       },
     });

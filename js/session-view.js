@@ -1,5 +1,4 @@
-// Session view. Sessions 1 of 7, with per-category session-goals.
-// Breakdown to weeks/days lives one layer deeper; the skeleton stops at session-goal authoring.
+// Session view. 1 of 7 sessions, navigable.
 
 import { getLearner, getGoals, saveGoal } from './store.js';
 import { getCategoriesForStudio, getStudioName, SESSIONS_PER_YEAR, WEEKS_PER_SESSION_DEFAULT } from './studios.js';
@@ -15,14 +14,14 @@ export function getCurrentSession() {
   return currentSession;
 }
 
-export function renderSessionView(learnerId) {
-  const learner = getLearner(learnerId);
+export async function renderSessionView(learnerId) {
+  const learner = await getLearner(learnerId);
   const title = document.getElementById('session-title');
   const meta = document.getElementById('session-meta');
   const list = document.getElementById('session-goals');
 
   if (!learner) {
-    list.innerHTML = '<p class="patterns-empty">No learner profile yet.</p>';
+    list.innerHTML = '<p class="learners-empty">No learner profile yet.</p>';
     return;
   }
 
@@ -33,7 +32,8 @@ export function renderSessionView(learnerId) {
   document.getElementById('session-next').disabled = currentSession >= SESSIONS_PER_YEAR;
 
   const categories = getCategoriesForStudio(learner.studio);
-  const sessionGoals = getGoals(learnerId).filter(
+  const allGoals = await getGoals(learnerId);
+  const sessionGoals = allGoals.filter(
     (g) => g.scope === 'session' && g.sessionIndex === currentSession
   );
 
@@ -55,8 +55,8 @@ export function renderSessionView(learnerId) {
         title: `${cat.name} - Session ${currentSession} goal`,
         existing: goal,
         example: cat.example,
-        onSave: (text) => {
-          saveGoal({
+        onSave: async (text) => {
+          await saveGoal({
             id: goal?.id,
             learnerId,
             categoryId: cat.id,
@@ -65,7 +65,7 @@ export function renderSessionView(learnerId) {
             text,
             status: 'active',
           });
-          renderSessionView(learnerId);
+          await renderSessionView(learnerId);
         },
       });
     });
@@ -74,17 +74,17 @@ export function renderSessionView(learnerId) {
 }
 
 export function initSessionNav(learnerId) {
-  document.getElementById('session-prev').addEventListener('click', () => {
+  document.getElementById('session-prev').addEventListener('click', async () => {
     if (currentSession > 1) {
       currentSession--;
-      renderSessionView(learnerId);
+      await renderSessionView(learnerId);
       import('./app.js').then(m => m.applyLandscape?.(currentSession));
     }
   });
-  document.getElementById('session-next').addEventListener('click', () => {
+  document.getElementById('session-next').addEventListener('click', async () => {
     if (currentSession < SESSIONS_PER_YEAR) {
       currentSession++;
-      renderSessionView(learnerId);
+      await renderSessionView(learnerId);
       import('./app.js').then(m => m.applyLandscape?.(currentSession));
     }
   });

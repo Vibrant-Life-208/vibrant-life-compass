@@ -1,13 +1,16 @@
 // Patterns view. Observations, not scores.
-// Skeleton: scans goals + check-ins and surfaces simple, quiet observations.
-// Real algorithm is deferred until a guide confirms tone.
+// Skeleton: scans goals + check-ins and surfaces simple observations.
+// Per Decision 3 of the 2026-05-11 council, real algorithm deferred
+// until a guide confirms tone.
 
 import { getGoals, getCheckIns } from './store.js';
 
-export function renderPatterns(learnerId) {
+export async function renderPatterns(learnerId) {
   const list = document.getElementById('patterns-list');
-  const goals = getGoals(learnerId);
-  const checkIns = getCheckIns(learnerId);
+  const [goals, checkIns] = await Promise.all([
+    getGoals(learnerId),
+    getCheckIns(learnerId),
+  ]);
 
   const observations = buildObservations(goals, checkIns);
 
@@ -27,16 +30,11 @@ export function renderPatterns(learnerId) {
 
 function buildObservations(goals, checkIns) {
   const out = [];
-
   const yearGoals = goals.filter((g) => g.scope === 'year');
-  if (yearGoals.length === 0) {
-    return out;
-  }
+  if (yearGoals.length === 0) return out;
 
-  // Observation 1: how many year-goals are authored
   out.push(`You have ${yearGoals.length} year-goal${yearGoals.length === 1 ? '' : 's'} set.`);
 
-  // Observation 2: which categories have any session-goals set
   const sessionGoalsByCategory = {};
   goals.filter((g) => g.scope === 'session').forEach((g) => {
     sessionGoalsByCategory[g.categoryId] = (sessionGoalsByCategory[g.categoryId] || 0) + 1;
@@ -47,7 +45,6 @@ function buildObservations(goals, checkIns) {
     }
   });
 
-  // Observation 3: check-in cadence
   if (checkIns.length >= 4) {
     out.push(`You've checked in ${checkIns.length} times. Steady is the practice.`);
   }

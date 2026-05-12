@@ -1,33 +1,26 @@
 // Parent view - scoped to session-level visibility only.
-// Per captain decision 2026-05-11:
-//   - Parents see SESSION goals (not year goals, not daily tasks)
-//   - End-of-session recap: celebrations + percentages + one focus area + how-to-support
-//   - Acton-aligned: help by listening, not by doing
 
-import { getLearners, getLearner, getGoals } from './store.js';
+import { getLearners, getGoals } from './store.js';
 import { getCategoriesForStudio, PARENT_SUPPORT_HINTS } from './studios.js';
 import { computeYearPosition } from './year-map.js';
 
-export function renderParentView() {
+export async function renderParentView() {
   const container = document.getElementById('parent-learner');
   if (!container) return;
 
-  const learners = getLearners();
+  const learners = await getLearners();
   if (!learners.length) {
     container.innerHTML = '<p class="learners-empty">No learner linked yet.</p>';
     return;
   }
-  // For the skeleton, the parent sees the first learner. In a real auth model
-  // this would be the parent_learner_link table from the schema.
   const learner = learners[0];
-  const goals = getGoals(learner.id);
+  const goals = await getGoals(learner.id);
   const position = computeYearPosition();
   const currentSession = position.beforeYearStart ? 1 : position.sessionIndex;
   const previousSession = currentSession - 1;
 
   container.innerHTML = '';
 
-  // Header
   const header = document.createElement('div');
   header.className = 'parent-header';
   header.innerHTML = `
@@ -36,17 +29,14 @@ export function renderParentView() {
   `;
   container.appendChild(header);
 
-  // Last session recap (if there was one)
   if (previousSession >= 1) {
     const recap = renderRecap(learner, goals, previousSession);
     container.appendChild(recap);
   }
 
-  // Current session goals (read-only)
   const focus = renderCurrentSessionFocus(learner, goals, currentSession);
   container.appendChild(focus);
 
-  // One goal to help support + how
   const supportCard = renderSupportSuggestion(learner, goals, currentSession);
   if (supportCard) container.appendChild(supportCard);
 }
@@ -55,10 +45,10 @@ function renderRecap(learner, allGoals, sessionIndex) {
   const sessionGoals = allGoals.filter(
     (g) => g.scope === 'session' && g.sessionIndex === sessionIndex
   );
-  if (sessionGoals.length === 0) return emptyEl();
+  if (sessionGoals.length === 0) return document.createElement('div');
 
   const approved = sessionGoals.filter((g) => g.status === 'approved' || g.status === 'done');
-  const pct = sessionGoals.length === 0 ? 0 : Math.round((approved.length / sessionGoals.length) * 100);
+  const pct = Math.round((approved.length / sessionGoals.length) * 100);
 
   const wrap = document.createElement('div');
   wrap.className = 'parent-recap-card';
@@ -115,9 +105,6 @@ function renderSupportSuggestion(learner, allGoals, sessionIndex) {
   );
   if (sessionGoals.length === 0) return null;
 
-  // Heuristic: pick the first non-done session goal. Could be smarter
-  // (e.g. the one that's been pending longest). The captain may want
-  // to make this guide-selectable later.
   const focus = sessionGoals[0];
   const cat = findCategoryName(learner.studio, focus.categoryId);
   const hint = PARENT_SUPPORT_HINTS[focus.categoryId] || 'Ask one open question. Listen more than you talk.';
@@ -146,11 +133,6 @@ function getStudioLabel(studioId) {
     launchpad: 'Launchpad',
   };
   return labels[studioId] || studioId;
-}
-
-function emptyEl() {
-  const el = document.createElement('div');
-  return el;
 }
 
 function escapeHtml(s) {

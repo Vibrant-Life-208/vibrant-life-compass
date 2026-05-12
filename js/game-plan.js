@@ -1,6 +1,4 @@
 // Game Plan - the week-view re-plan surface.
-// Per Decision 8: 5-column grid (Mon-Fri), each column shows that day's tasks.
-// Tap a task to move it. Learner-confirmed only; no auto-move.
 
 import { getTasksForRange, moveTask, saveTask } from './store.js';
 import { openTaskModal, openMoveTaskModal } from './modals.js';
@@ -8,10 +6,9 @@ import { todayISO } from './tasks.js';
 
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
-// Returns ISO date for Monday of the current week (today's Monday).
 function mondayOfThisWeek(today = new Date()) {
   const d = new Date(today);
-  const day = d.getDay(); // 0 (Sun) - 6 (Sat)
+  const day = d.getDay();
   const offset = day === 0 ? -6 : 1 - day;
   d.setDate(d.getDate() + offset);
   d.setHours(0, 0, 0, 0);
@@ -33,10 +30,9 @@ function weekDates() {
   return dates;
 }
 
-export function renderGamePlan(learnerId) {
+export async function renderGamePlan(learnerId) {
   const container = document.getElementById('north-week-summary');
   if (!container) return;
-
   if (!learnerId) {
     container.innerHTML = '<p class="learners-empty">No learner selected.</p>';
     return;
@@ -45,11 +41,10 @@ export function renderGamePlan(learnerId) {
   const dates = weekDates();
   const start = dates[0];
   const end = dates[4];
-  const tasksAll = getTasksForRange(learnerId, start, end);
+  const tasksAll = await getTasksForRange(learnerId, start, end);
   const today = todayISO();
 
   container.innerHTML = '';
-
   const grid = document.createElement('div');
   grid.className = 'game-plan-grid';
 
@@ -81,9 +76,9 @@ export function renderGamePlan(learnerId) {
         item.textContent = task.text;
         item.title = 'Tap to move';
         item.addEventListener('click', () => {
-          openMoveTaskModal(task, (newDate) => {
-            moveTask(learnerId, task.id, newDate);
-            renderGamePlan(learnerId);
+          openMoveTaskModal(task, async (newDate) => {
+            await moveTask(learnerId, task.id, newDate);
+            await renderGamePlan(learnerId);
             document.dispatchEvent(new CustomEvent('hc:tasks-changed'));
           });
         });
@@ -92,7 +87,6 @@ export function renderGamePlan(learnerId) {
     }
     col.appendChild(list);
 
-    // Per-day add button
     const addBtn = document.createElement('button');
     addBtn.type = 'button';
     addBtn.className = 'game-plan-day-add';
@@ -101,9 +95,9 @@ export function renderGamePlan(learnerId) {
     addBtn.addEventListener('click', () => {
       openTaskModal({
         defaultDate: iso,
-        onSave: (taskData) => {
-          saveTask(learnerId, taskData);
-          renderGamePlan(learnerId);
+        onSave: async (taskData) => {
+          await saveTask(learnerId, taskData);
+          await renderGamePlan(learnerId);
           document.dispatchEvent(new CustomEvent('hc:tasks-changed'));
         },
       });

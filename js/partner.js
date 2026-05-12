@@ -1,18 +1,14 @@
 // Accountability partner UI: proposal + pending banner + active partnership.
-// Per captain decisions 2026-05-11:
-//   - Self-chosen with partner approval (mutual opt-in)
-//   - 1:1 only; dissolve before switching
-//   - Partner approves year-goal check-offs
 
 import {
-  getLearners, getLearner,
+  getLearners, getLearner, getGoals,
   getActivePartnerOf, getPendingProposalsFor,
   proposePartner, respondToPartnerProposal, dissolvePartnership,
   getYearGoalPendingApprovals, approveYearGoal, rejectYearGoal,
 } from './store.js';
 import { openConfirmModal } from './modals.js';
 
-export function renderPartnerSection(learnerId) {
+export async function renderPartnerSection(learnerId) {
   const container = document.getElementById('north-partner');
   if (!container) return;
   if (!learnerId) {
@@ -20,14 +16,15 @@ export function renderPartnerSection(learnerId) {
     return;
   }
 
-  const active = getActivePartnerOf(learnerId);
-  const pending = getPendingProposalsFor(learnerId);
+  const [active, pending] = await Promise.all([
+    getActivePartnerOf(learnerId),
+    getPendingProposalsFor(learnerId),
+  ]);
 
   let html = '';
 
-  // Pending proposals (someone proposed YOU)
-  pending.forEach((link) => {
-    const proposer = getLearner(link.proposerId);
+  for (const link of pending) {
+    const proposer = await getLearner(link.proposerId);
     html += `
       <div class="partner-proposal-card">
         <p class="partner-proposal-text">
@@ -39,10 +36,10 @@ export function renderPartnerSection(learnerId) {
         </div>
       </div>
     `;
-  });
+  }
 
   if (active) {
-    const partner = getLearner(active.partnerId);
+    const partner = await getLearner(active.partnerId);
     html += `
       <div class="partner-active-card">
         <div class="partner-active-header">
@@ -54,14 +51,17 @@ export function renderPartnerSection(learnerId) {
       </div>
     `;
   } else {
-    // Show proposal UI: list of other learners in the same studio
-    const self = getLearner(learnerId);
-    const candidates = getLearners().filter(
-      (l) => l.id !== learnerId
-        && l.studio === self?.studio
-        && !getActivePartnerOf(l.id)
-    );
-    if (candidates.length === 0) {
+    const self = await getLearner(learnerId);
+    const allLearners = await getLearners();
+    const filtered = [];
+    for (const l of allLearners) {
+      if (l.id === learnerId) continue;
+      if (l.studio !== self?.studio) continue;
+      const theirPartner = await getActivePartnerOf(l.id);
+      if (theirPartner) continue;
+      filtered.push(l);
+    }
+    if (filtered.length === 0) {
       html += `
         <div class="partner-empty-card">
           <p class="partner-label">No accountability partner yet</p>
@@ -75,7 +75,7 @@ export function renderPartnerSection(learnerId) {
           <p class="partner-empty-text">They'll approve your year-goal check-offs. You'll approve theirs.</p>
           <div class="partner-candidate-list">
       `;
-      candidates.forEach((c) => {
+      filtered.forEach((c) => {
         html += `
           <button type="button" class="partner-candidate" data-id="${c.id}">
             <span class="partner-candidate-name">${escapeHtml(c.name)}</span>
@@ -88,58 +88,13 @@ export function renderPartnerSection(learnerId) {
   }
 
   container.innerHTML = html;
-
-  // Wire actions
-  container.querySelectorAll('[data-action="accept"]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      respondToPartnerProposal(btn.dataset.link, true);
-      renderPartnerSection(learnerId);
-    });
-  });
-  container.querySelectorAll('[data-action="decline"]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      respondToPartnerProposal(btn.dataset.link, false);
-      renderPartnerSection(learnerId);
-    });
-  });
-  container.querySelectorAll('.partner-dissolve-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      openConfirmModal({
-        title: 'Dissolve this partnership?',
-        body: 'You\'ll both lose the partner link. You can propose a new partner anytime after.',
-        confirmLabel: 'Dissolve',
-        cancelLabel: 'Cancel',
-        onConfirm: () => {
-          dissolvePartnership(btn.dataset.link);
-          renderPartnerSection(learnerId);
-        },
-      });
-    });
-  });
-  container.querySelectorAll('.partner-candidate').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const targetId = btn.dataset.id;
-      const target = getLearner(targetId);
-      openConfirmModal({
-        title: `Propose ${target?.name || 'them'} as your partner?`,
-        body: `They'll get a request to accept. Until they accept, you don't have an accountability partner yet.`,
-        confirmLabel: 'Send proposal',
-        cancelLabel: 'Not yet',
-        onConfirm: () => {
-          proposePartner(learnerId, targetId);
-          renderPartnerSection(learnerId);
-        },
-      });
-    });
-  });
+  wireSectionActions(container, learnerId);
 }
 
-// Approvals dashboard - shows year-goals from THIS learner's partners
-// (i.e. they nominated me as partner and have sent goals for check-off).
-export function renderPartnerApprovals(learnerId) {
+export async function renderPartnerApprovals(learnerId) {
   const container = document.getElementById('north-approvals');
   if (!container) return;
-  const pending = getYearGoalPendingApprovals(learnerId);
+  const pending = await getYearGoalPendingApprovals(learnerId);
 
   if (pending.length === 0) {
     container.innerHTML = '<p class="learners-empty">No goals waiting on your approval right now.</p>';
@@ -147,8 +102,8 @@ export function renderPartnerApprovals(learnerId) {
   }
 
   container.innerHTML = '';
-  pending.forEach((goal) => {
-    const learner = getLearner(goal.learnerId);
+  for (const goal of pending) {
+    const learner = await getLearner(goal.learnerId);
     const card = document.createElement('div');
     card.className = 'approval-card';
     card.innerHTML = `
@@ -163,24 +118,69 @@ export function renderPartnerApprovals(learnerId) {
       </div>
     `;
 
-    card.querySelector('[data-action="approve"]').addEventListener('click', () => {
-      approveYearGoal(goal.id, learnerId, '');
-      renderPartnerApprovals(learnerId);
+    card.querySelector('[data-action="approve"]').addEventListener('click', async () => {
+      await approveYearGoal(goal.id, learnerId, '');
+      await renderPartnerApprovals(learnerId);
     });
-    card.querySelector('[data-action="reject"]').addEventListener('click', () => {
+    card.querySelector('[data-action="reject"]').addEventListener('click', async () => {
       const note = prompt('Brief note for your partner (optional):') || '';
-      rejectYearGoal(goal.id, learnerId, note);
-      renderPartnerApprovals(learnerId);
+      await rejectYearGoal(goal.id, learnerId, note);
+      await renderPartnerApprovals(learnerId);
     });
 
     container.appendChild(card);
+  }
+}
+
+function wireSectionActions(container, learnerId) {
+  container.querySelectorAll('[data-action="accept"]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await respondToPartnerProposal(btn.dataset.link, true);
+      await renderPartnerSection(learnerId);
+    });
+  });
+  container.querySelectorAll('[data-action="decline"]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await respondToPartnerProposal(btn.dataset.link, false);
+      await renderPartnerSection(learnerId);
+    });
+  });
+  container.querySelectorAll('.partner-dissolve-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      openConfirmModal({
+        title: 'Dissolve this partnership?',
+        body: 'You\'ll both lose the partner link. You can propose a new partner anytime after.',
+        confirmLabel: 'Dissolve',
+        cancelLabel: 'Cancel',
+        onConfirm: async () => {
+          await dissolvePartnership(btn.dataset.link);
+          await renderPartnerSection(learnerId);
+        },
+      });
+    });
+  });
+  container.querySelectorAll('.partner-candidate').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const targetId = btn.dataset.id;
+      const target = await getLearner(targetId);
+      openConfirmModal({
+        title: `Propose ${target?.name || 'them'} as your partner?`,
+        body: `They'll get a request to accept. Until they accept, you don't have an accountability partner yet.`,
+        confirmLabel: 'Send proposal',
+        cancelLabel: 'Not yet',
+        onConfirm: async () => {
+          await proposePartner(learnerId, targetId);
+          await renderPartnerSection(learnerId);
+        },
+      });
+    });
   });
 }
 
-// Full Partner page (dedicated tab). Replaces the Everyone Page entirely.
-// Per captain decision 2026-05-12: no broadcast surface between learners;
-// accountability is 1:1 only. The Partner page is the social surface.
-export function renderPartnerPage(learnerId) {
+// =========================================================================
+// Full Partner page (dedicated tab).
+// =========================================================================
+export async function renderPartnerPage(learnerId) {
   const container = document.getElementById('partner-view-content');
   if (!container) return;
   if (!learnerId) {
@@ -188,18 +188,18 @@ export function renderPartnerPage(learnerId) {
     return;
   }
 
-  const active = getActivePartnerOf(learnerId);
-  const pending = getPendingProposalsFor(learnerId);
+  const [active, pending] = await Promise.all([
+    getActivePartnerOf(learnerId),
+    getPendingProposalsFor(learnerId),
+  ]);
 
-  // Header
   let html = `<div class="partner-page-header">
     <h2 class="partner-page-title">Accountability partner</h2>
     <p class="partner-page-sub">One Hero Genius. One commitment to walking alongside.</p>
   </div>`;
 
-  // Pending proposals received
-  pending.forEach((link) => {
-    const proposer = getLearner(link.proposerId);
+  for (const link of pending) {
+    const proposer = await getLearner(link.proposerId);
     html += `
       <div class="partner-proposal-card">
         <p class="partner-proposal-text">
@@ -211,26 +211,26 @@ export function renderPartnerPage(learnerId) {
         </div>
       </div>
     `;
-  });
+  }
 
   if (active) {
-    const partner = getLearner(active.partnerId);
-    html += renderActivePartnership(learnerId, partner, active.linkId);
+    const partner = await getLearner(active.partnerId);
+    html += await renderActivePartnership(learnerId, partner, active.linkId);
   } else {
-    html += renderProposalUI(learnerId);
+    html += await renderProposalUI(learnerId);
   }
 
   container.innerHTML = html;
   wirePageActions(container, learnerId);
 }
 
-function renderActivePartnership(learnerId, partner, linkId) {
-  // Gather: their wins (their approved year goals where I'm the approver),
-  // my wins (my approved year goals where they're the approver),
-  // pending from each side
-  const allGoalsRaw = JSON.parse(localStorage.getItem('hc_goals') || '[]');
-  const theirYearGoals = allGoalsRaw.filter(g => g.learnerId === partner?.id && g.scope === 'year');
-  const myYearGoals = allGoalsRaw.filter(g => g.learnerId === learnerId && g.scope === 'year');
+async function renderActivePartnership(learnerId, partner, linkId) {
+  const [theirGoals, myGoals] = await Promise.all([
+    getGoals(partner?.id),
+    getGoals(learnerId),
+  ]);
+  const theirYearGoals = theirGoals.filter(g => g.scope === 'year');
+  const myYearGoals = myGoals.filter(g => g.scope === 'year');
 
   const theirWins = theirYearGoals.filter(g => g.status === 'approved' && g.approval?.partnerId === learnerId);
   const myWins = myYearGoals.filter(g => g.status === 'approved' && g.approval?.partnerId === partner?.id);
@@ -305,13 +305,17 @@ function renderActivePartnership(learnerId, partner, linkId) {
   `;
 }
 
-function renderProposalUI(learnerId) {
-  const self = getLearner(learnerId);
-  const candidates = getLearners().filter(
-    (l) => l.id !== learnerId
-      && l.studio === self?.studio
-      && !getActivePartnerOf(l.id)
-  );
+async function renderProposalUI(learnerId) {
+  const self = await getLearner(learnerId);
+  const allLearners = await getLearners();
+  const candidates = [];
+  for (const l of allLearners) {
+    if (l.id === learnerId) continue;
+    if (l.studio !== self?.studio) continue;
+    const theirPartner = await getActivePartnerOf(l.id);
+    if (theirPartner) continue;
+    candidates.push(l);
+  }
 
   if (candidates.length === 0) {
     return `
@@ -342,61 +346,57 @@ function renderProposalUI(learnerId) {
 
 function wirePageActions(container, learnerId) {
   container.querySelectorAll('[data-action="accept"]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      respondToPartnerProposal(btn.dataset.link, true);
-      renderPartnerPage(learnerId);
+    btn.addEventListener('click', async () => {
+      await respondToPartnerProposal(btn.dataset.link, true);
+      await renderPartnerPage(learnerId);
     });
   });
   container.querySelectorAll('[data-action="decline"]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      respondToPartnerProposal(btn.dataset.link, false);
-      renderPartnerPage(learnerId);
+    btn.addEventListener('click', async () => {
+      await respondToPartnerProposal(btn.dataset.link, false);
+      await renderPartnerPage(learnerId);
     });
   });
   container.querySelectorAll('.partner-dissolve-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
-      import('./modals.js').then(({ openConfirmModal }) => {
-        openConfirmModal({
-          title: 'Dissolve this partnership?',
-          body: 'You\'ll both lose the partner link. You can propose a new partner anytime after.',
-          confirmLabel: 'Dissolve',
-          cancelLabel: 'Cancel',
-          onConfirm: () => {
-            dissolvePartnership(btn.dataset.link);
-            renderPartnerPage(learnerId);
-          },
-        });
+      openConfirmModal({
+        title: 'Dissolve this partnership?',
+        body: 'You\'ll both lose the partner link. You can propose a new partner anytime after.',
+        confirmLabel: 'Dissolve',
+        cancelLabel: 'Cancel',
+        onConfirm: async () => {
+          await dissolvePartnership(btn.dataset.link);
+          await renderPartnerPage(learnerId);
+        },
       });
     });
   });
   container.querySelectorAll('[data-action="approve-page"]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      approveYearGoal(btn.dataset.goal, learnerId, '');
-      renderPartnerPage(learnerId);
+    btn.addEventListener('click', async () => {
+      await approveYearGoal(btn.dataset.goal, learnerId, '');
+      await renderPartnerPage(learnerId);
     });
   });
   container.querySelectorAll('[data-action="reject-page"]').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const note = prompt('Brief note for your partner (optional):') || '';
-      rejectYearGoal(btn.dataset.goal, learnerId, note);
-      renderPartnerPage(learnerId);
+      await rejectYearGoal(btn.dataset.goal, learnerId, note);
+      await renderPartnerPage(learnerId);
     });
   });
   container.querySelectorAll('.partner-candidate').forEach((btn) => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const targetId = btn.dataset.id;
-      const target = getLearner(targetId);
-      import('./modals.js').then(({ openConfirmModal }) => {
-        openConfirmModal({
-          title: `Propose ${target?.name || 'them'} as your partner?`,
-          body: `They'll get a request to accept. Until they accept, you don't have an accountability partner yet.`,
-          confirmLabel: 'Send proposal',
-          cancelLabel: 'Not yet',
-          onConfirm: () => {
-            proposePartner(learnerId, targetId);
-            renderPartnerPage(learnerId);
-          },
-        });
+      const target = await getLearner(targetId);
+      openConfirmModal({
+        title: `Propose ${target?.name || 'them'} as your partner?`,
+        body: `They'll get a request to accept. Until they accept, you don't have an accountability partner yet.`,
+        confirmLabel: 'Send proposal',
+        cancelLabel: 'Not yet',
+        onConfirm: async () => {
+          await proposePartner(learnerId, targetId);
+          await renderPartnerPage(learnerId);
+        },
       });
     });
   });

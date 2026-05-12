@@ -1,7 +1,4 @@
-// North - the dashboard / home view.
-// Three sections: Today (day plan), This week (week plan), Year vision (the map at a glance).
-// In the skeleton, day and week plans are placeholders until breakdown UI lands;
-// Year vision renders year-goals as a visual grid.
+// North view - the dashboard.
 
 import { getLearner, getGoals, getYearQuote } from './store.js';
 import { getCategoriesForStudio } from './studios.js';
@@ -16,34 +13,36 @@ export function setYearMapClickHandler(fn) {
   yearMapClickHandler = fn;
 }
 
-export function renderNorth(learnerId) {
-  const learner = getLearner(learnerId);
+export async function renderNorth(learnerId) {
+  const learner = await getLearner(learnerId);
   const greeting = document.getElementById('north-greeting-text');
   const dateLabel = document.getElementById('north-date');
 
   if (greeting) greeting.textContent = learner ? `North · ${learner.name}` : 'North';
   if (dateLabel) dateLabel.textContent = formatToday();
 
-  renderQuoteSection(learnerId);
-  renderYearMapSection(learner);
-  renderPartnerSection(learnerId);
-  renderPartnerApprovals(learnerId);
-  renderToday(learnerId);
-  initTodayFab(learnerId);
-  renderGamePlan(learnerId);
-  renderVision(learnerId, learner);
+  await Promise.all([
+    renderQuoteSection(learnerId),
+    renderYearMapSection(learner),
+    renderPartnerSection(learnerId),
+    renderPartnerApprovals(learnerId),
+    renderToday(learnerId),
+    renderGamePlan(learnerId),
+    renderVision(learnerId, learner),
+  ]);
 
-  // Re-render Today + Game Plan when tasks change anywhere in the app
+  initTodayFab(learnerId);
+
   if (!document._hcTasksListener) {
     document._hcTasksListener = true;
-    document.addEventListener('hc:tasks-changed', () => {
-      renderToday(learnerId);
-      renderGamePlan(learnerId);
+    document.addEventListener('hc:tasks-changed', async () => {
+      await renderToday(learnerId);
+      await renderGamePlan(learnerId);
     });
   }
 }
 
-function renderQuoteSection(learnerId) {
+async function renderQuoteSection(learnerId) {
   const section = document.getElementById('north-quote-section');
   const text = document.getElementById('north-quote-text');
   const footer = document.getElementById('north-quote-footer');
@@ -52,7 +51,7 @@ function renderQuoteSection(learnerId) {
     section.style.display = 'none';
     return;
   }
-  const quote = getYearQuote(learnerId);
+  const quote = await getYearQuote(learnerId);
   if (!quote) {
     section.style.display = 'none';
     return;
@@ -62,7 +61,7 @@ function renderQuoteSection(learnerId) {
   if (footer) footer.textContent = 'Your anchor until Session 7';
 }
 
-function renderYearMapSection(learner) {
+async function renderYearMapSection(learner) {
   const container = document.getElementById('north-year-map');
   if (!container) return;
   if (!learner) {
@@ -81,7 +80,7 @@ function formatToday() {
   return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
 }
 
-function renderVision(learnerId, learner) {
+async function renderVision(learnerId, learner) {
   const el = document.getElementById('north-vision');
   if (!el) return;
 
@@ -91,7 +90,8 @@ function renderVision(learnerId, learner) {
   }
 
   const categories = getCategoriesForStudio(learner.studio);
-  const yearGoals = getGoals(learnerId).filter((g) => g.scope === 'year');
+  const allGoals = await getGoals(learnerId);
+  const yearGoals = allGoals.filter((g) => g.scope === 'year');
 
   el.innerHTML = '';
   categories.forEach((cat) => {

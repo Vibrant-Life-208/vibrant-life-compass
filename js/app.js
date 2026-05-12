@@ -85,77 +85,74 @@ function registerServiceWorker() {
   }
 }
 
-function afterBearing() {
+async function afterBearing() {
   stopBearingAutoCycle();
-  // Re-anchor the landscape to the learner's actual session (if any).
   applyLandscape();
-  const session = requireSession();
+  const session = await requireSession();
   if (!session) {
     showSignIn();
     initAuth(onSignedIn);
   } else {
-    onSignedIn();
+    await onSignedIn();
   }
 }
 
-function onSignedIn() {
+async function onSignedIn() {
   showApp();
-  const session = requireSession();
+  const session = await requireSession();
   if (!session) return;
 
   document.getElementById('who-label').textContent = `${session.name} · ${session.role}`;
   buildTabs(session.role);
   wireRoleSwitcher();
 
-  const learnerId = resolveLearnerId(session);
+  const learnerId = await resolveLearnerId(session);
   initSessionNav(learnerId);
   initLogins(learnerId);
   initStillness();
   wireBearingAgain();
-  updateBreadcrumb(learnerId);
+  await updateBreadcrumb(learnerId);
   applyLandscape();
 
-  // Year Map session-click → jump to Session view with that session selected.
   setYearMapClickHandler((sessionNumber) => {
     setCurrentSession(sessionNumber);
     showTab('session-view', learnerId);
   });
 
   // First-run onboarding: learner OR guide has no quote and no traits yet.
-  // The identity used for storage differs by role - learnerId for learners,
-  // guideId for guides. Parents share their learner's quote, no separate one.
   const ownIdentity = session.role === 'learner' ? learnerId
                     : session.role === 'guide' ? session.guideId
                     : null;
-  if (ownIdentity && needsOnboarding(ownIdentity)) {
+  if (ownIdentity && await needsOnboarding(ownIdentity)) {
     openOnboardingModal({
       role: session.role,
-      onComplete: ({ quote, traits }) => {
-        if (quote) setYearQuote(ownIdentity, quote);
-        if (traits.length) setYearTraits(ownIdentity, traits);
-        showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
+      onComplete: async ({ quote, traits }) => {
+        if (quote) await setYearQuote(ownIdentity, quote);
+        if (traits.length) await setYearTraits(ownIdentity, traits);
+        await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
       },
     });
   }
 
-  // Default tab.
   const defaultTab = TABS_BY_ROLE[session.role][0].id;
-  showTab(defaultTab, learnerId);
+  await showTab(defaultTab, learnerId);
 }
 
-function needsOnboarding(learnerId) {
-  const quote = getYearQuote(learnerId);
-  const traits = getYearTraits(learnerId);
+async function needsOnboarding(identityId) {
+  const [quote, traits] = await Promise.all([
+    getYearQuote(identityId),
+    getYearTraits(identityId),
+  ]);
   return !quote && (!traits || traits.length === 0);
 }
 
-function resolveLearnerId(session) {
+async function resolveLearnerId(session) {
   if (session.learnerId) return session.learnerId;
-  const learners = getLearners();
+  const learners = await getLearners();
   return learners[0]?.id || null;
 }
 
-function buildTabs(role) {
+async function buildTabs(role) {
   const nav = document.getElementById('tab-nav');
   nav.innerHTML = '';
   const tabs = TABS_BY_ROLE[role] || TABS_BY_ROLE.learner;
@@ -164,15 +161,16 @@ function buildTabs(role) {
     btn.className = 'tab' + (i === 0 ? ' active' : '');
     btn.dataset.tab = t.id;
     btn.textContent = t.label;
-    btn.addEventListener('click', () => {
-      const learnerId = resolveLearnerId(requireSession());
-      showTab(t.id, learnerId);
+    btn.addEventListener('click', async () => {
+      const session = await requireSession();
+      const learnerId = await resolveLearnerId(session);
+      await showTab(t.id, learnerId);
     });
     nav.appendChild(btn);
   });
 }
 
-function showTab(tabId, learnerId) {
+async function showTab(tabId, learnerId) {
   document.querySelectorAll('.tab').forEach((t) => {
     t.classList.toggle('active', t.dataset.tab === tabId);
   });
@@ -180,28 +178,26 @@ function showTab(tabId, learnerId) {
     c.classList.toggle('active', c.id === tabId);
   });
 
-  if (tabId === 'north-view') { renderNorth(learnerId); applyLandscape(); }
-  if (tabId === 'year-view') renderYearView(learnerId);
+  if (tabId === 'north-view') { await renderNorth(learnerId); applyLandscape(); }
+  if (tabId === 'year-view') await renderYearView(learnerId);
   if (tabId === 'session-view') {
-    renderSessionView(learnerId);
-    // Session view drives the landscape - lets the learner travel as they navigate.
+    await renderSessionView(learnerId);
     import('./session-view.js').then(m => applyLandscape(m.getCurrentSession()));
   }
-  if (tabId === 'patterns-view') renderPatterns(learnerId);
-  if (tabId === 'passwords-view') renderLogins(learnerId);
-  if (tabId === 'partner-view') renderPartnerPage(learnerId);
-  if (tabId === 'guide-view') renderRoleView('guide', learnerId);
-  if (tabId === 'parent-view') renderRoleView('parent', learnerId);
+  if (tabId === 'patterns-view') await renderPatterns(learnerId);
+  if (tabId === 'passwords-view') await renderLogins(learnerId);
+  if (tabId === 'partner-view') await renderPartnerPage(learnerId);
+  if (tabId === 'guide-view') await renderRoleView('guide', learnerId);
+  if (tabId === 'parent-view') await renderRoleView('parent', learnerId);
 }
 
-function renderRoleView(role, learnerId) {
+async function renderRoleView(role, learnerId) {
   if (role === 'guide') {
-    // Render guide's own quote at the top of their dashboard
-    const session = getSession();
+    const session = await getSession();
     const quoteSection = document.getElementById('guide-quote-section');
     const quoteText = document.getElementById('guide-quote-text');
     if (session?.guideId && quoteSection && quoteText) {
-      const q = getYearQuote(session.guideId);
+      const q = await getYearQuote(session.guideId);
       if (q) {
         quoteText.textContent = `“${q}”`;
         quoteSection.style.display = 'block';
@@ -210,7 +206,7 @@ function renderRoleView(role, learnerId) {
       }
     }
     const list = document.getElementById('guide-learners');
-    const learners = getLearners();
+    const learners = await getLearners();
     if (!learners.length) {
       list.innerHTML = '<p class="learners-empty">No learners assigned yet.</p>';
       return;
@@ -310,23 +306,24 @@ export function applyLandscape(sessionIndex) {
 // on .scene-layer. The viewer is the one moving - no figure on the trail.
 function positionWalker() { /* removed per captain 2026-05-11 */ }
 
-function updateBreadcrumb(learnerId) {
+async function updateBreadcrumb(learnerId) {
   const el = document.getElementById('position-breadcrumb');
   if (!el) return;
-  const learner = learnerId ? getLearners().find((l) => l.id === learnerId) : null;
+  if (!learnerId) { el.textContent = ''; return; }
+  const learners = await getLearners();
+  const learner = learners.find((l) => l.id === learnerId);
   el.textContent = learner ? breadcrumbLabel(learner) : '';
 }
 
-function wireRoleSwitcher() {
+async function wireRoleSwitcher() {
   const buttons = document.querySelectorAll('.role-switch-btn');
-  const session = requireSession();
+  const session = await requireSession();
   buttons.forEach((btn) => {
     btn.classList.toggle('is-active', btn.dataset.switchRole === session?.role);
     if (btn.dataset.wired) return;
     btn.dataset.wired = '1';
-    btn.addEventListener('click', () => {
-      switchRole(btn.dataset.switchRole, () => {
-        // Re-run the post-sign-in flow so tabs + views update for the new role.
+    btn.addEventListener('click', async () => {
+      await switchRole(btn.dataset.switchRole, () => {
         location.reload();
       });
     });
