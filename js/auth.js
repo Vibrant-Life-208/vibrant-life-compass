@@ -2,7 +2,7 @@
 // Google OAuth) wires in next session per captain decision 2026-05-12.
 // Skeleton accepts any email + any password; password is never compared.
 
-import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides, findAccountByHeroName, getParentLearnerLinks } from './store.js';
+import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides, findAccountByHeroName, signInWithHeroName, getParentLearnerLinks } from './store.js';
 import { verifyPassword } from './crypto.js';
 import { BACKEND_TYPE } from './backend/config.js';
 
@@ -33,25 +33,13 @@ export function initAuth(onSignedIn) {
         showSigninError('Enter your hero name.');
         return;
       }
-      const account = await findAccountByHeroName(heroName);
+      // Backend-aware sign-in. Local backend verifies a PBKDF2 hash from
+      // the account record. Supabase backend calls auth.signInWithPassword
+      // which checks server-side bcrypt. Either way, returns the account
+      // on success or null on failure.
+      const account = await signInWithHeroName(heroName, password);
       if (!account) {
-        showSigninError(`No account found for "${heroName}". A guide can create one for you.`);
-        return;
-      }
-      // Verify password. If account has no passwordHash yet, accept any
-      // non-empty password (covers skeleton accounts created before this
-      // hardening pass; admin tool can set a real password via Reset).
-      if (account.passwordHash && account.passwordSalt) {
-        const ok = await verifyPassword(password, {
-          salt: account.passwordSalt,
-          hash: account.passwordHash,
-        });
-        if (!ok) {
-          showSigninError('Hero name and password don\'t match. Ask a guide to reset if you forgot.');
-          return;
-        }
-      } else if (!password) {
-        showSigninError('Enter your password. (Ask a guide if you don\'t have one set yet.)');
+        showSigninError('Hero name and password don\'t match. Ask a guide to reset if you forgot.');
         return;
       }
       const errorEl = document.getElementById('signin-error');
