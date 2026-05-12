@@ -1,4 +1,4 @@
-const CACHE = 'heros-compass-v16';
+const CACHE = 'heros-compass-v17';
 const CORE = [
   '/',
   '/index.html',
@@ -38,6 +38,25 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  // Network-first for JS, CSS, HTML, JSON, SVG - so reloads pick up code changes
+  // immediately. Cache is the fallback when offline.
+  const isCode = /\.(js|mjs|css|html|json|svg)(\?|$)/.test(url.pathname);
+  if (isCode) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE).then((c) => c.put(event.request, clone)).catch(() => {});
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+  // Other assets (icons, fonts, etc.) - cache-first
   event.respondWith(
     caches.match(event.request).then((cached) => cached || fetch(event.request).catch(() => cached))
   );
