@@ -105,8 +105,8 @@ export function renderYearView(learnerId) {
       openYearGoalModal({
         category: cat,
         existing: goal,
-        onSave: ({ text, baseline, halfwayPoint }) => {
-          const saved = saveGoal({
+        onSave: ({ text, baseline, halfwayPoint, quarterPoint }) => {
+          saveGoal({
             id: goal?.id,
             learnerId,
             categoryId: cat.id,
@@ -114,31 +114,34 @@ export function renderYearView(learnerId) {
             text,
             baseline,
             halfwayPoint,
+            quarterPoint,
             targetSession: 6, // default per captain
             status: goal?.status || 'active',
           });
-          // Auto-populate Session 3 goal with the halfway point if it doesn't
-          // exist yet, OR update if it does. The learner can edit it.
-          if (halfwayPoint) {
-            const existingS3 = goals.find(
-              (g) => g.scope === 'session' && g.sessionIndex === 3 && g.categoryId === cat.id
+          // Auto-populate Session 3 goal with the halfway point, and
+          // Session 2 goal with the quarter point (halfway of the halfway).
+          // Per captain refinement: recursive halving.
+          const seedSession = (sessionIndex, seedText) => {
+            if (!seedText) return;
+            const existingS = goals.find(
+              (g) => g.scope === 'session' && g.sessionIndex === sessionIndex && g.categoryId === cat.id
             );
-            if (!existingS3) {
+            if (!existingS) {
               saveGoal({
                 learnerId,
                 categoryId: cat.id,
                 scope: 'session',
-                sessionIndex: 3,
-                text: halfwayPoint,
+                sessionIndex,
+                text: seedText,
+                autoPopulated: true,
                 status: 'active',
               });
+            } else if (existingS.autoPopulated) {
+              saveGoal({ ...existingS, text: seedText, autoPopulated: true });
             }
-            // If S3 exists but is just the auto-populated text, refresh it;
-            // otherwise leave the learner's edit alone.
-            else if (existingS3.autoPopulated) {
-              saveGoal({ ...existingS3, text: halfwayPoint });
-            }
-          }
+          };
+          seedSession(3, halfwayPoint);
+          seedSession(2, quarterPoint);
           renderYearView(learnerId);
         },
       });

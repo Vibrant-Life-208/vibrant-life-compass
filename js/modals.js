@@ -33,9 +33,14 @@ export function openGoalModal({ title, existing, example, onSave }) {
   setTimeout(() => document.getElementById('goal-text')?.focus(), 50);
 }
 
-// 3-stage year-goal modal: (1) the goal itself, (2) where you are now,
-// (3) the halfway point. Auto-populates Session 3 goal in the same category.
-// Per captain decision 2026-05-11.
+// 4-stage year-goal modal with recursive halving.
+// Per captain refinement 2026-05-11:
+//   Stage 1: year goal (target = end of Session 6)
+//   Stage 2: baseline - where you are now
+//   Stage 3: halfway of year goal -> auto-populates Session 3 goal
+//   Stage 4: halfway of THAT halfway -> auto-populates Session 2 goal
+// At stage 4, the Session 3 goal moves into the "endpoint" position
+// visually so the halving is clear.
 export function openYearGoalModal({ category, existing, onSave }) {
   setModalTitle(`${category.name} - year goal`);
   const fields = document.getElementById('form-fields');
@@ -44,9 +49,14 @@ export function openYearGoalModal({ category, existing, onSave }) {
       <span class="stage-dot is-active" data-stage="1">1</span>
       <span class="stage-dot" data-stage="2">2</span>
       <span class="stage-dot" data-stage="3">3</span>
+      <span class="stage-dot" data-stage="4">4</span>
     </div>
 
     <div class="stage-panel" data-stage="1">
+      <div class="endpoint-card">
+        <span class="endpoint-label">Year goal · end of Session 6</span>
+        <span class="endpoint-placeholder">…</span>
+      </div>
       <div class="form-field">
         <label for="yg-text">Stage 1 - Your year goal</label>
         <p class="form-hint">What does success look like by Session 6? Make it specific. Make it real.</p>
@@ -59,6 +69,10 @@ export function openYearGoalModal({ category, existing, onSave }) {
     </div>
 
     <div class="stage-panel" data-stage="2" hidden>
+      <div class="endpoint-card">
+        <span class="endpoint-label">Year goal · end of Session 6</span>
+        <span class="endpoint-value" id="endpoint-1"></span>
+      </div>
       <div class="form-field">
         <label for="yg-baseline">Stage 2 - Where you are now</label>
         <p class="form-hint">The honest starting line. Your partner will see this for context.</p>
@@ -71,10 +85,30 @@ export function openYearGoalModal({ category, existing, onSave }) {
     </div>
 
     <div class="stage-panel" data-stage="3" hidden>
+      <div class="endpoint-card">
+        <span class="endpoint-label">Year goal · end of Session 6</span>
+        <span class="endpoint-value" id="endpoint-2"></span>
+      </div>
       <div class="form-field">
         <label for="yg-halfway">Stage 3 - The halfway point</label>
         <p class="form-hint">What will be true by the end of Session 3? This becomes your Session 3 goal automatically.</p>
         <textarea id="yg-halfway" rows="3" placeholder="What does the midpoint look like?">${existing?.halfwayPoint ? escapeAttr(existing.halfwayPoint) : ''}</textarea>
+      </div>
+      <div class="stage-actions">
+        <button type="button" class="btn btn-text" data-action="back">Back</button>
+        <button type="button" class="btn btn-primary" data-action="next">Next</button>
+      </div>
+    </div>
+
+    <div class="stage-panel" data-stage="4" hidden>
+      <div class="endpoint-card endpoint-card-promoted">
+        <span class="endpoint-label">Now your destination · end of Session 3</span>
+        <span class="endpoint-value" id="endpoint-3"></span>
+      </div>
+      <div class="form-field">
+        <label for="yg-quarter">Stage 4 - The halfway to your Session 3 goal</label>
+        <p class="form-hint">What will be true by the end of Session 2? This becomes your Session 2 goal automatically.</p>
+        <textarea id="yg-quarter" rows="3" placeholder="What does the early checkpoint look like?">${existing?.quarterPoint ? escapeAttr(existing.quarterPoint) : ''}</textarea>
       </div>
       <div class="stage-actions">
         <button type="button" class="btn btn-text" data-action="back">Back</button>
@@ -83,6 +117,17 @@ export function openYearGoalModal({ category, existing, onSave }) {
     </div>
   `;
 
+  const updateEndpoints = () => {
+    const yearGoal = document.getElementById('yg-text')?.value.trim() || existing?.text || '';
+    const halfway = document.getElementById('yg-halfway')?.value.trim() || existing?.halfwayPoint || '';
+    const e1 = document.getElementById('endpoint-1');
+    const e2 = document.getElementById('endpoint-2');
+    const e3 = document.getElementById('endpoint-3');
+    if (e1) e1.textContent = yearGoal || '(set your year goal)';
+    if (e2) e2.textContent = yearGoal || '(set your year goal)';
+    if (e3) e3.textContent = halfway || '(set your halfway point)';
+  };
+
   const showStage = (n) => {
     fields.querySelectorAll('.stage-dot').forEach((d) => {
       d.classList.toggle('is-active', Number(d.dataset.stage) <= n);
@@ -90,6 +135,7 @@ export function openYearGoalModal({ category, existing, onSave }) {
     fields.querySelectorAll('.stage-panel').forEach((p) => {
       p.hidden = Number(p.dataset.stage) !== n;
     });
+    updateEndpoints();
     const focusEl = fields.querySelector(`.stage-panel[data-stage="${n}"] textarea`);
     focusEl?.focus();
   };
@@ -99,7 +145,6 @@ export function openYearGoalModal({ category, existing, onSave }) {
       const action = btn.dataset.action;
       const stage = Number(btn.closest('.stage-panel').dataset.stage);
       if (action === 'next') {
-        // Validate current stage has content
         const ta = fields.querySelector(`.stage-panel[data-stage="${stage}"] textarea`);
         if (!ta.value.trim()) { ta.focus(); return; }
         showStage(stage + 1);
@@ -109,14 +154,15 @@ export function openYearGoalModal({ category, existing, onSave }) {
         const text = document.getElementById('yg-text').value.trim();
         const baseline = document.getElementById('yg-baseline').value.trim();
         const halfwayPoint = document.getElementById('yg-halfway').value.trim();
+        const quarterPoint = document.getElementById('yg-quarter').value.trim();
         if (!text || !halfwayPoint) return;
-        onSave({ text, baseline, halfwayPoint });
+        onSave({ text, baseline, halfwayPoint, quarterPoint });
         closeModal();
       }
     });
   });
 
-  activeSubmit = null; // multi-stage; use the explicit buttons
+  activeSubmit = null;
   openModal();
   setTimeout(() => document.getElementById('yg-text')?.focus(), 50);
 }
