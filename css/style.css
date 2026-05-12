@@ -864,9 +864,9 @@ header h1 {
   transform-origin: 50% 100%;
   /* Forward-approach: scene grows toward the viewer at car-speed.
      Origin at bottom center so the horizon comes at you. */
-  animation: approach 14s ease-in-out infinite alternate;
+  animation: approach 8s ease-in-out infinite alternate;
   will-change: transform, opacity;
-  transition: opacity 1.6s ease-in-out;
+  transition: opacity 1s ease-in-out;
 }
 
 #scene-current { opacity: 1; }
@@ -878,7 +878,7 @@ header h1 {
 
 @keyframes approach {
   0%   { transform: scale(1); }
-  100% { transform: scale(1.22); }
+  100% { transform: scale(1.28); }
 }
 
 /* Body fallback background while scene-stage initializes / for visual continuity */

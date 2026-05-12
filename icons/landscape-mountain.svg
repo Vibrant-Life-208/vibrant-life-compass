@@ -4,6 +4,10 @@
       <stop offset="0" stop-color="#c0b29a"/>
       <stop offset="1" stop-color="#d4c8b4"/>
     </linearGradient>
+    <style>
+      .road-stripe { animation: road-flow 1.4s linear infinite; }
+      @keyframes road-flow { to { stroke-dashoffset: -30; } }
+    </style>
   </defs>
   <rect width="1200" height="600" fill="url(#msky)"/>
   <!-- back range -->
@@ -17,5 +21,5 @@
   <!-- Perspective mountain trail (centered, vanishing toward the peaks) -->
   <polygon points="585,420 615,420 880,600 320,600" fill="#a08868" opacity="0.95"/>
   <polygon points="593,420 607,420 730,600 470,600" fill="#806b50" opacity="0.85"/>
-  <line x1="600" y1="435" x2="600" y2="600" stroke="#f0e8d0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
+  <line class="road-stripe" x1="600" y1="435" x2="600" y2="600" stroke="#f0e8d0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
 </svg>

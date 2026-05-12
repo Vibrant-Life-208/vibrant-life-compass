@@ -4,6 +4,10 @@
       <stop offset="0" stop-color="#a8c2cb"/>
       <stop offset="1" stop-color="#c8d6db"/>
     </linearGradient>
+    <style>
+      .road-stripe { animation: road-flow 1.4s linear infinite; }
+      @keyframes road-flow { to { stroke-dashoffset: -22; } }
+    </style>
   </defs>
   <rect width="1200" height="600" fill="url(#osky)"/>
   <circle cx="900" cy="170" r="55" fill="#f4d690" opacity="0.6"/>
@@ -20,5 +24,5 @@
   <line x1="540" y1="460" x2="660" y2="460" stroke="#5a4534" stroke-width="2" opacity="0.7"/>
   <line x1="490" y1="510" x2="710" y2="510" stroke="#5a4534" stroke-width="2" opacity="0.75"/>
   <line x1="425" y1="560" x2="775" y2="560" stroke="#5a4534" stroke-width="2.5" opacity="0.8"/>
-  <line x1="600" y1="440" x2="600" y2="600" stroke="#f0e8d0" stroke-width="2" stroke-dasharray="10,12" opacity="0.6"/>
+  <line class="road-stripe" x1="600" y1="440" x2="600" y2="600" stroke="#f0e8d0" stroke-width="2" stroke-dasharray="10,12" opacity="0.6"/>
 </svg>

@@ -4,6 +4,10 @@
       <stop offset="0" stop-color="#c4d0db"/>
       <stop offset="1" stop-color="#dde3eb"/>
     </linearGradient>
+    <style>
+      .road-stripe { animation: road-flow 1.4s linear infinite; }
+      @keyframes road-flow { to { stroke-dashoffset: -30; } }
+    </style>
   </defs>
   <rect width="1200" height="600" fill="url(#asky)"/>
   <circle cx="260" cy="180" r="45" fill="#eef1f4" opacity="0.85"/>
@@ -13,5 +17,5 @@
   <!-- Perspective snow path -->
   <polygon points="585,470 615,470 870,600 330,600" fill="#dbe5ee" opacity="0.95"/>
   <polygon points="593,470 607,470 720,600 480,600" fill="#c4d2dd" opacity="0.9"/>
-  <line x1="600" y1="485" x2="600" y2="600" stroke="#7d92a4" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.7"/>
+  <line class="road-stripe" x1="600" y1="485" x2="600" y2="600" stroke="#7d92a4" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.7"/>
 </svg>

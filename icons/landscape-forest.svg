@@ -4,12 +4,16 @@
       <stop offset="0" stop-color="#b8cdb0"/>
       <stop offset="1" stop-color="#d4dec8"/>
     </linearGradient>
+    <style>
+      .road-stripe { animation: road-flow 1.4s linear infinite; }
+      @keyframes road-flow { to { stroke-dashoffset: -30; } }
+    </style>
   </defs>
   <rect width="1200" height="600" fill="url(#fsky)"/>
   <!-- Perspective road first so trees layer on top, framing the path -->
   <polygon points="585,440 615,440 870,600 330,600" fill="#8a6f4f" opacity="0.9"/>
   <polygon points="593,440 607,440 720,600 480,600" fill="#6f5840" opacity="0.85"/>
-  <line x1="600" y1="455" x2="600" y2="600" stroke="#e8d8b0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
+  <line class="road-stripe" x1="600" y1="455" x2="600" y2="600" stroke="#e8d8b0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
   <!-- Trees on the sides of the road -->
   <g fill="#6b8f5e" opacity="0.6">
     <polygon points="80,520 60,420 100,420"/>
@@ -32,5 +36,5 @@
   <rect y="555" width="1200" height="45" fill="#4a6741" opacity="0.85"/>
   <!-- Re-draw the road's foreground edge on top of the ground strip -->
   <polygon points="445,555 755,555 870,600 330,600" fill="#8a6f4f" opacity="0.95"/>
-  <line x1="600" y1="555" x2="600" y2="600" stroke="#e8d8b0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.9"/>
+  <line class="road-stripe" x1="600" y1="555" x2="600" y2="600" stroke="#e8d8b0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.9"/>
 </svg>

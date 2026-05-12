@@ -50,8 +50,34 @@ document.addEventListener('DOMContentLoaded', () => {
   // Apply the landscape backdrop before bearing so the "travel" begins
   // the moment the app opens, not after sign-in.
   applyLandscape();
+  startBearingAutoCycle();
   initBearing(afterBearing);
 });
+
+// Bearing-screen auto-cycle: every 4 seconds, advance to the next landscape
+// so the captain (and any viewer waiting on Begin) sees the year's journey
+// previewed as a slideshow. Stops once Begin is tapped and the app loads.
+let bearingCycleTimer = null;
+let bearingCycleSession = 1;
+function startBearingAutoCycle() {
+  stopBearingAutoCycle();
+  bearingCycleSession = 1;
+  bearingCycleTimer = setInterval(() => {
+    const bearing = document.getElementById('bearing-screen');
+    if (!bearing?.classList.contains('active')) {
+      stopBearingAutoCycle();
+      return;
+    }
+    bearingCycleSession = (bearingCycleSession % 7) + 1;
+    applyLandscape(bearingCycleSession);
+  }, 4000);
+}
+function stopBearingAutoCycle() {
+  if (bearingCycleTimer) {
+    clearInterval(bearingCycleTimer);
+    bearingCycleTimer = null;
+  }
+}
 
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
@@ -60,6 +86,9 @@ function registerServiceWorker() {
 }
 
 function afterBearing() {
+  stopBearingAutoCycle();
+  // Re-anchor the landscape to the learner's actual session (if any).
+  applyLandscape();
   const session = requireSession();
   if (!session) {
     showSignIn();

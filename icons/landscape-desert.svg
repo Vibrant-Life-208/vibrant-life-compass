@@ -4,6 +4,10 @@
       <stop offset="0" stop-color="#e8c48a"/>
       <stop offset="1" stop-color="#f0d9a8"/>
     </linearGradient>
+    <style>
+      .road-stripe { animation: road-flow 1.4s linear infinite; }
+      @keyframes road-flow { to { stroke-dashoffset: -30; } }
+    </style>
   </defs>
   <rect width="1200" height="600" fill="url(#dsky)"/>
   <circle cx="940" cy="200" r="60" fill="#f4d690" opacity="0.85"/>
@@ -13,5 +17,5 @@
   <polygon points="585,460 615,460 880,600 320,600" fill="#d4b283" opacity="0.9"/>
   <polygon points="592,460 608,460 720,600 480,600" fill="#c49968" opacity="0.7"/>
   <!-- Center dashed stripe -->
-  <line x1="600" y1="475" x2="600" y2="600" stroke="#f4e8c8" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
+  <line class="road-stripe" x1="600" y1="475" x2="600" y2="600" stroke="#f4e8c8" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
 </svg>
