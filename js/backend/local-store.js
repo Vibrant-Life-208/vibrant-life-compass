@@ -133,6 +133,20 @@ export async function findAccountByHeroName(heroName) {
   return null;
 }
 
+// Hero-name + password sign-in. Returns the verified account (with role)
+// on success, null on failure. Backend-aware so auth.js can call one
+// function regardless of localStorage vs Supabase Auth.
+import { verifyPassword as _verifyPasswordLocal } from '../crypto.js';
+export async function signInWithHeroName(heroName, password) {
+  const account = await findAccountByHeroName(heroName);
+  if (!account) return null;
+  if (!account.passwordHash || !account.passwordSalt) return null;
+  const ok = await _verifyPasswordLocal(password, {
+    hash: account.passwordHash, salt: account.passwordSalt,
+  });
+  return ok ? account : null;
+}
+
 // ============================================================================
 // Guides
 // ============================================================================

@@ -25,6 +25,7 @@ export const {
   getParentLearnerLinks,
   linkParentToLearner,
   findAccountByHeroName,
+  signInWithHeroName,
   getGuides,
   getGuide,
   saveGuide,
