@@ -1,4 +1,4 @@
-const CACHE = 'heros-compass-v35';
+const CACHE = 'heros-compass-v36';
 const CORE = [
   '/',
   '/index.html',
@@ -24,6 +24,9 @@ const CORE = [
   '/js/parent-view.js',
   '/js/admin.js',
   '/js/setup.js',
+  '/js/backend/config.js',
+  '/js/backend/local-store.js',
+  '/js/backend/supabase-adapter.js',
 ];
 
 self.addEventListener('install', (event) => {

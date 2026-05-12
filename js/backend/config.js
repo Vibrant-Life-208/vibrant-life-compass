@@ -1,15 +1,25 @@
 // Backend configuration.
-// Flip BACKEND_TYPE to 'supabase' once Vibrant Life provides URL + anon key
-// and the schema (supabase/schema.sql) has been applied.
+//
+// Reads from `window.__HC_RUNTIME_CONFIG__` if present (production: Vercel
+// build step generates `config.runtime.js` from env vars and index.html
+// loads it before the app). Falls back to local-storage backend for dev.
+//
+// To run locally against a Supabase project, drop a `config.runtime.js`
+// at the repo root containing:
+//   window.__HC_RUNTIME_CONFIG__ = {
+//     BACKEND_TYPE: 'supabase',
+//     SUPABASE_URL: 'https://xxxxx.supabase.co',
+//     SUPABASE_ANON_KEY: 'eyJ...',
+//   };
+// That file is gitignored. Never commit credentials.
 
-export const BACKEND_TYPE = 'local'; // 'local' | 'supabase'
+const RUNTIME = (typeof window !== 'undefined' && window.__HC_RUNTIME_CONFIG__) || {};
 
-// Supabase configuration - filled in at deploy time, never committed.
-// Pattern: keep these blank in source; Vibrant Life sets them in a local
-// `config.local.js` that is gitignored, or via build-time env injection.
+export const BACKEND_TYPE = RUNTIME.BACKEND_TYPE || 'local'; // 'local' | 'supabase'
+
 export const SUPABASE_CONFIG = {
-  url: '',     // e.g. 'https://abcdef.supabase.co'
-  anonKey: '', // public anon key from Supabase project settings
+  url: RUNTIME.SUPABASE_URL || '',
+  anonKey: RUNTIME.SUPABASE_ANON_KEY || '',
 };
 
 export function backendIsConfigured() {
