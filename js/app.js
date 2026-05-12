@@ -2,7 +2,7 @@
 // Boot order: Bearing -> Sign-in -> first-run onboarding (if learner) -> role-based view.
 
 import { initBearing } from './arrive.js';
-import { initAuth, requireSession, showSignIn, showApp, switchRole } from './auth.js';
+import { initAuth, requireSession, showSignIn, showApp, switchRole, startIdleTimeout } from './auth.js';
 import { renderNorth, setYearMapClickHandler } from './north.js';
 import { renderYearView } from './year-view.js';
 import { renderSessionView, initSessionNav, setCurrentSession } from './session-view.js';
@@ -104,6 +104,7 @@ async function onSignedIn() {
   const session = await requireSession();
   if (!session) return;
 
+  startIdleTimeout(); // auto-logout after 30 min inactivity
   document.getElementById('who-label').textContent = `${session.name} · ${session.role}`;
 
   // First-run gate: learner role without setupCompletedAt sees ONLY the

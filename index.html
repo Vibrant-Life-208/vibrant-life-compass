@@ -7,6 +7,10 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- Content Security Policy: restrict what scripts and resources can load.
+       'unsafe-inline' is needed for the inline event handlers + inline SVG.
+       No external scripts allowed. Connect only to self (no external APIs). -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';">
   <title>Hero's Compass</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
@@ -212,9 +216,12 @@
       <section class="admin-section">
         <div class="admin-header">
           <h3 class="admin-title">Account administration</h3>
-          <button type="button" id="admin-create-btn" class="btn btn-primary">+ Create account</button>
+          <div class="admin-header-buttons">
+            <button type="button" id="admin-bulk-btn" class="btn btn-text">Bulk import (CSV)</button>
+            <button type="button" id="admin-create-btn" class="btn btn-primary">+ Create account</button>
+          </div>
         </div>
-        <p class="admin-sub">Vibrant Life staff only. Create accounts for hero geniuses, parents, and fellow guides. No emails are collected; identity stays inside Vibrant Life.</p>
+        <p class="admin-sub">Vibrant Life staff only. Create accounts for hero geniuses, parents, and fellow guides. No emails are collected; identity stays inside Vibrant Life. Temporary passwords are shown once on creation - write them down and hand them to the user.</p>
         <div id="admin-accounts" class="admin-accounts"></div>
       </section>
     </main>

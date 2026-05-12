@@ -93,6 +93,75 @@ export function isEnvelope(v) {
   return v && typeof v === 'object' && typeof v.ct === 'string' && typeof v.iv === 'string';
 }
 
+// ============================================================================
+// Password hashing - PBKDF2-SHA256, 100k iterations.
+// For local-auth account passwords. Plaintext never stored.
+// Stored as { salt: base64, hash: base64 } on the account record.
+// ============================================================================
+const PBKDF2_ITERATIONS = 100000;
+const SALT_BYTES = 16;
+const HASH_BYTES = 32;
+
+export async function hashPassword(plaintext) {
+  if (!plaintext) return { salt: '', hash: '' };
+  const salt = crypto.getRandomValues(new Uint8Array(SALT_BYTES));
+  const hash = await pbkdf2(plaintext, salt);
+  return {
+    salt: arrayBufferToBase64(salt),
+    hash: arrayBufferToBase64(hash),
+  };
+}
+
+export async function verifyPassword(plaintext, stored) {
+  if (!plaintext || !stored?.salt || !stored?.hash) return false;
+  const salt = new Uint8Array(base64ToArrayBuffer(stored.salt));
+  const candidate = await pbkdf2(plaintext, salt);
+  const expected = base64ToArrayBuffer(stored.hash);
+  return constantTimeEqual(candidate, expected);
+}
+
+async function pbkdf2(plaintext, salt) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    enc.encode(plaintext),
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits']
+  );
+  return crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt: salt,
+      iterations: PBKDF2_ITERATIONS,
+      hash: 'SHA-256',
+    },
+    keyMaterial,
+    HASH_BYTES * 8
+  );
+}
+
+function constantTimeEqual(a, b) {
+  const aBytes = new Uint8Array(a);
+  const bBytes = new Uint8Array(b);
+  if (aBytes.length !== bBytes.length) return false;
+  let diff = 0;
+  for (let i = 0; i < aBytes.length; i++) diff |= aBytes[i] ^ bBytes[i];
+  return diff === 0;
+}
+
+// Generate a memorable temporary password: word-1234 style.
+export function generateTempPassword() {
+  const words = [
+    'compass', 'lantern', 'river', 'meadow', 'summit', 'harbor',
+    'thistle', 'beacon', 'glade', 'cedar', 'willow', 'aspen',
+    'ridge', 'cove', 'brook', 'pine', 'oak', 'fern', 'maple',
+  ];
+  const w = words[Math.floor(Math.random() * words.length)];
+  const n = Math.floor(Math.random() * 9000) + 1000;
+  return `${w}-${n}`;
+}
+
 function arrayBufferToBase64(buf) {
   const bytes = new Uint8Array(buf);
   let str = '';

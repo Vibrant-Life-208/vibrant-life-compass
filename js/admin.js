@@ -1,12 +1,6 @@
 // Account administration - guide-only tool.
 // Captain decision 2026-05-12: Vibrant Life staff create all accounts;
 // no self-signup, no email collection. Hero name + temporary password.
-//
-// Skeleton storage: temporary passwords are NOT stored locally (we don't
-// have password auth yet in skeleton mode). When Supabase activates, this
-// tool calls supabase.auth.admin.createUser({ email: synthetic, password,
-// email_confirm: true }) and shows the temp password once to the guide,
-// who hands it to the learner on paper.
 
 import {
   getLearners, saveLearner,
@@ -15,7 +9,8 @@ import {
   linkParentToLearner, getParentLearnerLinks,
 } from './store.js';
 import { STUDIOS } from './studios.js';
-import { openCreateAccountModal } from './modals.js';
+import { openCreateAccountModal, openBulkImportModal, openTempPasswordModal } from './modals.js';
+import { hashPassword, generateTempPassword } from './crypto.js';
 
 export async function renderAdminAccounts() {
   const container = document.getElementById('admin-accounts');
@@ -28,6 +23,7 @@ export async function renderAdminAccounts() {
   let html = '';
 
   html += renderGroup('Hero geniuses (learners)', learners.map(l => ({
+    id: l.id,
     name: l.heroName || l.name,
     sub: studioLabel(l.studio),
     role: 'learner',
@@ -37,6 +33,7 @@ export async function renderAdminAccounts() {
     const link = links.find(x => x.parentId === p.id);
     const linkedLearner = link ? learners.find(l => l.id === link.learnerId) : null;
     return {
+      id: p.id,
       name: p.heroName || p.name,
       sub: linkedLearner ? `linked to ${linkedLearner.heroName || linkedLearner.name}` : 'no learner linked',
       role: 'parent',
@@ -44,6 +41,7 @@ export async function renderAdminAccounts() {
   }));
 
   html += renderGroup('Guides', guides.map(g => ({
+    id: g.id,
     name: g.heroName || g.name,
     sub: 'guide',
     role: 'guide',
@@ -62,7 +60,7 @@ function renderGroup(title, items) {
             <li class="admin-account-row">
               <span class="admin-account-name">${escapeHtml(a.name)}</span>
               <span class="admin-account-sub">${escapeHtml(a.sub)}</span>
-              <button type="button" class="btn btn-text admin-reset-btn" data-role="${a.role}" data-name="${escapeHtml(a.name)}">Reset password</button>
+              <button type="button" class="btn btn-text admin-reset-btn" data-role="${a.role}" data-id="${a.id}" data-name="${escapeHtml(a.name)}">Reset password</button>
             </li>
           `).join('') + '</ul>'
       }
@@ -77,27 +75,71 @@ export function initAdmin() {
     btn.addEventListener('click', () => {
       openCreateAccountModal({
         studios: STUDIOS,
-        availableLearners: null, // resolved at submit time
         onCreate: async (data) => {
-          await createAccount(data);
-          await renderAdminAccounts();
+          const result = await createAccount(data);
+          if (result?.tempPassword) {
+            openTempPasswordModal({
+              heroName: result.heroName,
+              tempPassword: result.tempPassword,
+              onClose: async () => { await renderAdminAccounts(); },
+            });
+          } else {
+            await renderAdminAccounts();
+          }
         },
       });
     });
   }
-  // Reset password buttons - skeleton shows a placeholder message
-  document.getElementById('admin-accounts')?.addEventListener('click', (e) => {
-    if (e.target.classList.contains('admin-reset-btn')) {
-      const tempPassword = generateTempPassword();
-      alert(`Temporary password for ${e.target.dataset.name}:\n\n${tempPassword}\n\n(Skeleton only - real reset wires in when Supabase Auth activates. Hand this to the learner on paper.)`);
-    }
+
+  const bulkBtn = document.getElementById('admin-bulk-btn');
+  if (bulkBtn && !bulkBtn.dataset.wired) {
+    bulkBtn.dataset.wired = '1';
+    bulkBtn.addEventListener('click', () => {
+      openBulkImportModal({
+        studios: STUDIOS,
+        onImport: async (rows) => {
+          const results = [];
+          for (const row of rows) {
+            const r = await createAccount(row);
+            if (r) results.push(r);
+          }
+          openTempPasswordModal({
+            multiple: results.map(r => ({ heroName: r.heroName, tempPassword: r.tempPassword })),
+            onClose: async () => { await renderAdminAccounts(); },
+          });
+        },
+      });
+    });
+  }
+
+  // Reset password handler - real implementation now
+  document.getElementById('admin-accounts')?.addEventListener('click', async (e) => {
+    if (!e.target.classList.contains('admin-reset-btn')) return;
+    const id = e.target.dataset.id;
+    const role = e.target.dataset.role;
+    const name = e.target.dataset.name;
+    const tempPassword = generateTempPassword();
+    const hashed = await hashPassword(tempPassword);
+    const update = { id, passwordHash: hashed.hash, passwordSalt: hashed.salt };
+    if (role === 'learner') await saveLearner(update);
+    else if (role === 'parent') await saveParent(update);
+    else if (role === 'guide') await saveGuide(update);
+    openTempPasswordModal({
+      heroName: name,
+      tempPassword,
+      isReset: true,
+      onClose: async () => { await renderAdminAccounts(); },
+    });
   });
 }
 
 async function createAccount(data) {
   const { type, heroName, studio, linkedLearnerId } = data;
   const name = heroName.trim();
-  if (!name) return;
+  if (!name) return null;
+
+  const tempPassword = generateTempPassword();
+  const hashed = await hashPassword(tempPassword);
 
   if (type === 'learner') {
     const learners = await saveLearner({
@@ -106,26 +148,34 @@ async function createAccount(data) {
       studio: studio || 'adventure',
       guideEmail: '',
       parentEmail: '',
+      passwordHash: hashed.hash,
+      passwordSalt: hashed.salt,
+      setupCompletedAt: null,
+      priorityGoalIds: [],
     });
-    return learners[learners.length - 1];
+    return { ...learners[learners.length - 1], tempPassword, heroName: name };
   }
   if (type === 'parent') {
     const parents = await saveParent({
       heroName: name,
       name: prettyName(name),
+      passwordHash: hashed.hash,
+      passwordSalt: hashed.salt,
     });
     const parent = parents[parents.length - 1];
     if (linkedLearnerId) {
       await linkParentToLearner(parent.id, linkedLearnerId);
     }
-    return parent;
+    return { ...parent, tempPassword, heroName: name };
   }
   if (type === 'guide') {
     const guides = await saveGuide({
       heroName: name,
       name: prettyName(name),
+      passwordHash: hashed.hash,
+      passwordSalt: hashed.salt,
     });
-    return guides[guides.length - 1];
+    return { ...guides[guides.length - 1], tempPassword, heroName: name };
   }
 }
 
@@ -135,15 +185,6 @@ function prettyName(heroName) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
     .join(' ');
-}
-
-function generateTempPassword() {
-  // Skeleton placeholder. Real Supabase reset generates a cryptographically
-  // secure password via the admin API and stores it hashed.
-  const words = ['compass', 'lantern', 'river', 'meadow', 'summit', 'harbor', 'thistle', 'beacon'];
-  const w = words[Math.floor(Math.random() * words.length)];
-  const n = Math.floor(Math.random() * 9000) + 1000;
-  return `${w}-${n}`;
 }
 
 function studioLabel(id) {

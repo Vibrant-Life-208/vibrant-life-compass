@@ -609,6 +609,155 @@ export async function openCreateAccountModal({ studios, onCreate }) {
   setTimeout(() => document.getElementById('account-hero-name')?.focus(), 50);
 }
 
+// Bulk-import accounts from a CSV paste.
+// CSV columns: type,heroName,studio,linkedLearnerHeroName
+// type = learner | parent | guide
+export async function openBulkImportModal({ studios, onImport }) {
+  const { getLearners } = await import('./store.js');
+  const allLearners = await getLearners();
+  setModalTitle('Bulk import accounts');
+  const sampleRows = [
+    'type,heroName,studio,linkedLearnerHeroName',
+    'learner,liam-discovery,discovery,',
+    'learner,mira-adventure,adventure,',
+    'parent,sam-parent,,liam-discovery',
+    'guide,coach-alex,,',
+  ].join('\n');
+
+  document.getElementById('form-fields').innerHTML = `
+    <p style="color: var(--text-soft); line-height: 1.5; margin: 0 0 0.75rem; font-size: 0.9rem;">
+      Paste CSV rows below. One account per row. First row is the header.
+      Each account gets a generated temporary password shown at the end.
+    </p>
+    <div class="form-field">
+      <label for="bulk-csv">CSV</label>
+      <textarea id="bulk-csv" rows="10" placeholder="${escapeAttr(sampleRows)}" style="font-family: ui-monospace, Menlo, monospace; font-size: 0.85rem;"></textarea>
+    </div>
+    <div class="form-field">
+      <p class="form-hint">
+        <strong>Columns:</strong> type, heroName, studio, linkedLearnerHeroName<br>
+        <strong>type:</strong> learner / parent / guide<br>
+        <strong>studio:</strong> sparks / discovery / adventure / launchpad (learners only)<br>
+        <strong>linkedLearnerHeroName:</strong> for parents only — the hero name of the learner they're linked to
+      </p>
+    </div>
+    <p id="bulk-csv-error" class="signin-error" style="display:none"></p>
+  `;
+
+  activeSubmit = async () => {
+    const raw = document.getElementById('bulk-csv').value.trim();
+    const errorEl = document.getElementById('bulk-csv-error');
+    if (!raw) return;
+    const lines = raw.split(/\r?\n/).filter((l) => l.trim().length > 0);
+    if (lines.length < 2) {
+      errorEl.textContent = 'Need at least a header row + one data row.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    const header = lines[0].split(',').map((s) => s.trim().toLowerCase());
+    const typeIdx = header.indexOf('type');
+    const heroIdx = header.indexOf('heroname');
+    const studioIdx = header.indexOf('studio');
+    const linkedIdx = header.indexOf('linkedlearnerheroname');
+    if (typeIdx < 0 || heroIdx < 0) {
+      errorEl.textContent = 'Header must include "type" and "heroName".';
+      errorEl.style.display = 'block';
+      return;
+    }
+    const rows = [];
+    const errors = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cells = lines[i].split(',').map((s) => s.trim());
+      const type = cells[typeIdx]?.toLowerCase();
+      const heroName = cells[heroIdx]?.toLowerCase();
+      if (!['learner', 'parent', 'guide'].includes(type)) {
+        errors.push(`Row ${i + 1}: invalid type "${type}"`); continue;
+      }
+      if (!heroName || !/^[a-z0-9_-]+$/.test(heroName)) {
+        errors.push(`Row ${i + 1}: invalid hero name "${heroName}"`); continue;
+      }
+      const row = { type, heroName };
+      if (type === 'learner') {
+        const studio = (cells[studioIdx] || '').toLowerCase();
+        if (studio && !studios[studio]) {
+          errors.push(`Row ${i + 1}: unknown studio "${studio}"`); continue;
+        }
+        row.studio = studio || 'adventure';
+      }
+      if (type === 'parent') {
+        const linkedName = (cells[linkedIdx] || '').toLowerCase();
+        if (linkedName) {
+          const target = allLearners.find((l) => (l.heroName || '').toLowerCase() === linkedName);
+          if (!target) {
+            errors.push(`Row ${i + 1}: linked learner "${linkedName}" not found. Create the learner first.`);
+            continue;
+          }
+          row.linkedLearnerId = target.id;
+        }
+      }
+      rows.push(row);
+    }
+    if (errors.length > 0) {
+      errorEl.innerHTML = errors.slice(0, 5).map(escapeHtml).join('<br>') + (errors.length > 5 ? `<br>...and ${errors.length - 5} more` : '');
+      errorEl.style.display = 'block';
+      return;
+    }
+    if (rows.length === 0) {
+      errorEl.textContent = 'No valid rows to import.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    onImport(rows);
+    closeModal();
+  };
+  openModal();
+}
+
+// Show generated temporary password(s) once. Guide writes them down.
+export function openTempPasswordModal({ heroName, tempPassword, isReset, multiple, onClose }) {
+  setModalTitle(multiple ? `${multiple.length} accounts created` : (isReset ? 'Password reset' : 'Account created'));
+  let body;
+  if (multiple) {
+    body = `
+      <p style="color: var(--text); line-height: 1.5; margin: 0 0 1rem;">
+        <strong>Write these down before closing.</strong> They will not be shown again.
+      </p>
+      <div class="temp-password-list">
+        ${multiple.map(m => `
+          <div class="temp-password-row">
+            <span class="temp-password-name">${escapeHtml(m.heroName)}</span>
+            <code class="temp-password-code">${escapeHtml(m.tempPassword)}</code>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else {
+    body = `
+      <p style="color: var(--text); line-height: 1.5; margin: 0 0 1rem;">
+        <strong>${escapeHtml(heroName)}</strong>'s temporary password:
+      </p>
+      <code class="temp-password-code temp-password-single">${escapeHtml(tempPassword)}</code>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin: 1rem 0 0;">
+        Hand this to the ${isReset ? 'user' : 'user'} on paper. They can sign in with their hero name and this password; encourage them to change it at first sign-in.
+      </p>
+    `;
+  }
+  document.getElementById('form-fields').innerHTML = `
+    ${body}
+    <div class="confirm-actions">
+      <button type="button" class="btn btn-primary" id="temp-pwd-ok">I've written it down</button>
+    </div>
+  `;
+  document.getElementById('temp-pwd-ok').addEventListener('click', () => {
+    closeModal();
+    if (onClose) onClose();
+  });
+  activeSubmit = null;
+  const defaultActions = document.querySelector('#goal-form .modal-actions');
+  if (defaultActions) defaultActions.style.display = 'none';
+  openModal();
+}
+
 export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabel = 'Cancel', onConfirm, onCancel }) {
   setModalTitle(title);
   document.getElementById('form-fields').innerHTML = `

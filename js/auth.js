@@ -3,18 +3,21 @@
 // Skeleton accepts any email + any password; password is never compared.
 
 import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides, findAccountByHeroName, getParentLearnerLinks } from './store.js';
+import { verifyPassword } from './crypto.js';
 
 const ROLES = ['learner', 'parent', 'guide'];
+const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes - studio iPads are shared
 
 export function initAuth(onSignedIn) {
-  // Hero-name sign-in - validates against accounts a guide has created.
+  // Hero-name + password sign-in.
   const submitBtn = document.getElementById('signin-submit');
   if (submitBtn && !submitBtn.dataset.wired) {
     submitBtn.dataset.wired = '1';
     submitBtn.addEventListener('click', async () => {
       const heroNameEl = document.getElementById('signin-hero');
-      const errorEl = document.getElementById('signin-error');
+      const passwordEl = document.getElementById('signin-password');
       const heroName = heroNameEl?.value?.trim().toLowerCase() || '';
+      const password = passwordEl?.value || '';
       if (!heroName) {
         showSigninError('Enter your hero name.');
         return;
@@ -24,8 +27,24 @@ export function initAuth(onSignedIn) {
         showSigninError(`No account found for "${heroName}". A guide can create one for you.`);
         return;
       }
+      // Verify password. If account has no passwordHash yet, accept any
+      // non-empty password (covers skeleton accounts created before this
+      // hardening pass; admin tool can set a real password via Reset).
+      if (account.passwordHash && account.passwordSalt) {
+        const ok = await verifyPassword(password, {
+          salt: account.passwordSalt,
+          hash: account.passwordHash,
+        });
+        if (!ok) {
+          showSigninError('Hero name and password don\'t match. Ask a guide to reset if you forgot.');
+          return;
+        }
+      } else if (!password) {
+        showSigninError('Enter your password. (Ask a guide if you don\'t have one set yet.)');
+        return;
+      }
+      const errorEl = document.getElementById('signin-error');
       if (errorEl) errorEl.style.display = 'none';
-      // Password is not verified in skeleton mode; Supabase Auth handles it later.
       await signInWithAccount(account);
       onSignedIn();
     });
@@ -156,4 +175,36 @@ export async function switchRole(newRole, onSwitched) {
   const email = current.email || `${newRole}@vibrantlife.local`;
   await signInAs(newRole, email);
   if (onSwitched) onSwitched();
+}
+
+// Idle-timeout: auto-logout after 30 minutes of no user activity.
+// Studio iPads are shared; this prevents a learner from staying signed in
+// after they walk away.
+let idleTimer = null;
+let idleListenersWired = false;
+
+export function startIdleTimeout() {
+  if (!idleListenersWired) {
+    idleListenersWired = true;
+    ['click', 'keydown', 'touchstart', 'pointermove'].forEach((ev) => {
+      document.addEventListener(ev, resetIdleTimer, { passive: true });
+    });
+  }
+  resetIdleTimer();
+}
+
+export function stopIdleTimeout() {
+  if (idleTimer) {
+    clearTimeout(idleTimer);
+    idleTimer = null;
+  }
+}
+
+function resetIdleTimer() {
+  if (idleTimer) clearTimeout(idleTimer);
+  idleTimer = setTimeout(async () => {
+    await clearSession();
+    alert('Signed out for inactivity. Sign in again to continue.');
+    location.reload();
+  }, IDLE_TIMEOUT_MS);
 }
