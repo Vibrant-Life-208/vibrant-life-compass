@@ -1,6 +1,7 @@
 // Shared modal logic. Goal authoring, quote setting, traits, logins, first-run onboarding.
 
 let activeSubmit = null;
+let activeOnClose = null;
 
 export function initModal() {
   document.getElementById('modal-close')?.addEventListener('click', closeModal);
@@ -618,9 +619,9 @@ export async function openBulkImportModal({ studios, onImport }) {
   setModalTitle('Bulk import accounts');
   const sampleRows = [
     'type,heroName,studio,linkedLearnerHeroName',
-    'learner,liam-discovery,discovery,',
-    'learner,mira-adventure,adventure,',
-    'parent,sam-parent,,liam-discovery',
+    'learner,liam-d,discovery,',
+    'learner,mira-a,adventure,',
+    'parent,sam-parent,,liam-d|mira-a',
     'guide,coach-alex,,',
   ].join('\n');
 
@@ -638,7 +639,7 @@ export async function openBulkImportModal({ studios, onImport }) {
         <strong>Columns:</strong> type, heroName, studio, linkedLearnerHeroName<br>
         <strong>type:</strong> learner / parent / guide<br>
         <strong>studio:</strong> sparks / discovery / adventure / launchpad (learners only)<br>
-        <strong>linkedLearnerHeroName:</strong> for parents only — the hero name of the learner they're linked to
+        <strong>linkedLearnerHeroName:</strong> for parents only — hero name(s) of their kids. Use <code>|</code> to link siblings: <code>liam-d|mira-a</code>
       </p>
     </div>
     <p id="bulk-csv-error" class="signin-error" style="display:none"></p>
@@ -666,6 +667,9 @@ export async function openBulkImportModal({ studios, onImport }) {
     }
     const rows = [];
     const errors = [];
+    // Hero names that will exist after this batch runs: existing learners + new learner rows
+    const existingLearnerNames = new Set(allLearners.map((l) => (l.heroName || '').toLowerCase()).filter(Boolean));
+    const batchLearnerNames = new Set();
     for (let i = 1; i < lines.length; i++) {
       const cells = lines[i].split(',').map((s) => s.trim());
       const type = cells[typeIdx]?.toLowerCase();
@@ -683,16 +687,20 @@ export async function openBulkImportModal({ studios, onImport }) {
           errors.push(`Row ${i + 1}: unknown studio "${studio}"`); continue;
         }
         row.studio = studio || 'adventure';
+        batchLearnerNames.add(heroName);
       }
       if (type === 'parent') {
-        const linkedName = (cells[linkedIdx] || '').toLowerCase();
-        if (linkedName) {
-          const target = allLearners.find((l) => (l.heroName || '').toLowerCase() === linkedName);
-          if (!target) {
-            errors.push(`Row ${i + 1}: linked learner "${linkedName}" not found. Create the learner first.`);
+        // Multi-link: pipe-separated list of learner hero-names ("liam-d|mira-a")
+        // lets one parent account see all their kids.
+        const linkedRaw = (cells[linkedIdx] || '').toLowerCase();
+        if (linkedRaw) {
+          const names = linkedRaw.split('|').map((s) => s.trim()).filter(Boolean);
+          const missing = names.filter((n) => !existingLearnerNames.has(n) && !batchLearnerNames.has(n));
+          if (missing.length > 0) {
+            errors.push(`Row ${i + 1}: linked learner${missing.length > 1 ? 's' : ''} ${missing.map((m) => `"${m}"`).join(', ')} not found. Add the learner row(s) first.`);
             continue;
           }
-          row.linkedLearnerId = target.id;
+          row.linkedLearnerHeroNames = names;
         }
       }
       rows.push(row);
@@ -750,9 +758,9 @@ export function openTempPasswordModal({ heroName, tempPassword, isReset, multipl
   `;
   document.getElementById('temp-pwd-ok').addEventListener('click', () => {
     closeModal();
-    if (onClose) onClose();
   });
   activeSubmit = null;
+  activeOnClose = onClose || null;
   const defaultActions = document.querySelector('#goal-form .modal-actions');
   if (defaultActions) defaultActions.style.display = 'none';
   openModal();
@@ -826,6 +834,14 @@ function openModal() {
 function closeModal() {
   document.getElementById('modal')?.classList.remove('active');
   activeSubmit = null;
+  // Fire onClose hook (e.g. admin re-render after temp-pwd modal) regardless of
+  // whether the user clicked the OK button or the X. Snapshot + clear first so
+  // a re-entrant openModal call in the callback can set a new onClose.
+  const cb = activeOnClose;
+  activeOnClose = null;
+  if (cb) {
+    try { cb(); } catch (e) { console.error('modal onClose failed', e); }
+  }
   // Restore default form actions for the next modal that needs them.
   const defaultActions = document.querySelector('#goal-form .modal-actions');
   if (defaultActions) defaultActions.style.display = '';

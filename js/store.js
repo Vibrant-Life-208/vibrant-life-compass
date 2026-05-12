@@ -165,15 +165,23 @@ export async function getGoals(learnerId) {
 }
 
 export async function saveGoal(goal) {
+  // Destructure id out so an explicit `id: undefined` from callers (e.g. the
+  // year-goal modal calling saveGoal({ id: filled?.id, ... }) on a new goal)
+  // can't overwrite a freshly generated id via spread.
+  const { id, ...rest } = goal;
   const all = read(KEYS.goals) || [];
-  if (goal.id) {
-    const idx = all.findIndex((g) => g.id === goal.id);
-    if (idx >= 0) all[idx] = { ...all[idx], ...goal, updatedAt: new Date().toISOString() };
-  } else {
-    all.push({ id: generateId(), createdAt: new Date().toISOString(), ...goal });
+  if (id) {
+    const idx = all.findIndex((g) => g.id === id);
+    if (idx >= 0) {
+      all[idx] = { ...all[idx], ...rest, id, updatedAt: new Date().toISOString() };
+    }
+    write(KEYS.goals, all);
+    return all.find((g) => g.id === id);
   }
+  const created = { id: generateId(), createdAt: new Date().toISOString(), ...rest };
+  all.push(created);
   write(KEYS.goals, all);
-  return all.find((g) => g.id === goal.id) || all[all.length - 1];
+  return created;
 }
 
 // ============================================================================

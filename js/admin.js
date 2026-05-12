@@ -98,10 +98,24 @@ export function initAdmin() {
       openBulkImportModal({
         studios: STUDIOS,
         onImport: async (rows) => {
+          // Learners first so parent rows can resolve their linkedLearnerHeroName to a real id
+          const order = { learner: 0, guide: 1, parent: 2 };
+          const sorted = [...rows].sort((a, b) => (order[a.type] ?? 9) - (order[b.type] ?? 9));
+          // Map from heroName → learner id, seeded with existing learners
+          const existingLearners = await getLearners();
+          const heroToId = new Map(existingLearners.map((l) => [(l.heroName || '').toLowerCase(), l.id]));
           const results = [];
-          for (const row of rows) {
+          for (const row of sorted) {
+            if (row.type === 'parent' && Array.isArray(row.linkedLearnerHeroNames)) {
+              row.linkedLearnerIds = row.linkedLearnerHeroNames
+                .map((n) => heroToId.get(n))
+                .filter(Boolean);
+            }
             const r = await createAccount(row);
-            if (r) results.push(r);
+            if (r) {
+              results.push(r);
+              if (row.type === 'learner') heroToId.set(row.heroName.toLowerCase(), r.id);
+            }
           }
           openTempPasswordModal({
             multiple: results.map(r => ({ heroName: r.heroName, tempPassword: r.tempPassword })),
@@ -134,7 +148,7 @@ export function initAdmin() {
 }
 
 async function createAccount(data) {
-  const { type, heroName, studio, linkedLearnerId } = data;
+  const { type, heroName, studio, linkedLearnerId, linkedLearnerIds } = data;
   const name = heroName.trim();
   if (!name) return null;
 
@@ -163,8 +177,11 @@ async function createAccount(data) {
       passwordSalt: hashed.salt,
     });
     const parent = parents[parents.length - 1];
-    if (linkedLearnerId) {
-      await linkParentToLearner(parent.id, linkedLearnerId);
+    const ids = Array.isArray(linkedLearnerIds) && linkedLearnerIds.length > 0
+      ? linkedLearnerIds
+      : (linkedLearnerId ? [linkedLearnerId] : []);
+    for (const id of ids) {
+      await linkParentToLearner(parent.id, id);
     }
     return { ...parent, tempPassword, heroName: name };
   }
