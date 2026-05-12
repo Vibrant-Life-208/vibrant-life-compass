@@ -6,18 +6,17 @@ import { SESSIONS_PER_YEAR, YEAR_CALENDAR, DAYS_PER_WEEK, getStudio } from './st
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
-// Compute the learner's current position in the academic year.
-// Returns { sessionIndex, weekInSession, dayInWeek, weekOfYear, totalWeeks, beforeYearStart, afterYearEnd }
-// sessionIndex is 1-indexed (1..7). All week/day indices are 1-indexed.
+// Compute the learner's current position in the Vibrant Life academic year.
+// Honors actual session start dates and break periods between sessions.
+// Returns { sessionIndex, weekInSession, dayInWeek, weekOfYear, totalWeeks,
+//           beforeYearStart, afterYearEnd, onBreak }
 export function computeYearPosition(today = new Date()) {
-  const start = new Date(YEAR_CALENDAR.yearStartISO + 'T00:00:00');
   const totalWeeks = YEAR_CALENDAR.sessionWeeks.reduce((a, b) => a + b, 0);
-  const totalDays = totalWeeks * 7;
+  const yearStart = new Date(YEAR_CALENDAR.yearStartISO + 'T00:00:00');
+  // yearEnd is inclusive - the entire last day still counts as in-session
+  const yearEnd = new Date(YEAR_CALENDAR.yearEndISO + 'T23:59:59');
 
-  const msSinceStart = today.getTime() - start.getTime();
-  const daysSinceStart = Math.floor(msSinceStart / MS_PER_DAY);
-
-  if (daysSinceStart < 0) {
+  if (today < yearStart) {
     return {
       sessionIndex: 1,
       weekInSession: 1,
@@ -26,9 +25,10 @@ export function computeYearPosition(today = new Date()) {
       totalWeeks,
       beforeYearStart: true,
       afterYearEnd: false,
+      onBreak: false,
     };
   }
-  if (daysSinceStart >= totalDays) {
+  if (today > yearEnd) {
     return {
       sessionIndex: SESSIONS_PER_YEAR,
       weekInSession: YEAR_CALENDAR.sessionWeeks[SESSIONS_PER_YEAR - 1],
@@ -37,25 +37,45 @@ export function computeYearPosition(today = new Date()) {
       totalWeeks,
       beforeYearStart: false,
       afterYearEnd: true,
+      onBreak: false,
     };
   }
 
-  // Determine which session
-  let weeksConsumed = 0;
+  // Find which session today falls inside, or whether today is on a break.
   let sessionIndex = 1;
-  const weekOfYear = Math.floor(daysSinceStart / 7) + 1;
+  let weekInSession = 1;
+  let onBreak = false;
+  let weeksBeforeCurrent = 0; // weeks of program completed before current session
 
-  for (let i = 0; i < YEAR_CALENDAR.sessionWeeks.length; i++) {
-    if (weekOfYear <= weeksConsumed + YEAR_CALENDAR.sessionWeeks[i]) {
+  for (let i = 0; i < YEAR_CALENDAR.sessionStarts.length; i++) {
+    const sStart = new Date(YEAR_CALENDAR.sessionStarts[i] + 'T00:00:00');
+    const sWeeks = YEAR_CALENDAR.sessionWeeks[i];
+    const sEnd = new Date(sStart.getTime() + (sWeeks * 7 * MS_PER_DAY) - MS_PER_DAY);
+    const nextStart = i + 1 < YEAR_CALENDAR.sessionStarts.length
+      ? new Date(YEAR_CALENDAR.sessionStarts[i + 1] + 'T00:00:00')
+      : yearEnd;
+
+    if (today >= sStart && today <= sEnd) {
+      // Inside this session
       sessionIndex = i + 1;
+      const daysIntoSession = Math.floor((today - sStart) / MS_PER_DAY);
+      weekInSession = Math.floor(daysIntoSession / 7) + 1;
+      if (weekInSession > sWeeks) weekInSession = sWeeks;
       break;
     }
-    weeksConsumed += YEAR_CALENDAR.sessionWeeks[i];
+    if (today > sEnd && today < nextStart) {
+      // On break between this session and the next
+      sessionIndex = i + 1;
+      weekInSession = sWeeks;
+      onBreak = true;
+      weeksBeforeCurrent += sWeeks;
+      break;
+    }
+    weeksBeforeCurrent += sWeeks;
   }
-  const weekInSession = weekOfYear - weeksConsumed;
 
-  // Map calendar day to school-day (1..5 Mon-Fri; 0 if weekend)
-  const dayOfWeek = ((daysSinceStart % 7) + 1); // 1 if started on Monday
+  const weekOfYear = weeksBeforeCurrent + weekInSession;
+  const dayOfWeek = today.getDay(); // 0 Sun .. 6 Sat
   const dayInWeek = dayOfWeek >= 1 && dayOfWeek <= 5 ? dayOfWeek : 0;
 
   return {
@@ -66,6 +86,7 @@ export function computeYearPosition(today = new Date()) {
     totalWeeks,
     beforeYearStart: false,
     afterYearEnd: false,
+    onBreak,
   };
 }
 
@@ -170,6 +191,7 @@ export function renderYearMap(container, learner, opts = {}) {
 function positionLabel(position, studioName) {
   if (position.beforeYearStart) return 'Year hasn\'t started yet';
   if (position.afterYearEnd) return 'Year complete';
+  if (position.onBreak) return `Break before Session ${position.sessionIndex + 1}`;
   return `Session ${position.sessionIndex} · Week ${position.weekInSession}`;
 }
 
@@ -182,6 +204,9 @@ export function breadcrumbLabel(learner) {
   }
   if (position.afterYearEnd) {
     return `${studio?.name || ''} · year complete`;
+  }
+  if (position.onBreak) {
+    return `${studio?.name || ''} · break before S${position.sessionIndex + 1}`;
   }
   const parts = [studio?.name, `S${position.sessionIndex}`, `W${position.weekInSession}`];
   if (position.dayInWeek > 0) parts.push(`D${position.dayInWeek}`);

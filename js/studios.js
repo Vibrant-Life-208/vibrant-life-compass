@@ -234,14 +234,36 @@ export const SESSIONS_PER_YEAR = 7;
 export const WEEKS_PER_SESSION_DEFAULT = 5;
 export const DAYS_PER_WEEK = 5; // school days (M-F)
 
-// Academic year structure - captain-provided structure, exact start date TBC.
-//   - yearStartISO: Monday of Session 1, Week 1 (TBC by Vibrant Life)
-//   - sessionWeeks: per Europa 2026-05-11 - Sessions 1-4 are 4 weeks each,
-//     Sessions 5-7 are 6 weeks each. Total 34 weeks.
-//   - Break weeks between sessions handled separately (TBC).
+// Vibrant Life 2026-2027 academic year structure.
+// Source: VL 2026-2027 Academic Calendar PDF, captain-provided 2026-05-12.
+// Total = 34 weeks of programs. Break periods sit between sessionStarts.
+//
+//   Session 1: Aug 17 - Sept 11 (4 weeks)    [orientation Aug 4-7]
+//   Session 1 Break: Sept 14-17
+//   Session 2: Sept 21 - Oct 23 (5 weeks)    [Columbus Day Oct 12]
+//   Session 2 Break: Oct 26-29
+//   Session 3: Nov 2 - Nov 20 (3 weeks)
+//   Thanksgiving Break: Nov 23-27
+//   Session 4: Nov 30 - Dec 18 (3 weeks)
+//   Winter Break: Dec 21 - Jan 1
+//   Session 5: Jan 4 - Feb 12 (6 weeks)      [MLK Day Jan 18]
+//   Session 5 Break: Feb 15-18
+//   Session 6: Feb 22 - Apr 2 (6 weeks)
+//   Session 6 Break: Apr 5-8
+//   Session 7: Apr 12 - May 27 (7 weeks)     [Last Day Thu May 27]
 export const YEAR_CALENDAR = {
-  yearStartISO: '2026-08-17',  // Monday of Session 1, Week 1 (TBC by Vibrant Life)
-  sessionWeeks: [4, 4, 4, 4, 6, 6, 6], // captain-provided 2026-05-11; 34 weeks total
+  yearStartISO: '2026-08-17',  // Monday of Session 1, Week 1
+  yearEndISO:   '2027-05-27',  // Last Day (Thursday)
+  sessionStarts: [
+    '2026-08-17', // S1
+    '2026-09-21', // S2
+    '2026-11-02', // S3
+    '2026-11-30', // S4
+    '2027-01-04', // S5
+    '2027-02-22', // S6
+    '2027-04-12', // S7
+  ],
+  sessionWeeks: [4, 5, 3, 3, 6, 6, 7], // weeks of programs per session
 };
 
 // Per-session landscape theme. Each session has a backdrop that gives the
