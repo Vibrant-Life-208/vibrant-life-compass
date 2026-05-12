@@ -3,9 +3,9 @@
 // set age + studio, filled at least 5 year goals, and starred top 3
 // priorities. Then partner approval (Phase 5) ships everything off.
 
-import { getLearner, saveLearner, getGoals } from './store.js';
+import { getLearner, saveLearner, getGoals, submitYearPlan, getActivePartnerOf } from './store.js';
 import { STUDIOS, getCategoriesForStudio } from './studios.js';
-import { openYearGoalModal } from './modals.js';
+import { openYearGoalModal, openConfirmModal } from './modals.js';
 
 const MIN_GOALS = 5;
 const TOP_PRIORITIES = 3;
@@ -76,14 +76,14 @@ export async function renderSetupView(learnerId) {
 
     <div class="setup-footer">
       <button type="button" id="setup-continue" class="btn btn-primary setup-continue-btn"
-        ${(filledGoals.length >= MIN_GOALS && priorityIds.length === TOP_PRIORITIES) ? '' : 'disabled'}>
+        ${filledGoals.length >= MIN_GOALS ? '' : 'disabled'}>
         Continue — send to my partner for approval
       </button>
       <p class="setup-footer-hint">${
         filledGoals.length < MIN_GOALS
           ? `Fill at least ${MIN_GOALS - filledGoals.length} more goal${MIN_GOALS - filledGoals.length === 1 ? '' : 's'} to continue.`
-          : priorityIds.length !== TOP_PRIORITIES
-          ? `Star ${TOP_PRIORITIES - priorityIds.length} more priorit${TOP_PRIORITIES - priorityIds.length === 1 ? 'y' : 'ies'} to continue.`
+          : priorityIds.length === 0
+          ? 'Top 3 priorities are optional — you can star them any time. Ready to send your plan to your partner for sign-off.'
           : 'Ready to send to your partner for sign-off.'
       }</p>
     </div>
@@ -105,10 +105,27 @@ export async function renderSetupView(learnerId) {
     await renderSetupView(learnerId);
   });
 
-  // Wire the continue button
+  // Wire the continue button - submit year plan to partner for approval
   document.getElementById('setup-continue')?.addEventListener('click', async () => {
+    const partner = await getActivePartnerOf(learner.id);
+    if (!partner) {
+      openConfirmModal({
+        title: 'You need a partner first',
+        body: 'Year plans get signed off by your accountability partner. Set one up before submitting your plan. (Look for the Partner tab once you finish setup.)',
+        confirmLabel: 'Continue anyway',
+        cancelLabel: 'Set up partner first',
+        onConfirm: async () => {
+          await saveLearner({ id: learner.id, setupCompletedAt: new Date().toISOString() });
+          location.reload();
+        },
+      });
+      return;
+    }
+    // Submit the plan to the partner; learner moves into the main app
+    // while waiting for approval.
+    await submitYearPlan(learner.id);
     await saveLearner({ id: learner.id, setupCompletedAt: new Date().toISOString() });
-    // Phase 5 will dispatch a partner-approval ping here.
+    document.dispatchEvent(new CustomEvent('hc:partner-changed'));
     location.reload();
   });
 }

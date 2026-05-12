@@ -1,6 +1,6 @@
 // Parent view - scoped to session-level visibility only.
 
-import { getLearners, getGoals } from './store.js';
+import { getLearners, getGoals, getSession, getNotifications, markNotificationRead, getParents } from './store.js';
 import { getCategoriesForStudio, PARENT_SUPPORT_HINTS } from './studios.js';
 import { computeYearPosition } from './year-map.js';
 
@@ -20,6 +20,30 @@ export async function renderParentView() {
   const previousSession = currentSession - 1;
 
   container.innerHTML = '';
+
+  // Notifications surface for the parent (year-plan-approved + milestone-shared)
+  const session = await getSession();
+  if (session?.parentId) {
+    const notifs = await getNotifications(session.parentId);
+    const unread = notifs.filter((n) => !n.readAt).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    if (unread.length > 0) {
+      const notifBox = document.createElement('div');
+      notifBox.className = 'parent-notif-card';
+      notifBox.innerHTML = unread.slice(0, 5).map((n) => `
+        <div class="parent-notif-item" data-notif="${n.id}">
+          <span class="parent-notif-title">${escapeHtml(n.title)}</span>
+          <p class="parent-notif-body">${escapeHtml(n.body)}</p>
+        </div>
+      `).join('');
+      container.appendChild(notifBox);
+      notifBox.querySelectorAll('[data-notif]').forEach((el) => {
+        el.addEventListener('click', async () => {
+          await markNotificationRead(el.dataset.notif);
+          el.classList.add('parent-notif-read');
+        });
+      });
+    }
+  }
 
   const header = document.createElement('div');
   header.className = 'parent-header';

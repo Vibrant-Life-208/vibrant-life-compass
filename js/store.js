@@ -21,6 +21,8 @@ const KEYS = {
   partnerLinks: 'hc_partner_links',
   parents: 'hc_parents',
   parentLearnerLinks: 'hc_parent_learner_links',
+  yearPlans: 'hc_year_plans',
+  notifications: 'hc_notifications',
 };
 
 function read(key) {
@@ -355,11 +357,12 @@ export async function dissolvePartnership(linkId) {
 // Returns total of: pending proposals for them + year goals waiting for
 // their approval. Used to drive the Partner tab's notification bell.
 export async function getPartnerNotificationCount(learnerId) {
-  const [pendingProposals, pendingApprovals] = await Promise.all([
+  const [pendingProposals, pendingApprovals, pendingPlans] = await Promise.all([
     getPendingProposalsFor(learnerId),
     getYearGoalPendingApprovals(learnerId),
+    getPendingYearPlanFor(learnerId),
   ]);
-  return pendingProposals.length + pendingApprovals.length;
+  return pendingProposals.length + pendingApprovals.length + pendingPlans.length;
 }
 
 // ============================================================================
@@ -412,6 +415,109 @@ export async function rejectYearGoal(goalId, approverId, note = '') {
   };
   write(KEYS.goals, all);
   return all[idx];
+}
+
+// ============================================================================
+// Year plan submission - the full year plan goes to the partner for sign-off.
+// Captain decision 2026-05-12.
+//
+// Shape: { id, learnerId, submittedAt, status: 'pending'|'approved'|'returned',
+//          approverId, approvedAt, returnedAt, note }
+// ============================================================================
+export async function getYearPlans() {
+  return read(KEYS.yearPlans) || [];
+}
+
+export async function submitYearPlan(learnerId) {
+  const plans = await getYearPlans();
+  // Cancel any prior pending plan for this learner
+  plans.forEach((p) => {
+    if (p.learnerId === learnerId && p.status === 'pending') {
+      p.status = 'superseded';
+    }
+  });
+  const plan = {
+    id: generateId(),
+    learnerId,
+    submittedAt: new Date().toISOString(),
+    status: 'pending',
+  };
+  plans.push(plan);
+  write(KEYS.yearPlans, plans);
+  return plan;
+}
+
+export async function getPendingYearPlanFor(partnerId) {
+  // Returns any pending year plan whose learner's active partner is partnerId
+  const plans = (await getYearPlans()).filter((p) => p.status === 'pending');
+  const result = [];
+  for (const p of plans) {
+    const link = await getActivePartnerOf(p.learnerId);
+    if (link?.partnerId === partnerId) result.push(p);
+  }
+  return result;
+}
+
+export async function approveYearPlan(planId, approverId, note = '') {
+  const plans = await getYearPlans();
+  const plan = plans.find((p) => p.id === planId);
+  if (!plan || plan.status !== 'pending') return null;
+  plan.status = 'approved';
+  plan.approverId = approverId;
+  plan.approvedAt = new Date().toISOString();
+  plan.note = note;
+  write(KEYS.yearPlans, plans);
+  return plan;
+}
+
+export async function returnYearPlan(planId, approverId, note = '') {
+  const plans = await getYearPlans();
+  const plan = plans.find((p) => p.id === planId);
+  if (!plan || plan.status !== 'pending') return null;
+  plan.status = 'returned';
+  plan.approverId = approverId;
+  plan.returnedAt = new Date().toISOString();
+  plan.note = note;
+  write(KEYS.yearPlans, plans);
+  return plan;
+}
+
+// ============================================================================
+// Notifications - simple in-app dispatch.
+// Shape: { id, recipientId, type, title, body, createdAt, readAt, fromId? }
+// type: 'year-plan-approved' | 'milestone-shared' | 'goal-approved' |
+//       'partner-proposal' | 'plan-returned' | etc.
+// ============================================================================
+export async function getNotifications(recipientId) {
+  const all = read(KEYS.notifications) || [];
+  return all.filter((n) => n.recipientId === recipientId);
+}
+
+export async function addNotification(notif) {
+  const all = read(KEYS.notifications) || [];
+  const record = {
+    id: generateId(),
+    createdAt: new Date().toISOString(),
+    readAt: null,
+    ...notif,
+  };
+  all.push(record);
+  write(KEYS.notifications, all);
+  return record;
+}
+
+export async function markNotificationRead(id) {
+  const all = read(KEYS.notifications) || [];
+  const idx = all.findIndex((n) => n.id === id);
+  if (idx >= 0) {
+    all[idx].readAt = new Date().toISOString();
+    write(KEYS.notifications, all);
+  }
+}
+
+export async function getUnreadCount(recipientId) {
+  const list = await getNotifications(recipientId);
+  return list.filter((n) => !n.readAt).length;
 }
 
 // ============================================================================

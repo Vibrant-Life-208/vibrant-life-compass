@@ -1,6 +1,6 @@
 // Compass (year view).
 
-import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval } from './store.js';
+import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval, addNotification, getParentLearnerLinks } from './store.js';
 import { getCategoriesForStudio, getStudioName } from './studios.js';
 import { openGoalModal, openQuoteModal, openTraitsModal, openConfirmModal, openYearGoalModal } from './modals.js';
 import { renderYearMap } from './year-map.js';
@@ -100,6 +100,10 @@ export async function renderYearView(learnerId) {
       ? `<button type="button" class="btn btn-text goal-checkoff" data-id="${goal.id}">Ready for check-off</button>`
       : '';
 
+    const shareWinButton = (goal && status === 'approved')
+      ? `<button type="button" class="btn btn-text goal-share-win" data-id="${goal.id}">Share this win with my parents</button>`
+      : '';
+
     const placeholder = `Example: ${cat.example}`;
     card.innerHTML = `
       <div class="category-header">
@@ -112,6 +116,7 @@ export async function renderYearView(learnerId) {
       ${goal?.quarterPoint ? `<p class="goal-meta"><span class="goal-meta-label">EOS 2:</span> ${escapeHtml(goal.quarterPoint)}</p>` : ''}
       ${goal?.halfwayPoint ? `<p class="goal-meta"><span class="goal-meta-label">EOS 3 · locked:</span> ${escapeHtml(goal.halfwayPoint)}</p>` : ''}
       ${checkOffButton}
+      ${shareWinButton}
     `;
 
     card.addEventListener('click', (e) => {
@@ -187,6 +192,42 @@ export async function renderYearView(learnerId) {
             await renderYearView(learnerId);
             document.dispatchEvent(new CustomEvent('hc:partner-changed'));
           },
+        });
+      });
+    }
+
+    // Share-this-win button: sends a notification to all linked parents
+    const shareBtn = card.querySelector('.goal-share-win');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const links = await getParentLearnerLinks();
+        const parentIds = links.filter((l) => l.learnerId === learnerId).map((l) => l.parentId);
+        if (parentIds.length === 0) {
+          openConfirmModal({
+            title: 'No parent linked',
+            body: 'A guide can link a parent to your account so you can share wins with them.',
+            confirmLabel: 'OK',
+            cancelLabel: 'Cancel',
+            onConfirm: () => {},
+          });
+          return;
+        }
+        for (const pid of parentIds) {
+          await addNotification({
+            recipientId: pid,
+            type: 'milestone-shared',
+            title: 'A win to celebrate',
+            body: `${learner.name || learner.heroName} reached: ${goal.text}`,
+            fromId: learnerId,
+          });
+        }
+        openConfirmModal({
+          title: 'Win shared',
+          body: `${parentIds.length === 1 ? 'Your parent has' : 'Your parents have'} been notified. Take the moment.`,
+          confirmLabel: 'OK',
+          cancelLabel: 'Cancel',
+          onConfirm: () => {},
         });
       });
     }

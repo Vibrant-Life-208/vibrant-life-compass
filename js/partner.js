@@ -5,6 +5,8 @@ import {
   getActivePartnerOf, getPendingProposalsFor,
   proposePartner, respondToPartnerProposal, dissolvePartnership,
   getYearGoalPendingApprovals, approveYearGoal, rejectYearGoal,
+  getPendingYearPlanFor, approveYearPlan, returnYearPlan,
+  addNotification, getGuides, getParents, getParentLearnerLinks,
 } from './store.js';
 import { openConfirmModal } from './modals.js';
 
@@ -92,45 +94,36 @@ export async function renderPartnerSection(learnerId) {
 }
 
 export async function renderPartnerApprovals(learnerId) {
+  // (Kept for backward compat - no longer rendered on North per Phase 1
+  // dashboard restructure; the rich version lives on the Partner page.)
   const container = document.getElementById('north-approvals');
   if (!container) return;
-  const pending = await getYearGoalPendingApprovals(learnerId);
-
-  if (pending.length === 0) {
-    container.innerHTML = '<p class="learners-empty">No goals waiting on your approval right now.</p>';
-    return;
-  }
-
   container.innerHTML = '';
-  for (const goal of pending) {
-    const learner = await getLearner(goal.learnerId);
-    const card = document.createElement('div');
-    card.className = 'approval-card';
-    card.innerHTML = `
-      <div class="approval-header">
-        <span class="approval-name"><strong>${escapeHtml(learner?.name || 'Your partner')}</strong> is ready to check off:</span>
-      </div>
-      <p class="approval-goal-text">${escapeHtml(goal.text)}</p>
-      ${goal.baseline ? `<p class="approval-meta"><span class="approval-meta-label">Started from:</span> ${escapeHtml(goal.baseline)}</p>` : ''}
-      <div class="approval-actions">
-        <button type="button" class="btn btn-text" data-action="reject" data-goal="${goal.id}">Send back</button>
-        <button type="button" class="btn btn-primary" data-action="approve" data-goal="${goal.id}">Approve ✓</button>
-      </div>
-    `;
+}
 
-    card.querySelector('[data-action="approve"]').addEventListener('click', async () => {
-      await approveYearGoal(goal.id, learnerId, '');
-      await renderPartnerApprovals(learnerId);
-    document.dispatchEvent(new CustomEvent('hc:partner-changed'));
+// Notify all parents + guides that a learner has had their year plan
+// approved. Called from the partner-approval flow.
+async function notifyParentsAndGuide(learnerId, message) {
+  const links = await getParentLearnerLinks();
+  const parentIds = links.filter((l) => l.learnerId === learnerId).map((l) => l.parentId);
+  const guides = await getGuides();
+  for (const pid of parentIds) {
+    await addNotification({
+      recipientId: pid,
+      type: 'year-plan-approved',
+      title: 'Year plan approved',
+      body: message,
+      fromId: learnerId,
     });
-    card.querySelector('[data-action="reject"]').addEventListener('click', async () => {
-      const note = prompt('Brief note for your partner (optional):') || '';
-      await rejectYearGoal(goal.id, learnerId, note);
-      await renderPartnerApprovals(learnerId);
-    document.dispatchEvent(new CustomEvent('hc:partner-changed'));
+  }
+  for (const g of guides) {
+    await addNotification({
+      recipientId: g.id,
+      type: 'year-plan-approved',
+      title: 'Year plan approved',
+      body: message,
+      fromId: learnerId,
     });
-
-    container.appendChild(card);
   }
 }
 
@@ -231,9 +224,10 @@ export async function renderPartnerPage(learnerId) {
 }
 
 async function renderActivePartnership(learnerId, partner, linkId) {
-  const [theirGoals, myGoals] = await Promise.all([
+  const [theirGoals, myGoals, pendingYearPlans] = await Promise.all([
     getGoals(partner?.id),
     getGoals(learnerId),
+    getPendingYearPlanFor(learnerId),
   ]);
   const theirYearGoals = theirGoals.filter(g => g.scope === 'year');
   const myYearGoals = myGoals.filter(g => g.scope === 'year');
@@ -243,6 +237,13 @@ async function renderActivePartnership(learnerId, partner, linkId) {
   const theirPending = theirYearGoals.filter(g => g.status === 'pending-approval');
   const myPending = myYearGoals.filter(g => g.status === 'pending-approval');
 
+  // Render the pending year-plan card if there is one
+  let yearPlanSection = '';
+  if (pendingYearPlans.length > 0) {
+    const plan = pendingYearPlans[0]; // one at a time per partner
+    yearPlanSection = await renderYearPlanCard(plan, partner);
+  }
+
   return `
     <div class="partner-active-page-card">
       <div class="partner-active-header">
@@ -250,8 +251,10 @@ async function renderActivePartnership(learnerId, partner, linkId) {
         <button type="button" class="btn btn-text partner-dissolve-btn" data-link="${linkId}">Dissolve</button>
       </div>
       <p class="partner-active-name">${escapeHtml(partner?.name || 'Unknown')}</p>
-      <p class="partner-active-note">You approve each other's year-goal check-offs. The work is structured; the encouragement is real.</p>
+      <p class="partner-active-note">You approve each other's year plan and year-goal check-offs. The work is structured; the encouragement is real.</p>
     </div>
+
+    ${yearPlanSection}
 
     <section class="partner-page-section">
       <h3 class="partner-section-title">Waiting on your approval</h3>
@@ -390,6 +393,29 @@ function wirePageActions(container, learnerId) {
       await renderPartnerPage(learnerId);
     });
   });
+  container.querySelectorAll('[data-action="approve-yearplan"]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const planId = btn.dataset.plan;
+      const planLearnerId = btn.dataset.learner;
+      await approveYearPlan(planId, learnerId, '');
+      // Notify parents + guide that the plan was approved
+      const planLearner = await getLearner(planLearnerId);
+      await notifyParentsAndGuide(
+        planLearnerId,
+        `${planLearner?.name || 'Your hero'}'s year plan has been signed off by their accountability partner.`
+      );
+      await renderPartnerPage(learnerId);
+      document.dispatchEvent(new CustomEvent('hc:partner-changed'));
+    });
+  });
+  container.querySelectorAll('[data-action="return-yearplan"]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const note = prompt('What would you like your partner to reconsider? (optional)') || '';
+      await returnYearPlan(btn.dataset.plan, learnerId, note);
+      await renderPartnerPage(learnerId);
+      document.dispatchEvent(new CustomEvent('hc:partner-changed'));
+    });
+  });
   container.querySelectorAll('.partner-candidate').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const targetId = btn.dataset.id;
@@ -406,6 +432,41 @@ function wirePageActions(container, learnerId) {
       });
     });
   });
+}
+
+async function renderYearPlanCard(plan, partner) {
+  const yearGoals = (await getGoals(partner.id)).filter((g) => g.scope === 'year' && g.text);
+  const goalCount = yearGoals.length;
+  const partnerLearner = await getLearner(plan.learnerId);
+  const priorityIds = Array.isArray(partnerLearner?.priorityGoalIds) ? partnerLearner.priorityGoalIds : [];
+
+  const goalSummaries = yearGoals.map((g) => {
+    const isPriority = priorityIds.includes(g.id);
+    return `
+      <div class="year-plan-goal ${isPriority ? 'is-priority' : ''}">
+        <div class="year-plan-goal-header">
+          ${isPriority ? '<span class="year-plan-star">★</span>' : ''}
+          <span class="year-plan-goal-cat">${escapeHtml(g.categoryId)}</span>
+        </div>
+        <p class="year-plan-goal-text">${escapeHtml(g.text)}</p>
+        ${g.halfwayPoint ? `<p class="year-plan-goal-eos3"><strong>EOS 3:</strong> ${escapeHtml(g.halfwayPoint)}</p>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <section class="partner-page-section partner-yearplan-section">
+      <h3 class="partner-section-title">Year plan waiting for your approval</h3>
+      <div class="year-plan-card">
+        <p class="year-plan-intro">${escapeHtml(partner.name || 'Your partner')} has set ${goalCount} year goal${goalCount === 1 ? '' : 's'}. Review the plan below; approve it as a whole, or send it back with a note for revision.</p>
+        <div class="year-plan-goals">${goalSummaries}</div>
+        <div class="approval-actions">
+          <button type="button" class="btn btn-text" data-action="return-yearplan" data-plan="${plan.id}">Send back with notes</button>
+          <button type="button" class="btn btn-primary" data-action="approve-yearplan" data-plan="${plan.id}" data-learner="${plan.learnerId}">Approve year plan ✓</button>
+        </div>
+      </div>
+    </section>
+  `;
 }
 
 function formatDate(iso) {

@@ -1058,6 +1058,69 @@ header h1 {
   white-space: nowrap;
 }
 
+/* Year plan card on Partner page (Phase 5) */
+.partner-yearplan-section {
+  background: var(--sage-pale);
+  border: 1px solid var(--sage);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+}
+.year-plan-card { display: flex; flex-direction: column; gap: 0.75rem; }
+.year-plan-intro {
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+.year-plan-goals {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.year-plan-goal {
+  background: var(--warm-white);
+  border: 1px solid var(--earth-pale);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.85rem;
+}
+.year-plan-goal.is-priority {
+  border-left: 3px solid var(--sage);
+  background: var(--cream);
+}
+.year-plan-goal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.25rem;
+}
+.year-plan-star { color: var(--sage); font-size: 1rem; }
+.year-plan-goal-cat {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.year-plan-goal-text { margin: 0; color: var(--text); font-size: 0.92rem; line-height: 1.4; }
+.year-plan-goal-eos3 {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--earth);
+}
+
+/* Share-this-win button on approved year goals */
+.goal-share-win {
+  margin-top: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  background: var(--sage-pale);
+  color: var(--sage);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.goal-share-win:hover { background: var(--sage); color: var(--warm-white); }
+
 /* Approval cards */
 .approval-card {
   background: var(--warm-white);
@@ -1096,6 +1159,34 @@ header h1 {
 .year-map-finish.is-future { background: var(--sage-pale); border-color: var(--sage-light); }
 .year-map-harvest .year-map-session-label { color: var(--earth); font-style: italic; }
 .year-map-harvest.is-future { background: var(--earth-pale); border-color: var(--earth-light); }
+
+/* Parent notifications (year-plan-approved + milestone-shared) */
+.parent-notif-card {
+  background: var(--sage-pale);
+  border-left: 3px solid var(--sage);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+.parent-notif-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(74, 103, 65, 0.15);
+  cursor: pointer;
+}
+.parent-notif-item:last-child { border-bottom: none; }
+.parent-notif-item.parent-notif-read { opacity: 0.5; }
+.parent-notif-title {
+  display: block;
+  color: var(--sage);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+.parent-notif-body {
+  margin: 0.2rem 0 0;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
 
 /* Parent view */
 .parent-header {
