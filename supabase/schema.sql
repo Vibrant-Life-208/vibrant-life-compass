@@ -148,6 +148,56 @@ create table everyone_posts (
 );
 
 -- ============================================================================
+-- Partner links (accountability partnerships between learners)
+-- ============================================================================
+create table partner_links (
+  id uuid primary key default uuid_generate_v4(),
+  proposer_id uuid not null references learners(id) on delete cascade,
+  partner_id uuid not null references learners(id) on delete cascade,
+  status text not null default 'proposed'
+    check (status in ('proposed', 'accepted', 'declined', 'dissolved')),
+  proposed_at timestamptz default now(),
+  responded_at timestamptz,
+  dissolved_at timestamptz,
+  check (proposer_id <> partner_id)
+);
+create index idx_partner_links_proposer on partner_links(proposer_id);
+create index idx_partner_links_partner on partner_links(partner_id);
+create index idx_partner_links_status on partner_links(status);
+
+-- ============================================================================
+-- Year plans (learner submits for partner sign-off)
+-- ============================================================================
+create table year_plans (
+  id uuid primary key default uuid_generate_v4(),
+  learner_id uuid not null references learners(id) on delete cascade,
+  status text not null default 'pending'
+    check (status in ('pending', 'approved', 'returned', 'superseded')),
+  submitted_at timestamptz default now(),
+  approver_id uuid references learners(id) on delete set null,
+  approved_at timestamptz,
+  note text default ''
+);
+create index idx_year_plans_learner on year_plans(learner_id);
+create index idx_year_plans_status on year_plans(status);
+
+-- ============================================================================
+-- Notifications (year-plan-approved, milestone-shared, partner-proposal, etc.)
+-- ============================================================================
+create table notifications (
+  id uuid primary key default uuid_generate_v4(),
+  recipient_id uuid not null references profiles(id) on delete cascade,
+  type text not null,
+  title text not null,
+  body text not null,
+  from_id uuid references profiles(id) on delete set null,
+  created_at timestamptz default now(),
+  read_at timestamptz
+);
+create index idx_notifications_recipient on notifications(recipient_id, read_at);
+create index idx_notifications_recipient_created on notifications(recipient_id, created_at desc);
+
+-- ============================================================================
 -- Row Level Security
 -- ============================================================================
 
@@ -162,6 +212,9 @@ alter table tasks enable row level security;
 alter table check_ins enable row level security;
 alter table logins enable row level security;
 alter table everyone_posts enable row level security;
+alter table partner_links enable row level security;
+alter table year_plans enable row level security;
+alter table notifications enable row level security;
 
 -- Profile: each user reads/writes their own profile only.
 create policy "profiles_self" on profiles
@@ -222,6 +275,58 @@ create policy "parent_link_read" on parent_learner_link for select
   using (parent_id = auth.uid() or learner_id = auth.uid());
 create policy "guide_assignment_read" on guide_learner_assignment for select
   using (guide_id = auth.uid() or learner_id = auth.uid());
+
+-- Partner links: readable by either party (proposer OR partner).
+-- Insert: only proposer can create a proposal for themselves.
+-- Update: either party can update status (e.g., partner accepts/declines,
+-- proposer dissolves, etc.). App layer enforces which transitions are valid.
+create policy "partner_links_read" on partner_links for select
+  using (proposer_id = auth.uid() or partner_id = auth.uid());
+create policy "partner_links_insert" on partner_links for insert
+  with check (proposer_id = auth.uid());
+create policy "partner_links_update" on partner_links for update
+  using (proposer_id = auth.uid() or partner_id = auth.uid())
+  with check (proposer_id = auth.uid() or partner_id = auth.uid());
+
+-- Year plans: readable by the learner, their parents, their guides, and
+-- their accepted partner. Insert: only the learner. Update: the partner
+-- (for approval / returning) or the learner (to supersede).
+create policy "year_plans_read" on year_plans for select
+  using (
+    learner_id in (select learner_id from my_visible_learners)
+    or exists (
+      select 1 from partner_links pl
+      where pl.status = 'accepted'
+        and (
+          (pl.proposer_id = year_plans.learner_id and pl.partner_id = auth.uid())
+          or (pl.partner_id = year_plans.learner_id and pl.proposer_id = auth.uid())
+        )
+    )
+  );
+create policy "year_plans_insert_self" on year_plans for insert
+  with check (learner_id = auth.uid());
+create policy "year_plans_update_learner_or_partner" on year_plans for update
+  using (
+    learner_id = auth.uid()
+    or exists (
+      select 1 from partner_links pl
+      where pl.status = 'accepted'
+        and (
+          (pl.proposer_id = year_plans.learner_id and pl.partner_id = auth.uid())
+          or (pl.partner_id = year_plans.learner_id and pl.proposer_id = auth.uid())
+        )
+    )
+  );
+
+-- Notifications: recipient reads + marks-read their own. Any authenticated
+-- user can insert (the app enforces which sender/recipient pairs are valid).
+create policy "notifications_read_self" on notifications for select
+  using (recipient_id = auth.uid());
+create policy "notifications_insert_any" on notifications for insert
+  with check (auth.uid() is not null);
+create policy "notifications_update_self" on notifications for update
+  using (recipient_id = auth.uid())
+  with check (recipient_id = auth.uid());
 
 -- Everyone posts: readable by all authenticated users; only guides can
 -- publish directly; learners and parents may create with status='pending'.
