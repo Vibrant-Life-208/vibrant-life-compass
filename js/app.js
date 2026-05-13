@@ -15,7 +15,7 @@ import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderSetupView } from './setup.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal } from './modals.js';
-import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession, getPartnerNotificationCount } from './store.js';
+import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead } from './store.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -253,11 +253,41 @@ async function renderRoleView(role, learnerId) {
         quoteSection.style.display = 'none';
       }
     }
+    // Notifications surface for this guide (year-plan-approved, milestone-shared, etc.)
+    const list = document.getElementById('guide-learners');
+    if (session?.guideId) {
+      const notifs = await getNotifications(session.guideId);
+      const unread = notifs.filter((n) => !n.readAt).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      // Remove any previous banner from a prior render
+      document.getElementById('guide-notif-banner')?.remove();
+      if (unread.length > 0) {
+        const banner = document.createElement('div');
+        banner.id = 'guide-notif-banner';
+        banner.className = 'guide-notif-banner';
+        banner.innerHTML = `
+          <p class="guide-notif-label">${unread.length} new ${unread.length === 1 ? 'update' : 'updates'}</p>
+          ${unread.slice(0, 6).map((n) => `
+            <div class="guide-notif-item" data-notif-id="${escapeHtml(n.id)}">
+              <span class="guide-notif-title">${escapeHtml(n.title)}</span>
+              <p class="guide-notif-body">${escapeHtml(n.body)}</p>
+            </div>
+          `).join('')}
+          <p class="guide-notif-hint">Tap an item to mark it read.</p>
+        `;
+        list.parentNode.insertBefore(banner, list.parentNode.firstChild);
+        banner.querySelectorAll('[data-notif-id]').forEach((el) => {
+          el.addEventListener('click', async () => {
+            await markNotificationRead(el.dataset.notifId);
+            await renderRoleView('guide', learnerId);
+          });
+        });
+      }
+    }
+
     // Admin account-creation tool
     await renderAdminAccounts();
     initAdmin();
 
-    const list = document.getElementById('guide-learners');
     const learners = await getLearners();
     if (!learners.length) {
       list.innerHTML = '<p class="learners-empty">No learners assigned yet.</p>';

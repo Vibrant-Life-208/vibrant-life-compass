@@ -148,9 +148,13 @@ export function initAdmin() {
 }
 
 async function createAccount(data) {
-  const { type, heroName, studio, linkedLearnerId, linkedLearnerIds } = data;
+  const { type, heroName, studio, linkedLearnerId, linkedLearnerIds, fullName } = data;
   const name = heroName.trim();
   if (!name) return null;
+
+  // Display name: prefer the explicit fullName from the CSV; fall back to
+  // a pretty-cased version of the hero-name slug ("kyra-j" → "Kyra J").
+  const displayName = (fullName && fullName.trim()) || prettyName(name);
 
   const tempPassword = generateTempPassword();
   const hashed = await hashPassword(tempPassword);
@@ -158,7 +162,7 @@ async function createAccount(data) {
   if (type === 'learner') {
     const learners = await saveLearner({
       heroName: name,
-      name: prettyName(name),
+      name: displayName,
       studio: studio || 'adventure',
       guideEmail: '',
       parentEmail: '',
@@ -172,7 +176,7 @@ async function createAccount(data) {
   if (type === 'parent') {
     const parents = await saveParent({
       heroName: name,
-      name: prettyName(name),
+      name: displayName,
       passwordHash: hashed.hash,
       passwordSalt: hashed.salt,
     });
@@ -188,7 +192,7 @@ async function createAccount(data) {
   if (type === 'guide') {
     const guides = await saveGuide({
       heroName: name,
-      name: prettyName(name),
+      name: displayName,
       passwordHash: hashed.hash,
       passwordSalt: hashed.salt,
     });

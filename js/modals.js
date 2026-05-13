@@ -651,11 +651,11 @@ export async function openBulkImportModal({ studios, onImport }) {
   const allLearners = await getLearners();
   setModalTitle('Bulk import accounts');
   const sampleRows = [
-    'type,heroName,studio,linkedLearnerHeroName',
-    'learner,liam-d,discovery,',
-    'learner,mira-a,adventure,',
-    'parent,sam-parent,,liam-d|mira-a',
-    'guide,coach-alex,,',
+    'type,heroName,studio,linkedLearnerHeroName,fullName',
+    'learner,liam-d,discovery,,Liam Davis',
+    'learner,mira-a,adventure,,Mira Anderson',
+    'parent,sam-parent,,liam-d|mira-a,Sam Davis-Anderson',
+    'guide,coach-alex,,,Coach Alex Morrison',
   ].join('\n');
 
   document.getElementById('form-fields').innerHTML = `
@@ -669,10 +669,11 @@ export async function openBulkImportModal({ studios, onImport }) {
     </div>
     <div class="form-field">
       <p class="form-hint">
-        <strong>Columns:</strong> type, heroName, studio, linkedLearnerHeroName<br>
+        <strong>Columns:</strong> type, heroName, studio, linkedLearnerHeroName, fullName<br>
         <strong>type:</strong> learner / parent / guide<br>
         <strong>studio:</strong> sparks / discovery / adventure / launchpad (learners only)<br>
-        <strong>linkedLearnerHeroName:</strong> for parents only — hero name(s) of their kids. Use <code>|</code> to link siblings: <code>liam-d|mira-a</code>
+        <strong>linkedLearnerHeroName:</strong> for parents only — hero name(s) of their kids. Use <code>|</code> to link siblings: <code>liam-d|mira-a</code><br>
+        <strong>fullName:</strong> optional — the real name to show in the app ("Kyra Jones"). If blank, generated from hero name.
       </p>
     </div>
     <p id="bulk-csv-error" class="signin-error" style="display:none"></p>
@@ -693,6 +694,7 @@ export async function openBulkImportModal({ studios, onImport }) {
     const heroIdx = header.indexOf('heroname');
     const studioIdx = header.indexOf('studio');
     const linkedIdx = header.indexOf('linkedlearnerheroname');
+    const fullNameIdx = header.indexOf('fullname');
     if (typeIdx < 0 || heroIdx < 0) {
       errorEl.textContent = 'Header must include "type" and "heroName".';
       errorEl.style.display = 'block';
@@ -714,6 +716,11 @@ export async function openBulkImportModal({ studios, onImport }) {
         errors.push(`Row ${i + 1}: invalid hero name "${heroName}"`); continue;
       }
       const row = { type, heroName };
+      // Optional fullName column — preserves real names ("Kyra Jones") for
+      // display, while heroName stays the login slug ("kyra-j").
+      if (fullNameIdx >= 0 && cells[fullNameIdx]) {
+        row.fullName = cells[fullNameIdx].trim();
+      }
       if (type === 'learner') {
         const studio = (cells[studioIdx] || '').toLowerCase();
         if (studio && !studios[studio]) {
