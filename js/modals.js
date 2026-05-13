@@ -811,11 +811,20 @@ export function openTempPasswordModal({ heroName, tempPassword, isReset, multipl
   openModal();
 }
 
-export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabel = 'Cancel', onConfirm, onCancel }) {
+// SSC-D1 (2026-05-13): an optional third `dismissLabel` enables a
+// no-position exit on celebration prompts. Bashir's principle: consent
+// includes abstention. When dismissLabel is set, the modal shows three
+// buttons (dismiss / cancel / confirm); clicking dismiss closes without
+// firing onConfirm or onCancel.
+export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabel = 'Cancel', dismissLabel, onConfirm, onCancel }) {
   setModalTitle(title);
+  const dismissButton = dismissLabel
+    ? `<button type="button" class="btn btn-text confirm-dismiss" id="confirm-dismiss">${escapeHtml(dismissLabel)}</button>`
+    : '';
   document.getElementById('form-fields').innerHTML = `
     <p style="color: var(--text); line-height: 1.6; margin: 0 0 1rem;">${escapeHtml(body)}</p>
     <div class="confirm-actions">
+      ${dismissButton}
       <button type="button" class="btn btn-text" id="confirm-cancel">${escapeHtml(cancelLabel)}</button>
       <button type="button" class="btn btn-primary" id="confirm-yes">${escapeHtml(confirmLabel)}</button>
     </div>
@@ -831,6 +840,12 @@ export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabe
     if (onCancel) onCancel();
     closeModal();
   });
+  if (dismissLabel) {
+    document.getElementById('confirm-dismiss').addEventListener('click', () => {
+      // No callback fires - intentional. Skip-the-question == no-position.
+      closeModal();
+    });
+  }
   // Confirm has no form-submit path; null out activeSubmit so Enter doesn't fire.
   activeSubmit = null;
   openModal();

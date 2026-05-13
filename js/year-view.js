@@ -83,6 +83,16 @@ export async function renderYearView(learnerId) {
   studioHeader.textContent = `${getStudioName(learner.studio)} studio · ${learner.name}`;
   list.appendChild(studioHeader);
 
+  // SSC-D2 (2026-05-13): low-shame reset copy for stuck learners. Accord's
+  // observation - the recursive-halving structure is emotionally demanding
+  // for anxious-perfectionist kids; locking EOS 3 can become dread. A quiet
+  // text presence makes "this is hard right now" a known state, not a
+  // private shame loop.
+  const resetCue = document.createElement('p');
+  resetCue.className = 'compass-reset-cue';
+  resetCue.textContent = 'Sometimes a goal looks impossible. That is information, not failure. Bring it to your partner or your guide.';
+  list.appendChild(resetCue);
+
   // Has the learner started any year goal yet? Used to gate the
   // first-time invitation in the year-goal modal (PDC D1 2026-05-13).
   const noFilledGoalsYet = !goals.some((g) => g.scope === 'year' && g.text && g.text.trim().length > 0);

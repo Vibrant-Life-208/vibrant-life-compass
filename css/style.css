@@ -1240,6 +1240,28 @@ header h1 {
   line-height: 1.4;
 }
 
+/* SSC-D2 (2026-05-13): low-shame reset copy on Compass page.
+   Quiet, italic, present without demanding attention. */
+.compass-reset-cue {
+  margin: 0 0 1rem;
+  padding: 0.55rem 0.85rem;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.5;
+  border-left: 2px solid var(--sage-soft, #cdd4c4);
+}
+
+/* SSC-D1 (2026-05-13): dismiss button in three-button confirm modal.
+   Lighter weight than cancel so the visual hierarchy reads:
+   primary action / secondary action / skip-the-question. */
+.confirm-dismiss {
+  opacity: 0.7;
+  margin-right: auto;
+  font-size: 0.85rem;
+}
+
 /* First-time invitation on Stage 1 of year-goal modal (PDC D1 2026-05-13).
    Permission to do-this-with-someone for the youngest learners. */
 .first-time-invitation {

@@ -128,12 +128,14 @@ export async function renderSessionView(learnerId) {
         e.stopPropagation();
         await saveGoal({ ...goal, status: 'done' });
         await renderSessionView(learnerId);
-        // Celebrate + offer to ping parents
+        // Celebrate + offer to ping parents. Three choices, including
+        // a no-position skip (SSC-D1 2026-05-13: consent includes abstention).
         openConfirmModal({
           title: 'Nicely done',
           body: `You marked "${goal.text}" complete. Share this win with your parents?`,
           confirmLabel: 'Share with parents',
           cancelLabel: 'Just for me',
+          dismissLabel: 'Skip',
           onConfirm: async () => {
             await pingParentsAboutWin(learner, learnerId, goal);
           },
