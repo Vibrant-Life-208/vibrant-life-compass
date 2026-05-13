@@ -1240,6 +1240,22 @@ header h1 {
   line-height: 1.4;
 }
 
+/* First-time invitation on Stage 1 of year-goal modal (PDC D1 2026-05-13).
+   Permission to do-this-with-someone for the youngest learners. */
+.first-time-invitation {
+  background: var(--warm-white, #f5efe6);
+  border-left: 3px solid var(--sage, #4a6741);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+.first-time-invitation p {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 /* Goal-modal: scaffolding hint sitting below the primary form-hint. */
 .form-hint-secondary {
   margin: 0.25rem 0 0.6rem;

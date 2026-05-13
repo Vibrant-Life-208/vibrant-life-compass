@@ -280,6 +280,7 @@ function renderGoalsGrid(learner, filledGoals) {
       openYearGoalModal({
         category: cat,
         existing: filled,
+        isFirstTime: filledGoals.length === 0,
         onSave: async (data) => {
           const { saveGoal } = await import('./store.js');
           await saveGoal({

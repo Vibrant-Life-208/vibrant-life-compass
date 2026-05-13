@@ -65,7 +65,7 @@ async function weekDateLabel(sessionIndex, weekIndex) {
 // On save, seeds Session 1, 2, 3 goals automatically with EOS 1, 2, 3
 // respectively. Each tagged autoPopulated=true so learner-edited
 // session goals are preserved on re-save.
-export async function openYearGoalModal({ category, existing, onSave }) {
+export async function openYearGoalModal({ category, existing, onSave, isFirstTime }) {
   setModalTitle(`${category.name} - year goal`);
   // Pre-compute date labels for the weekly inputs
   const s1Dates = await Promise.all([1,2,3,4].map(w => weekDateLabel(1, w)));
@@ -95,6 +95,11 @@ export async function openYearGoalModal({ category, existing, onSave }) {
     </div>
 
     <div class="stage-panel" data-stage="1">
+      ${isFirstTime ? `
+        <div class="first-time-invitation">
+          <p>This is a big planning tool. It's normal to do this with a guide or parent sitting next to you the first time.</p>
+        </div>
+      ` : ''}
       <div class="endpoint-card">
         <span class="endpoint-label">Year goal · end of Session 6 (EOS 6)</span>
         <span class="endpoint-placeholder">…</span>

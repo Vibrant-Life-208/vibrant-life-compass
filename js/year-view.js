@@ -83,6 +83,10 @@ export async function renderYearView(learnerId) {
   studioHeader.textContent = `${getStudioName(learner.studio)} studio · ${learner.name}`;
   list.appendChild(studioHeader);
 
+  // Has the learner started any year goal yet? Used to gate the
+  // first-time invitation in the year-goal modal (PDC D1 2026-05-13).
+  const noFilledGoalsYet = !goals.some((g) => g.scope === 'year' && g.text && g.text.trim().length > 0);
+
   categories.forEach((cat) => {
     const goal = goals.find((g) => g.categoryId === cat.id);
     const card = document.createElement('div');
@@ -124,6 +128,7 @@ export async function renderYearView(learnerId) {
       openYearGoalModal({
         category: cat,
         existing: goal,
+        isFirstTime: noFilledGoalsYet,
         onSave: async ({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps }) => {
           await saveGoal({
             id: goal?.id,
