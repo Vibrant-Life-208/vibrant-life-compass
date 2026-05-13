@@ -179,8 +179,8 @@ async function pingParentsAboutWin(learner, learnerId, goal) {
     });
   }
   openConfirmModal({
-    title: 'Win shared',
-    body: `${parentIds.length === 1 ? 'Your parent has' : 'Your parents have'} been notified. Take the moment.`,
+    title: 'Yes!',
+    body: `${parentIds.length === 1 ? 'Your parent just heard' : 'Your parents just heard'}. Big moment - sit with it for a second.`,
     confirmLabel: 'OK',
     cancelLabel: 'Cancel',
     onConfirm: () => {},
