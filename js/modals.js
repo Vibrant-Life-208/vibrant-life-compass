@@ -102,7 +102,8 @@ export async function openYearGoalModal({ category, existing, onSave }) {
       <div class="form-field">
         <label for="yg-text">Stage 1 · EOS 6 — Your year goal</label>
         <p class="form-hint">What does success look like by the end of Session 6? Make it specific. Make it real.</p>
-        <textarea id="yg-text" rows="3" placeholder="What does success look like?">${existing?.text ? escapeAttr(existing.text) : ''}</textarea>
+        <p class="form-hint-secondary">A complete answer might include: what "finished" looks like, a number or threshold you can point to, and why it matters to you.</p>
+        <textarea id="yg-text" rows="5" data-autogrow placeholder="Write your year-end vision here…">${existing?.text ? escapeAttr(existing.text) : ''}</textarea>
       </div>
       ${category.example ? `<div class="form-example"><span class="form-example-label">Example</span><p>${escapeHtml(category.example)}</p></div>` : ''}
       <div class="stage-actions">
@@ -118,7 +119,8 @@ export async function openYearGoalModal({ category, existing, onSave }) {
       <div class="form-field">
         <label for="yg-baseline">Stage 2 · Baseline — Where you are now</label>
         <p class="form-hint">The honest starting line. Your partner will see this for context.</p>
-        <textarea id="yg-baseline" rows="3" placeholder="What's true today about this goal?">${existing?.baseline ? escapeAttr(existing.baseline) : ''}</textarea>
+        <p class="form-hint-secondary">A complete answer might include: what you can already do today, what's hard, and what you've tried before.</p>
+        <textarea id="yg-baseline" rows="5" data-autogrow placeholder="Write the honest truth about where you're starting…">${existing?.baseline ? escapeAttr(existing.baseline) : ''}</textarea>
       </div>
       <div class="stage-actions">
         <button type="button" class="btn btn-text" data-action="back">Back</button>
@@ -134,7 +136,8 @@ export async function openYearGoalModal({ category, existing, onSave }) {
       <div class="form-field">
         <label for="yg-halfway">Stage 3 · EOS 3 — The midpoint (this becomes locked)</label>
         <p class="form-hint">What will be true by the end of Session 3? This is the commitment anchor — once saved, your partner approves it and it cannot be edited until you replan in the second half. It becomes your Session 3 goal automatically.</p>
-        <textarea id="yg-halfway" rows="3" placeholder="What does the midpoint look like?">${existing?.halfwayPoint ? escapeAttr(existing.halfwayPoint) : ''}</textarea>
+        <p class="form-hint-secondary">A complete answer might include: the visible halfway marker, what your partner would see is true, and something you could demonstrate or show.</p>
+        <textarea id="yg-halfway" rows="5" data-autogrow placeholder="Write the midpoint commitment you're willing to lock in…">${existing?.halfwayPoint ? escapeAttr(existing.halfwayPoint) : ''}</textarea>
       </div>
       <div class="stage-actions">
         <button type="button" class="btn btn-text" data-action="back">Back</button>
@@ -150,7 +153,8 @@ export async function openYearGoalModal({ category, existing, onSave }) {
       <div class="form-field">
         <label for="yg-quarter">Stage 4 · EOS 2 — Halfway to your Session 3 goal</label>
         <p class="form-hint">What will be true by the end of Session 2? This becomes your Session 2 goal automatically.</p>
-        <textarea id="yg-quarter" rows="3" placeholder="What does the early checkpoint look like?">${existing?.quarterPoint ? escapeAttr(existing.quarterPoint) : ''}</textarea>
+        <p class="form-hint-secondary">A complete answer might include: a smaller milestone between today and Session 3, something you can verify by yourself, and an honest read on the pace.</p>
+        <textarea id="yg-quarter" rows="5" data-autogrow placeholder="Write the Session 2 checkpoint…">${existing?.quarterPoint ? escapeAttr(existing.quarterPoint) : ''}</textarea>
       </div>
       <div class="stage-actions">
         <button type="button" class="btn btn-text" data-action="back">Back</button>
@@ -166,7 +170,8 @@ export async function openYearGoalModal({ category, existing, onSave }) {
       <div class="form-field">
         <label for="yg-eos1">Stage 5 · EOS 1 — Setting up + quick wins</label>
         <p class="form-hint">What's the marker that proves you've <strong>started</strong>? Achievable in Session 1's four weeks. Foundation, not finish line.</p>
-        <textarea id="yg-eos1" rows="3" placeholder="What proves you're on the path by end of Session 1?">${existing?.eos1Point ? escapeAttr(existing.eos1Point) : ''}</textarea>
+        <p class="form-hint-secondary">A complete answer might include: the rhythm you've established, the foundation that proves you're on the path, and one small win you can point to.</p>
+        <textarea id="yg-eos1" rows="5" data-autogrow placeholder="Write the Session 1 foundation marker…">${existing?.eos1Point ? escapeAttr(existing.eos1Point) : ''}</textarea>
       </div>
       <div class="stage-actions">
         <button type="button" class="btn btn-text" data-action="back">Back</button>
@@ -175,9 +180,15 @@ export async function openYearGoalModal({ category, existing, onSave }) {
     </div>
 
     <div class="stage-panel" data-stage="6" hidden>
-      <div class="endpoint-card endpoint-card-promoted">
-        <span class="endpoint-label">Session 1 leads to EOS 1</span>
-        <span class="endpoint-value" id="endpoint-5"></span>
+      <div class="continuity-cards">
+        <div class="continuity-card continuity-from">
+          <span class="continuity-label">Starting from</span>
+          <span class="continuity-value" id="starting-from-s1"></span>
+        </div>
+        <div class="endpoint-card endpoint-card-promoted">
+          <span class="endpoint-label">Session 1 leads to EOS 1</span>
+          <span class="endpoint-value" id="endpoint-5"></span>
+        </div>
       </div>
       <div class="form-field">
         <label>Stage 6 · Session 1 — 4 weeks, one step per week</label>
@@ -196,9 +207,15 @@ export async function openYearGoalModal({ category, existing, onSave }) {
     </div>
 
     <div class="stage-panel" data-stage="7" hidden>
-      <div class="endpoint-card endpoint-card-promoted">
-        <span class="endpoint-label">Session 2 leads to EOS 2</span>
-        <span class="endpoint-value" id="endpoint-6"></span>
+      <div class="continuity-cards">
+        <div class="continuity-card continuity-from">
+          <span class="continuity-label">Starting from (end of Session 1)</span>
+          <span class="continuity-value" id="starting-from-s2"></span>
+        </div>
+        <div class="endpoint-card endpoint-card-promoted">
+          <span class="endpoint-label">Session 2 leads to EOS 2</span>
+          <span class="endpoint-value" id="endpoint-6"></span>
+        </div>
       </div>
       <div class="form-field">
         <label>Stage 7 · Session 2 — 5 weeks</label>
@@ -218,9 +235,15 @@ export async function openYearGoalModal({ category, existing, onSave }) {
     </div>
 
     <div class="stage-panel" data-stage="8" hidden>
-      <div class="endpoint-card endpoint-card-promoted">
-        <span class="endpoint-label">Session 3 leads to EOS 3 (locked)</span>
-        <span class="endpoint-value" id="endpoint-7"></span>
+      <div class="continuity-cards">
+        <div class="continuity-card continuity-from">
+          <span class="continuity-label">Starting from (end of Session 2)</span>
+          <span class="continuity-value" id="starting-from-s3"></span>
+        </div>
+        <div class="endpoint-card endpoint-card-promoted">
+          <span class="endpoint-label">Session 3 leads to EOS 3 (locked)</span>
+          <span class="endpoint-value" id="endpoint-7"></span>
+        </div>
       </div>
       <div class="form-field">
         <label>Stage 8 · Session 3 — only 3 weeks</label>
@@ -271,6 +294,7 @@ export async function openYearGoalModal({ category, existing, onSave }) {
     const eos3 = v.halfwayPoint || existing?.halfwayPoint || '';
     const eos2 = v.quarterPoint || existing?.quarterPoint || '';
     const eos1 = v.eos1Point || existing?.eos1Point || '';
+    const baseline = v.baseline || existing?.baseline || '';
     const setText = (id, val, placeholder) => {
       const el = document.getElementById(id);
       if (el) el.textContent = val || placeholder;
@@ -282,6 +306,15 @@ export async function openYearGoalModal({ category, existing, onSave }) {
     setText('endpoint-5', eos1, '(set EOS 1 first)');
     setText('endpoint-6', eos2, '(set EOS 2 first)');
     setText('endpoint-7', eos3, '(set EOS 3 first)');
+
+    // D3 — coming-from anchors on stages 6/7/8.
+    // Stage 6 starts from the baseline (year-level starting line).
+    // Stages 7 and 8 start from the prior session's last weekly task.
+    const s1LastWeek = v.weeklySteps?.[1]?.[3] || '';
+    const s2LastWeek = v.weeklySteps?.[2]?.[4] || '';
+    setText('starting-from-s1', baseline, '(set your baseline in Stage 2)');
+    setText('starting-from-s2', s1LastWeek, "(fill Session 1's last week first)");
+    setText('starting-from-s3', s2LastWeek, "(fill Session 2's last week first)");
   };
 
   const renderReview = () => {

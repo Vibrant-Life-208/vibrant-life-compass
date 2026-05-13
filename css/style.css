@@ -1240,6 +1240,76 @@ header h1 {
   line-height: 1.4;
 }
 
+/* Goal-modal: scaffolding hint sitting below the primary form-hint. */
+.form-hint-secondary {
+  margin: 0.25rem 0 0.6rem;
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  font-style: italic;
+}
+
+/* Goal-modal textareas: auto-grow with content. CSS-only on modern browsers. */
+textarea[data-autogrow] {
+  field-sizing: content;
+  min-height: calc(1.5em * 5 + 1rem);
+  resize: vertical;
+}
+
+/* D3 — coming-from + heading-toward symmetry on weekly-planning stages. */
+.continuity-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.continuity-card {
+  background: var(--warm-white, #f5efe6);
+  border-left: 3px solid var(--earth, #8a6a3a);
+  border-radius: 6px;
+  padding: 0.55rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.continuity-from {
+  border-left-color: var(--text-soft, #8a8576);
+}
+.continuity-label {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-soft);
+}
+.continuity-value {
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* D4 — session view: coming-from banner. */
+.session-continuity-banner {
+  background: var(--warm-white, #f5efe6);
+  border-left: 3px solid var(--text-soft, #8a8576);
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+  margin: 0.75rem 0 1.25rem;
+}
+.session-continuity-banner .continuity-label {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.session-continuity-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.session-continuity-list li {
+  margin: 0.15rem 0;
+}
+
 /* Incoming partner check-in banner (on partner page). */
 .partner-checkin-banner {
   background: var(--warm-white, #f5efe6);

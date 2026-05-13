@@ -37,6 +37,42 @@ export async function renderSessionView(learnerId) {
     (g) => g.scope === 'session' && g.sessionIndex === currentSession
   );
 
+  // D4 — coming-from anchor at the top of each session's view.
+  // Pull from the prior session's last weekly task across all of this
+  // learner's year goals. Skip on Session 1 (no prior session exists).
+  const existingBanner = document.getElementById('session-continuity-banner');
+  if (existingBanner) existingBanner.remove();
+  if (currentSession > 1) {
+    const yearGoals = allGoals.filter((g) => g.scope === 'year');
+    const priorSession = currentSession - 1;
+    // weeklySteps shape: { 1: [w1,w2,w3,w4], 2: [..5..], 3: [..3..] }
+    const priorLastWeekTexts = yearGoals
+      .map((g) => {
+        const weeks = g.weeklySteps?.[priorSession];
+        if (!Array.isArray(weeks)) return null;
+        const lastIdx = weeks.length - 1;
+        const text = weeks[lastIdx];
+        if (!text) return null;
+        const cat = categories.find((c) => c.id === g.categoryId);
+        return { cat: cat?.name || g.categoryId, text };
+      })
+      .filter(Boolean);
+    if (priorLastWeekTexts.length > 0) {
+      const banner = document.createElement('div');
+      banner.id = 'session-continuity-banner';
+      banner.className = 'session-continuity-banner';
+      banner.innerHTML = `
+        <span class="continuity-label">Picking up from end of Session ${priorSession}</span>
+        <ul class="session-continuity-list">
+          ${priorLastWeekTexts.map((p) => `
+            <li><strong>${escapeHtml(p.cat)}:</strong> ${escapeHtml(p.text)}</li>
+          `).join('')}
+        </ul>
+      `;
+      meta.parentNode.insertBefore(banner, meta.nextSibling);
+    }
+  }
+
   list.innerHTML = '';
   categories.forEach((cat) => {
     const goal = sessionGoals.find((g) => g.categoryId === cat.id);
