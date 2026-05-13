@@ -62,6 +62,12 @@ export async function renderSetupView(learnerId) {
     outboundPartnerName = target?.name || target?.heroName || 'them';
   }
 
+  // Gate the rest of setup until About You (age + studio) is saved. Goal
+  // categories and accountability-partner candidates are studio-specific;
+  // showing them before studio is committed leads to stale lists when the
+  // dropdown changes without a save.
+  const aboutComplete = Boolean(learner.age) && Boolean(learner.studio);
+
   container.innerHTML = `
     ${inboundProposerName ? `
       <div class="setup-partner-banner">
@@ -77,7 +83,9 @@ export async function renderSetupView(learnerId) {
 
     <div class="setup-header">
       <h2 class="setup-title">Welcome, ${escapeHtml(learner.name || learner.heroName || 'Hero')}.</h2>
-      <p class="setup-sub">A few things to set before you sit down at the Compass. Your year plan is yours to shape.</p>
+      <p class="setup-sub">${aboutComplete
+        ? `A few things to set before you sit down at the Compass. Your year plan is yours to shape.`
+        : `Start by telling us a couple things about you. Once you save, the rest of setup opens up.`}</p>
     </div>
 
     <section class="setup-section">
@@ -95,10 +103,11 @@ export async function renderSetupView(learnerId) {
             ).join('')}
           </select>
         </div>
-        <button type="button" id="setup-save-about" class="btn btn-text">Save</button>
+        <button type="button" id="setup-save-about" class="btn btn-primary">${aboutComplete ? 'Save changes' : 'Save and continue'}</button>
       </div>
     </section>
 
+    ${aboutComplete ? `
     <section class="setup-section">
       <div class="setup-progress">
         <h3 class="setup-section-title">2. Your year goals</h3>
@@ -124,7 +133,9 @@ export async function renderSetupView(learnerId) {
       <p class="setup-hint">Optional now — you can pick one any time from the Partner tab. But picking now means your year plan gets signed off as soon as setup is done.</p>
       <div id="setup-partner-zone" class="setup-partner-zone"></div>
     </section>
+    ` : ''}
 
+    ${aboutComplete ? `
     <div class="setup-footer">
       <button type="button" id="setup-continue" class="btn btn-primary setup-continue-btn"
         ${filledGoals.length >= MIN_GOALS ? '' : 'disabled'}>
@@ -138,16 +149,21 @@ export async function renderSetupView(learnerId) {
           : 'Ready to send to your partner for sign-off.'
       }</p>
     </div>
+    ` : ''}
   `;
 
-  renderGoalsGrid(learner, filledGoals);
-  renderPriorityList(learner, filledGoals, priorityIds);
-  await renderPartnerZoneInSetup(learner, {
-    myActivePartnerLink,
-    myActivePartnerName,
-    outboundProposed,
-    outboundPartnerName,
-  });
+  // Sections 2-4 only render after About You is saved; skip the section
+  // populators when the gate is closed.
+  if (aboutComplete) {
+    renderGoalsGrid(learner, filledGoals);
+    renderPriorityList(learner, filledGoals, priorityIds);
+    await renderPartnerZoneInSetup(learner, {
+      myActivePartnerLink,
+      myActivePartnerName,
+      outboundProposed,
+      outboundPartnerName,
+    });
+  }
 
   // Wire the inbound-proposal banner buttons (top of view)
   container.querySelectorAll('[data-partner-action]').forEach((btn) => {
@@ -160,13 +176,58 @@ export async function renderSetupView(learnerId) {
     });
   });
 
+  // Reactive: when the studio dropdown or age input is changed AFTER initial
+  // save, hide sections 2-4 with a "Save your changes" cue. Prevents the
+  // stale-list bug where the partner list shows the old studio's candidates.
+  if (aboutComplete) {
+    const ageInput = document.getElementById('setup-age');
+    const studioSelect = document.getElementById('setup-studio');
+    const restOfSetup = container.querySelectorAll('.setup-section:not(:first-of-type), .setup-footer');
+    const checkDirty = () => {
+      const dirty = studioSelect.value !== learner.studio
+        || Number(ageInput.value || 0) !== Number(learner.age);
+      restOfSetup.forEach((el) => el.style.display = dirty ? 'none' : '');
+      let cue = document.getElementById('setup-dirty-cue');
+      if (dirty && !cue) {
+        cue = document.createElement('p');
+        cue.id = 'setup-dirty-cue';
+        cue.className = 'setup-hint';
+        cue.style.cssText = 'background:var(--warm-white,#f5efe6); padding:0.75rem 1rem; border-radius:8px; border-left:3px solid var(--earth,#8a6a3a); margin-top:0.75rem;';
+        cue.textContent = 'Save your changes to refresh your goals and partner list for the new studio.';
+        document.querySelector('.setup-form').appendChild(cue);
+      } else if (!dirty && cue) {
+        cue.remove();
+      }
+    };
+    ageInput.addEventListener('input', checkDirty);
+    studioSelect.addEventListener('change', checkDirty);
+  }
+
   // Wire the about-you save
   document.getElementById('setup-save-about')?.addEventListener('click', async () => {
     const ageVal = document.getElementById('setup-age').value;
     const studio = document.getElementById('setup-studio').value;
+    const ageNum = ageVal ? Number(ageVal) : 0;
+    if (!ageNum || ageNum < 4 || ageNum > 19) {
+      // Inline error without alert()
+      const ageInput = document.getElementById('setup-age');
+      ageInput.focus();
+      ageInput.style.outline = '2px solid #b94a4a';
+      let err = document.getElementById('setup-age-error');
+      if (!err) {
+        err = document.createElement('p');
+        err.id = 'setup-age-error';
+        err.style.color = '#b94a4a';
+        err.style.fontSize = '0.85rem';
+        err.style.marginTop = '0.4rem';
+        ageInput.parentElement.appendChild(err);
+      }
+      err.textContent = 'Please enter your age (4-19) to continue.';
+      return;
+    }
     const updated = {
       id: learner.id,
-      age: ageVal ? Number(ageVal) : null,
+      age: ageNum,
       studio,
     };
     await saveLearner(updated);
