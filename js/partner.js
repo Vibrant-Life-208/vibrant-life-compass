@@ -6,7 +6,8 @@ import {
   proposePartner, respondToPartnerProposal, dissolvePartnership,
   getYearGoalPendingApprovals, approveYearGoal, rejectYearGoal,
   getPendingYearPlanFor, approveYearPlan, returnYearPlan,
-  addNotification, getGuides, getParents, getParentLearnerLinks,
+  addNotification, getNotifications, markNotificationRead,
+  getGuides, getParents, getParentLearnerLinks,
 } from './store.js';
 import { openConfirmModal } from './modals.js';
 
@@ -224,11 +225,17 @@ export async function renderPartnerPage(learnerId) {
 }
 
 async function renderActivePartnership(learnerId, partner, linkId) {
-  const [theirGoals, myGoals, pendingYearPlans] = await Promise.all([
+  const [theirGoals, myGoals, pendingYearPlans, myNotifs] = await Promise.all([
     getGoals(partner?.id),
     getGoals(learnerId),
     getPendingYearPlanFor(learnerId),
+    getNotifications(learnerId),
   ]);
+
+  // Unread incoming partner check-ins (from this learner's partner).
+  const incomingCheckins = (myNotifs || []).filter(
+    (n) => n.type === 'partner-checkin' && !n.readAt
+  );
   const theirYearGoals = theirGoals.filter(g => g.scope === 'year');
   const myYearGoals = myGoals.filter(g => g.scope === 'year');
 
@@ -244,7 +251,22 @@ async function renderActivePartnership(learnerId, partner, linkId) {
     yearPlanSection = await renderYearPlanCard(plan, partner);
   }
 
+  // Inline banner showing recent unread check-ins from this learner's partner.
+  const checkinBanner = incomingCheckins.length > 0 ? `
+    <div class="partner-checkin-banner">
+      <p class="partner-checkin-banner-label">From ${escapeHtml(partner?.name?.split(' ')[0] || 'your partner')}</p>
+      ${incomingCheckins.slice(0, 3).map((n) => `
+        <div class="partner-checkin-item" data-notif-id="${escapeHtml(n.id)}">
+          <p class="partner-checkin-body">${escapeHtml(n.body)}</p>
+          <span class="partner-checkin-date">${formatDate(n.createdAt)}</span>
+        </div>
+      `).join('')}
+      <p class="partner-checkin-hint">Tap a check-in to mark it read.</p>
+    </div>
+  ` : '';
+
   return `
+    ${checkinBanner}
     <div class="partner-active-page-card">
       <div class="partner-active-header">
         <span class="partner-label">Walking with</span>
@@ -252,6 +274,7 @@ async function renderActivePartnership(learnerId, partner, linkId) {
       </div>
       <p class="partner-active-name">${escapeHtml(partner?.name || 'Unknown')}</p>
       <p class="partner-active-note">You approve each other's year plan and year-goal check-offs. The work is structured; the encouragement is real.</p>
+      <button type="button" class="btn btn-primary partner-checkin-btn" style="margin-top:0.75rem;" data-partner-id="${escapeHtml(partner?.id || '')}" data-partner-name="${escapeHtml(partner?.name || '')}">Tell ${escapeHtml(partner?.name?.split(' ')[0] || 'them')} I finished my work today</button>
     </div>
 
     ${yearPlanSection}
@@ -354,6 +377,41 @@ async function renderProposalUI(learnerId) {
 }
 
 function wirePageActions(container, learnerId) {
+  // Incoming partner check-in: tap to mark read.
+  container.querySelectorAll('.partner-checkin-item').forEach((el) => {
+    el.addEventListener('click', async () => {
+      const notifId = el.dataset.notifId;
+      if (notifId) {
+        await markNotificationRead(notifId);
+        await renderPartnerPage(learnerId);
+        document.dispatchEvent(new CustomEvent('hc:partner-changed'));
+      }
+    });
+  });
+
+  // Partner check-in: learner pings their partner that they finished today's work.
+  container.querySelectorAll('.partner-checkin-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const partnerId = btn.dataset.partnerId;
+      const partnerName = btn.dataset.partnerName;
+      if (!partnerId) return;
+      const me = await getLearner(learnerId);
+      await addNotification({
+        recipientId: partnerId,
+        type: 'partner-checkin',
+        title: 'Partner check-in',
+        body: `${me?.name || me?.heroName || 'Your partner'} finished their work today.`,
+        fromId: learnerId,
+      });
+      openConfirmModal({
+        title: 'Sent',
+        body: `${partnerName?.split(' ')[0] || 'Your partner'} will see your check-in next time they sign in. Nice work today.`,
+        confirmLabel: 'OK',
+        cancelLabel: 'Cancel',
+        onConfirm: () => {},
+      });
+    });
+  });
   container.querySelectorAll('[data-action="accept"]').forEach((btn) => {
     btn.addEventListener('click', async () => {
       await respondToPartnerProposal(btn.dataset.link, true);

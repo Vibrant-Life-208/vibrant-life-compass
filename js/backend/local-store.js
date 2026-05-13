@@ -392,7 +392,12 @@ export async function getPartnerNotificationCount(learnerId) {
     getYearGoalPendingApprovals(learnerId),
     getPendingYearPlanFor(learnerId),
   ]);
-  return pendingProposals.length + pendingApprovals.length + pendingPlans.length;
+  // Also count unread incoming partner check-ins.
+  const allNotifs = read(KEYS.notifications) || [];
+  const unreadCheckins = allNotifs.filter(
+    (n) => n.recipientId === learnerId && n.type === 'partner-checkin' && !n.readAt
+  ).length;
+  return pendingProposals.length + pendingApprovals.length + pendingPlans.length + unreadCheckins;
 }
 
 // ============================================================================

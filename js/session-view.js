@@ -1,8 +1,8 @@
 // Session view. 1 of 7 sessions, navigable.
 
-import { getLearner, getGoals, saveGoal } from './store.js';
+import { getLearner, getGoals, saveGoal, getParentLearnerLinks, addNotification } from './store.js';
 import { getCategoriesForStudio, getStudioName, SESSIONS_PER_YEAR, WEEKS_PER_SESSION_DEFAULT } from './studios.js';
-import { openGoalModal } from './modals.js';
+import { openGoalModal, openConfirmModal } from './modals.js';
 
 let currentSession = 1;
 
@@ -43,14 +43,29 @@ export async function renderSessionView(learnerId) {
     const card = document.createElement('div');
     card.className = 'category-card';
     const placeholder = `Example: ${cat.example}`;
+    const isDone = goal?.status === 'done';
+    const statusBadge = isDone
+      ? '<span class="goal-status goal-status-done">Complete ✓</span>'
+      : '';
+    const markCompleteButton = (goal && !isDone)
+      ? `<button type="button" class="btn btn-text session-goal-complete" data-id="${goal.id}">Mark complete</button>`
+      : '';
+    const shareButton = (goal && isDone)
+      ? `<button type="button" class="btn btn-text session-goal-share" data-id="${goal.id}">Share this win with my parents</button>`
+      : '';
     card.innerHTML = `
       <div class="category-header">
-        <span class="category-name">${cat.name}</span>
+        <span class="category-name">${cat.name}${statusBadge}</span>
         <span class="category-kind">${cat.kind}</span>
       </div>
-      <p class="category-goal ${goal ? '' : 'empty'}">${goal ? escapeHtml(goal.text) : escapeHtml(placeholder)}</p>
+      <p class="category-goal ${goal ? '' : 'empty'} ${isDone ? 'goal-done' : ''}">${goal ? escapeHtml(goal.text) : escapeHtml(placeholder)}</p>
+      ${markCompleteButton}
+      ${shareButton}
     `;
-    card.addEventListener('click', () => {
+    // Card-tap opens the edit modal, but only if a button inside wasn't tapped.
+    card.addEventListener('click', (e) => {
+      if (e.target.classList.contains('session-goal-complete')) return;
+      if (e.target.classList.contains('session-goal-share')) return;
       openGoalModal({
         title: `${cat.name} - Session ${currentSession} goal`,
         existing: goal,
@@ -63,13 +78,74 @@ export async function renderSessionView(learnerId) {
             scope: 'session',
             sessionIndex: currentSession,
             text,
-            status: 'active',
+            status: goal?.status || 'active',
           });
           await renderSessionView(learnerId);
         },
       });
     });
+
+    // Mark-complete button: toggle status to 'done' + prompt to share.
+    const completeBtn = card.querySelector('.session-goal-complete');
+    if (completeBtn) {
+      completeBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await saveGoal({ ...goal, status: 'done' });
+        await renderSessionView(learnerId);
+        // Celebrate + offer to ping parents
+        openConfirmModal({
+          title: 'Nicely done',
+          body: `You marked "${goal.text}" complete. Share this win with your parents?`,
+          confirmLabel: 'Share with parents',
+          cancelLabel: 'Just for me',
+          onConfirm: async () => {
+            await pingParentsAboutWin(learner, learnerId, goal);
+          },
+        });
+      });
+    }
+
+    // Share button (for already-complete goals where the learner skipped the share prompt earlier)
+    const shareBtn = card.querySelector('.session-goal-share');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        await pingParentsAboutWin(learner, learnerId, goal);
+      });
+    }
+
     list.appendChild(card);
+  });
+}
+
+async function pingParentsAboutWin(learner, learnerId, goal) {
+  const links = await getParentLearnerLinks();
+  const parentIds = links.filter((l) => l.learnerId === learnerId).map((l) => l.parentId);
+  if (parentIds.length === 0) {
+    openConfirmModal({
+      title: 'No parent linked yet',
+      body: 'A guide can link a parent to your account so you can share wins with them.',
+      confirmLabel: 'OK',
+      cancelLabel: 'Cancel',
+      onConfirm: () => {},
+    });
+    return;
+  }
+  for (const pid of parentIds) {
+    await addNotification({
+      recipientId: pid,
+      type: 'milestone-shared',
+      title: 'A session win to celebrate',
+      body: `${learner.name || learner.heroName} marked complete: ${goal.text}`,
+      fromId: learnerId,
+    });
+  }
+  openConfirmModal({
+    title: 'Win shared',
+    body: `${parentIds.length === 1 ? 'Your parent has' : 'Your parents have'} been notified. Take the moment.`,
+    confirmLabel: 'OK',
+    cancelLabel: 'Cancel',
+    onConfirm: () => {},
   });
 }
 

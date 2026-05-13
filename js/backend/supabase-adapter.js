@@ -512,8 +512,15 @@ export async function getPartnerNotificationCount(learnerId) {
     getPendingProposalsFor(learnerId),
     getPendingYearPlanFor(learnerId),
   ]);
+  // Unread incoming partner check-ins.
+  const { count: unreadCheckins } = await getClient()
+    .from('notifications')
+    .select('id', { count: 'exact', head: true })
+    .eq('recipient_id', learnerId)
+    .eq('type', 'partner-checkin')
+    .is('read_at', null);
   // Year-goal pending approvals omitted in v1 (feature not yet wired through supabase).
-  return pendingProposals.length + pendingPlans.length;
+  return pendingProposals.length + pendingPlans.length + (unreadCheckins || 0);
 }
 
 // ============================================================================
