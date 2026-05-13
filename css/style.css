@@ -20,11 +20,40 @@
 
 * { box-sizing: border-box; }
 
-/* Root font size bumped from default 16px to 18px (Captain 2026-05-13) for
-   younger-learner legibility on iPads. All component sizes use rem, so this
-   scales every text + spacing unit ~12.5% larger across the app. */
+/* Responsive root font-size (Captain 2026-05-13 second pass).
+   All component sizes use rem, so scaling html { font-size } scales every
+   text + spacing unit proportionally across the entire app.
+   - Phone (default, <600px): 18px base for younger-learner legibility on iPads
+   - Tablet (600-1024px): 19px
+   - Small desktop (1024-1440px): 20px
+   - Large desktop (>1440px): 22px - big monitors are viewed farther away, so
+     bigger text isn't "too big," it matches the viewing distance.
+   The phone tier keeps the iPad/iPad-mini sweet spot; desktop tiers stretch
+   for big monitors. */
 html {
   font-size: 18px;
+}
+@media (min-width: 600px) {
+  html { font-size: 19px; }
+}
+@media (min-width: 1024px) {
+  html { font-size: 20px; }
+}
+@media (min-width: 1440px) {
+  html { font-size: 22px; }
+}
+@media (min-width: 1920px) {
+  html { font-size: 24px; }
+}
+
+/* Constrain main content max-width on large screens so reading lines
+   don't stretch unmanageably wide. */
+.tab-content {
+  max-width: 920px;
+  margin: 0 auto;
+}
+@media (min-width: 1440px) {
+  .tab-content { max-width: 1080px; }
 }
 
 html, body {

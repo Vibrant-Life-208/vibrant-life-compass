@@ -104,7 +104,7 @@ export async function renderYearView(learnerId) {
 
   // SSC-D2 (2026-05-13): low-shame reset copy for stuck learners. Accord's
   // observation - the recursive-halving structure is emotionally demanding
-  // for anxious-perfectionist kids; locking EOS 3 can become dread. A quiet
+  // for anxious-perfectionist kids; locking End of Session 3 can become dread. A quiet
   // text presence makes "this is hard right now" a known state, not a
   // private shame loop.
   const resetCue = document.createElement('p');
@@ -112,14 +112,8 @@ export async function renderYearView(learnerId) {
   resetCue.textContent = 'Sometimes a goal looks impossible. That is information, not failure. Bring it to your partner or your guide.';
   list.appendChild(resetCue);
 
-  // MAC-D1 (2026-05-13): EOS glossary. The labels EOS 1 / 2 / 3 / 6 appear
-  // throughout the year-goal flow and read as spreadsheet to a young learner.
-  // Single quiet definition near the top of Compass + title-attr tooltips
-  // on each EOS occurrence in the modal handle the rest.
-  const eosGlossary = document.createElement('p');
-  eosGlossary.className = 'compass-eos-glossary';
-  eosGlossary.innerHTML = '<strong>EOS</strong> = End of Session. EOS 3 means the goal you set for the end of Session 3.';
-  list.appendChild(eosGlossary);
+  // Glossary line retired 2026-05-13 — captain spelled out "End of Session"
+  // everywhere it appears, so the abbreviation no longer needs explanation.
 
   // Has the learner started any year goal yet? Used to gate the
   // first-time invitation in the year-goal modal (PDC D1 2026-05-13).
@@ -154,9 +148,9 @@ export async function renderYearView(learnerId) {
       </div>
       <p class="category-goal ${goal ? '' : 'empty'}">${goal ? escapeHtml(goal.text) : escapeHtml(placeholder)}</p>
       ${goal?.baseline ? `<p class="goal-meta"><span class="goal-meta-label">Starting line:</span> ${escapeHtml(goal.baseline)}</p>` : ''}
-      ${goal?.eos1Point ? `<p class="goal-meta"><span class="goal-meta-label">EOS 1:</span> ${escapeHtml(goal.eos1Point)}</p>` : ''}
-      ${goal?.quarterPoint ? `<p class="goal-meta"><span class="goal-meta-label">EOS 2:</span> ${escapeHtml(goal.quarterPoint)}</p>` : ''}
-      ${goal?.halfwayPoint ? `<p class="goal-meta" title="This one stays. It is your commitment anchor."><span class="goal-meta-label">EOS 3 · locked:</span> ${escapeHtml(goal.halfwayPoint)}</p>` : ''}
+      ${goal?.eos1Point ? `<p class="goal-meta"><span class="goal-meta-label">End of Session 1:</span> ${escapeHtml(goal.eos1Point)}</p>` : ''}
+      ${goal?.quarterPoint ? `<p class="goal-meta"><span class="goal-meta-label">End of Session 2:</span> ${escapeHtml(goal.quarterPoint)}</p>` : ''}
+      ${goal?.halfwayPoint ? `<p class="goal-meta" title="This one stays. It is your commitment anchor."><span class="goal-meta-label">End of Session 3 · locked:</span> ${escapeHtml(goal.halfwayPoint)}</p>` : ''}
       ${checkOffButton}
       ${shareWinButton}
     `;
@@ -183,7 +177,7 @@ export async function renderYearView(learnerId) {
             status: goal?.status || 'active',
           });
           // Auto-populate Session 1, 2, 3 goals (recursive halving + foundation).
-          // EOS 3 -> Session 3, EOS 2 -> Session 2, EOS 1 -> Session 1.
+          // End of Session 3 -> Session 3, End of Session 2 -> Session 2, End of Session 1 -> Session 1.
           const seedSession = async (sessionIndex, seedText) => {
             if (!seedText) return;
             const existingS = allGoals.find(

@@ -50,19 +50,19 @@ async function weekDateLabel(sessionIndex, weekIndex) {
 
 // 9-stage year-goal modal: 5 milestones + 3 weekly breakdowns + review.
 // Per captain decisions 2026-05-11 and 2026-05-12:
-//   Stage 1: EOS 6 - end goal (where you want to be by end of Session 6)
+//   Stage 1: End of Session 6 - end goal (where you want to be by end of Session 6)
 //   Stage 2: Baseline - where you are now
-//   Stage 3: EOS 3 - midpoint (locked after save; the accountability anchor)
-//   Stage 4: EOS 2 - milestone between baseline and EOS 3
-//   Stage 5: EOS 1 - setting up + quick wins (foundation by end of Session 1)
+//   Stage 3: End of Session 3 - midpoint (locked after save; the accountability anchor)
+//   Stage 4: End of Session 2 - milestone between baseline and End of Session 3
+//   Stage 5: End of Session 1 - setting up + quick wins (foundation by end of Session 1)
 //
 // The endpoint card at the top of each stage "promotes" to show the
 // most recent committed milestone as the working destination:
-//   Stages 1-3: endpoint = EOS 6 (year goal)
-//   Stage 4:    endpoint = EOS 3 (Session 3 midpoint)
-//   Stage 5:    endpoint = EOS 2 (Session 2 milestone)
+//   Stages 1-3: endpoint = End of Session 6 (year goal)
+//   Stage 4:    endpoint = End of Session 3 (Session 3 midpoint)
+//   Stage 5:    endpoint = End of Session 2 (Session 2 milestone)
 //
-// On save, seeds Session 1, 2, 3 goals automatically with EOS 1, 2, 3
+// On save, seeds Session 1, 2, 3 goals automatically with End of Session 1, 2, 3
 // respectively. Each tagged autoPopulated=true so learner-edited
 // session goals are preserved on re-save.
 export async function openYearGoalModal({ category, existing, onSave, isFirstTime }) {
@@ -101,11 +101,11 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         </div>
       ` : ''}
       <div class="endpoint-card">
-        <span class="endpoint-label">Year goal · end of Session 6 (EOS 6)</span>
+        <span class="endpoint-label">Year goal · End of Session 6</span>
         <span class="endpoint-placeholder">…</span>
       </div>
       <div class="form-field">
-        <label for="yg-text">Stage 1 · EOS 6 — Your year goal</label>
+        <label for="yg-text">Stage 1 · End of Session 6 — Your year goal</label>
         <p class="form-hint">A year from now, what's different about you? How will you know you've gotten there - what would your partner or guide have to see?</p>
         <p class="form-hint-secondary">Think about: what "finished" looks like in plain words. Something specific you could point to. Why it matters to you right now.</p>
         <textarea id="yg-text" rows="5" data-autogrow placeholder="Write your year-end vision here…">${existing?.text ? escapeAttr(existing.text) : ''}</textarea>
@@ -118,7 +118,7 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
 
     <div class="stage-panel" data-stage="2" hidden>
       <div class="endpoint-card">
-        <span class="endpoint-label">EOS 6 — Year goal</span>
+        <span class="endpoint-label">End of Session 6 — Year goal</span>
         <span class="endpoint-value" id="endpoint-1"></span>
       </div>
       <div class="form-field">
@@ -135,11 +135,11 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
 
     <div class="stage-panel" data-stage="3" hidden>
       <div class="endpoint-card">
-        <span class="endpoint-label">EOS 6 — Year goal</span>
+        <span class="endpoint-label">End of Session 6 — Year goal</span>
         <span class="endpoint-value" id="endpoint-2"></span>
       </div>
       <div class="form-field">
-        <label for="yg-halfway">Stage 3 · EOS 3 — The midpoint (this becomes locked)</label>
+        <label for="yg-halfway">Stage 3 · End of Session 3 — The midpoint (this becomes locked)</label>
         <p class="form-hint">By the end of Session 3 - halfway through the year - what will you have done? Something specific your partner could check. Something you could show or demonstrate.</p>
         <p class="form-hint-secondary">This is your commitment anchor. Specific enough to point at. Measurable enough to check. Real enough to commit to - once your partner signs off, this one locks until you replan in the second half.</p>
         <textarea id="yg-halfway" rows="5" data-autogrow placeholder="Write the midpoint commitment you're willing to lock in…">${existing?.halfwayPoint ? escapeAttr(existing.halfwayPoint) : ''}</textarea>
@@ -152,13 +152,13 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
 
     <div class="stage-panel" data-stage="4" hidden>
       <div class="endpoint-card endpoint-card-promoted">
-        <span class="endpoint-label">EOS 3 — Now your destination</span>
+        <span class="endpoint-label">End of Session 3 — Now your destination</span>
         <span class="endpoint-value" id="endpoint-3"></span>
       </div>
       <div class="form-field">
-        <label for="yg-quarter">Stage 4 · EOS 2 — Halfway to your Session 3 goal</label>
-        <p class="form-hint">By the end of Session 2, what will be different? A smaller step toward your EOS 3 commitment. What can you check on your own?</p>
-        <p class="form-hint-secondary">Achievable in five weeks. Specific enough to verify by yourself. An honest read on the pace - if EOS 2 feels too tight, EOS 3 will feel impossible. Adjust here, not later.</p>
+        <label for="yg-quarter">Stage 4 · End of Session 2 — Halfway to your Session 3 goal</label>
+        <p class="form-hint">By the end of Session 2, what will be different? A smaller step toward your End of Session 3 commitment. What can you check on your own?</p>
+        <p class="form-hint-secondary">Achievable in five weeks. Specific enough to verify by yourself. An honest read on the pace - if End of Session 2 feels too tight, End of Session 3 will feel impossible. Adjust here, not later.</p>
         <textarea id="yg-quarter" rows="5" data-autogrow placeholder="Write the Session 2 checkpoint…">${existing?.quarterPoint ? escapeAttr(existing.quarterPoint) : ''}</textarea>
       </div>
       <div class="stage-actions">
@@ -169,11 +169,11 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
 
     <div class="stage-panel" data-stage="5" hidden>
       <div class="endpoint-card endpoint-card-promoted">
-        <span class="endpoint-label">EOS 2 — Now your foundation builds toward</span>
+        <span class="endpoint-label">End of Session 2 — Now your foundation builds toward</span>
         <span class="endpoint-value" id="endpoint-4"></span>
       </div>
       <div class="form-field">
-        <label for="yg-eos1">Stage 5 · EOS 1 — Setting up + quick wins</label>
+        <label for="yg-eos1">Stage 5 · End of Session 1 — Setting up + quick wins</label>
         <p class="form-hint">By the end of Session 1, how will you know you've <strong>started</strong>? Not "finished" - "started." What rhythm could you have in place? What small first win could you point to?</p>
         <p class="form-hint-secondary">Foundation, not finish line. Four weeks is short - what's achievable that builds the habit and proves the path?</p>
         <textarea id="yg-eos1" rows="5" data-autogrow placeholder="Write the Session 1 foundation marker…">${existing?.eos1Point ? escapeAttr(existing.eos1Point) : ''}</textarea>
@@ -191,13 +191,13 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
           <span class="continuity-value" id="starting-from-s1"></span>
         </div>
         <div class="endpoint-card endpoint-card-promoted">
-          <span class="endpoint-label">Session 1 leads to EOS 1</span>
+          <span class="endpoint-label">Session 1 leads to End of Session 1</span>
           <span class="endpoint-value" id="endpoint-5"></span>
         </div>
       </div>
       <div class="form-field">
         <label>Stage 6 · Session 1 — 4 weeks, one step per week</label>
-        <p class="form-hint">Session 1 has four weeks (Aug 17 - Sept 11). How do you break your work into one step per week, building toward EOS 1?</p>
+        <p class="form-hint">Session 1 has four weeks (Aug 17 - Sept 11). How do you break your work into one step per week, building toward End of Session 1?</p>
         <div class="week-rows">
           ${weeklyRow(1, 1, s1Dates[0], existingS1[0])}
           ${weeklyRow(1, 2, s1Dates[1], existingS1[1])}
@@ -218,13 +218,13 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
           <span class="continuity-value" id="starting-from-s2"></span>
         </div>
         <div class="endpoint-card endpoint-card-promoted">
-          <span class="endpoint-label">Session 2 leads to EOS 2</span>
+          <span class="endpoint-label">Session 2 leads to End of Session 2</span>
           <span class="endpoint-value" id="endpoint-6"></span>
         </div>
       </div>
       <div class="form-field">
         <label>Stage 7 · Session 2 — 5 weeks</label>
-        <p class="form-hint">Picking up from end of Session 1, how do you get to EOS 2 in 5 weekly steps?</p>
+        <p class="form-hint">Picking up from end of Session 1, how do you get to End of Session 2 in 5 weekly steps?</p>
         <div class="week-rows">
           ${weeklyRow(2, 1, s2Dates[0], existingS2[0])}
           ${weeklyRow(2, 2, s2Dates[1], existingS2[1])}
@@ -246,13 +246,13 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
           <span class="continuity-value" id="starting-from-s3"></span>
         </div>
         <div class="endpoint-card endpoint-card-promoted">
-          <span class="endpoint-label">Session 3 leads to EOS 3 (locked)</span>
+          <span class="endpoint-label">Session 3 leads to End of Session 3 (locked)</span>
           <span class="endpoint-value" id="endpoint-7"></span>
         </div>
       </div>
       <div class="form-field">
         <label>Stage 8 · Session 3 — only 3 weeks</label>
-        <p class="form-hint">The final stretch to your locked EOS 3. Only 3 weeks. If this feels tight, the next screen lets you rebalance back into Sessions 1 or 2.</p>
+        <p class="form-hint">The final stretch to your locked End of Session 3. Only 3 weeks. If this feels tight, the next screen lets you rebalance back into Sessions 1 or 2.</p>
         <div class="week-rows">
           ${weeklyRow(3, 1, s3Dates[0], existingS3[0])}
           ${weeklyRow(3, 2, s3Dates[1], existingS3[1])}
@@ -268,7 +268,7 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
     <div class="stage-panel" data-stage="9" hidden>
       <div class="form-field">
         <label>Stage 9 · Review &amp; rebalance</label>
-        <p class="form-hint">Your full plan to EOS 3 is below. Everything is editable <strong>except EOS 3</strong> (your commitment anchor). If Session 3 feels heavy, move work into Sessions 1 or 2. Save when it feels honest.</p>
+        <p class="form-hint">Your full plan to End of Session 3 is below. Everything is editable <strong>except End of Session 3</strong> (your commitment anchor). If Session 3 feels heavy, move work into Sessions 1 or 2. Save when it feels honest.</p>
       </div>
       <div id="review-surface" class="review-surface"></div>
       <div class="stage-actions">
@@ -306,11 +306,11 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
     };
     setText('endpoint-1', eos6, '(set your year goal)');
     setText('endpoint-2', eos6, '(set your year goal)');
-    setText('endpoint-3', eos3, '(set your EOS 3 midpoint)');
-    setText('endpoint-4', eos2, '(set your EOS 2 milestone)');
-    setText('endpoint-5', eos1, '(set EOS 1 first)');
-    setText('endpoint-6', eos2, '(set EOS 2 first)');
-    setText('endpoint-7', eos3, '(set EOS 3 first)');
+    setText('endpoint-3', eos3, '(set your End of Session 3 midpoint)');
+    setText('endpoint-4', eos2, '(set your End of Session 2 milestone)');
+    setText('endpoint-5', eos1, '(set End of Session 1 first)');
+    setText('endpoint-6', eos2, '(set End of Session 2 first)');
+    setText('endpoint-7', eos3, '(set End of Session 3 first)');
 
     // D3 — coming-from anchors on stages 6/7/8.
     // Stage 6 starts from the baseline (year-level starting line).
@@ -333,7 +333,7 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
        </div>`;
     review.innerHTML = `
       <div class="review-section">
-        <span class="review-section-label">EOS 6 — Year goal</span>
+        <span class="review-section-label">End of Session 6 — Year goal</span>
         <input type="text" id="review-text" class="review-milestone-input" value="${escapeAttr(v.text)}">
       </div>
       <div class="review-section">
@@ -341,16 +341,16 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         <input type="text" id="review-baseline" class="review-milestone-input" value="${escapeAttr(v.baseline)}">
       </div>
       <div class="review-section review-locked">
-        <span class="review-section-label">EOS 3 — Midpoint · LOCKED</span>
+        <span class="review-section-label">End of Session 3 — Midpoint · LOCKED</span>
         <input type="text" class="review-milestone-input" value="${escapeAttr(v.halfwayPoint)}" disabled>
         <p class="review-locked-note">This is the commitment your partner approves. Edit only at end of Session 3.</p>
       </div>
       <div class="review-section">
-        <span class="review-section-label">EOS 2 — Session 2 milestone</span>
+        <span class="review-section-label">End of Session 2 — Session 2 milestone</span>
         <input type="text" id="review-quarter" class="review-milestone-input" value="${escapeAttr(v.quarterPoint)}">
       </div>
       <div class="review-section">
-        <span class="review-section-label">EOS 1 — Quick wins (end of Session 1)</span>
+        <span class="review-section-label">End of Session 1 — Quick wins (end of Session 1)</span>
         <input type="text" id="review-eos1" class="review-milestone-input" value="${escapeAttr(v.eos1Point)}">
       </div>
       <div class="review-section">
@@ -414,7 +414,7 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
           : v.weeklySteps;
         const text = reviewText || v.text;
         const baseline = reviewBaseline || v.baseline;
-        const halfwayPoint = v.halfwayPoint; // EOS 3 is locked - never read from review surface
+        const halfwayPoint = v.halfwayPoint; // End of Session 3 is locked - never read from review surface
         const quarterPoint = reviewQuarter || v.quarterPoint;
         const eos1Point = reviewEos1 || v.eos1Point;
         if (!text || !halfwayPoint) return;

@@ -113,7 +113,7 @@ export async function renderSetupView(learnerId) {
         <h3 class="setup-section-title">2. Your year goals</h3>
         <span class="setup-count ${filledGoals.length >= MIN_GOALS ? 'is-met' : ''}">${filledGoals.length} of ${MIN_GOALS} minimum</span>
       </div>
-      <p class="setup-hint">Set at least ${MIN_GOALS} year goals. Tap a category to walk through the 9-stage plan (EOS 6 → baseline → EOS 3 → EOS 2 → EOS 1 → weekly steps for Sessions 1, 2, 3).</p>
+      <p class="setup-hint">Set at least ${MIN_GOALS} year goals. Tap a category to walk through the 9-stage plan (End of Session 6 → baseline → End of Session 3 → End of Session 2 → End of Session 1 → weekly steps for Sessions 1, 2, 3).</p>
       <div id="setup-goals-grid" class="setup-goals-grid"></div>
     </section>
 
@@ -274,7 +274,7 @@ function renderGoalsGrid(learner, filledGoals) {
       <span class="setup-goal-cat">${escapeHtml(cat.name)}</span>
       <span class="setup-goal-kind">${escapeHtml(cat.kind)}</span>
       <p class="setup-goal-text">${filled ? escapeHtml(filled.text) : 'Tap to plan this goal'}</p>
-      ${filled?.halfwayPoint ? `<span class="setup-goal-eos3"><strong>EOS 3:</strong> ${escapeHtml(filled.halfwayPoint)}</span>` : ''}
+      ${filled?.halfwayPoint ? `<span class="setup-goal-eos3"><strong>End of Session 3:</strong> ${escapeHtml(filled.halfwayPoint)}</span>` : ''}
     `;
     card.addEventListener('click', () => {
       openYearGoalModal({
