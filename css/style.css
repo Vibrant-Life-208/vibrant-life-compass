@@ -20,6 +20,13 @@
 
 * { box-sizing: border-box; }
 
+/* Root font size bumped from default 16px to 18px (Captain 2026-05-13) for
+   younger-learner legibility on iPads. All component sizes use rem, so this
+   scales every text + spacing unit ~12.5% larger across the app. */
+html {
+  font-size: 18px;
+}
+
 html, body {
   margin: 0;
   padding: 0;
