@@ -1240,6 +1240,20 @@ header h1 {
   line-height: 1.4;
 }
 
+/* MAC-D1 (2026-05-13): EOS glossary line on Compass page.
+   Quiet, present-always - kid translation for the spreadsheet-y EOS labels. */
+.compass-eos-glossary {
+  margin: 0 0 1rem;
+  padding: 0.45rem 0.85rem;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.compass-eos-glossary strong {
+  color: var(--text);
+}
+
 /* SSC-D2 (2026-05-13): low-shame reset copy on Compass page.
    Quiet, italic, present without demanding attention. */
 .compass-reset-cue {
