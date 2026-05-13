@@ -1,8 +1,8 @@
 // Compass (year view).
 
-import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval, addNotification, getParentLearnerLinks } from './store.js';
+import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getYearVision, setYearVision, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval, addNotification, getParentLearnerLinks } from './store.js';
 import { getCategoriesForStudio, getStudioName } from './studios.js';
-import { openGoalModal, openQuoteModal, openTraitsModal, openConfirmModal, openYearGoalModal } from './modals.js';
+import { openGoalModal, openQuoteModal, openVisionModal, openTraitsModal, openConfirmModal, openYearGoalModal } from './modals.js';
 import { renderYearMap } from './year-map.js';
 import { getYearMapClickHandler } from './north.js';
 
@@ -28,13 +28,21 @@ export async function renderYearView(learnerId) {
   }
 
   const categories = getCategoriesForStudio(learner.studio);
-  const [allGoals, quoteText, traits, partner] = await Promise.all([
+  const [allGoals, quoteText, visionText, traits, partner] = await Promise.all([
     getGoals(learnerId),
     getYearQuote(learnerId),
+    getYearVision(learnerId),
     getYearTraits(learnerId),
     getActivePartnerOf(learnerId),
   ]);
   const goals = allGoals.filter((g) => g.scope === 'year');
+
+  // Vision (pedagogy addition 2026-05-13)
+  const visionEl = document.getElementById('year-vision-text');
+  if (visionEl) {
+    visionEl.textContent = visionText || 'Tap to write where you see yourself a year from now';
+    visionEl.classList.toggle('empty', !visionText);
+  }
 
   // Quote
   const quoteEl = document.getElementById('year-quote-text');
@@ -70,6 +78,17 @@ export async function renderYearView(learnerId) {
       openTraitsModal(existing, async (next) => {
         await setYearTraits(learnerId, next);
         await renderYearView(learnerId);
+      });
+    });
+    document.querySelector('.year-vision')?.addEventListener('click', async () => {
+      const existing = await getYearVision(learnerId);
+      openVisionModal({
+        existing,
+        currentStudio: learner.studio,
+        onSave: async (next) => {
+          await setYearVision(learnerId, next);
+          await renderYearView(learnerId);
+        },
       });
     });
     wired = true;

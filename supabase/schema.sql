@@ -58,10 +58,14 @@ create table guide_learner_assignment (
 -- Learner content
 -- ============================================================================
 
--- Year-level motivational quote, anchor for the year (Decision: lock until S7)
+-- Year-level motivational quote + 1-year vision statement.
+-- (vision added 2026-05-13 pedagogy addition - the protagonist statement
+-- alongside the motivational quote and the character traits.)
+-- Lock until S7.
 create table year_quotes (
   learner_id uuid primary key references learners(id) on delete cascade,
-  text text not null,
+  text text not null default '',
+  vision text not null default '',
   locked_until_session int default 7,
   updated_at timestamptz default now()
 );

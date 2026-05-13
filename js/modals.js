@@ -106,8 +106,8 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
       </div>
       <div class="form-field">
         <label for="yg-text">Stage 1 · EOS 6 — Your year goal</label>
-        <p class="form-hint">What does success look like by the end of Session 6? Make it specific. Make it real.</p>
-        <p class="form-hint-secondary">A complete answer might include: what "finished" looks like, a number or threshold you can point to, and why it matters to you.</p>
+        <p class="form-hint">A year from now, what's different about you? How will you know you've gotten there - what would your partner or guide have to see?</p>
+        <p class="form-hint-secondary">Think about: what "finished" looks like in plain words. Something specific you could point to. Why it matters to you right now.</p>
         <textarea id="yg-text" rows="5" data-autogrow placeholder="Write your year-end vision here…">${existing?.text ? escapeAttr(existing.text) : ''}</textarea>
       </div>
       ${category.example ? `<div class="form-example"><span class="form-example-label">Example</span><p>${escapeHtml(category.example)}</p></div>` : ''}
@@ -123,8 +123,8 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
       </div>
       <div class="form-field">
         <label for="yg-baseline">Stage 2 · Baseline — Where you are now</label>
-        <p class="form-hint">The honest starting line. Your partner will see this for context.</p>
-        <p class="form-hint-secondary">A complete answer might include: what you can already do today, what's hard, and what you've tried before.</p>
+        <p class="form-hint">Where are you starting from today? What's hard about this for you right now? What have you already tried?</p>
+        <p class="form-hint-secondary">Your partner will see this for context. The honest version helps more than the impressive one.</p>
         <textarea id="yg-baseline" rows="5" data-autogrow placeholder="Write the honest truth about where you're starting…">${existing?.baseline ? escapeAttr(existing.baseline) : ''}</textarea>
       </div>
       <div class="stage-actions">
@@ -140,8 +140,8 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
       </div>
       <div class="form-field">
         <label for="yg-halfway">Stage 3 · EOS 3 — The midpoint (this becomes locked)</label>
-        <p class="form-hint">What will be true by the end of Session 3? This is the commitment anchor — once saved, your partner approves it and it cannot be edited until you replan in the second half. It becomes your Session 3 goal automatically.</p>
-        <p class="form-hint-secondary">A complete answer might include: the visible halfway marker, what your partner would see is true, and something you could demonstrate or show.</p>
+        <p class="form-hint">By the end of Session 3 - halfway through the year - what will you have done? Something specific your partner could check. Something you could show or demonstrate.</p>
+        <p class="form-hint-secondary">This is your commitment anchor. Specific enough to point at. Measurable enough to check. Real enough to commit to - once your partner signs off, this one locks until you replan in the second half.</p>
         <textarea id="yg-halfway" rows="5" data-autogrow placeholder="Write the midpoint commitment you're willing to lock in…">${existing?.halfwayPoint ? escapeAttr(existing.halfwayPoint) : ''}</textarea>
       </div>
       <div class="stage-actions">
@@ -157,8 +157,8 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
       </div>
       <div class="form-field">
         <label for="yg-quarter">Stage 4 · EOS 2 — Halfway to your Session 3 goal</label>
-        <p class="form-hint">What will be true by the end of Session 2? This becomes your Session 2 goal automatically.</p>
-        <p class="form-hint-secondary">A complete answer might include: a smaller milestone between today and Session 3, something you can verify by yourself, and an honest read on the pace.</p>
+        <p class="form-hint">By the end of Session 2, what will be different? A smaller step toward your EOS 3 commitment. What can you check on your own?</p>
+        <p class="form-hint-secondary">Achievable in five weeks. Specific enough to verify by yourself. An honest read on the pace - if EOS 2 feels too tight, EOS 3 will feel impossible. Adjust here, not later.</p>
         <textarea id="yg-quarter" rows="5" data-autogrow placeholder="Write the Session 2 checkpoint…">${existing?.quarterPoint ? escapeAttr(existing.quarterPoint) : ''}</textarea>
       </div>
       <div class="stage-actions">
@@ -174,8 +174,8 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
       </div>
       <div class="form-field">
         <label for="yg-eos1">Stage 5 · EOS 1 — Setting up + quick wins</label>
-        <p class="form-hint">What's the marker that proves you've <strong>started</strong>? Achievable in Session 1's four weeks. Foundation, not finish line.</p>
-        <p class="form-hint-secondary">A complete answer might include: the rhythm you've established, the foundation that proves you're on the path, and one small win you can point to.</p>
+        <p class="form-hint">By the end of Session 1, how will you know you've <strong>started</strong>? Not "finished" - "started." What rhythm could you have in place? What small first win could you point to?</p>
+        <p class="form-hint-secondary">Foundation, not finish line. Four weeks is short - what's achievable that builds the habit and proves the path?</p>
         <textarea id="yg-eos1" rows="5" data-autogrow placeholder="Write the Session 1 foundation marker…">${existing?.eos1Point ? escapeAttr(existing.eos1Point) : ''}</textarea>
       </div>
       <div class="stage-actions">
@@ -446,6 +446,33 @@ export function openQuoteModal(existing, onSave) {
   };
   openModal();
   setTimeout(() => document.getElementById('quote-input')?.focus(), 50);
+}
+
+// 1-year vision prompt (pedagogy addition 2026-05-13). The protagonist
+// statement above the per-category goals. Acton-aligned vision-first move:
+// who you're becoming, not what you're doing.
+export function openVisionModal({ existing, currentStudio, onSave }) {
+  setModalTitle('Where you see yourself a year from now');
+  const studioOrder = ['sparks', 'discovery', 'adventure', 'launchpad'];
+  const nextIdx = studioOrder.indexOf(currentStudio) + 1;
+  const nextStudio = nextIdx > 0 && nextIdx < studioOrder.length ? studioOrder[nextIdx] : null;
+  const nextStudioHint = nextStudio
+    ? `Are you in <strong>${nextStudio.charAt(0).toUpperCase() + nextStudio.slice(1)}</strong> studio? What did you have to grow through to get there?`
+    : `What does it look like to be the version of yourself you're moving toward?`;
+  document.getElementById('form-fields').innerHTML = `
+    <div class="form-field">
+      <p class="form-hint">A year from today - who do you see? Not what you did. Who you became.</p>
+      <p class="form-hint-secondary">${nextStudioHint} What do your guide and your parents see? What does your partner notice about you? What's different about how you show up?</p>
+      <label for="vision-input">Your one-year vision</label>
+      <textarea id="vision-input" rows="6" data-autogrow placeholder="A year from now…">${existing ? escapeAttr(existing) : ''}</textarea>
+    </div>
+  `;
+  activeSubmit = () => {
+    onSave(document.getElementById('vision-input').value.trim());
+    closeModal();
+  };
+  openModal();
+  setTimeout(() => document.getElementById('vision-input')?.focus(), 50);
 }
 
 export function openTraitsModal(existing, onSave) {

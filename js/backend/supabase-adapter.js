@@ -86,6 +86,20 @@ export async function setYearQuote(learnerId, text) {
   await getClient().from('year_quotes').upsert({ learner_id: learnerId, text });
 }
 
+// Year vision (pedagogy addition 2026-05-13). Uses the same year_quotes
+// table with an added `vision` column - simpler than a separate table for
+// the protagonist-statement triple (quote + vision + traits). Schema
+// migration deferred to post-deploy; for now upserts into year_quotes
+// with vision-only payload.
+export async function getYearVision(learnerId) {
+  const { data } = await getClient().from('year_quotes').select('vision').eq('learner_id', learnerId).single();
+  return data?.vision || '';
+}
+
+export async function setYearVision(learnerId, text) {
+  await getClient().from('year_quotes').upsert({ learner_id: learnerId, vision: text });
+}
+
 export async function getYearTraits(learnerId) {
   const { data } = await getClient().from('year_traits').select('traits').eq('learner_id', learnerId).single();
   return data?.traits || [];

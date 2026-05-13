@@ -338,6 +338,29 @@ header h1 {
 .tab-content.active { display: block; }
 
 /* Year View */
+/* Year vision — protagonist statement, sibling to quote + traits.
+   Pedagogy addition 2026-05-13. Visually distinct: deeper border,
+   the most-important-thing-on-the-page emphasis. */
+.year-vision {
+  background: var(--warm-white);
+  border-left: 4px solid var(--sage);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+}
+.vision-text {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+.vision-text.empty {
+  color: var(--text-soft);
+  font-style: italic;
+}
+
 .year-quote {
   background: var(--warm-white);
   border-left: 3px solid var(--sage);

@@ -15,6 +15,7 @@ const KEYS = {
   checkIns: 'hc_check_ins',
   posts: 'hc_everyone_posts',
   yearQuotes: 'hc_year_quotes',  // keyed by learner.id OR guide.id (both UUIDs)
+  yearVisions: 'hc_year_visions',  // 1-year vision prompt (Captain pedagogy add 2026-05-13)
   yearTraits: 'hc_year_traits',  // same
   logins: 'hc_logins',
   tasks: 'hc_tasks',
@@ -248,6 +249,22 @@ export async function setYearQuote(identityId, text) {
   const all = read(KEYS.yearQuotes) || {};
   all[identityId] = text;
   write(KEYS.yearQuotes, all);
+}
+
+// ============================================================================
+// Year vision per learner — "a year from now, who do you see?"
+// Pedagogy addition 2026-05-13: anchor for the protagonist statement above
+// the per-category goals. Visible to learner + their parents + their partner.
+// ============================================================================
+export async function getYearVision(identityId) {
+  const all = read(KEYS.yearVisions) || {};
+  return all[identityId] || '';
+}
+
+export async function setYearVision(identityId, text) {
+  const all = read(KEYS.yearVisions) || {};
+  all[identityId] = text;
+  write(KEYS.yearVisions, all);
 }
 
 // ============================================================================
