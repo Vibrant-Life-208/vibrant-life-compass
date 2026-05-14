@@ -1299,6 +1299,20 @@ header h1 {
   line-height: 1.4;
 }
 
+/* GMR-D3 (2026-05-13): Stage 5 → Stage 6 bridge line — names the shift
+   from "what" (milestones) to "how" (weekly path) without explaining it.
+   Ezri's intervention; mirrors the journey-shape of the modal. */
+.stage-bridge {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.85rem;
+  background: var(--earth-pale, #f5efe6);
+  border-radius: 8px;
+  color: var(--text);
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+}
+
 /* MAC-D1 (2026-05-13): EOS glossary line on Compass page.
    Quiet, present-always - kid translation for the spreadsheet-y EOS labels. */
 .compass-eos-glossary {

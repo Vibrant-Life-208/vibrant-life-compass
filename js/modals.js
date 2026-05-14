@@ -107,7 +107,7 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
       <div class="form-field">
         <label for="yg-text">Stage 1 · End of Session 6 — Your year goal</label>
         <p class="form-hint">A year from now, what's different about you? How will you know you've gotten there - what would your partner or guide have to see?</p>
-        <p class="form-hint-secondary">Think about: what "finished" looks like in plain words. Something specific you could point to. Why it matters to you right now.</p>
+        <p class="form-hint-secondary">Think about: what "finished" looks like in plain words. Something specific you could point to. Why it matters to you right now. This builds on the bigger vision you wrote on the Compass page, focused on this category.</p>
         <textarea id="yg-text" rows="5" data-autogrow placeholder="Write your year-end vision here…">${existing?.text ? escapeAttr(existing.text) : ''}</textarea>
       </div>
       ${category.example ? `<div class="form-example"><span class="form-example-label">Example</span><p>${escapeHtml(category.example)}</p></div>` : ''}
@@ -139,10 +139,10 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         <span class="endpoint-value" id="endpoint-2"></span>
       </div>
       <div class="form-field">
-        <label for="yg-halfway">Stage 3 · End of Session 3 — The midpoint (this becomes locked)</label>
+        <label for="yg-halfway">Stage 3 · End of Session 3 — The commitment you'll make with your partner</label>
         <p class="form-hint">By the end of Session 3 - halfway through the year - what will you have done? Something specific your partner could check. Something you could show or demonstrate.</p>
-        <p class="form-hint-secondary">This is your commitment anchor. Specific enough to point at. Measurable enough to check. Real enough to commit to - once your partner signs off, this one locks until you replan in the second half.</p>
-        <textarea id="yg-halfway" rows="5" data-autogrow placeholder="Write the midpoint commitment you're willing to lock in…">${existing?.halfwayPoint ? escapeAttr(existing.halfwayPoint) : ''}</textarea>
+        <p class="form-hint-secondary">This is the commitment you and your partner make together. Specific enough to point at. Measurable enough to check. Real enough to commit to. Once your partner signs off, you both hold it.</p>
+        <textarea id="yg-halfway" rows="5" data-autogrow placeholder="Write the midpoint commitment you're willing to make…">${existing?.halfwayPoint ? escapeAttr(existing.halfwayPoint) : ''}</textarea>
       </div>
       <div class="stage-actions">
         <button type="button" class="btn btn-text" data-action="back">Back</button>
@@ -158,7 +158,7 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
       <div class="form-field">
         <label for="yg-quarter">Stage 4 · End of Session 2 — Halfway to your Session 3 goal</label>
         <p class="form-hint">By the end of Session 2, what will be different? A smaller step toward your End of Session 3 commitment. What can you check on your own?</p>
-        <p class="form-hint-secondary">Achievable in five weeks. Specific enough to verify by yourself. An honest read on the pace - if End of Session 2 feels too tight, End of Session 3 will feel impossible. Adjust here, not later.</p>
+        <p class="form-hint-secondary">Achievable in five weeks. Specific enough to verify by yourself. An honest read on the pace - if End of Session 2 feels too tight, End of Session 3 will feel impossible. Better to adjust now than later if the pace feels off.</p>
         <textarea id="yg-quarter" rows="5" data-autogrow placeholder="Write the Session 2 checkpoint…">${existing?.quarterPoint ? escapeAttr(existing.quarterPoint) : ''}</textarea>
       </div>
       <div class="stage-actions">
@@ -185,6 +185,7 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
     </div>
 
     <div class="stage-panel" data-stage="6" hidden>
+      <p class="stage-bridge">You've set the destinations. Now plan the path, week by week.</p>
       <div class="continuity-cards">
         <div class="continuity-card continuity-from">
           <span class="continuity-label">Starting from</span>
@@ -462,7 +463,7 @@ export function openVisionModal({ existing, currentStudio, onSave }) {
   document.getElementById('form-fields').innerHTML = `
     <div class="form-field">
       <p class="form-hint">A year from today - who do you see? Not what you did. Who you became.</p>
-      <p class="form-hint-secondary">${nextStudioHint} What do your guide and your parents see? What does your partner notice about you? What's different about how you show up?</p>
+      <p class="form-hint-secondary">${nextStudioHint} What do your guide and your parents see? What does your partner notice about you? What's different about how you show up? You'll set per-category goals next - this is the bigger picture they live inside.</p>
       <label for="vision-input">Your one-year vision</label>
       <textarea id="vision-input" rows="6" data-autogrow placeholder="A year from now…">${existing ? escapeAttr(existing) : ''}</textarea>
     </div>
