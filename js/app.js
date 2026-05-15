@@ -170,7 +170,14 @@ async function needsOnboarding(identityId) {
 }
 
 async function resolveLearnerId(session) {
+  // Learners + parents: use the linked-learner id from the session.
   if (session.learnerId) return session.learnerId;
+  // Guides: when they navigate to Compass/Session/North, the protagonist is
+  // the guide themselves (test-driving the summer prep journey, Captain
+  // 2026-05-15). Their guide.id is treated like a learner.id throughout the
+  // protagonist data flow.
+  if (session.role === 'guide' && session.guideId) return session.guideId;
+  // Skeleton-review fallback (default-role buttons).
   const learners = await getLearners();
   return learners[0]?.id || null;
 }

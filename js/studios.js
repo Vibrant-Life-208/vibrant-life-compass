@@ -182,6 +182,114 @@ export const STUDIOS = {
     yearMapDensity: 'compressed',
     dailyTaskThreshold: 7,
   },
+  // Guide summer-prep journey (Captain 2026-05-15). Guides test-drive the
+  // learner experience with their own goals before the school year starts.
+  // 12 life-areas (from the life-table planning architecture) + 4 Acton-
+  // specific categories. Calendar: May 18 → Aug 17 2026, 7 sections × 13 days.
+  'guide-summer': {
+    name: 'Guide Summer Prep',
+    ageRange: 'May 18 → Aug 17 · walk the path before the year begins',
+    visible: [
+      'guide_body', 'guide_mind', 'guide_spirit', 'guide_time',
+      'guide_joy', 'guide_emotions', 'guide_family', 'guide_friends',
+      'guide_intimate', 'guide_home', 'guide_finances', 'guide_career',
+      'guide_pedagogy', 'guide_studio', 'guide_learners', 'guide_socratic',
+    ],
+    conditional: [],
+    yearMapDensity: 'standard',
+    dailyTaskThreshold: 3,
+  },
+};
+
+// Guide-specific categories. The 12 life-area architecture (Career/Mission,
+// Spirit, Mind, Body, Time, Joy, Emotions, Family, Friendships, Intimate,
+// Home, Finances) + 4 Acton-specific practice domains (Pedagogy, Studio
+// Leadership, Learner Relationships, Socratic Practice).
+//
+// Captain's framing: "equip us to know and use what the learners will be
+// using so we can help from a knowing place."
+export const GUIDE_CATEGORIES = {
+  guide_body: {
+    name: 'Body',
+    kind: 'personal',
+    example: 'Daily yoga + 8 hours sleep, four days a week. By Aug 17, walking up the hill without getting winded.',
+  },
+  guide_mind: {
+    name: 'Mind',
+    kind: 'personal',
+    example: 'Read 6 books across pedagogy + Acton history. One book every 2 weeks. Notes shareable with another guide.',
+  },
+  guide_spirit: {
+    name: 'Spirit / Meaning',
+    kind: 'personal',
+    example: '20 min morning silence, five days a week. By Aug 17 the morning has been protected for 60 mornings.',
+  },
+  guide_time: {
+    name: 'Time / Rhythm',
+    kind: 'personal',
+    example: 'Open + close discipline daily. One weekly day off held without exception. Two scheduled drops per week.',
+  },
+  guide_joy: {
+    name: 'Joy',
+    kind: 'personal',
+    example: 'Weekly creative practice. Monthly explore day. One swing-of-the-wild slot kept each week.',
+  },
+  guide_emotions: {
+    name: 'Emotions',
+    kind: 'personal',
+    example: 'Daily 5-min check-in (one sentence in a journal). Weekly review of what surfaced. Therapy bi-weekly.',
+  },
+  guide_family: {
+    name: 'Family',
+    kind: 'personal',
+    example: 'Monthly camping. Daily phone-down dinner. One intentional act for each family member each week.',
+  },
+  guide_friends: {
+    name: 'Friendships / Community',
+    kind: 'personal',
+    example: 'One in-person friend per week. One phone catch-up per week. Maintain 3-4 active reciprocal friendships.',
+  },
+  guide_intimate: {
+    name: 'Intimate / Partner',
+    kind: 'personal',
+    example: 'Weekly date with my partner. Shared calendar discipline. Quarterly relationship-state conversation.',
+  },
+  guide_home: {
+    name: 'Home / Environment',
+    kind: 'personal',
+    example: 'Clear workspace by Monday morning. One declutter sweep per month. Quiet bedroom = phone-free.',
+  },
+  guide_finances: {
+    name: 'Finances',
+    kind: 'personal',
+    example: 'Monthly budget review. By Aug 17, runway clarity documented + income streams stable.',
+  },
+  guide_career: {
+    name: 'Career / Mission',
+    kind: 'personal',
+    example: 'By Aug 17, the Vibrant Life guide-role is well-prepared AND parallel project ships first milestone.',
+  },
+  // Acton / Vibrant Life specific practice
+  guide_pedagogy: {
+    name: 'Pedagogy / Teaching Craft',
+    kind: 'practice',
+    example: 'Read 3 Acton-aligned pedagogy books this summer. Practice Socratic question-design with a peer guide weekly.',
+  },
+  guide_studio: {
+    name: 'Studio Leadership',
+    kind: 'practice',
+    example: 'By Aug 17, year-one architecture for my studio drafted. Studio agreements written with co-guide.',
+  },
+  guide_learners: {
+    name: 'Learner Relationships',
+    kind: 'practice',
+    example: 'Reach out personally to each of my assigned learners between now and Aug 17. One meaningful conversation each.',
+  },
+  guide_socratic: {
+    name: 'Socratic Practice',
+    kind: 'practice',
+    example: 'Design and run 4 mock Socratic discussions with peer guides this summer. Notes on each. Refine my questioning.',
+  },
 };
 
 // Overflow prompt copy, tuned per studio voice. Praesens + Polaris design.
@@ -217,6 +325,15 @@ export function getStudio(studioId) {
 export function getCategoriesForStudio(studioId) {
   const studio = STUDIOS[studioId];
   if (!studio) return [];
+  // Guide-summer pulls from GUIDE_CATEGORIES; learner studios pull from CATEGORIES.
+  if (studioId === 'guide-summer') {
+    return studio.visible.map((id) => ({
+      id,
+      ...GUIDE_CATEGORIES[id],
+      // Guide categories use a single example (no per-studio variation needed)
+      example: GUIDE_CATEGORIES[id]?.example || '',
+    }));
+  }
   return [...studio.visible, ...studio.conditional].map((id) => ({
     id,
     ...CATEGORIES[id],
@@ -265,6 +382,34 @@ export const YEAR_CALENDAR = {
   ],
   sessionWeeks: [4, 5, 3, 3, 6, 6, 7], // weeks of programs per session
 };
+
+// Guide summer-prep calendar: 13 weeks, May 18 → Aug 17, 2026.
+// 7 sections × ~13 days each. Captain decision 2026-05-15: guides walk the
+// path before the school year starts so they can teach from a knowing place.
+// Section 6 is the work target; Section 7 is catch-up / plan-for-next-break.
+export const GUIDE_SUMMER_CALENDAR = {
+  yearStartISO: '2026-05-18',
+  yearEndISO:   '2026-08-17',
+  sessionStarts: [
+    '2026-05-18', // S1
+    '2026-05-31', // S2
+    '2026-06-13', // S3
+    '2026-06-26', // S4
+    '2026-07-09', // S5
+    '2026-07-22', // S6 (work target ends here)
+    '2026-08-04', // S7 (catch-up + plan for next break)
+  ],
+  // 13-day "weeks" measured as 2-week blocks for the rendering layer; the
+  // weekly-step inputs use these for date labels.
+  sessionWeeks: [2, 2, 2, 2, 2, 2, 2],
+};
+
+// Studio-aware calendar resolution. Use this everywhere YEAR_CALENDAR was
+// referenced before, so the guide-summer journey gets its own dates.
+export function getCalendarForStudio(studioId) {
+  if (studioId === 'guide-summer') return GUIDE_SUMMER_CALENDAR;
+  return YEAR_CALENDAR;
+}
 
 // Per-session landscape theme. Each session has a backdrop that gives the
 // learner a sense of "traveling" through the year. Desert -> forest -> arctic

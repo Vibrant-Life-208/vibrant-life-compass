@@ -34,11 +34,14 @@ export function openGoalModal({ title, existing, example, onSave }) {
   setTimeout(() => document.getElementById('goal-text')?.focus(), 50);
 }
 
-// Helper - format the date range for a given session-week (Mon-Fri).
+// Helper - format the date range for a given session-week.
 // Used in the weekly-breakdown stages (6-8) and the review (9).
-async function weekDateLabel(sessionIndex, weekIndex) {
-  const { YEAR_CALENDAR } = await import('./studios.js');
-  const sessionStart = YEAR_CALENDAR.sessionStarts[sessionIndex - 1];
+// studio param honors the guide-summer calendar (May 18 → Aug 17, 13-day
+// sections) vs the school-year calendar (Aug 17 → May 27).
+async function weekDateLabel(sessionIndex, weekIndex, studioId) {
+  const { getCalendarForStudio } = await import('./studios.js');
+  const calendar = getCalendarForStudio(studioId);
+  const sessionStart = calendar.sessionStarts[sessionIndex - 1];
   if (!sessionStart) return `Week ${weekIndex}`;
   const start = new Date(sessionStart + 'T00:00:00');
   start.setDate(start.getDate() + (weekIndex - 1) * 7);
@@ -65,12 +68,12 @@ async function weekDateLabel(sessionIndex, weekIndex) {
 // On save, seeds Session 1, 2, 3 goals automatically with End of Session 1, 2, 3
 // respectively. Each tagged autoPopulated=true so learner-edited
 // session goals are preserved on re-save.
-export async function openYearGoalModal({ category, existing, onSave, isFirstTime }) {
+export async function openYearGoalModal({ category, existing, onSave, isFirstTime, studio }) {
   setModalTitle(`${category.name} - year goal`);
-  // Pre-compute date labels for the weekly inputs
-  const s1Dates = await Promise.all([1,2,3,4].map(w => weekDateLabel(1, w)));
-  const s2Dates = await Promise.all([1,2,3,4,5].map(w => weekDateLabel(2, w)));
-  const s3Dates = await Promise.all([1,2,3].map(w => weekDateLabel(3, w)));
+  // Pre-compute date labels for the weekly inputs (studio-aware calendar)
+  const s1Dates = await Promise.all([1,2,3,4].map(w => weekDateLabel(1, w, studio)));
+  const s2Dates = await Promise.all([1,2,3,4,5].map(w => weekDateLabel(2, w, studio)));
+  const s3Dates = await Promise.all([1,2,3].map(w => weekDateLabel(3, w, studio)));
   const existingS1 = existing?.weeklySteps?.[1] || [];
   const existingS2 = existing?.weeklySteps?.[2] || [];
   const existingS3 = existing?.weeklySteps?.[3] || [];

@@ -63,7 +63,24 @@ export async function getLearners() {
 
 export async function getLearner(id) {
   const learners = await getLearners();
-  return learners.find((l) => l.id === id) || null;
+  const learner = learners.find((l) => l.id === id);
+  if (learner) return learner;
+  // Guide-as-protagonist fallback (Captain 2026-05-15): when a guide is
+  // signed in and their own id is being used as the protagonist id,
+  // return the guide record with a synthetic studio so all the learner-
+  // shaped rendering code (year-view, session-view, north, modals) works.
+  const guides = read(KEYS.guides) || [];
+  const guide = guides.find((g) => g.id === id);
+  if (guide) {
+    return {
+      ...guide,
+      studio: 'guide-summer',
+      // Guides skip the first-run setup gate by being implicitly setup-complete
+      setupCompletedAt: guide.setupCompletedAt || guide.createdAt || new Date().toISOString(),
+      priorityGoalIds: guide.priorityGoalIds || [],
+    };
+  }
+  return null;
 }
 
 export async function saveLearner(data) {

@@ -281,6 +281,7 @@ function renderGoalsGrid(learner, filledGoals) {
         category: cat,
         existing: filled,
         isFirstTime: filledGoals.length === 0,
+        studio: learner.studio,
         onSave: async (data) => {
           const { saveGoal } = await import('./store.js');
           await saveGoal({

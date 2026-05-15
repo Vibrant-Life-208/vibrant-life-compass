@@ -2,19 +2,22 @@
 // Per Decision 2 of the 2026-05-11 fleet meeting: not a Google Calendar replica.
 // A learner-time visualization that reveals the whole and marks the learner's position.
 
-import { SESSIONS_PER_YEAR, YEAR_CALENDAR, DAYS_PER_WEEK, getStudio } from './studios.js';
+import { SESSIONS_PER_YEAR, YEAR_CALENDAR, DAYS_PER_WEEK, getStudio, getCalendarForStudio } from './studios.js';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
-// Compute the learner's current position in the Vibrant Life academic year.
-// Honors actual session start dates and break periods between sessions.
+// Compute the protagonist's current position in their academic-year/summer-prep
+// timeline. Honors actual session start dates and break periods between sessions.
+// studioId is now optional — defaults to the school-year calendar; pass
+// 'guide-summer' to compute against the guide summer-prep timeline.
 // Returns { sessionIndex, weekInSession, dayInWeek, weekOfYear, totalWeeks,
 //           beforeYearStart, afterYearEnd, onBreak }
-export function computeYearPosition(today = new Date()) {
-  const totalWeeks = YEAR_CALENDAR.sessionWeeks.reduce((a, b) => a + b, 0);
-  const yearStart = new Date(YEAR_CALENDAR.yearStartISO + 'T00:00:00');
+export function computeYearPosition(today = new Date(), studioId) {
+  const calendar = getCalendarForStudio(studioId);
+  const totalWeeks = calendar.sessionWeeks.reduce((a, b) => a + b, 0);
+  const yearStart = new Date(calendar.yearStartISO + 'T00:00:00');
   // yearEnd is inclusive - the entire last day still counts as in-session
-  const yearEnd = new Date(YEAR_CALENDAR.yearEndISO + 'T23:59:59');
+  const yearEnd = new Date(calendar.yearEndISO + 'T23:59:59');
 
   if (today < yearStart) {
     return {
@@ -31,7 +34,7 @@ export function computeYearPosition(today = new Date()) {
   if (today > yearEnd) {
     return {
       sessionIndex: SESSIONS_PER_YEAR,
-      weekInSession: YEAR_CALENDAR.sessionWeeks[SESSIONS_PER_YEAR - 1],
+      weekInSession: calendar.sessionWeeks[SESSIONS_PER_YEAR - 1],
       dayInWeek: DAYS_PER_WEEK,
       weekOfYear: totalWeeks,
       totalWeeks,
@@ -47,12 +50,12 @@ export function computeYearPosition(today = new Date()) {
   let onBreak = false;
   let weeksBeforeCurrent = 0; // weeks of program completed before current session
 
-  for (let i = 0; i < YEAR_CALENDAR.sessionStarts.length; i++) {
-    const sStart = new Date(YEAR_CALENDAR.sessionStarts[i] + 'T00:00:00');
-    const sWeeks = YEAR_CALENDAR.sessionWeeks[i];
+  for (let i = 0; i < calendar.sessionStarts.length; i++) {
+    const sStart = new Date(calendar.sessionStarts[i] + 'T00:00:00');
+    const sWeeks = calendar.sessionWeeks[i];
     const sEnd = new Date(sStart.getTime() + (sWeeks * 7 * MS_PER_DAY) - MS_PER_DAY);
-    const nextStart = i + 1 < YEAR_CALENDAR.sessionStarts.length
-      ? new Date(YEAR_CALENDAR.sessionStarts[i + 1] + 'T00:00:00')
+    const nextStart = i + 1 < calendar.sessionStarts.length
+      ? new Date(calendar.sessionStarts[i + 1] + 'T00:00:00')
       : yearEnd;
 
     if (today >= sStart && today <= sEnd) {
@@ -95,7 +98,8 @@ export function renderYearMap(container, learner, opts = {}) {
   if (!container) return;
   const studio = getStudio(learner?.studio) || { yearMapDensity: 'standard', name: 'Adventure' };
   const density = opts.density || studio.yearMapDensity || 'standard';
-  const position = opts.position || computeYearPosition();
+  const calendar = getCalendarForStudio(learner?.studio);
+  const position = opts.position || computeYearPosition(new Date(), learner?.studio);
 
   container.innerHTML = '';
   container.classList.add('year-map', `year-map-${density}`);
@@ -112,9 +116,9 @@ export function renderYearMap(container, learner, opts = {}) {
   const thread = document.createElement('div');
   thread.className = 'year-map-thread';
 
-  const totalWeeksInYear = YEAR_CALENDAR.sessionWeeks.reduce((a, b) => a + b, 0);
+  const totalWeeksInYear = calendar.sessionWeeks.reduce((a, b) => a + b, 0);
 
-  YEAR_CALENDAR.sessionWeeks.forEach((weeksInSession, sIdx) => {
+  calendar.sessionWeeks.forEach((weeksInSession, sIdx) => {
     const sessionNumber = sIdx + 1;
     const isCurrent = sessionNumber === position.sessionIndex;
     const isPast = sessionNumber < position.sessionIndex || position.afterYearEnd;
