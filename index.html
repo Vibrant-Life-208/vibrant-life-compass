@@ -273,9 +273,11 @@
 
   <!-- Supabase client. Loaded as ES module so the adapter can use it.
        Production deploys with BACKEND_TYPE='supabase' rely on this being
-       available on window.__supabaseCreateClient before app.js runs. -->
+       available on window.__supabaseCreateClient before app.js runs.
+       Pinned to specific version (not @2 tag) to prevent silent CDN updates
+       from changing client behavior or introducing supply-chain compromise. -->
   <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.108.1';
     window.__supabaseCreateClient = createClient;
   </script>
 

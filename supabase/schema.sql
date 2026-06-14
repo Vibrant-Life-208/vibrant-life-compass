@@ -334,17 +334,24 @@ create policy "notifications_update_self" on notifications for update
 
 -- Everyone posts: readable by all authenticated users; only guides can
 -- publish directly; learners and parents may create with status='pending'.
+-- author_id must equal auth.uid() to prevent impersonation.
+-- Updates restricted to guides (for moderation: pending -> published / rejected).
 create policy "everyone_posts_read" on everyone_posts for select
   using (auth.uid() is not null and status = 'published');
 create policy "everyone_posts_guide_publish" on everyone_posts for insert
   with check (
-    exists (select 1 from profiles where id = auth.uid() and role = 'guide')
+    author_id = auth.uid()
+    and exists (select 1 from profiles where id = auth.uid() and role = 'guide')
   );
 create policy "everyone_posts_learner_submit" on everyone_posts for insert
   with check (
-    exists (select 1 from profiles where id = auth.uid() and role in ('learner', 'parent'))
+    author_id = auth.uid()
+    and exists (select 1 from profiles where id = auth.uid() and role in ('learner', 'parent'))
     and status = 'pending'
   );
+create policy "everyone_posts_guide_moderate" on everyone_posts for update
+  using (exists (select 1 from profiles where id = auth.uid() and role = 'guide'))
+  with check (exists (select 1 from profiles where id = auth.uid() and role = 'guide'));
 
 -- ============================================================================
 -- Updated-at triggers
