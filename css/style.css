@@ -2778,6 +2778,36 @@ body.landscape-mountain {
   border-color: var(--sage);
 }
 
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 4.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: inherit;
+  padding: 0.3rem 0.55rem;
+  border-radius: var(--radius-sm);
+}
+
+.password-toggle:hover,
+.password-toggle:focus {
+  color: var(--text);
+  background: var(--cream);
+  outline: none;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;

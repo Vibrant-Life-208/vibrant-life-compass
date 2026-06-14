@@ -48,7 +48,10 @@
         </div>
         <div class="form-field">
           <label for="signin-password">Password</label>
-          <input type="password" id="signin-password" placeholder="anything for the skeleton" autocomplete="current-password">
+          <div class="password-field">
+            <input type="password" id="signin-password" placeholder="anything for the skeleton" autocomplete="current-password">
+            <button type="button" class="password-toggle" id="signin-password-toggle" aria-label="Show password">Show</button>
+          </div>
         </div>
         <button type="button" id="signin-submit" class="btn btn-primary signin-submit">Sign in</button>
         <p id="signin-error" class="signin-error" style="display:none"></p>

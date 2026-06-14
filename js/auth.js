@@ -49,6 +49,19 @@ export function initAuth(onSignedIn) {
     });
   }
 
+  // Optional password reveal toggle.
+  const passwordToggle = document.getElementById('signin-password-toggle');
+  const passwordInput = document.getElementById('signin-password');
+  if (passwordToggle && passwordInput && !passwordToggle.dataset.wired) {
+    passwordToggle.dataset.wired = '1';
+    passwordToggle.addEventListener('click', () => {
+      const isHidden = passwordInput.type === 'password';
+      passwordInput.type = isHidden ? 'text' : 'password';
+      passwordToggle.textContent = isHidden ? 'Hide' : 'Show';
+      passwordToggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    });
+  }
+
   // Default-account role buttons (skeleton review only).
   const roleButtons = document.querySelectorAll('.role-btn');
   roleButtons.forEach((btn) => {
