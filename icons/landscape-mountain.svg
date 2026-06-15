@@ -10,19 +10,25 @@
     </style>
   </defs>
   <rect width="1200" height="600" fill="url(#msky)"/>
-  <!-- back range -->
-  <polygon points="0,500 150,300 350,420 550,280 750,400 950,260 1150,380 1200,420 1200,600 0,600" fill="#8b7d65" opacity="0.7"/>
-  <!-- snow caps -->
+  <!-- Earthy ground at horizon (y=500) connecting mountains to viewer, like forest's ground -->
+  <rect y="500" width="1200" height="100" fill="#5a4a38" opacity="0.85"/>
+  <!-- back range - ends at ground line (y=500) instead of viewport bottom -->
+  <polygon points="0,500 150,300 350,420 550,280 750,400 950,260 1150,380 1200,420 1200,500" fill="#8b7d65" opacity="0.75"/>
+  <!-- snow caps on the high back peaks -->
   <polygon points="130,310 150,300 170,310 165,335 140,335" fill="#f0e8d8" opacity="0.85"/>
   <polygon points="530,290 550,280 570,290 565,315 540,315" fill="#f0e8d8" opacity="0.85"/>
   <polygon points="930,270 950,260 970,270 965,295 940,295" fill="#f0e8d8" opacity="0.85"/>
-  <!-- front range -->
-  <polygon points="0,560 100,440 250,520 450,400 650,500 850,420 1050,510 1200,460 1200,600 0,600" fill="#6b5d48" opacity="0.85"/>
-  <!-- Front range snow caps (closer to road horizon, bringing the white down the slope) -->
+  <!-- front range - also ending at ground line; valley between middle peaks is where the cave sits -->
+  <polygon points="0,500 100,440 250,500 450,400 650,500 850,420 1050,500 1200,460 1200,500" fill="#6b5d48" opacity="0.9"/>
+  <!-- Front range snow caps (closer peaks) -->
   <polygon points="75,455 100,440 125,455 120,485 85,485" fill="#f0e8d8" opacity="0.85"/>
   <polygon points="425,415 450,400 475,415 470,450 435,450" fill="#f0e8d8" opacity="0.85"/>
   <polygon points="825,435 850,420 875,435 870,470 835,470" fill="#f0e8d8" opacity="0.85"/>
-  <!-- Perspective mountain trail: vanishing point lowered to meet front range top -->
+  <!-- Cave opening between the front range peaks - dark arched tunnel where the trail emerges -->
+  <path d="M 555 500 L 555 470 Q 555 435 600 430 Q 645 435 645 470 L 645 500 Z" fill="#1a1410"/>
+  <!-- Inner cave shadow for depth -->
+  <path d="M 575 495 L 575 475 Q 575 450 600 447 Q 625 450 625 475 L 625 495 Z" fill="#0f0a08" opacity="0.8"/>
+  <!-- Perspective mountain trail emerging from the cave -->
   <polygon points="585,500 615,500 880,600 320,600" fill="#a08868" opacity="0.95"/>
   <polygon points="593,500 607,500 730,600 470,600" fill="#806b50" opacity="0.85"/>
   <line class="road-stripe" x1="600" y1="510" x2="600" y2="600" stroke="#f0e8d0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
