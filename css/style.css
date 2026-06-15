@@ -74,6 +74,86 @@ html, body {
   display: block;
 }
 
+/* Welcome Screen (shown on first sign-in / at the start of each new cycle) */
+#welcome-screen {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+}
+
+#welcome-screen.active { display: flex; }
+
+.welcome-container {
+  background: var(--warm-white);
+  max-width: 480px;
+  width: 100%;
+  padding: 2.5rem 2rem;
+  border-radius: var(--radius);
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.welcome-title {
+  color: var(--sage);
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0 0 1.5rem;
+  line-height: 1.3;
+}
+
+.welcome-intro {
+  color: var(--text);
+  line-height: 1.7;
+  margin: 0 0 1.25rem;
+  font-size: 0.95rem;
+}
+
+.welcome-role-tagline {
+  color: var(--sage);
+  font-style: italic;
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  background: var(--sage-pale);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.welcome-late-start {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  background: var(--cream);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--earth-light);
+  line-height: 1.5;
+}
+
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+  align-items: center;
+}
+
+.welcome-instructions-link {
+  color: var(--sage);
+  text-decoration: underline;
+  font-size: 0.9rem;
+}
+
+.welcome-instructions-link:hover { color: var(--sage-light); }
+
+.welcome-continue-btn {
+  padding: 0.85rem 2.5rem;
+  font-size: 1rem;
+  min-width: 160px;
+}
+
 /* Bearing Screen (calm-first compass orientation) */
 #bearing-screen {
   display: none;

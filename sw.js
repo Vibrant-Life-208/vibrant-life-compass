@@ -1,4 +1,4 @@
-const CACHE = 'heros-compass-v53';
+const CACHE = 'heros-compass-v54';
 const CORE = [
   '/',
   '/index.html',
@@ -24,6 +24,7 @@ const CORE = [
   '/js/parent-view.js',
   '/js/admin.js',
   '/js/setup.js',
+  '/js/welcome.js',
   '/js/backend/config.js',
   '/js/backend/local-store.js',
   '/js/backend/supabase-adapter.js',

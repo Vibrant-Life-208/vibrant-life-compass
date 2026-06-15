@@ -15,6 +15,7 @@ import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderSetupView } from './setup.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal } from './modals.js';
+import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
 import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead } from './store.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
@@ -141,6 +142,16 @@ async function onSignedIn() {
     setCurrentSession(sessionNumber);
     showTab('session-view', learnerId);
   });
+
+  // Welcome screen (shown once per cycle: first sign-in or new year-start).
+  // Studio for guides = 'guide-summer' (uses summer-prep calendar);
+  // for learners = their assigned studio (uses school-year calendar).
+  const studioForCalendar = session.role === 'guide' ? 'guide-summer'
+                          : session.role === 'learner' ? (await (await import('./store.js')).getLearner(learnerId))?.studio
+                          : 'adventure';
+  if (shouldShowWelcome(session.role, studioForCalendar)) {
+    await showWelcomeScreen(session.role, studioForCalendar);
+  }
 
   // First-run onboarding: learner OR guide has no quote and no traits yet.
   const ownIdentity = session.role === 'learner' ? learnerId
