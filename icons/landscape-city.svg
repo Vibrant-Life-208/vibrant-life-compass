@@ -28,11 +28,11 @@
     <rect x="900" y="440" width="50" height="160"/>
     <rect x="1080" y="460" width="50" height="140"/>
   </g>
-  <!-- Perspective city street -->
-  <polygon points="585,440 615,440 880,600 320,600" fill="#4a3f33" opacity="0.95"/>
-  <polygon points="593,440 607,440 730,600 470,600" fill="#3a3128" opacity="0.85"/>
+  <!-- Perspective city street: vanishing point lowered to ground level -->
+  <polygon points="585,500 615,500 880,600 320,600" fill="#4a3f33" opacity="0.95"/>
+  <polygon points="593,500 607,500 730,600 470,600" fill="#3a3128" opacity="0.85"/>
   <!-- Yellow center line (city street) -->
-  <line class="road-stripe" x1="600" y1="455" x2="600" y2="600" stroke="#f4d690" stroke-width="3" stroke-dasharray="18,16" opacity="0.95"/>
+  <line class="road-stripe" x1="600" y1="510" x2="600" y2="600" stroke="#f4d690" stroke-width="3" stroke-dasharray="18,16" opacity="0.95"/>
   <!-- Window lights on sides -->
   <g fill="#f4e8c8" opacity="0.6">
     <rect x="110" y="460" width="6" height="10"/>

@@ -10,31 +10,30 @@
     </style>
   </defs>
   <rect width="1200" height="600" fill="url(#fsky)"/>
-  <!-- Perspective road first so trees layer on top, framing the path -->
-  <polygon points="585,440 615,440 870,600 330,600" fill="#8a6f4f" opacity="0.9"/>
-  <polygon points="593,440 607,440 720,600 480,600" fill="#6f5840" opacity="0.85"/>
-  <line class="road-stripe" x1="600" y1="455" x2="600" y2="600" stroke="#e8d8b0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
-  <!-- Trees on the sides of the road - point at top, base at bottom -->
+  <!-- Ground strip at horizon (y=500), filling down to viewer -->
+  <rect y="500" width="1200" height="100" fill="#4a6741" opacity="0.85"/>
+  <!-- Perspective road over ground: narrow point at horizon, widens to viewer -->
+  <polygon points="585,500 615,500 870,600 330,600" fill="#8a6f4f" opacity="0.95"/>
+  <polygon points="593,500 607,500 720,600 480,600" fill="#6f5840" opacity="0.85"/>
+  <!-- Center stripe (animated) -->
+  <line class="road-stripe" x1="600" y1="510" x2="600" y2="600" stroke="#e8d8b0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.9"/>
+  <!-- Trees standing at ground top (y=500), behind road in draw order so road sides remain clean -->
   <g fill="#6b8f5e" opacity="0.6">
-    <polygon points="80,420 60,520 100,520"/>
-    <polygon points="180,400 150,540 210,540"/>
-    <polygon points="280,410 250,520 310,520"/>
+    <polygon points="80,420 60,500 100,500"/>
+    <polygon points="180,400 150,500 210,500"/>
+    <polygon points="280,410 250,500 310,500"/>
     <polygon points="400,400 360,500 440,500"/>
     <polygon points="800,400 760,500 840,500"/>
-    <polygon points="920,410 890,520 950,520"/>
-    <polygon points="1020,400 990,540 1050,540"/>
-    <polygon points="1120,400 1090,540 1150,540"/>
+    <polygon points="920,410 890,500 950,500"/>
+    <polygon points="1020,400 990,500 1050,500"/>
+    <polygon points="1120,400 1090,500 1150,500"/>
   </g>
   <g fill="#4a6741" opacity="0.7">
-    <polygon points="50,430 20,560 80,560"/>
-    <polygon points="240,400 200,560 280,560"/>
-    <polygon points="450,420 420,560 480,560"/>
-    <polygon points="730,420 700,560 760,560"/>
-    <polygon points="940,420 910,560 970,560"/>
-    <polygon points="1170,400 1140,560 1200,560"/>
+    <polygon points="50,430 20,500 80,500"/>
+    <polygon points="240,400 200,500 280,500"/>
+    <polygon points="450,420 420,500 480,500"/>
+    <polygon points="730,420 700,500 760,500"/>
+    <polygon points="940,420 910,500 970,500"/>
+    <polygon points="1170,400 1140,500 1200,500"/>
   </g>
-  <rect y="555" width="1200" height="45" fill="#4a6741" opacity="0.85"/>
-  <!-- Re-draw the road's foreground edge on top of the ground strip -->
-  <polygon points="445,555 755,555 870,600 330,600" fill="#8a6f4f" opacity="0.95"/>
-  <line class="road-stripe" x1="600" y1="555" x2="600" y2="600" stroke="#e8d8b0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.9"/>
 </svg>

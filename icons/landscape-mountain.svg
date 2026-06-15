@@ -18,8 +18,8 @@
   <polygon points="930,270 950,260 970,270 965,295 940,295" fill="#f0e8d8" opacity="0.85"/>
   <!-- front range -->
   <polygon points="0,560 100,440 250,520 450,400 650,500 850,420 1050,510 1200,460 1200,600 0,600" fill="#6b5d48" opacity="0.85"/>
-  <!-- Perspective mountain trail (centered, vanishing toward the peaks) -->
-  <polygon points="585,420 615,420 880,600 320,600" fill="#a08868" opacity="0.95"/>
-  <polygon points="593,420 607,420 730,600 470,600" fill="#806b50" opacity="0.85"/>
-  <line class="road-stripe" x1="600" y1="435" x2="600" y2="600" stroke="#f0e8d0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
+  <!-- Perspective mountain trail: vanishing point lowered to meet front range top -->
+  <polygon points="585,500 615,500 880,600 320,600" fill="#a08868" opacity="0.95"/>
+  <polygon points="593,500 607,500 730,600 470,600" fill="#806b50" opacity="0.85"/>
+  <line class="road-stripe" x1="600" y1="510" x2="600" y2="600" stroke="#f0e8d0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.85"/>
 </svg>
