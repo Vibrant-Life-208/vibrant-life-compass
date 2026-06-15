@@ -44,12 +44,16 @@
     <circle cx="1015" cy="590" r="2" fill="#e8a8b8"/>
     <circle cx="1185" cy="575" r="2.5" fill="#e8a8b8"/>
   </g>
-  <!-- Background trees (original, lighter, behind) -->
+  <!-- Background trees (lighter, further back) - added more lining the road horizon edge -->
   <g fill="#6b8f5e" opacity="0.6">
     <polygon points="80,420 60,500 100,500"/>
     <polygon points="180,400 150,500 210,500"/>
     <polygon points="280,410 250,500 310,500"/>
     <polygon points="400,400 360,500 440,500"/>
+    <polygon points="490,440 470,500 510,500"/>
+    <polygon points="540,460 522,500 558,500"/>
+    <polygon points="660,460 642,500 678,500"/>
+    <polygon points="710,440 690,500 730,500"/>
     <polygon points="800,400 760,500 840,500"/>
     <polygon points="920,410 890,500 950,500"/>
     <polygon points="1020,400 990,500 1050,500"/>
@@ -69,26 +73,26 @@
   <polygon points="593,500 607,500 720,600 480,600" fill="#6f5840" opacity="0.85"/>
   <!-- Center stripe (animated) -->
   <line class="road-stripe" x1="600" y1="510" x2="600" y2="600" stroke="#e8d8b0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.9"/>
-  <!-- Foreground trees (larger, closer, darker - layered in front of road on the sides) -->
+  <!-- Foreground trees (pushed back: smaller, bases at y=540 instead of y=580) -->
   <g fill="#3a5530" opacity="0.9">
-    <polygon points="120,240 60,580 180,580"/>
-    <polygon points="270,290 220,575 320,575"/>
-    <polygon points="880,290 830,575 930,575"/>
-    <polygon points="1080,240 1020,580 1140,580"/>
+    <polygon points="100,380 70,545 130,545"/>
+    <polygon points="240,400 210,540 270,540"/>
+    <polygon points="930,400 900,540 960,540"/>
+    <polygon points="1100,380 1070,545 1130,545"/>
   </g>
-  <!-- Tall grass shrubs lining the road edges (small upward strokes representing blades) -->
-  <g stroke="#3a5530" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.85">
-    <!-- Left road edge tufts -->
-    <path d="M 570 525 l 0 -7 M 573 526 l -2 -8 M 567 525 l 1 -6"/>
-    <path d="M 535 545 l 0 -8 M 538 546 l -2 -9 M 532 545 l 1 -7"/>
-    <path d="M 490 565 l 0 -9 M 494 566 l -2 -10 M 486 565 l 1 -8"/>
-    <path d="M 440 585 l 0 -10 M 444 586 l -2 -11 M 436 585 l 1 -9"/>
-    <path d="M 385 597 l 0 -11 M 390 598 l -3 -12 M 380 597 l 2 -10"/>
-    <!-- Right road edge tufts -->
-    <path d="M 627 525 l 0 -7 M 624 526 l 2 -8 M 630 525 l -1 -6"/>
-    <path d="M 663 545 l 0 -8 M 660 546 l 2 -9 M 666 545 l -1 -7"/>
-    <path d="M 710 565 l 0 -9 M 706 566 l 2 -10 M 714 565 l -1 -8"/>
-    <path d="M 760 585 l 0 -10 M 756 586 l 2 -11 M 764 585 l -1 -9"/>
-    <path d="M 815 597 l 0 -11 M 810 598 l 3 -12 M 820 597 l -2 -10"/>
+  <!-- Fern-shaped grass clusters along the road's grass edges (OUTSIDE the road perspective) -->
+  <g stroke="#3a5530" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.9">
+    <!-- LEFT side ferns, from horizon (smaller, distant) to viewer (larger, closer) -->
+    <path d="M 525 528 q 0 -4 0 -8 M 525 525 q -2 -1 -3 -2 M 525 522 q -2 -1 -3 -2 M 525 520 q -1 0 -2 -1 M 525 525 q 2 -1 3 -2 M 525 522 q 2 -1 3 -2 M 525 520 q 1 0 2 -1"/>
+    <path d="M 475 548 q 0 -5 0 -11 M 475 544 q -3 -1 -4 -2 M 475 540 q -3 -1 -4 -2 M 475 537 q -2 -1 -3 -1 M 475 544 q 3 -1 4 -2 M 475 540 q 3 -1 4 -2 M 475 537 q 2 -1 3 -1"/>
+    <path d="M 420 568 q 0 -7 0 -14 M 420 563 q -4 -1 -5 -3 M 420 558 q -4 -1 -5 -3 M 420 553 q -3 -1 -3 -2 M 420 563 q 4 -1 5 -3 M 420 558 q 4 -1 5 -3 M 420 553 q 3 -1 3 -2"/>
+    <path d="M 370 583 q 0 -8 0 -17 M 370 577 q -5 -1 -6 -3 M 370 571 q -5 -1 -6 -3 M 370 565 q -3 -1 -4 -2 M 370 577 q 5 -1 6 -3 M 370 571 q 5 -1 6 -3 M 370 565 q 3 -1 4 -2"/>
+    <path d="M 320 597 q 0 -10 0 -20 M 320 590 q -6 -1 -7 -3 M 320 583 q -6 -1 -7 -3 M 320 577 q -4 -1 -5 -2 M 320 590 q 6 -1 7 -3 M 320 583 q 6 -1 7 -3 M 320 577 q 4 -1 5 -2"/>
+    <!-- RIGHT side ferns (mirror) -->
+    <path d="M 675 528 q 0 -4 0 -8 M 675 525 q 2 -1 3 -2 M 675 522 q 2 -1 3 -2 M 675 520 q 1 0 2 -1 M 675 525 q -2 -1 -3 -2 M 675 522 q -2 -1 -3 -2 M 675 520 q -1 0 -2 -1"/>
+    <path d="M 725 548 q 0 -5 0 -11 M 725 544 q 3 -1 4 -2 M 725 540 q 3 -1 4 -2 M 725 537 q 2 -1 3 -1 M 725 544 q -3 -1 -4 -2 M 725 540 q -3 -1 -4 -2 M 725 537 q -2 -1 -3 -1"/>
+    <path d="M 780 568 q 0 -7 0 -14 M 780 563 q 4 -1 5 -3 M 780 558 q 4 -1 5 -3 M 780 553 q 3 -1 3 -2 M 780 563 q -4 -1 -5 -3 M 780 558 q -4 -1 -5 -3 M 780 553 q -3 -1 -3 -2"/>
+    <path d="M 830 583 q 0 -8 0 -17 M 830 577 q 5 -1 6 -3 M 830 571 q 5 -1 6 -3 M 830 565 q 3 -1 4 -2 M 830 577 q -5 -1 -6 -3 M 830 571 q -5 -1 -6 -3 M 830 565 q -3 -1 -4 -2"/>
+    <path d="M 880 597 q 0 -10 0 -20 M 880 590 q 6 -1 7 -3 M 880 583 q 6 -1 7 -3 M 880 577 q 4 -1 5 -2 M 880 590 q -6 -1 -7 -3 M 880 583 q -6 -1 -7 -3 M 880 577 q -4 -1 -5 -2"/>
   </g>
 </svg>
