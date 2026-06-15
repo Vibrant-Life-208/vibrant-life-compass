@@ -35,6 +35,10 @@ function isForceShow() {
 }
 
 export function shouldShowWelcome(role) {
+  // PREVIEW MODE: always show welcome while captain is iterating on copy/design.
+  // Restore the localStorage-check logic once she signs off on the design.
+  return true;
+  // eslint-disable-next-line no-unreachable
   if (isForceShow()) return true;
   return !localStorage.getItem(welcomeKey(role));
 }
