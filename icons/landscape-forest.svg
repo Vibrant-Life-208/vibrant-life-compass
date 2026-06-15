@@ -12,12 +12,39 @@
   <rect width="1200" height="600" fill="url(#fsky)"/>
   <!-- Ground strip at horizon (y=500), filling down to viewer -->
   <rect y="500" width="1200" height="100" fill="#4a6741" opacity="0.85"/>
-  <!-- Perspective road over ground: narrow point at horizon, widens to viewer -->
-  <polygon points="585,500 615,500 870,600 330,600" fill="#8a6f4f" opacity="0.95"/>
-  <polygon points="593,500 607,500 720,600 480,600" fill="#6f5840" opacity="0.85"/>
-  <!-- Center stripe (animated) -->
-  <line class="road-stripe" x1="600" y1="510" x2="600" y2="600" stroke="#e8d8b0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.9"/>
-  <!-- Trees standing at ground top (y=500), behind road in draw order so road sides remain clean -->
+  <!-- Meadow flowers sprinkled across the grass (drawn early so trees layer over) -->
+  <g opacity="0.9">
+    <!-- White wildflowers -->
+    <circle cx="40" cy="580" r="2" fill="#f8f0e0"/>
+    <circle cx="130" cy="560" r="2" fill="#f8f0e0"/>
+    <circle cx="260" cy="585" r="2.5" fill="#f8f0e0"/>
+    <circle cx="370" cy="570" r="2" fill="#f8f0e0"/>
+    <circle cx="1030" cy="565" r="2" fill="#f8f0e0"/>
+    <circle cx="1115" cy="585" r="2.5" fill="#f8f0e0"/>
+    <circle cx="1170" cy="555" r="2" fill="#f8f0e0"/>
+    <!-- Yellow wildflowers -->
+    <circle cx="90" cy="570" r="2" fill="#f4d680"/>
+    <circle cx="195" cy="545" r="2" fill="#f4d680"/>
+    <circle cx="305" cy="580" r="2.5" fill="#f4d680"/>
+    <circle cx="395" cy="555" r="2" fill="#f4d680"/>
+    <circle cx="1060" cy="585" r="2" fill="#f4d680"/>
+    <circle cx="1145" cy="565" r="2" fill="#f4d680"/>
+    <circle cx="1095" cy="545" r="2" fill="#f4d680"/>
+    <!-- Purple wildflowers -->
+    <circle cx="65" cy="545" r="2" fill="#a890c0"/>
+    <circle cx="165" cy="585" r="2" fill="#a890c0"/>
+    <circle cx="225" cy="555" r="2.5" fill="#a890c0"/>
+    <circle cx="340" cy="590" r="2" fill="#a890c0"/>
+    <circle cx="1075" cy="555" r="2" fill="#a890c0"/>
+    <circle cx="1130" cy="540" r="2" fill="#a890c0"/>
+    <!-- Pink wildflowers -->
+    <circle cx="115" cy="590" r="2" fill="#e8a8b8"/>
+    <circle cx="230" cy="580" r="2" fill="#e8a8b8"/>
+    <circle cx="295" cy="555" r="2.5" fill="#e8a8b8"/>
+    <circle cx="1015" cy="590" r="2" fill="#e8a8b8"/>
+    <circle cx="1185" cy="575" r="2.5" fill="#e8a8b8"/>
+  </g>
+  <!-- Background trees (original, lighter, behind) -->
   <g fill="#6b8f5e" opacity="0.6">
     <polygon points="80,420 60,500 100,500"/>
     <polygon points="180,400 150,500 210,500"/>
@@ -28,6 +55,7 @@
     <polygon points="1020,400 990,500 1050,500"/>
     <polygon points="1120,400 1090,500 1150,500"/>
   </g>
+  <!-- Mid trees (darker green, middle distance) -->
   <g fill="#4a6741" opacity="0.7">
     <polygon points="50,430 20,500 80,500"/>
     <polygon points="240,400 200,500 280,500"/>
@@ -35,5 +63,32 @@
     <polygon points="730,420 700,500 760,500"/>
     <polygon points="940,420 910,500 970,500"/>
     <polygon points="1170,400 1140,500 1200,500"/>
+  </g>
+  <!-- Perspective road over ground: narrow point at horizon, widens to viewer -->
+  <polygon points="585,500 615,500 870,600 330,600" fill="#8a6f4f" opacity="0.95"/>
+  <polygon points="593,500 607,500 720,600 480,600" fill="#6f5840" opacity="0.85"/>
+  <!-- Center stripe (animated) -->
+  <line class="road-stripe" x1="600" y1="510" x2="600" y2="600" stroke="#e8d8b0" stroke-width="2.5" stroke-dasharray="14,16" opacity="0.9"/>
+  <!-- Foreground trees (larger, closer, darker - layered in front of road on the sides) -->
+  <g fill="#3a5530" opacity="0.9">
+    <polygon points="120,240 60,580 180,580"/>
+    <polygon points="270,290 220,575 320,575"/>
+    <polygon points="880,290 830,575 930,575"/>
+    <polygon points="1080,240 1020,580 1140,580"/>
+  </g>
+  <!-- Tall grass shrubs lining the road edges (small upward strokes representing blades) -->
+  <g stroke="#3a5530" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.85">
+    <!-- Left road edge tufts -->
+    <path d="M 570 525 l 0 -7 M 573 526 l -2 -8 M 567 525 l 1 -6"/>
+    <path d="M 535 545 l 0 -8 M 538 546 l -2 -9 M 532 545 l 1 -7"/>
+    <path d="M 490 565 l 0 -9 M 494 566 l -2 -10 M 486 565 l 1 -8"/>
+    <path d="M 440 585 l 0 -10 M 444 586 l -2 -11 M 436 585 l 1 -9"/>
+    <path d="M 385 597 l 0 -11 M 390 598 l -3 -12 M 380 597 l 2 -10"/>
+    <!-- Right road edge tufts -->
+    <path d="M 627 525 l 0 -7 M 624 526 l 2 -8 M 630 525 l -1 -6"/>
+    <path d="M 663 545 l 0 -8 M 660 546 l 2 -9 M 666 545 l -1 -7"/>
+    <path d="M 710 565 l 0 -9 M 706 566 l 2 -10 M 714 565 l -1 -8"/>
+    <path d="M 760 585 l 0 -10 M 756 586 l 2 -11 M 764 585 l -1 -9"/>
+    <path d="M 815 597 l 0 -11 M 810 598 l 3 -12 M 820 597 l -2 -10"/>
   </g>
 </svg>
