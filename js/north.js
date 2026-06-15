@@ -52,7 +52,7 @@ async function renderQuoteSection(learnerId) {
   }
   section.style.display = 'block';
   text.textContent = `“${quote}”`;
-  if (footer) footer.textContent = 'Your anchor until Session 7';
+  if (footer) footer.textContent = 'Your anchor for the cycle';
 }
 
 function formatToday() {

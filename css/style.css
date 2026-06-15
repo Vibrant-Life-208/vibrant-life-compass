@@ -246,18 +246,29 @@ html, body {
 
 .skip-btn {
   margin-top: 3rem;
-  background: none;
-  border: 1px solid var(--earth-light);
-  color: var(--text-soft);
-  padding: 0.6rem 1.5rem;
+  /* Solid warm-beige fill so the button stands out clearly against ANY
+     cycling scene (ocean, arctic, city blue tones especially) instead of
+     being a transparent button that fades into the landscape behind it */
+  background: rgba(74, 103, 65, 0.85);
+  border: 1px solid #d4c4a8;
+  color: #f0e8d0;
+  padding: 0.7rem 2rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   font-family: inherit;
-  transition: color 0.2s, border-color 0.2s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-.skip-btn:hover { color: var(--sage); border-color: var(--sage); }
+.skip-btn:hover {
+  background: rgba(74, 103, 65, 0.95);
+  color: #ffffff;
+  border-color: #e8d8b8;
+}
 
 /* Sign-In Screen */
 #signin-screen {
