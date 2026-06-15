@@ -29,18 +29,20 @@
   </defs>
   <rect width="1200" height="600" fill="url(#osky)"/>
   <circle cx="900" cy="170" r="55" fill="#f4d690" opacity="0.6"/>
-  <!-- Two seagulls swaying together in flight on the left side -->
+  <!-- Two seagulls swaying together: each is a full M-shape with body at its own V valley -->
   <g class="seagull">
-    <!-- Wings as continuous M-shape (both birds' wings together) -->
-    <path d="M 180 210 Q 190 198 200 210 Q 210 198 220 210 Q 225 205 232 208" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <!-- First seagull (left, under first arch peak ~x=190) -->
-    <ellipse cx="190" cy="212" rx="3" ry="1.8" fill="#ffffff"/>
-    <polygon points="193,211 198,212 193,213" fill="#f4842a"/>
-    <circle cx="191" cy="211" r="0.5" fill="#222"/>
-    <!-- Second seagull (right, under second arch peak ~x=210) -->
-    <ellipse cx="210" cy="212" rx="3" ry="1.8" fill="#ffffff"/>
-    <polygon points="213,211 218,212 213,213" fill="#f4842a"/>
-    <circle cx="211" cy="211" r="0.5" fill="#222"/>
+    <!-- Bird 1 wings (M-shape: peak, V, peak) -->
+    <path d="M 173 212 Q 182 200 191 212 Q 200 200 209 212" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Bird 1 body at the V valley (where the two arches meet at the bottom) -->
+    <ellipse cx="191" cy="213" rx="3" ry="1.8" fill="#ffffff"/>
+    <polygon points="194,212 199,213 194,214" fill="#f4842a"/>
+    <circle cx="192" cy="212" r="0.5" fill="#222"/>
+    <!-- Bird 2 wings (slightly smaller, slightly higher - distant companion) -->
+    <path d="M 214 210 Q 221 200 228 210 Q 235 201 242 210" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Bird 2 body at its own V valley -->
+    <ellipse cx="228" cy="211" rx="2.5" ry="1.5" fill="#ffffff"/>
+    <polygon points="230,210 234,211 230,212" fill="#f4842a"/>
+    <circle cx="229" cy="210" r="0.5" fill="#222"/>
   </g>
   <!-- waves - shifted up so topmost wave meets the dock's far edge (y=422) -->
   <path d="M0 422 Q150 402 300 422 T600 422 T900 422 T1200 422 L1200 600 L0 600 Z" fill="#7395a3" opacity="0.7"/>
