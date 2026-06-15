@@ -124,6 +124,13 @@ html, body {
   line-height: 1.5;
 }
 
+.welcome-next-step {
+  color: var(--text);
+  line-height: 1.65;
+  margin: 0 0 1.25rem;
+  font-size: 0.9rem;
+}
+
 .welcome-late-start {
   color: var(--text-soft);
   font-size: 0.9rem;
