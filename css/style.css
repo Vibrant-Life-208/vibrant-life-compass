@@ -2803,7 +2803,11 @@ body.landscape-mountain {
 .modal.active { display: flex; }
 
 .modal-content {
-  background: var(--warm-white);
+  /* Colored sheer back box for a quieter writing space - sage-pale tint at 92%
+     with frosted-glass blur so the scene behind feels distant/hushed */
+  background: rgba(232, 239, 229, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   width: 100%;
   max-width: 480px;
   border-radius: var(--radius) var(--radius) 0 0;
@@ -2811,6 +2815,16 @@ body.landscape-mountain {
   max-height: 90vh;
   overflow-y: auto;
 }
+
+/* Primary button inside modals uses warm light-brown text for higher
+   contrast against the dark sage button and warmer feel on the sheer back */
+.modal-content .btn-primary {
+  color: var(--earth-light);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.modal-content .btn-primary:hover { color: #d4c4a8; }
 
 .modal-header {
   display: flex;
