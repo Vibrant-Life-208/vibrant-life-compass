@@ -10,35 +10,59 @@
     </style>
   </defs>
   <rect width="1200" height="600" fill="url(#csky)"/>
-  <g fill="#8b7355" opacity="0.7">
-    <rect x="0" y="450" width="80" height="150"/>
-    <rect x="90" y="400" width="60" height="200"/>
-    <rect x="160" y="430" width="100" height="170"/>
-    <rect x="270" y="380" width="70" height="220"/>
-    <rect x="350" y="420" width="90" height="180"/>
-    <rect x="800" y="410" width="60" height="190"/>
-    <rect x="870" y="390" width="90" height="210"/>
-    <rect x="970" y="430" width="70" height="170"/>
-    <rect x="1050" y="410" width="80" height="190"/>
-    <rect x="1140" y="440" width="60" height="160"/>
+  <!-- Background skyline (taller, lighter, further back) -->
+  <g fill="#9b8769" opacity="0.65">
+    <rect x="0" y="280" width="60" height="320"/>
+    <rect x="65" y="240" width="55" height="360"/>
+    <rect x="125" y="270" width="65" height="330"/>
+    <rect x="195" y="220" width="55" height="380"/>
+    <rect x="255" y="260" width="70" height="340"/>
+    <rect x="855" y="250" width="60" height="350"/>
+    <rect x="920" y="220" width="80" height="380"/>
+    <rect x="1005" y="270" width="55" height="330"/>
+    <rect x="1065" y="240" width="70" height="360"/>
+    <rect x="1140" y="280" width="60" height="320"/>
   </g>
-  <g fill="#5a4a36" opacity="0.85">
-    <rect x="100" y="450" width="50" height="150"/>
-    <rect x="300" y="430" width="50" height="170"/>
-    <rect x="900" y="440" width="50" height="160"/>
-    <rect x="1080" y="460" width="50" height="140"/>
+  <!-- Foreground buildings (much taller, darker, more prominent) -->
+  <g fill="#5a4a36" opacity="0.9">
+    <rect x="30" y="220" width="55" height="380"/>
+    <rect x="150" y="200" width="65" height="400"/>
+    <rect x="270" y="230" width="50" height="370"/>
+    <rect x="870" y="230" width="55" height="370"/>
+    <rect x="985" y="210" width="65" height="390"/>
+    <rect x="1095" y="240" width="55" height="360"/>
   </g>
-  <!-- Perspective city street: vanishing point lowered to ground level -->
+  <!-- Sidewalks: perspective trapezoids meeting the road on either side -->
+  <polygon points="485,500 585,500 320,600 0,600" fill="#a8a39a" opacity="0.85"/>
+  <polygon points="615,500 715,500 1200,600 880,600" fill="#a8a39a" opacity="0.85"/>
+  <!-- Sidewalk curbs: darker line along the edge that meets the road -->
+  <line x1="585" y1="500" x2="320" y2="600" stroke="#766f63" stroke-width="3" opacity="0.75"/>
+  <line x1="615" y1="500" x2="880" y2="600" stroke="#766f63" stroke-width="3" opacity="0.75"/>
+  <!-- Sidewalk panel lines (cross-hatching for texture) -->
+  <line x1="430" y1="540" x2="180" y2="540" stroke="#8b857b" stroke-width="1.5" opacity="0.5"/>
+  <line x1="370" y1="580" x2="100" y2="580" stroke="#8b857b" stroke-width="1.5" opacity="0.5"/>
+  <line x1="670" y1="540" x2="900" y2="540" stroke="#8b857b" stroke-width="1.5" opacity="0.5"/>
+  <line x1="730" y1="580" x2="1050" y2="580" stroke="#8b857b" stroke-width="1.5" opacity="0.5"/>
+  <!-- Perspective city street -->
   <polygon points="585,500 615,500 880,600 320,600" fill="#4a3f33" opacity="0.95"/>
   <polygon points="593,500 607,500 730,600 470,600" fill="#3a3128" opacity="0.85"/>
   <!-- Yellow center line (city street) -->
   <line class="road-stripe" x1="600" y1="510" x2="600" y2="600" stroke="#f4d690" stroke-width="3" stroke-dasharray="18,16" opacity="0.95"/>
-  <!-- Window lights on sides -->
+  <!-- Window lights on buildings (small lit windows scattered on facades) -->
   <g fill="#f4e8c8" opacity="0.6">
-    <rect x="110" y="460" width="6" height="10"/>
-    <rect x="125" y="460" width="6" height="10"/>
-    <rect x="320" y="450" width="6" height="10"/>
-    <rect x="915" y="460" width="6" height="10"/>
-    <rect x="1095" y="475" width="6" height="10"/>
+    <rect x="45" y="280" width="6" height="10"/>
+    <rect x="65" y="320" width="6" height="10"/>
+    <rect x="55" y="380" width="6" height="10"/>
+    <rect x="170" y="260" width="6" height="10"/>
+    <rect x="195" y="310" width="6" height="10"/>
+    <rect x="180" y="370" width="6" height="10"/>
+    <rect x="285" y="280" width="6" height="10"/>
+    <rect x="300" y="340" width="6" height="10"/>
+    <rect x="885" y="290" width="6" height="10"/>
+    <rect x="905" y="350" width="6" height="10"/>
+    <rect x="1005" y="260" width="6" height="10"/>
+    <rect x="1025" y="320" width="6" height="10"/>
+    <rect x="1110" y="290" width="6" height="10"/>
+    <rect x="1125" y="340" width="6" height="10"/>
   </g>
 </svg>
