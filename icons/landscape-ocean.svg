@@ -14,20 +14,33 @@
         50% { transform: translate(60px, 4px); }
         75% { transform: translate(20px, 10px); }
       }
+      .fish-loop { animation: fish-arc 6s ease-in-out infinite; transform-origin: 970px 410px; }
+      @keyframes fish-arc {
+        0%   { transform: translate(0, 8px) rotate(-30deg); opacity: 0; }
+        8%   { transform: translate(2px, 2px) rotate(-25deg); opacity: 0.5; }
+        20%  { transform: translate(8px, -10px) rotate(-10deg); opacity: 1; }
+        40%  { transform: translate(22px, -20px) rotate(10deg); opacity: 1; }
+        60%  { transform: translate(38px, -10px) rotate(30deg); opacity: 1; }
+        80%  { transform: translate(50px, 4px) rotate(50deg); opacity: 0.7; }
+        92%  { transform: translate(55px, 12px) rotate(60deg); opacity: 0.2; }
+        100% { transform: translate(58px, 18px) rotate(65deg); opacity: 0; }
+      }
     </style>
   </defs>
   <rect width="1200" height="600" fill="url(#osky)"/>
   <circle cx="900" cy="170" r="55" fill="#f4d690" opacity="0.6"/>
-  <!-- Seagull swaying in flight on the left side (in the sky, above the waves) -->
+  <!-- Two seagulls swaying together in flight on the left side -->
   <g class="seagull">
-    <!-- Wings as M-shape (white with rounded caps) -->
+    <!-- Wings as continuous M-shape (both birds' wings together) -->
     <path d="M 180 210 Q 190 198 200 210 Q 210 198 220 210 Q 225 205 232 208" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <!-- Body -->
-    <ellipse cx="205" cy="211" rx="4" ry="2" fill="#ffffff"/>
-    <!-- Orange beak (pointing forward to the right) -->
-    <polygon points="208,210 214,211 208,212" fill="#f4842a"/>
-    <!-- Tiny eye -->
-    <circle cx="206" cy="210" r="0.5" fill="#222"/>
+    <!-- First seagull (left, under first arch peak ~x=190) -->
+    <ellipse cx="190" cy="212" rx="3" ry="1.8" fill="#ffffff"/>
+    <polygon points="193,211 198,212 193,213" fill="#f4842a"/>
+    <circle cx="191" cy="211" r="0.5" fill="#222"/>
+    <!-- Second seagull (right, under second arch peak ~x=210) -->
+    <ellipse cx="210" cy="212" rx="3" ry="1.8" fill="#ffffff"/>
+    <polygon points="213,211 218,212 213,213" fill="#f4842a"/>
+    <circle cx="211" cy="211" r="0.5" fill="#222"/>
   </g>
   <!-- waves - shifted up so topmost wave meets the dock's far edge (y=422) -->
   <path d="M0 422 Q150 402 300 422 T600 422 T900 422 T1200 422 L1200 600 L0 600 Z" fill="#7395a3" opacity="0.7"/>
@@ -41,8 +54,8 @@
   <line x1="490" y1="510" x2="710" y2="510" stroke="#5a4534" stroke-width="2" opacity="0.75"/>
   <line x1="425" y1="560" x2="775" y2="560" stroke="#5a4534" stroke-width="2.5" opacity="0.8"/>
   <line class="road-stripe" x1="600" y1="440" x2="600" y2="600" stroke="#f0e8d0" stroke-width="2" stroke-dasharray="10,12" opacity="0.6"/>
-  <!-- Fish leaping out of water on the right side (right of the dock, above wave 1) -->
-  <g opacity="0.9">
+  <!-- Fish leaping in a diving loop on the right side (animated arc) -->
+  <g class="fish-loop" opacity="0.9">
     <!-- Splash droplets at the leap point (where fish emerged) -->
     <circle cx="952" cy="425" r="1.5" fill="#a8c2cb" opacity="0.7"/>
     <circle cx="958" cy="430" r="1.2" fill="#a8c2cb" opacity="0.6"/>
