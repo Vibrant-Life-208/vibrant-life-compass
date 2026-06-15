@@ -1760,16 +1760,6 @@ textarea[data-autogrow] {
   transition: opacity 1s ease-in-out;
 }
 
-/* Mobile: show the entire SVG landscape at the bottom of the viewport
-   instead of cropping sides. The gradient (second background) fills
-   the upper viewport so the sky continues seamlessly above the
-   illustration. Desktop unchanged - it still uses "cover" to fill the
-   wide viewport with the landscape edge-to-edge. */
-@media (max-width: 700px) {
-  .scene-layer {
-    background-size: 100% auto, 100% 100%;
-  }
-}
 
 #scene-current { opacity: 1; }
 #scene-next { opacity: 0; }
