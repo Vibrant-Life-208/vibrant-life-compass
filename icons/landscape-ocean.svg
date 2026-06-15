@@ -11,12 +11,10 @@
   </defs>
   <rect width="1200" height="600" fill="url(#osky)"/>
   <circle cx="900" cy="170" r="55" fill="#f4d690" opacity="0.6"/>
-  <!-- horizon line -->
-  <rect x="0" y="420" width="1200" height="3" fill="#5d7a85" opacity="0.4"/>
-  <!-- waves -->
-  <path d="M0 460 Q150 440 300 460 T600 460 T900 460 T1200 460 L1200 600 L0 600 Z" fill="#7395a3" opacity="0.7"/>
-  <path d="M0 500 Q200 480 400 500 T800 500 T1200 500 L1200 600 L0 600 Z" fill="#5a7c8a" opacity="0.7"/>
-  <path d="M0 540 Q150 525 300 540 T600 540 T900 540 T1200 540 L1200 600 L0 600 Z" fill="#476773" opacity="0.75"/>
+  <!-- waves - shifted up so topmost wave meets the dock's far edge (y=422) -->
+  <path d="M0 422 Q150 402 300 422 T600 422 T900 422 T1200 422 L1200 600 L0 600 Z" fill="#7395a3" opacity="0.7"/>
+  <path d="M0 462 Q200 442 400 462 T800 462 T1200 462 L1200 600 L0 600 Z" fill="#5a7c8a" opacity="0.7"/>
+  <path d="M0 502 Q150 487 300 502 T600 502 T900 502 T1200 502 L1200 600 L0 600 Z" fill="#476773" opacity="0.75"/>
   <!-- Perspective wooden dock pier extending into the water -->
   <polygon points="585,422 615,422 870,600 330,600" fill="#8a6f4f" opacity="0.95"/>
   <polygon points="593,422 607,422 720,600 480,600" fill="#6b5440" opacity="0.85"/>
