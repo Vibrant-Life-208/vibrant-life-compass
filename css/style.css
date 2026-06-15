@@ -81,6 +81,9 @@ html, body {
   justify-content: center;
   min-height: 100vh;
   padding: 2rem 1.5rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 #welcome-screen.active { display: flex; }
