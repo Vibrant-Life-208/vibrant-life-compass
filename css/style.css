@@ -155,14 +155,19 @@ html, body {
   padding: 0.85rem 2.5rem;
   font-size: 1rem;
   min-width: 160px;
-  /* Lighter warm beige text reads more clearly against the dark sage button
-     when the cycling scene behind tints toward blue/cold (ocean, arctic) */
+}
+
+/* Higher specificity to override .btn-primary's warm-white color.
+   Lighter warm beige reads clearly against dark sage regardless of which
+   scene is cycling behind (especially ocean / arctic / city blue tones) */
+#welcome-screen .btn-primary.welcome-continue-btn {
   color: #d4c4a8;
   font-weight: 600;
   letter-spacing: 0.04em;
 }
 
-.welcome-continue-btn:hover { color: #e0d2b8; }
+#welcome-screen .btn-primary.welcome-continue-btn:hover { color: #e8d8b8; }
+#welcome-screen .btn-primary.welcome-continue-btn:focus { outline: 2px solid #d4c4a8; outline-offset: 2px; }
 
 /* Bearing Screen (calm-first compass orientation) */
 #bearing-screen {
