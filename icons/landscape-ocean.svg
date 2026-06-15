@@ -7,10 +7,28 @@
     <style>
       .road-stripe { animation: road-flow 1.4s linear infinite; }
       @keyframes road-flow { to { stroke-dashoffset: -22; } }
+      .seagull { animation: seagull-sway 9s ease-in-out infinite; transform-origin: 200px 210px; }
+      @keyframes seagull-sway {
+        0%, 100% { transform: translate(0px, 0px); }
+        25% { transform: translate(35px, -8px); }
+        50% { transform: translate(60px, 4px); }
+        75% { transform: translate(20px, 10px); }
+      }
     </style>
   </defs>
   <rect width="1200" height="600" fill="url(#osky)"/>
   <circle cx="900" cy="170" r="55" fill="#f4d690" opacity="0.6"/>
+  <!-- Seagull swaying in flight on the left side (in the sky, above the waves) -->
+  <g class="seagull">
+    <!-- Wings as M-shape (white with rounded caps) -->
+    <path d="M 180 210 Q 190 198 200 210 Q 210 198 220 210 Q 225 205 232 208" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Body -->
+    <ellipse cx="205" cy="211" rx="4" ry="2" fill="#ffffff"/>
+    <!-- Orange beak (pointing forward to the right) -->
+    <polygon points="208,210 214,211 208,212" fill="#f4842a"/>
+    <!-- Tiny eye -->
+    <circle cx="206" cy="210" r="0.5" fill="#222"/>
+  </g>
   <!-- waves - shifted up so topmost wave meets the dock's far edge (y=422) -->
   <path d="M0 422 Q150 402 300 422 T600 422 T900 422 T1200 422 L1200 600 L0 600 Z" fill="#7395a3" opacity="0.7"/>
   <path d="M0 462 Q200 442 400 462 T800 462 T1200 462 L1200 600 L0 600 Z" fill="#5a7c8a" opacity="0.7"/>
@@ -23,4 +41,21 @@
   <line x1="490" y1="510" x2="710" y2="510" stroke="#5a4534" stroke-width="2" opacity="0.75"/>
   <line x1="425" y1="560" x2="775" y2="560" stroke="#5a4534" stroke-width="2.5" opacity="0.8"/>
   <line class="road-stripe" x1="600" y1="440" x2="600" y2="600" stroke="#f0e8d0" stroke-width="2" stroke-dasharray="10,12" opacity="0.6"/>
+  <!-- Fish leaping out of water on the right side (right of the dock, above wave 1) -->
+  <g opacity="0.9">
+    <!-- Splash droplets at the leap point (where fish emerged) -->
+    <circle cx="952" cy="425" r="1.5" fill="#a8c2cb" opacity="0.7"/>
+    <circle cx="958" cy="430" r="1.2" fill="#a8c2cb" opacity="0.6"/>
+    <circle cx="945" cy="428" r="1" fill="#a8c2cb" opacity="0.6"/>
+    <!-- Fish body (silver-blue, angled upward to the right) -->
+    <path d="M 958 410 Q 970 395 985 392 Q 988 398 982 412 Q 972 416 958 410 Z" fill="#5a7c8a"/>
+    <!-- Belly highlight (lighter blue) -->
+    <path d="M 962 410 Q 972 408 982 410 Q 978 414 968 414 Q 962 412 962 410 Z" fill="#9bb5be" opacity="0.85"/>
+    <!-- Tail (V-shape at lower-left) -->
+    <polygon points="958,410 951,406 953,413 958,413" fill="#476773"/>
+    <!-- Top dorsal fin -->
+    <polygon points="975,394 978,388 980,394" fill="#476773"/>
+    <!-- Eye -->
+    <circle cx="983" cy="397" r="0.8" fill="#222"/>
+  </g>
 </svg>
