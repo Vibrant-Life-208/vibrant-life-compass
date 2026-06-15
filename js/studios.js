@@ -345,75 +345,63 @@ export function getStudioName(studioId) {
   return STUDIOS[studioId]?.name || 'Unknown';
 }
 
-// Session structure mirrors the spreadsheet: 7 sessions, each 4-6 weeks.
-// Exact weeks-per-session are studio- and year-specific; placeholder is 5 weeks each.
-export const SESSIONS_PER_YEAR = 7;
+// Session structure: 8 sessions, unified for all roles (guides, learners, parents).
+// Captain decision 2026-06-15: Session 8 is Summer, treated as its own cycle.
+// Previous guide-summer separate calendar removed - everyone uses one calendar.
+export const SESSIONS_PER_YEAR = 8;
 export const WEEKS_PER_SESSION_DEFAULT = 5;
 export const DAYS_PER_WEEK = 5; // school days (M-F)
 
-// Vibrant Life 2026-2027 academic year structure.
-// Source: VL 2026-2027 Academic Calendar PDF, captain-provided 2026-05-12.
-// Total = 34 weeks of programs. Break periods sit between sessionStarts.
-//
-//   Session 1: Aug 17 - Sept 11 (4 weeks)    [orientation Aug 4-7]
-//   Session 1 Break: Sept 14-17
-//   Session 2: Sept 21 - Oct 23 (5 weeks)    [Columbus Day Oct 12]
-//   Session 2 Break: Oct 26-29
-//   Session 3: Nov 2 - Nov 20 (3 weeks)
-//   Thanksgiving Break: Nov 23-27
-//   Session 4: Nov 30 - Dec 18 (3 weeks)
-//   Winter Break: Dec 21 - Jan 1
-//   Session 5: Jan 4 - Feb 12 (6 weeks)      [MLK Day Jan 18]
-//   Session 5 Break: Feb 15-18
-//   Session 6: Feb 22 - Apr 2 (6 weeks)
-//   Session 6 Break: Apr 5-8
-//   Session 7: Apr 12 - May 27 (7 weeks)     [Last Day Thu May 27]
-export const YEAR_CALENDAR = {
-  yearStartISO: '2026-08-17',  // Monday of Session 1, Week 1
-  yearEndISO:   '2027-05-27',  // Last Day (Thursday)
-  sessionStarts: [
-    '2026-08-17', // S1
-    '2026-09-21', // S2
-    '2026-11-02', // S3
-    '2026-11-30', // S4
-    '2027-01-04', // S5
-    '2027-02-22', // S6
-    '2027-04-12', // S7
-  ],
-  sessionWeeks: [4, 5, 3, 3, 6, 6, 7], // weeks of programs per session
-};
-
-// Guide summer-prep calendar: 13 weeks, May 18 → Aug 17, 2026.
-// 7 sections × ~13 days each. Captain decision 2026-05-15: guides walk the
-// path before the school year starts so they can teach from a knowing place.
-// Section 6 is the work target; Section 7 is catch-up / plan-for-next-break.
-export const GUIDE_SUMMER_CALENDAR = {
-  yearStartISO: '2026-05-18',
-  yearEndISO:   '2026-08-17',
-  sessionStarts: [
-    '2026-05-18', // S1
-    '2026-05-31', // S2
-    '2026-06-13', // S3
-    '2026-06-26', // S4
-    '2026-07-09', // S5
-    '2026-07-22', // S6 (work target ends here)
-    '2026-08-04', // S7 (catch-up + plan for next break)
-  ],
-  // 13-day "weeks" measured as 2-week blocks for the rendering layer; the
-  // weekly-step inputs use these for date labels.
-  sessionWeeks: [2, 2, 2, 2, 2, 2, 2],
-};
-
-// Studio-aware calendar resolution. Use this everywhere YEAR_CALENDAR was
-// referenced before, so the guide-summer journey gets its own dates.
-export function getCalendarForStudio(studioId) {
-  if (studioId === 'guide-summer') return GUIDE_SUMMER_CALENDAR;
-  return YEAR_CALENDAR;
+// Determine which cycle year today falls in. A cycle runs Aug 17 of year N
+// through Aug 14 of year N+1 (12 months including the summer reset).
+function getCycleYear(today = new Date()) {
+  const year = today.getFullYear();
+  const augStart = new Date(year, 7, 17); // Aug 17 this year (month is 0-indexed)
+  return today < augStart ? year - 1 : year;
 }
 
-// Per-session landscape theme. Each session has a backdrop that gives the
-// learner a sense of "traveling" through the year. Desert -> forest -> arctic
-// -> city -> ocean -> mountain -> desert (return). Captain-designed.
+// Compute the calendar for the cycle that today falls within. Dynamic so
+// the system automatically rolls forward each Aug 17 without manual updates.
+//
+// 8 sessions per cycle:
+//   S1: Aug 17 - Sept 11 (4 weeks)    [orientation Aug 4-7]
+//   S2: Sept 21 - Oct 23 (5 weeks)    [Columbus Day Oct 12]
+//   S3: Nov 2 - Nov 20 (3 weeks)
+//   S4: Nov 30 - Dec 18 (3 weeks)     [last before Winter Break - reflection]
+//   S5: Jan 4 - Feb 12 (6 weeks)      [MLK Day Jan 18]
+//   S6: Feb 22 - Apr 2 (6 weeks)      [finish line]
+//   S7: Apr 12 - May 27 (7 weeks)     [last before summer - harvest/reflection]
+//   S8: Jun 1 - Aug 14 (~11 weeks)    [summer cycle - rest + plan next year]
+export function getYearCalendar(today = new Date()) {
+  const cy = getCycleYear(today);
+  return {
+    yearStartISO: `${cy}-08-17`,
+    yearEndISO:   `${cy + 1}-08-14`,
+    sessionStarts: [
+      `${cy}-08-17`,        // S1
+      `${cy}-09-21`,        // S2
+      `${cy}-11-02`,        // S3
+      `${cy}-11-30`,        // S4
+      `${cy + 1}-01-04`,    // S5
+      `${cy + 1}-02-22`,    // S6
+      `${cy + 1}-04-12`,    // S7
+      `${cy + 1}-06-01`,    // S8 (summer cycle)
+    ],
+    sessionWeeks: [4, 5, 3, 3, 6, 6, 7, 11],
+  };
+}
+
+// Current cycle's calendar (computed at module load - refreshed on page reload).
+export const YEAR_CALENDAR = getYearCalendar();
+
+// Legacy entry point - all roles now use the same unified calendar.
+// studioId argument retained for backward compat but ignored.
+export function getCalendarForStudio(_studioId) {
+  return getYearCalendar();
+}
+
+// Per-session landscape theme. Sessions 1-7 are the school year journey;
+// Session 8 is summer (ocean - beach/water vibes for rest + reset).
 export const SESSION_LANDSCAPES = {
   1: 'desert',
   2: 'forest',
@@ -421,7 +409,8 @@ export const SESSION_LANDSCAPES = {
   4: 'city',
   5: 'ocean',
   6: 'mountain',
-  7: 'desert',
+  7: 'desert',  // harvest / return at school year end
+  8: 'ocean',   // summer cycle - rest + planning next year
 };
 
 export function getLandscapeForSession(sessionIndex) {

@@ -136,13 +136,16 @@ export function renderYearMap(container, learner, opts = {}) {
     const label = document.createElement('div');
     label.className = 'year-map-session-label';
     let labelText = density === 'compressed' ? `S${sessionNumber}` : `Session ${sessionNumber}`;
-    // Per captain decision 2026-05-11: Session 6 is the finish line, Session 7 is harvest
+    // Session 6 = finish line, Session 7 = harvest, Session 8 = summer cycle
     if (sessionNumber === 6) {
       labelText += density === 'compressed' ? ' 🏁' : ' · finish';
       session.classList.add('year-map-finish');
     } else if (sessionNumber === 7) {
       labelText += density === 'compressed' ? ' ✦' : ' · harvest';
       session.classList.add('year-map-harvest');
+    } else if (sessionNumber === 8) {
+      labelText += density === 'compressed' ? ' ☀' : ' · summer';
+      session.classList.add('year-map-summer');
     }
     label.textContent = labelText;
     session.appendChild(label);

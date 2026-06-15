@@ -3,7 +3,7 @@
 // optional instructions link, surface late-start context if applicable, and
 // adapt copy by role (guide / learner / parent).
 
-import { getCalendarForStudio } from './studios.js';
+import { getYearCalendar } from './studios.js';
 import { computeYearPosition } from './year-map.js';
 
 const ROLE_TAGLINES = {
@@ -12,22 +12,22 @@ const ROLE_TAGLINES = {
   parent: "Witness your hero's journey unfold and walk alongside them.",
 };
 
-function welcomeKey(role, studioId) {
-  const calendar = getCalendarForStudio(studioId);
+function welcomeKey(role) {
+  const calendar = getYearCalendar();
   return `compass-welcome-seen-${role}-${calendar.yearStartISO}`;
 }
 
-export function shouldShowWelcome(role, studioId) {
-  return !localStorage.getItem(welcomeKey(role, studioId));
+export function shouldShowWelcome(role) {
+  return !localStorage.getItem(welcomeKey(role));
 }
 
-export function markWelcomeSeen(role, studioId) {
-  localStorage.setItem(welcomeKey(role, studioId), new Date().toISOString());
+export function markWelcomeSeen(role) {
+  localStorage.setItem(welcomeKey(role), new Date().toISOString());
 }
 
 // Show the welcome screen and resolve when the user clicks Begin.
 // Returns a Promise that resolves after the user proceeds.
-export function showWelcomeScreen(role, studioId) {
+export function showWelcomeScreen(role) {
   return new Promise((resolve) => {
     const screen = document.getElementById('welcome-screen');
     if (!screen) {
@@ -42,7 +42,7 @@ export function showWelcomeScreen(role, studioId) {
     }
 
     // Late-start context if applicable
-    const position = computeYearPosition(new Date(), studioId);
+    const position = computeYearPosition(new Date());
     const lateStartEl = document.getElementById('welcome-late-start');
     if (lateStartEl) {
       if (!position.beforeYearStart && !position.afterYearEnd
@@ -61,7 +61,7 @@ export function showWelcomeScreen(role, studioId) {
     // Wire Begin button (one-shot)
     const continueBtn = document.getElementById('welcome-continue');
     const handler = () => {
-      markWelcomeSeen(role, studioId);
+      markWelcomeSeen(role);
       screen.classList.remove('active');
       const appScreen = document.getElementById('app-screen');
       if (appScreen) appScreen.classList.add('active');

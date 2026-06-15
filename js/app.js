@@ -147,13 +147,9 @@ async function onSignedIn() {
   });
 
   // Welcome screen (shown once per cycle: first sign-in or new year-start).
-  // Studio for guides = 'guide-summer' (uses summer-prep calendar);
-  // for learners = their assigned studio (uses school-year calendar).
-  const studioForCalendar = session.role === 'guide' ? 'guide-summer'
-                          : session.role === 'learner' ? (await (await import('./store.js')).getLearner(learnerId))?.studio
-                          : 'adventure';
-  if (shouldShowWelcome(session.role, studioForCalendar)) {
-    await showWelcomeScreen(session.role, studioForCalendar);
+  // Unified calendar - all roles use the same 8-session structure now.
+  if (shouldShowWelcome(session.role)) {
+    await showWelcomeScreen(session.role);
   }
 
   // First-run onboarding: learner OR guide has no quote and no traits yet.
