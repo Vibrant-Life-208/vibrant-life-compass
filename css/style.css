@@ -2709,7 +2709,9 @@ body.landscape-mountain {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   align-items: flex-end;
   justify-content: center;
   z-index: 100;
