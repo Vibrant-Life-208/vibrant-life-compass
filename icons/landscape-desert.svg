@@ -11,8 +11,10 @@
   </defs>
   <rect width="1200" height="600" fill="url(#dsky)"/>
   <circle cx="940" cy="200" r="60" fill="#f4d690" opacity="0.85"/>
+  <!-- Background dunes (lighter, higher peaks) - distant horizon -->
   <path d="M0 480 Q200 420 400 460 T800 450 T1200 480 L1200 600 L0 600 Z" fill="#c9a567" opacity="0.85"/>
-  <path d="M0 540 Q300 500 600 530 T1200 520 L1200 600 L0 600 Z" fill="#b08a4e" opacity="0.85"/>
+  <!-- Foreground darker sand raised to meet the road at horizon (y=500) -->
+  <path d="M0 510 Q300 470 600 500 T1200 490 L1200 600 L0 600 Z" fill="#b08a4e" opacity="0.85"/>
   <!-- Perspective road: vanishing point lowered to meet sand horizon -->
   <polygon points="585,500 615,500 880,600 320,600" fill="#d4b283" opacity="0.9"/>
   <polygon points="592,500 608,500 720,600 480,600" fill="#c49968" opacity="0.7"/>

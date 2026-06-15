@@ -18,6 +18,12 @@
   <polygon points="930,270 950,260 970,270 965,295 940,295" fill="#f0e8d8" opacity="0.85"/>
   <!-- front range -->
   <polygon points="0,560 100,440 250,520 450,400 650,500 850,420 1050,510 1200,460 1200,600 0,600" fill="#6b5d48" opacity="0.85"/>
+  <!-- Front range snow caps (closer to road horizon, bringing the white down the slope) -->
+  <polygon points="75,455 100,440 125,455 120,485 85,485" fill="#f0e8d8" opacity="0.85"/>
+  <polygon points="425,415 450,400 475,415 470,450 435,450" fill="#f0e8d8" opacity="0.85"/>
+  <polygon points="825,435 850,420 875,435 870,470 835,470" fill="#f0e8d8" opacity="0.85"/>
+  <!-- Snow plateau at the trail horizon - white snow meeting the road -->
+  <ellipse cx="600" cy="500" rx="260" ry="22" fill="#f0e8d8" opacity="0.8"/>
   <!-- Perspective mountain trail: vanishing point lowered to meet front range top -->
   <polygon points="585,500 615,500 880,600 320,600" fill="#a08868" opacity="0.95"/>
   <polygon points="593,500 607,500 730,600 470,600" fill="#806b50" opacity="0.85"/>
