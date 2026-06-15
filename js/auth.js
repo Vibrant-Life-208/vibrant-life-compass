@@ -74,8 +74,16 @@ export function initAuth(onSignedIn) {
     });
   });
 
+  wireSignOut();
+}
+
+// Wire sign-out separately so it works whether the user came through sign-in
+// OR landed on the app via a persisted Supabase session (where initAuth is
+// skipped). Idempotent via dataset.wired guard.
+export function wireSignOut() {
   const signOutBtn = document.getElementById('signout-btn');
-  if (signOutBtn) {
+  if (signOutBtn && !signOutBtn.dataset.wired) {
+    signOutBtn.dataset.wired = '1';
     signOutBtn.addEventListener('click', async () => {
       await clearSession();
       location.reload();

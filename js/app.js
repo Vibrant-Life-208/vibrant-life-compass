@@ -2,7 +2,7 @@
 // Boot order: Bearing -> Sign-in -> first-run onboarding (if learner) -> role-based view.
 
 import { initBearing } from './arrive.js';
-import { initAuth, requireSession, showSignIn, showApp, switchRole, startIdleTimeout } from './auth.js';
+import { initAuth, requireSession, showSignIn, showApp, switchRole, startIdleTimeout, wireSignOut } from './auth.js';
 import { renderNorth, setYearMapClickHandler } from './north.js';
 import { renderYearView } from './year-view.js';
 import { renderSessionView, initSessionNav, setCurrentSession } from './session-view.js';
@@ -91,6 +91,9 @@ function registerServiceWorker() {
 async function afterBearing() {
   stopBearingAutoCycle();
   applyLandscape();
+  // Wire sign-out unconditionally so the button works whether the user came
+  // through sign-in (initAuth path) or landed via a persisted Supabase session.
+  wireSignOut();
   const session = await requireSession();
   if (!session) {
     showSignIn();
