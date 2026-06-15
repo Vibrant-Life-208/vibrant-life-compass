@@ -13,7 +13,8 @@
   <circle cx="260" cy="180" r="45" fill="#eef1f4" opacity="0.85"/>
   <polygon points="0,540 200,400 350,470 500,360 700,460 850,380 1000,440 1200,400 1200,600 0,600" fill="#9aabbc" opacity="0.7"/>
   <polygon points="0,560 150,490 350,520 500,470 700,510 900,480 1100,520 1200,500 1200,600 0,600" fill="#7d92a4" opacity="0.75"/>
-  <rect y="555" width="1200" height="45" fill="#eaf0f5" opacity="0.9"/>
+  <!-- Snow ground raised to meet the road at horizon (y=510), creating snowy foreground -->
+  <rect y="510" width="1200" height="90" fill="#eaf0f5" opacity="0.9"/>
   <!-- Perspective snow path: vanishing point lowered to meet front ridge -->
   <polygon points="585,510 615,510 870,600 330,600" fill="#dbe5ee" opacity="0.95"/>
   <polygon points="593,510 607,510 720,600 480,600" fill="#c4d2dd" opacity="0.9"/>
