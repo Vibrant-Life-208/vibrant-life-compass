@@ -1,4 +1,4 @@
-const CACHE = 'heros-compass-v58';
+const CACHE = 'heros-compass-v59';
 const CORE = [
   '/',
   '/index.html',

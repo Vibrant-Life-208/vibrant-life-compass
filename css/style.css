@@ -155,7 +155,14 @@ html, body {
   padding: 0.85rem 2.5rem;
   font-size: 1rem;
   min-width: 160px;
+  /* Lighter warm beige text reads more clearly against the dark sage button
+     when the cycling scene behind tints toward blue/cold (ocean, arctic) */
+  color: #d4c4a8;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
+
+.welcome-continue-btn:hover { color: #e0d2b8; }
 
 /* Bearing Screen (calm-first compass orientation) */
 #bearing-screen {
