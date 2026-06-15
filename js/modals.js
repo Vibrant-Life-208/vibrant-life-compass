@@ -885,14 +885,11 @@ export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabe
 export function openOnboardingModal({ role = 'learner', onComplete }) {
   setModalTitle(role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass');
   const opener = role === 'guide'
-    ? `Before you walk alongside learners this year, a moment for yourself. Your own anchor matters too.`
-    : `This is the start of your year. Two small things to set first - a quote you can carry, and the traits you're growing into.`;
+    ? `Welcome. Before you walk alongside learners this year, Compass invites you to take a moment for yourself. Two small things anchor your year here: a quote that carries you, and three to five character traits you're growing into. These are private to you - learners do not see your anchor - and you can change them anytime.`
+    : `This is the start of your year. Compass invites you to set two small things that will anchor you through it: a motivational quote that brings you back to yourself when things get hard, and three to five character traits you're growing into. These are yours. You can change them anytime, but most learners keep theirs until the year is done.`;
   document.getElementById('form-fields').innerHTML = `
     <p style="color: var(--text); line-height: 1.6; margin: 0 0 1.25rem;">
       ${escapeHtml(opener)}
-    </p>
-    <p style="color: var(--text-muted); line-height: 1.5; margin: 0 0 1.25rem; font-size: 0.9rem;">
-      You can change either anytime, but most ${role === 'guide' ? 'guides' : 'learners'} keep theirs until the year is done.
     </p>
     <div class="form-field">
       <label for="onb-quote">Your motivational quote for the year</label>
@@ -901,6 +898,12 @@ export function openOnboardingModal({ role = 'learner', onComplete }) {
     <div class="form-field">
       <label for="onb-traits">Character traits you're anchoring on (3-5, separated by commas)</label>
       <input type="text" id="onb-traits" placeholder="courage, kindness, persistence">
+    </div>
+    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--earth-light); text-align: center;">
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.75rem; line-height: 1.5;">
+        If now isn't the right time, you can come back to this later.
+      </p>
+      <button type="button" id="onb-skip" class="btn btn-text">Skip for now</button>
     </div>
   `;
   activeSubmit = () => {
@@ -911,7 +914,19 @@ export function openOnboardingModal({ role = 'learner', onComplete }) {
     closeModal();
   };
   openModal();
-  setTimeout(() => document.getElementById('onb-quote')?.focus(), 50);
+  setTimeout(() => {
+    document.getElementById('onb-quote')?.focus();
+    const skipBtn = document.getElementById('onb-skip');
+    if (skipBtn && !skipBtn.dataset.wired) {
+      skipBtn.dataset.wired = '1';
+      skipBtn.addEventListener('click', () => {
+        // Skip: complete with empty values. Per app.js onComplete, empty quote
+        // and empty traits result in no DB writes; user lands on the default tab.
+        onComplete({ quote: '', traits: [] });
+        closeModal();
+      });
+    }
+  }, 50);
 }
 
 function setModalTitle(text) {
