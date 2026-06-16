@@ -148,8 +148,12 @@ async function onSignedIn() {
 
   // Welcome screen (shown once per cycle: first sign-in or new year-start).
   // Unified calendar - all roles use the same 8-session structure now.
-  if (shouldShowWelcome(session.role)) {
+  console.log('[welcome] checking shouldShowWelcome for role:', session.role);
+  const showWelcome = shouldShowWelcome(session.role);
+  console.log('[welcome] shouldShowWelcome returned:', showWelcome);
+  if (showWelcome) {
     await showWelcomeScreen(session.role);
+    console.log('[welcome] showWelcomeScreen Promise resolved');
   }
 
   // First-run onboarding: learner OR guide has no quote and no traits yet.

@@ -50,9 +50,12 @@ export function markWelcomeSeen(role) {
 // Show the welcome screen and resolve when the user clicks Begin.
 // Returns a Promise that resolves after the user proceeds.
 export function showWelcomeScreen(role) {
+  console.log('[welcome] showWelcomeScreen called with role:', role);
   return new Promise((resolve) => {
     const screen = document.getElementById('welcome-screen');
+    console.log('[welcome] welcome-screen element:', screen);
     if (!screen) {
+      console.warn('[welcome] welcome-screen div not found - skipping');
       resolve();
       return;
     }
@@ -84,8 +87,16 @@ export function showWelcomeScreen(role) {
     }
 
     // Hide all other screens, show welcome
-    document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach((s) => {
+      s.classList.remove('active');
+      // Belt-and-suspenders: also explicitly clear inline display so .screen
+      // CSS rule takes over (display:none)
+      if (s !== screen) s.style.display = '';
+    });
     screen.classList.add('active');
+    // Force display via inline style in case CSS specificity is overriding
+    screen.style.display = 'flex';
+    console.log('[welcome] welcome-screen activated, display:', getComputedStyle(screen).display);
 
     // Wire Begin button (one-shot)
     const continueBtn = document.getElementById('welcome-continue');
