@@ -74,12 +74,16 @@ html, body {
   display: block;
 }
 
-/* Welcome Screen (shown on first sign-in / at the start of each new cycle) */
+/* Welcome Screen (shown on first sign-in / at the start of each new cycle).
+   Position fixed + high z-index so it overlays the dashboard regardless
+   of document flow - this is the "first page" the user sees post-sign-in. */
 #welcome-screen {
   display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
   padding: 2rem 1.5rem;
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(8px);

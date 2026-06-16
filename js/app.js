@@ -104,9 +104,21 @@ async function afterBearing() {
 }
 
 async function onSignedIn() {
-  showApp();
   const session = await requireSession();
   if (!session) return;
+
+  // Welcome page FIRST - before the dashboard renders. The user sees the
+  // welcome as the first page after sign-in until they complete their anchor
+  // (quote + values + character strengths). Per captain 2026-06-15.
+  console.log('[welcome] onSignedIn: checking shouldShowWelcome for role:', session.role);
+  const showWelcome = shouldShowWelcome(session.role);
+  console.log('[welcome] shouldShowWelcome returned:', showWelcome);
+  if (showWelcome) {
+    await showWelcomeScreen(session.role);
+    console.log('[welcome] showWelcomeScreen Promise resolved');
+  }
+
+  showApp();
 
   startIdleTimeout(); // auto-logout after 30 min inactivity
   document.getElementById('who-label').textContent = `${session.name} · ${session.role}`;
@@ -145,16 +157,6 @@ async function onSignedIn() {
     setCurrentSession(sessionNumber);
     showTab('session-view', learnerId);
   });
-
-  // Welcome screen (shown once per cycle: first sign-in or new year-start).
-  // Unified calendar - all roles use the same 8-session structure now.
-  console.log('[welcome] checking shouldShowWelcome for role:', session.role);
-  const showWelcome = shouldShowWelcome(session.role);
-  console.log('[welcome] shouldShowWelcome returned:', showWelcome);
-  if (showWelcome) {
-    await showWelcomeScreen(session.role);
-    console.log('[welcome] showWelcomeScreen Promise resolved');
-  }
 
   // First-run onboarding: learner OR guide has no quote and no traits yet.
   const ownIdentity = session.role === 'learner' ? learnerId
