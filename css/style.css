@@ -82,9 +82,14 @@ html, body {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  align-items: center;
-  justify-content: center;
+  /* "safe center" centers when content fits and falls back to flex-start when
+     it overflows, so tall content stays reachable instead of clipping off the
+     top of the viewport. */
+  align-items: safe center;
+  justify-content: safe center;
   padding: 2rem 1.5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -120,7 +125,7 @@ html, body {
 .welcome-role-tagline {
   color: var(--sage);
   font-style: italic;
-  margin: 0 0 1.25rem;
+  margin: 0 1rem 1.25rem;
   padding: 0.7rem 0.9rem;
   background: var(--sage-pale);
   border-radius: var(--radius-sm);
