@@ -111,12 +111,10 @@ async function onSignedIn() {
   // welcome as the first page after sign-in until they complete their anchor
   // (quote + values + character strengths). Per captain 2026-06-15.
   // Welcome gating reads from Supabase (Decision 3 of 2026-06-16 meeting).
-  // The profile id for the gating check is the user's own profile - guideId,
-  // learnerId, or parentId depending on role.
-  const gateProfileId = session.role === 'learner' ? session.learnerId
-                      : session.role === 'guide' ? session.guideId
-                      : session.role === 'parent' ? session.parentId
-                      : null;
+  // session.id is profile.id (set by getSession) and works for guide, learner,
+  // and parent persisted sessions; session.guideId/parentId/learnerId are only
+  // populated by the fresh-sign-in auth path and are undefined on reload.
+  const gateProfileId = session.id;
   console.log('[welcome] onSignedIn: checking shouldShowWelcome for role:', session.role);
   const showWelcome = await shouldShowWelcome(session.role, gateProfileId);
   console.log('[welcome] shouldShowWelcome returned:', showWelcome);
@@ -170,10 +168,9 @@ async function onSignedIn() {
   // 3 values + 3 character strengths are all populated on the profile row).
   // The modal flow captures all three; partial completion still leaves the
   // anchor incomplete and the welcome reappears on next sign-in.
-  const ownIdentity = session.role === 'learner' ? learnerId
-                    : session.role === 'guide' ? session.guideId
-                    : session.role === 'parent' ? session.parentId
-                    : null;
+  // Own identity for the anchor writes: session.id is the profile id and is
+  // always set on persisted sessions. Same reliability fix as gateProfileId.
+  const ownIdentity = session.id;
   if (ownIdentity && !(await hasCompletedAnchor(ownIdentity))) {
     openOnboardingModal({
       role: session.role,
