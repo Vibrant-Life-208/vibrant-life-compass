@@ -122,6 +122,10 @@ export function showWelcomeScreen(role) {
       // Don't mark seen when forced via query param - lets captain re-preview
       if (!isForceShow()) markWelcomeSeen(role);
       screen.classList.remove('active');
+      // Clear the inline display:flex we set when showing the screen. Without
+      // this, the inline style wins over the CSS display:none rule and the
+      // welcome stays visible even after the .active class is removed.
+      screen.style.display = '';
       const appScreen = document.getElementById('app-screen');
       if (appScreen) appScreen.classList.add('active');
       continueBtn.removeEventListener('click', handler);
