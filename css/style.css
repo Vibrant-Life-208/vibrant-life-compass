@@ -137,10 +137,12 @@ html, body {
 
 .welcome-anchor-list {
   color: var(--text);
-  margin: 0 0 1.25rem;
+  margin: 0 auto 1.25rem;
   padding: 0 0 0 1.25rem;
   font-size: 0.9rem;
   line-height: 1.65;
+  text-align: left;
+  display: table;
 }
 
 .welcome-anchor-list li {

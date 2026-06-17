@@ -16,7 +16,8 @@ const ROLE_TITLES = {
 // rhythm of the writing carries visually and short sentences don't wrap awkwardly.
 const ROLE_TAGLINES = {
   guide: [
-    'As a guide, you walk this path alongside your learners.',
+    'As a guide, you walk this path',
+    'alongside your learners.',
     'Your own anchor matters too.',
   ],
   learner: [
