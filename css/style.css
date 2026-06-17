@@ -121,18 +121,30 @@ html, body {
   color: var(--sage);
   font-style: italic;
   margin: 0 0 1.25rem;
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 0.9rem;
   background: var(--sage-pale);
   border-radius: var(--radius-sm);
-  font-size: 0.95rem;
+  font-size: 0.825rem;
   line-height: 1.5;
 }
 
 .welcome-next-step {
   color: var(--text);
   line-height: 1.65;
-  margin: 0 0 1.25rem;
+  margin: 0 0 0.5rem;
   font-size: 0.9rem;
+}
+
+.welcome-anchor-list {
+  color: var(--text);
+  margin: 0 0 1.25rem;
+  padding: 0 0 0 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.welcome-anchor-list li {
+  margin-bottom: 0.25rem;
 }
 
 .welcome-late-start {
@@ -153,14 +165,6 @@ html, body {
   margin-top: 1.75rem;
   align-items: center;
 }
-
-.welcome-instructions-link {
-  color: var(--sage);
-  text-decoration: underline;
-  font-size: 0.9rem;
-}
-
-.welcome-instructions-link:hover { color: var(--sage-light); }
 
 .welcome-continue-btn {
   padding: 0.85rem 2.5rem;

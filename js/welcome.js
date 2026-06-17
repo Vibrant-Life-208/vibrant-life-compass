@@ -12,10 +12,22 @@ const ROLE_TITLES = {
   parent: 'Welcome.',
 };
 
+// Each tagline is an array of sentences. Rendered one sentence per line so the
+// rhythm of the writing carries visually and short sentences don't wrap awkwardly.
 const ROLE_TAGLINES = {
-  guide: 'As a guide, you walk this path alongside your learners. Your own anchor matters too.',
-  learner: 'This is your year. Set your course. Walk it your way.',
-  parent: 'Walk alongside your learner - Compass gives you a place to support them, and a place to walk your own path.',
+  guide: [
+    'As a guide, you walk this path alongside your learners.',
+    'Your own anchor matters too.',
+  ],
+  learner: [
+    'This is your year.',
+    'Set your course.',
+    'Walk it your way.',
+  ],
+  parent: [
+    'Walk alongside your learner.',
+    'Compass gives you a place to support them, and a place to walk your own path.',
+  ],
 };
 
 // Session 8 is the summer cycle. Other sessions are part of the school year.
@@ -66,10 +78,15 @@ export function showWelcomeScreen(role) {
       titleEl.textContent = ROLE_TITLES[role] || 'Welcome.';
     }
 
-    // Role-specific tagline
+    // Role-specific tagline - rendered one sentence per line via <br>.
+    // Each tagline value is an array of sentences; we escape and join them so
+    // the data layer holds the structure and the DOM holds the rendering.
     const taglineEl = document.getElementById('welcome-role-tagline');
     if (taglineEl) {
-      taglineEl.textContent = ROLE_TAGLINES[role] || '';
+      const sentences = ROLE_TAGLINES[role] || [];
+      taglineEl.innerHTML = sentences
+        .map((s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'))
+        .join('<br>');
     }
 
     // Late-start context if applicable - works for any role at any session/week
@@ -110,15 +127,5 @@ export function showWelcomeScreen(role) {
       resolve();
     };
     continueBtn.addEventListener('click', handler);
-
-    // Optional instructions link (placeholder - full instructions page TBD)
-    const instructionsLink = document.getElementById('welcome-instructions');
-    if (instructionsLink && !instructionsLink.dataset.wired) {
-      instructionsLink.dataset.wired = '1';
-      instructionsLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        alert('Instructions page coming soon. For now, just dive in - Compass will guide you through it.');
-      });
-    }
   });
 }
