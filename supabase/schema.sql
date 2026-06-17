@@ -25,6 +25,17 @@ create table profiles (
   role text not null check (role in ('learner', 'parent', 'guide')),
   name text,
   email text,
+  -- Year-level anchor: quote + vision + character strengths + values.
+  -- Held on profiles (not learners) so guides, parents, and learners all
+  -- have a single place to store their own anchor. Per Decisions 1+2+3 of
+  -- the 2026-06-16 meeting. The values_top_3 and via_strengths_top_3 arrays
+  -- are constrained at the app layer to ids from values_lexicon and
+  -- via_character_strengths respectively.
+  quote_text text not null default '',
+  quote_vision text not null default '',
+  quote_locked_until_session int default 7,
+  values_top_3 text[] not null default '{}',
+  via_strengths_top_3 text[] not null default '{}',
   created_at timestamptz default now()
 );
 
@@ -202,6 +213,95 @@ create index idx_notifications_recipient on notifications(recipient_id, read_at)
 create index idx_notifications_recipient_created on notifications(recipient_id, created_at desc);
 
 -- ============================================================================
+-- Reference tables: VIA character strengths and values lexicon
+-- ============================================================================
+
+-- Canonical 24 VIA character strengths organized into 6 virtue categories.
+-- Source: viacharacter.org/character-strengths. Per Decision 2 of the
+-- 2026-06-16 meeting, the onboarding selection surface reads from this table
+-- so capture is constrained to the canonical vocabulary.
+create table via_character_strengths (
+  id text primary key,
+  virtue_category text not null,
+  display_label_adult text not null,
+  sort_order int not null
+);
+
+insert into via_character_strengths (id, virtue_category, display_label_adult, sort_order) values
+  ('creativity',             'Wisdom & Knowledge', 'Creativity',                            1),
+  ('curiosity',              'Wisdom & Knowledge', 'Curiosity',                             2),
+  ('judgment',               'Wisdom & Knowledge', 'Judgment',                              3),
+  ('love_of_learning',       'Wisdom & Knowledge', 'Love of Learning',                      4),
+  ('perspective',            'Wisdom & Knowledge', 'Perspective',                           5),
+  ('bravery',                'Courage',            'Bravery',                               6),
+  ('perseverance',           'Courage',            'Perseverance',                          7),
+  ('honesty',                'Courage',            'Honesty',                               8),
+  ('zest',                   'Courage',            'Zest',                                  9),
+  ('love',                   'Humanity',           'Love',                                 10),
+  ('kindness',               'Humanity',           'Kindness',                             11),
+  ('social_intelligence',    'Humanity',           'Social Intelligence',                  12),
+  ('teamwork',               'Justice',            'Teamwork',                             13),
+  ('fairness',               'Justice',            'Fairness',                             14),
+  ('leadership',             'Justice',            'Leadership',                           15),
+  ('forgiveness',            'Temperance',         'Forgiveness',                          16),
+  ('humility',               'Temperance',         'Humility',                             17),
+  ('prudence',               'Temperance',         'Prudence',                             18),
+  ('self_regulation',        'Temperance',         'Self-Regulation',                      19),
+  ('appreciation_of_beauty', 'Transcendence',      'Appreciation of Beauty & Excellence',  20),
+  ('gratitude',              'Transcendence',      'Gratitude',                            21),
+  ('hope',                   'Transcendence',      'Hope',                                 22),
+  ('humor',                  'Transcendence',      'Humor',                                23),
+  ('spirituality',           'Transcendence',      'Spirituality',                         24);
+
+-- Values lexicon: 36 values from the "Virtues: The Gifts of Character" card
+-- (52 items) minus 16 items that overlap with VIA character strengths
+-- (7 direct word, 5 conceptual, 4 synonym - full list documented in the
+-- 2026-06-17 migration file).
+create table values_lexicon (
+  id text primary key,
+  display_label_adult text not null,
+  sort_order int not null
+);
+
+insert into values_lexicon (id, display_label_adult, sort_order) values
+  ('assertiveness',    'Assertiveness',     1),
+  ('caring',           'Caring',            2),
+  ('cleanliness',      'Cleanliness',       3),
+  ('commitment',       'Commitment',        4),
+  ('compassion',       'Compassion',        5),
+  ('confidence',       'Confidence',        6),
+  ('consideration',    'Consideration',     7),
+  ('cooperation',      'Cooperation',       8),
+  ('courtesy',         'Courtesy',          9),
+  ('detachment',       'Detachment',       10),
+  ('diligence',        'Diligence',        11),
+  ('flexibility',      'Flexibility',      12),
+  ('friendliness',     'Friendliness',     13),
+  ('generosity',       'Generosity',       14),
+  ('gentleness',       'Gentleness',       15),
+  ('helpfulness',      'Helpfulness',      16),
+  ('honor',            'Honor',            17),
+  ('idealism',         'Idealism',         18),
+  ('integrity',        'Integrity',        19),
+  ('joyfulness',       'Joyfulness',       20),
+  ('loyalty',          'Loyalty',          21),
+  ('moderation',       'Moderation',       22),
+  ('orderliness',      'Orderliness',      23),
+  ('patience',         'Patience',         24),
+  ('peacefulness',     'Peacefulness',     25),
+  ('purposefulness',   'Purposefulness',   26),
+  ('reliability',      'Reliability',      27),
+  ('respect',          'Respect',          28),
+  ('responsibility',   'Responsibility',   29),
+  ('service',          'Service',          30),
+  ('tact',             'Tact',             31),
+  ('tolerance',        'Tolerance',        32),
+  ('trust',            'Trust',            33),
+  ('trustworthiness',  'Trustworthiness',  34),
+  ('understanding',    'Understanding',    35),
+  ('unity',            'Unity',            36);
+
+-- ============================================================================
 -- Row Level Security
 -- ============================================================================
 
@@ -219,6 +319,15 @@ alter table everyone_posts enable row level security;
 alter table partner_links enable row level security;
 alter table year_plans enable row level security;
 alter table notifications enable row level security;
+alter table via_character_strengths enable row level security;
+alter table values_lexicon enable row level security;
+
+-- Reference tables: world-readable to any authenticated user (canonical
+-- lookup data, no user-owned rows). No write policies.
+create policy "via_strengths_readable_authenticated" on via_character_strengths
+  for select using (auth.role() = 'authenticated');
+create policy "values_lexicon_readable_authenticated" on values_lexicon
+  for select using (auth.role() = 'authenticated');
 
 -- Profile: each user reads/writes their own profile only.
 create policy "profiles_self" on profiles
