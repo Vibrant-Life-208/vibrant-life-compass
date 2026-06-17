@@ -1,5 +1,7 @@
 // Shared modal logic. Goal authoring, quote setting, traits, logins, first-run onboarding.
 
+import { getValuesLexicon, getViaCharacterStrengths } from './store.js';
+
 let activeSubmit = null;
 let activeOnClose = null;
 
@@ -882,51 +884,168 @@ export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabe
   openModal();
 }
 
-export function openOnboardingModal({ role = 'learner', onComplete }) {
-  setModalTitle(role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass');
-  const opener = role === 'guide'
-    ? `Welcome. Before you walk alongside learners this year, Compass invites you to take a moment for yourself. Two small things anchor your year here: a quote that carries you, and three to five character traits you're growing into. These are private to you - learners do not see your anchor - and you can change them anytime.`
-    : `This is the start of your year. Compass invites you to set two small things that will anchor you through it: a motivational quote that brings you back to yourself when things get hard, and three to five character traits you're growing into. These are yours. You can change them anytime, but most learners keep theirs until the year is done.`;
-  document.getElementById('form-fields').innerHTML = `
-    <p style="color: var(--text); line-height: 1.6; margin: 0 0 1.25rem;">
-      ${escapeHtml(opener)}
-    </p>
-    <div class="form-field">
-      <label for="onb-quote">Your motivational quote for the year</label>
-      <textarea id="onb-quote" rows="3" placeholder="A line that carries you when things get hard."></textarea>
-    </div>
-    <div class="form-field">
-      <label for="onb-traits">Character traits you're anchoring on (3-5, separated by commas)</label>
-      <input type="text" id="onb-traits" placeholder="courage, kindness, persistence">
-    </div>
-    <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--earth-light); text-align: center;">
-      <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0 0 0.75rem; line-height: 1.5;">
-        If now isn't the right time, you can come back to this later.
-      </p>
-      <button type="button" id="onb-skip" class="btn btn-text">Skip for now</button>
-    </div>
-  `;
-  activeSubmit = () => {
-    const quote = document.getElementById('onb-quote').value.trim();
-    const traitsRaw = document.getElementById('onb-traits').value;
-    const traits = traitsRaw.split(',').map((t) => t.trim()).filter(Boolean);
-    onComplete({ quote, traits });
-    closeModal();
+// v0.2 onboarding modal - 3-step anchor capture per Decisions 1, 2, 3 of the
+// 2026-06-16 fleet meeting.
+//   Step 1: quote (text)
+//   Step 2: values (pick 3 from values_lexicon)
+//   Step 3: character strengths (pick 3 from via_character_strengths, grouped
+//           by virtue category)
+// onComplete receives { quote, values, strengths } where values and strengths
+// are arrays of id strings from the reference tables.
+export async function openOnboardingModal({ role = 'learner', onComplete }) {
+  const state = {
+    step: 1,
+    quote: '',
+    values: [],          // array of value ids, max 3
+    strengths: [],       // array of strength ids, max 3
+    valuesLexicon: [],
+    viaStrengths: [],
   };
-  openModal();
-  setTimeout(() => {
-    document.getElementById('onb-quote')?.focus();
-    const skipBtn = document.getElementById('onb-skip');
-    if (skipBtn && !skipBtn.dataset.wired) {
-      skipBtn.dataset.wired = '1';
-      skipBtn.addEventListener('click', () => {
-        // Skip: complete with empty values. Per app.js onComplete, empty quote
-        // and empty traits result in no DB writes; user lands on the default tab.
-        onComplete({ quote: '', traits: [] });
-        closeModal();
+
+  setModalTitle(role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass');
+
+  // Hide the default form's modal-actions; each step renders its own buttons.
+  const defaultActions = document.querySelector('#goal-form .modal-actions');
+  if (defaultActions) defaultActions.style.display = 'none';
+  activeSubmit = null;
+
+  // Eager-load the reference tables once. Cached at the adapter level so a
+  // re-open of the modal doesn't re-query.
+  state.valuesLexicon = await getValuesLexicon();
+  state.viaStrengths = await getViaCharacterStrengths();
+
+  const opener = role === 'guide'
+    ? `Welcome. Before you walk alongside learners this year, Compass invites you to take a moment for yourself. Three small things anchor your year here: a quote that carries you, three values you want to lean into, and three character strengths you want to grow. These are private to you - learners do not see your anchor - and you can change them anytime.`
+    : `This is the start of your year. Compass invites you to set three small things that will anchor you through it: a motivational quote, three values you want to lean into, and three character strengths you want to grow. These are yours. You can change them anytime, but most learners keep theirs until the year is done.`;
+
+  function render() {
+    const formFields = document.getElementById('form-fields');
+    if (state.step === 1) formFields.innerHTML = renderStep1();
+    else if (state.step === 2) formFields.innerHTML = renderStep2();
+    else if (state.step === 3) formFields.innerHTML = renderStep3();
+    wireStepButtons();
+    if (state.step === 1) setTimeout(() => document.getElementById('onb-quote')?.focus(), 50);
+  }
+
+  function renderStep1() {
+    return `
+      <p class="onb-step-counter">Step 1 of 3</p>
+      <p class="onb-opener">${escapeHtml(opener)}</p>
+      <div class="form-field">
+        <label for="onb-quote">Your motivational quote for the year</label>
+        <textarea id="onb-quote" rows="3" placeholder="A line that carries you when things get hard.">${escapeHtml(state.quote)}</textarea>
+      </div>
+      <div class="onb-step-actions">
+        <button type="button" id="onb-skip" class="btn btn-text">Skip for now</button>
+        <button type="button" id="onb-continue" class="btn btn-primary">Continue</button>
+      </div>
+    `;
+  }
+
+  function renderStep2() {
+    const cards = state.valuesLexicon.map((v) => {
+      const selected = state.values.includes(v.id);
+      return `<button type="button" class="onb-select-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}" data-kind="value">${escapeHtml(v.display_label_adult)}</button>`;
+    }).join('');
+    return `
+      <p class="onb-step-counter">Step 2 of 3</p>
+      <p class="onb-step-instruction">Pick three values you want to lean into this year. <span class="onb-count">(${state.values.length} of 3 selected)</span></p>
+      <div class="onb-select-grid">${cards}</div>
+      <div class="onb-step-actions">
+        <button type="button" id="onb-back" class="btn btn-text">Back</button>
+        <button type="button" id="onb-continue" class="btn btn-primary"${state.values.length !== 3 ? ' disabled' : ''}>Continue</button>
+      </div>
+    `;
+  }
+
+  function renderStep3() {
+    // Group strengths by virtue_category preserving the canonical 6-category order.
+    const byCategory = new Map();
+    state.viaStrengths.forEach((s) => {
+      if (!byCategory.has(s.virtue_category)) byCategory.set(s.virtue_category, []);
+      byCategory.get(s.virtue_category).push(s);
+    });
+    const groups = Array.from(byCategory.entries()).map(([category, items]) => {
+      const cards = items.map((s) => {
+        const selected = state.strengths.includes(s.id);
+        return `<button type="button" class="onb-select-card${selected ? ' selected' : ''}" data-id="${escapeAttr(s.id)}" data-kind="strength">${escapeHtml(s.display_label_adult)}</button>`;
+      }).join('');
+      return `
+        <div class="onb-virtue-group">
+          <h3 class="onb-virtue-heading">${escapeHtml(category)}</h3>
+          <div class="onb-select-grid">${cards}</div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <p class="onb-step-counter">Step 3 of 3</p>
+      <p class="onb-step-instruction">Pick three character strengths you want to grow. <span class="onb-count">(${state.strengths.length} of 3 selected)</span></p>
+      <div class="onb-virtue-groups">${groups}</div>
+      <div class="onb-step-actions">
+        <button type="button" id="onb-back" class="btn btn-text">Back</button>
+        <button type="button" id="onb-save" class="btn btn-primary"${state.strengths.length !== 3 ? ' disabled' : ''}>Save anchor</button>
+      </div>
+    `;
+  }
+
+  function wireStepButtons() {
+    document.getElementById('onb-skip')?.addEventListener('click', () => {
+      // Skip: write nothing. Welcome will reappear on next sign-in because
+      // hasCompletedAnchor returns false. Per captain 2026-06-16 (Decision 3).
+      onComplete({ quote: '', values: [], strengths: [] });
+      restoreDefaultActions();
+      closeModal();
+    });
+    document.getElementById('onb-continue')?.addEventListener('click', () => {
+      if (state.step === 1) {
+        state.quote = document.getElementById('onb-quote').value.trim();
+        state.step = 2;
+        render();
+      } else if (state.step === 2) {
+        if (state.values.length !== 3) return;
+        state.step = 3;
+        render();
+      }
+    });
+    document.getElementById('onb-back')?.addEventListener('click', () => {
+      if (state.step > 1) {
+        if (state.step === 2) state.quote = document.getElementById('onb-quote')?.value?.trim() || state.quote;
+        state.step -= 1;
+        render();
+      }
+    });
+    document.getElementById('onb-save')?.addEventListener('click', () => {
+      if (state.strengths.length !== 3) return;
+      onComplete({ quote: state.quote, values: state.values, strengths: state.strengths });
+      restoreDefaultActions();
+      closeModal();
+    });
+
+    // Selection card toggling for steps 2 and 3.
+    document.querySelectorAll('.onb-select-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.id;
+        const kind = card.dataset.kind;
+        const list = kind === 'value' ? state.values : state.strengths;
+        const idx = list.indexOf(id);
+        if (idx >= 0) {
+          list.splice(idx, 1);
+        } else {
+          if (list.length >= 3) return; // soft cap - can't pick a 4th
+          list.push(id);
+        }
+        render();
       });
-    }
-  }, 50);
+    });
+  }
+
+  function restoreDefaultActions() {
+    const defaultActions = document.querySelector('#goal-form .modal-actions');
+    if (defaultActions) defaultActions.style.display = '';
+  }
+
+  render();
+  openModal();
 }
 
 function setModalTitle(text) {

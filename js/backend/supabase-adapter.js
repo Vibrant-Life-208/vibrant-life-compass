@@ -75,38 +75,118 @@ export async function getLearner(id) {
 }
 
 // ============================================================================
-// Year quote / traits
+// Year-level anchor: quote, vision, values, character strengths
+//
+// Per the 2026-06-17 v0.2 Phase 1 migration, the anchor lives on the profiles
+// row (one place for guides, parents, and learners). Function names are kept
+// to match existing callers (year-view.js, north.js, app.js) so the migration
+// is transparent. Phase 2 will retire the legacy year_quotes and year_traits
+// tables once all writes are confirmed routed through these functions.
+//
+// The `traits` field is intentionally not exposed by the new functions - the
+// v0.2 flow replaces free-text traits with VIA character strengths (selection
+// from controlled vocabulary). getYearTraits is preserved as a legacy reader
+// (year-view.js reads it for now) and reads via_strengths_top_3 from profiles.
 // ============================================================================
-export async function getYearQuote(learnerId) {
-  const { data } = await getClient().from('year_quotes').select('text').eq('learner_id', learnerId).single();
-  return data?.text || '';
+
+export async function getYearQuote(profileId) {
+  const { data } = await getClient().from('profiles').select('quote_text').eq('id', profileId).single();
+  return data?.quote_text || '';
 }
 
-export async function setYearQuote(learnerId, text) {
-  await getClient().from('year_quotes').upsert({ learner_id: learnerId, text });
+export async function setYearQuote(profileId, text) {
+  await getClient().from('profiles').update({ quote_text: text }).eq('id', profileId);
 }
 
-// Year vision (pedagogy addition 2026-05-13). Uses the same year_quotes
-// table with an added `vision` column - simpler than a separate table for
-// the protagonist-statement triple (quote + vision + traits). Schema
-// migration deferred to post-deploy; for now upserts into year_quotes
-// with vision-only payload.
-export async function getYearVision(learnerId) {
-  const { data } = await getClient().from('year_quotes').select('vision').eq('learner_id', learnerId).single();
-  return data?.vision || '';
+export async function getYearVision(profileId) {
+  const { data } = await getClient().from('profiles').select('quote_vision').eq('id', profileId).single();
+  return data?.quote_vision || '';
 }
 
-export async function setYearVision(learnerId, text) {
-  await getClient().from('year_quotes').upsert({ learner_id: learnerId, vision: text });
+export async function setYearVision(profileId, text) {
+  await getClient().from('profiles').update({ quote_vision: text }).eq('id', profileId);
 }
 
-export async function getYearTraits(learnerId) {
-  const { data } = await getClient().from('year_traits').select('traits').eq('learner_id', learnerId).single();
-  return data?.traits || [];
+// Legacy alias: reads VIA character strength ids out of via_strengths_top_3.
+// Existing callers (year-view.js display, app.js needsOnboarding) get the
+// strength ids back; downstream display code can resolve ids -> labels via
+// the via_character_strengths reference table.
+export async function getYearTraits(profileId) {
+  const { data } = await getClient().from('profiles').select('via_strengths_top_3').eq('id', profileId).single();
+  return data?.via_strengths_top_3 || [];
 }
 
-export async function setYearTraits(learnerId, traits) {
-  await getClient().from('year_traits').upsert({ learner_id: learnerId, traits });
+export async function setYearTraits(profileId, strengthIds) {
+  await getClient().from('profiles').update({ via_strengths_top_3: strengthIds }).eq('id', profileId);
+}
+
+// ============================================================================
+// v0.2 anchor: values + VIA character strengths
+//
+// Selection from controlled vocabularies (values_lexicon, via_character_strengths).
+// Each profile picks top 3 from each. Per Decisions 1 + 2 of the 2026-06-16
+// fleet meeting.
+// ============================================================================
+
+export async function getProfileValues(profileId) {
+  const { data } = await getClient().from('profiles').select('values_top_3').eq('id', profileId).single();
+  return data?.values_top_3 || [];
+}
+
+export async function setProfileValues(profileId, valueIds) {
+  await getClient().from('profiles').update({ values_top_3: valueIds }).eq('id', profileId);
+}
+
+export async function getProfileStrengths(profileId) {
+  const { data } = await getClient().from('profiles').select('via_strengths_top_3').eq('id', profileId).single();
+  return data?.via_strengths_top_3 || [];
+}
+
+export async function setProfileStrengths(profileId, strengthIds) {
+  await getClient().from('profiles').update({ via_strengths_top_3: strengthIds }).eq('id', profileId);
+}
+
+// Reference vocabularies. Read-only, world-readable to authenticated users.
+// Cached per-session in module memory so we hit Supabase once per app load.
+let _valuesLexiconCache = null;
+let _viaStrengthsCache = null;
+
+export async function getValuesLexicon() {
+  if (_valuesLexiconCache) return _valuesLexiconCache;
+  const { data } = await getClient()
+    .from('values_lexicon')
+    .select('id, display_label_adult, sort_order')
+    .order('sort_order', { ascending: true });
+  _valuesLexiconCache = data || [];
+  return _valuesLexiconCache;
+}
+
+export async function getViaCharacterStrengths() {
+  if (_viaStrengthsCache) return _viaStrengthsCache;
+  const { data } = await getClient()
+    .from('via_character_strengths')
+    .select('id, virtue_category, display_label_adult, sort_order')
+    .order('sort_order', { ascending: true });
+  _viaStrengthsCache = data || [];
+  return _viaStrengthsCache;
+}
+
+// Has this profile completed the v0.2 anchor capture? Used by the Welcome
+// gating check and by app.js to decide whether to open the onboarding modal.
+// Per Decision 3 of the 2026-06-16 meeting: gating reads from Supabase, not
+// localStorage. Completion = both values_top_3 AND via_strengths_top_3 have
+// 3 entries each AND a quote_text exists.
+export async function hasCompletedAnchor(profileId) {
+  const { data } = await getClient()
+    .from('profiles')
+    .select('quote_text, values_top_3, via_strengths_top_3')
+    .eq('id', profileId)
+    .single();
+  if (!data) return false;
+  const hasQuote = (data.quote_text || '').trim().length > 0;
+  const hasValues = Array.isArray(data.values_top_3) && data.values_top_3.length === 3;
+  const hasStrengths = Array.isArray(data.via_strengths_top_3) && data.via_strengths_top_3.length === 3;
+  return hasQuote && hasValues && hasStrengths;
 }
 
 // ============================================================================

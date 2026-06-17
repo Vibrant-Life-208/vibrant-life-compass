@@ -16,7 +16,7 @@ import { renderSetupView } from './setup.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
-import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead } from './store.js';
+import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, setProfileValues, setProfileStrengths, hasCompletedAnchor } from './store.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -110,8 +110,15 @@ async function onSignedIn() {
   // Welcome page FIRST - before the dashboard renders. The user sees the
   // welcome as the first page after sign-in until they complete their anchor
   // (quote + values + character strengths). Per captain 2026-06-15.
+  // Welcome gating reads from Supabase (Decision 3 of 2026-06-16 meeting).
+  // The profile id for the gating check is the user's own profile - guideId,
+  // learnerId, or parentId depending on role.
+  const gateProfileId = session.role === 'learner' ? session.learnerId
+                      : session.role === 'guide' ? session.guideId
+                      : session.role === 'parent' ? session.parentId
+                      : null;
   console.log('[welcome] onSignedIn: checking shouldShowWelcome for role:', session.role);
-  const showWelcome = shouldShowWelcome(session.role);
+  const showWelcome = await shouldShowWelcome(session.role, gateProfileId);
   console.log('[welcome] shouldShowWelcome returned:', showWelcome);
   if (showWelcome) {
     await showWelcomeScreen(session.role);
@@ -158,16 +165,22 @@ async function onSignedIn() {
     showTab('session-view', learnerId);
   });
 
-  // First-run onboarding: learner OR guide has no quote and no traits yet.
+  // First-run onboarding per Decisions 1+2+3 of the 2026-06-16 fleet meeting.
+  // Gating reads from Supabase via hasCompletedAnchor (true only when quote +
+  // 3 values + 3 character strengths are all populated on the profile row).
+  // The modal flow captures all three; partial completion still leaves the
+  // anchor incomplete and the welcome reappears on next sign-in.
   const ownIdentity = session.role === 'learner' ? learnerId
                     : session.role === 'guide' ? session.guideId
+                    : session.role === 'parent' ? session.parentId
                     : null;
-  if (ownIdentity && await needsOnboarding(ownIdentity)) {
+  if (ownIdentity && !(await hasCompletedAnchor(ownIdentity))) {
     openOnboardingModal({
       role: session.role,
-      onComplete: async ({ quote, traits }) => {
+      onComplete: async ({ quote, values, strengths }) => {
         if (quote) await setYearQuote(ownIdentity, quote);
-        if (traits.length) await setYearTraits(ownIdentity, traits);
+        if (values.length === 3) await setProfileValues(ownIdentity, values);
+        if (strengths.length === 3) await setProfileStrengths(ownIdentity, strengths);
         await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
       },
     });

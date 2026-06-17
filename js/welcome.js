@@ -5,6 +5,7 @@
 
 import { getYearCalendar } from './studios.js';
 import { computeYearPosition } from './year-map.js';
+import { hasCompletedAnchor } from './store.js';
 
 const ROLE_TITLES = {
   guide: 'Welcome, Guide.',
@@ -47,13 +48,16 @@ function isForceShow() {
   return params.get('welcome') === '1';
 }
 
-export function shouldShowWelcome(role) {
-  // PREVIEW MODE: always show welcome while captain is iterating on copy/design.
-  // Restore the localStorage-check logic once she signs off on the design.
-  return true;
-  // eslint-disable-next-line no-unreachable
+// Welcome gating per Decision 3 of the 2026-06-16 fleet meeting: reads from
+// Supabase (hasCompletedAnchor checks quote + values + strengths on profile)
+// rather than localStorage. The welcome appears at every sign-in until the
+// user has completed their anchor; once complete, it stops appearing.
+// `?welcome=1` query param still force-shows for design preview.
+export async function shouldShowWelcome(role, profileId) {
   if (isForceShow()) return true;
-  return !localStorage.getItem(welcomeKey(role));
+  if (!profileId) return false;
+  const completed = await hasCompletedAnchor(profileId);
+  return !completed;
 }
 
 export function markWelcomeSeen(role) {
