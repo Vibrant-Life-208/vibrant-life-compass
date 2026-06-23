@@ -1,6 +1,11 @@
 // Shared modal logic. Goal authoring, quote setting, traits, logins, first-run onboarding.
 
-import { getValuesLexicon, getViaCharacterStrengths } from './store.js';
+import {
+  getValuesLexicon, getViaCharacterStrengths,
+  getProfileValues, setProfileValues, getProfileStrengths, setProfileStrengths,
+  getProfileHorizons, setProfileHorizon,
+  getOnboardingState, setOnboardingStep, markOnboardingStepSkipped, completeOnboarding,
+} from './store.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
@@ -884,22 +889,85 @@ export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabe
   openModal();
 }
 
-// v0.2 onboarding modal - 3-step anchor capture per Decisions 1, 2, 3 of the
-// 2026-06-16 fleet meeting.
-//   Step 1: quote (text)
-//   Step 2: values (pick 3 from values_lexicon)
-//   Step 3: character strengths (pick 3 from via_character_strengths, grouped
-//           by virtue category)
-// onComplete receives { quote, values, strengths } where values and strengths
-// are arrays of id strings from the reference tables.
-export async function openOnboardingModal({ role = 'learner', onComplete }) {
+// v0.3 first-run cascade - resumable, gating onboarding. Per the 2026-06-22
+// fleet meeting. Replaces the v0.2 3-step anchor modal with the telescoping
+// cascade: body-first breath -> VIA strengths (link-out) -> Values (link-out) ->
+// beyond-5yr -> within-5yr -> within-1yr -> where-you-are-now -> halfway.
+//
+// Resumability (Decision 3): every step writes to Supabase immediately (the
+// field + the onboarding_step pointer), so closing the tab mid-cascade -
+// including during the external VIA/Values round-trip - loses nothing. On
+// re-open we read getOnboardingState and land on the saved step.
+//
+// Gate semantics (Decisions 1+2): "walk the pages once," not "answer every
+// field." Every step has a "Not now" skip that records the step as honored, not
+// failed (markOnboardingStepSkipped), and advances. Reaching the end calls
+// completeOnboarding so the gate recedes. No "Step X of N" counter - the room
+// (Fabula) flagged form-feel as a ship failure; the resume must never shame.
+//
+// Developmental gating (Decision 5): the long-horizon steps are dropped for the
+// youngest studios. NOTE: the young-tier copy + age-tier VIA/Values labels are
+// NOT yet built (reference tables hold display_label_adult only). The
+// near-horizon set is the mechanism; Sparks/Discovery learners must not be
+// onboarded until the age-tier register lands.
+//
+// onComplete is called once the cascade is walked; per-step saving already
+// happened, so it only routes the user into the app.
+
+// External assessment links (Decision 8: measured link-out). Both confirmed
+// against live sources 2026-06-22. The VIA site routes to the age-appropriate
+// survey after registration (Adult; Youth ages 8-17), so one entry URL covers
+// all tiers. An empty URL would render the entry grid without a link-out (graceful
+// fallback), but both are populated.
+const VIA_SURVEY_URL = 'https://www.viacharacter.org/survey/account/register';
+// values.institute - Brad Hook's "Start With Values": ~15 min, returns top-3
+// values + a personalized action plan. Matches the captain's 6-15 spec.
+const VALUES_ASSESSMENT_URL = 'https://values.institute/values-app/';
+
+// The ordered cascade. The ids match the onboarding_step enum in the schema.
+const CASCADE_FULL = ['breath', 'strengths', 'values', 'beyond_5yr', 'within_5yr', 'within_1yr', 'current_state', 'halfway'];
+// Youngest tiers (Decision 5): one near horizon only, no five-year telescope.
+const CASCADE_NEAR = ['breath', 'strengths', 'values', 'within_1yr'];
+
+// Telescoping prompts for the horizon steps (adult register).
+const HORIZON_PROMPTS = {
+  beyond_5yr: {
+    heading: 'Look far down the road.',
+    body: 'Beyond five years from now - who have you become? What does your life look like? Let yourself imagine. There is no wrong answer.',
+    placeholder: 'Beyond five years from now...',
+  },
+  within_5yr: {
+    heading: 'Now bring it closer.',
+    body: 'Within the next five years - what do you want to be true?',
+    placeholder: 'Within five years...',
+  },
+  within_1yr: {
+    heading: 'This year.',
+    body: 'Twelve months from now - what do you want to have grown into?',
+    placeholder: 'By this time next year...',
+  },
+  current_state: {
+    heading: 'And right now.',
+    body: 'Honestly - where are you today? This is the mirror, not the dream. You can stop here anytime; this step is yours to take at your pace.',
+    placeholder: 'Where I am right now...',
+  },
+  halfway: {
+    heading: 'The halfway point.',
+    body: 'Between where you are now and this year’s horizon - what does halfway look like? How will you know you are on your way?',
+    placeholder: 'Halfway, I will...',
+  },
+};
+
+export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, onComplete }) {
+  const steps = (studio === 'sparks' || studio === 'discovery') ? CASCADE_NEAR : CASCADE_FULL;
+
   const state = {
-    step: 1,
-    quote: '',
-    values: [],          // array of value ids, max 3
-    strengths: [],       // array of strength ids, max 3
+    idx: 0,
+    values: [],
+    strengths: [],
     valuesLexicon: [],
     viaStrengths: [],
+    horizons: { beyond_5yr: '', within_5yr: '', within_1yr: '', current_state: '', halfway: '' },
   };
 
   setModalTitle(role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass');
@@ -909,127 +977,194 @@ export async function openOnboardingModal({ role = 'learner', onComplete }) {
   if (defaultActions) defaultActions.style.display = 'none';
   activeSubmit = null;
 
-  // Eager-load the reference tables once. Cached at the adapter level so a
-  // re-open of the modal doesn't re-query.
+  // Reference tables (cached at the adapter level).
   state.valuesLexicon = await getValuesLexicon();
   state.viaStrengths = await getViaCharacterStrengths();
 
-  const opener = role === 'guide'
-    ? `Welcome. Before you walk alongside learners this year, Compass invites you to take a moment for yourself. Three small things anchor your year here: a quote that carries you, three values you want to lean into, and three character strengths you want to grow. These are private to you - learners do not see your anchor - and you can change them anytime.`
-    : `This is the start of your year. Compass invites you to set three small things that will anchor you through it: a motivational quote, three values you want to lean into, and three character strengths you want to grow. These are yours. You can change them anytime, but most learners keep theirs until the year is done.`;
+  // Load any saved progress and resume on the saved step (Decision 3).
+  if (profileId) {
+    const [savedValues, savedStrengths, savedHorizons, onb] = await Promise.all([
+      getProfileValues(profileId),
+      getProfileStrengths(profileId),
+      getProfileHorizons(profileId),
+      getOnboardingState(profileId),
+    ]);
+    state.values = Array.isArray(savedValues) ? savedValues.slice(0, 3) : [];
+    state.strengths = Array.isArray(savedStrengths) ? savedStrengths.slice(0, 3) : [];
+    if (savedHorizons) state.horizons = { ...state.horizons, ...savedHorizons };
+    const resumeIdx = steps.indexOf(onb.step);
+    state.idx = resumeIdx >= 0 ? resumeIdx : 0;
+  }
+
+  function curStep() { return steps[state.idx]; }
+  function isLast() { return state.idx === steps.length - 1; }
+
+  function finish() {
+    restoreDefaultActions();
+    closeModal();
+    if (onComplete) onComplete();
+  }
+
+  // Capture an in-progress textarea into state so Back/forward never loses it.
+  function captureHorizon() {
+    const step = curStep();
+    if (HORIZON_PROMPTS[step]) {
+      const ta = document.getElementById('onb-horizon');
+      if (ta) state.horizons[step] = ta.value;
+    }
+  }
+
+  // Advance one step: persist the pointer, complete the cascade if we ran off
+  // the end. saveFn (optional) writes the current step's field first.
+  async function advance(saveFn) {
+    if (saveFn) await saveFn();
+    state.idx += 1;
+    if (state.idx >= steps.length) {
+      if (profileId) await completeOnboarding(profileId);
+      finish();
+      return;
+    }
+    if (profileId) await setOnboardingStep(profileId, steps[state.idx]);
+    render();
+  }
+
+  // "Not now" (Decision 2): record the skip as honored, then advance.
+  async function skipStep() {
+    const step = curStep();
+    captureHorizon();
+    if (profileId && step !== 'breath') await markOnboardingStepSkipped(profileId, step);
+    await advance(null);
+  }
+
+  function back() {
+    if (state.idx === 0) return;
+    captureHorizon();
+    state.idx -= 1;
+    if (profileId) setOnboardingStep(profileId, steps[state.idx]);
+    render();
+  }
+
+  function navButtons({ skippable = true, continueLabel = 'Continue', continueDisabled = false } = {}) {
+    const backBtn = state.idx > 0 ? `<button type="button" id="onb-back" class="btn btn-text">Back</button>` : '<span></span>';
+    const skipBtn = skippable ? `<button type="button" id="onb-skip" class="btn btn-text">Not now</button>` : '';
+    return `
+      <div class="onb-step-actions">
+        ${backBtn}
+        <div class="onb-step-actions-right">
+          ${skipBtn}
+          <button type="button" id="onb-continue" class="btn btn-primary"${continueDisabled ? ' disabled' : ''}>${escapeHtml(continueLabel)}</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderBreath() {
+    return `
+      <div class="onb-breath">
+        <p class="onb-breath-copy">Welcome. Before we look at anything together - one breath.</p>
+        <p class="onb-breath-copy">In through your nose. Out through your mouth. There is no hurry.</p>
+      </div>
+      <div class="onb-step-actions">
+        <span></span>
+        <div class="onb-step-actions-right">
+          <button type="button" id="onb-continue" class="btn btn-primary">I’m ready</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSelectStep({ kind, label }) {
+    const list = kind === 'value' ? state.values : state.strengths;
+    const linkUrl = kind === 'value' ? VALUES_ASSESSMENT_URL : VIA_SURVEY_URL;
+    const linkText = kind === 'value'
+      ? 'Take the Values assessment'
+      : 'Take the free VIA Survey';
+    const linkBlock = linkUrl
+      ? `<p class="onb-linkout"><a href="${escapeAttr(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(linkText)} ↗</a><span class="onb-linkout-note">Opens in a new tab. We’ll keep your place here - come back when you have your results.</span></p>`
+      : `<p class="onb-linkout-note">Assessment link coming soon - for now, choose what fits you best below.</p>`;
+    let grid;
+    if (kind === 'value') {
+      grid = `<div class="onb-select-grid">${state.valuesLexicon.map((v) => {
+        const selected = state.values.includes(v.id);
+        return `<button type="button" class="onb-select-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}" data-kind="value">${escapeHtml(v.display_label_adult)}</button>`;
+      }).join('')}</div>`;
+    } else {
+      const byCategory = new Map();
+      state.viaStrengths.forEach((s) => {
+        if (!byCategory.has(s.virtue_category)) byCategory.set(s.virtue_category, []);
+        byCategory.get(s.virtue_category).push(s);
+      });
+      grid = `<div class="onb-virtue-groups">${Array.from(byCategory.entries()).map(([category, items]) => {
+        const cards = items.map((s) => {
+          const selected = state.strengths.includes(s.id);
+          return `<button type="button" class="onb-select-card${selected ? ' selected' : ''}" data-id="${escapeAttr(s.id)}" data-kind="strength">${escapeHtml(s.display_label_adult)}</button>`;
+        }).join('');
+        return `<div class="onb-virtue-group"><h3 class="onb-virtue-heading">${escapeHtml(category)}</h3><div class="onb-select-grid">${cards}</div></div>`;
+      }).join('')}</div>`;
+    }
+    return `
+      <p class="onb-step-instruction">Enter your top three ${escapeHtml(label)} from your results. <span class="onb-count">(${list.length} of 3 selected)</span></p>
+      ${linkBlock}
+      ${grid}
+      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: list.length !== 3 })}
+    `;
+  }
+
+  function renderHorizon(step) {
+    const p = HORIZON_PROMPTS[step];
+    return `
+      <div class="onb-horizon-prompt">
+        <h3 class="onb-horizon-heading">${escapeHtml(p.heading)}</h3>
+        <p class="onb-horizon-body">${escapeHtml(p.body)}</p>
+      </div>
+      <div class="form-field">
+        <textarea id="onb-horizon" rows="4" placeholder="${escapeAttr(p.placeholder)}">${escapeHtml(state.horizons[step] || '')}</textarea>
+      </div>
+      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
+    `;
+  }
 
   function render() {
     const formFields = document.getElementById('form-fields');
-    if (state.step === 1) formFields.innerHTML = renderStep1();
-    else if (state.step === 2) formFields.innerHTML = renderStep2();
-    else if (state.step === 3) formFields.innerHTML = renderStep3();
-    wireStepButtons();
-    if (state.step === 1) setTimeout(() => document.getElementById('onb-quote')?.focus(), 50);
+    const step = curStep();
+    if (step === 'breath') formFields.innerHTML = renderBreath();
+    else if (step === 'strengths') formFields.innerHTML = renderSelectStep({ kind: 'strength', label: 'character strengths' });
+    else if (step === 'values') formFields.innerHTML = renderSelectStep({ kind: 'value', label: 'values' });
+    else formFields.innerHTML = renderHorizon(step);
+    wireStep();
+    if (HORIZON_PROMPTS[step]) setTimeout(() => document.getElementById('onb-horizon')?.focus(), 50);
   }
 
-  function renderStep1() {
-    return `
-      <p class="onb-step-counter">Step 1 of 3</p>
-      <p class="onb-opener">${escapeHtml(opener)}</p>
-      <div class="form-field">
-        <label for="onb-quote">Your motivational quote for the year</label>
-        <textarea id="onb-quote" rows="3" placeholder="A line that carries you when things get hard.">${escapeHtml(state.quote)}</textarea>
-      </div>
-      <div class="onb-step-actions">
-        <button type="button" id="onb-skip" class="btn btn-text">Skip for now</button>
-        <button type="button" id="onb-continue" class="btn btn-primary">Continue</button>
-      </div>
-    `;
-  }
+  function wireStep() {
+    const step = curStep();
 
-  function renderStep2() {
-    const cards = state.valuesLexicon.map((v) => {
-      const selected = state.values.includes(v.id);
-      return `<button type="button" class="onb-select-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}" data-kind="value">${escapeHtml(v.display_label_adult)}</button>`;
-    }).join('');
-    return `
-      <p class="onb-step-counter">Step 2 of 3</p>
-      <p class="onb-step-instruction">Pick three values you want to lean into this year. <span class="onb-count">(${state.values.length} of 3 selected)</span></p>
-      <div class="onb-select-grid">${cards}</div>
-      <div class="onb-step-actions">
-        <button type="button" id="onb-back" class="btn btn-text">Back</button>
-        <button type="button" id="onb-continue" class="btn btn-primary"${state.values.length !== 3 ? ' disabled' : ''}>Continue</button>
-      </div>
-    `;
-  }
+    document.getElementById('onb-back')?.addEventListener('click', back);
+    document.getElementById('onb-skip')?.addEventListener('click', skipStep);
 
-  function renderStep3() {
-    // Group strengths by virtue_category preserving the canonical 6-category order.
-    const byCategory = new Map();
-    state.viaStrengths.forEach((s) => {
-      if (!byCategory.has(s.virtue_category)) byCategory.set(s.virtue_category, []);
-      byCategory.get(s.virtue_category).push(s);
-    });
-    const groups = Array.from(byCategory.entries()).map(([category, items]) => {
-      const cards = items.map((s) => {
-        const selected = state.strengths.includes(s.id);
-        return `<button type="button" class="onb-select-card${selected ? ' selected' : ''}" data-id="${escapeAttr(s.id)}" data-kind="strength">${escapeHtml(s.display_label_adult)}</button>`;
-      }).join('');
-      return `
-        <div class="onb-virtue-group">
-          <h3 class="onb-virtue-heading">${escapeHtml(category)}</h3>
-          <div class="onb-select-grid">${cards}</div>
-        </div>
-      `;
-    }).join('');
-    return `
-      <p class="onb-step-counter">Step 3 of 3</p>
-      <p class="onb-step-instruction">Pick three character strengths you want to grow. <span class="onb-count">(${state.strengths.length} of 3 selected)</span></p>
-      <div class="onb-virtue-groups">${groups}</div>
-      <div class="onb-step-actions">
-        <button type="button" id="onb-back" class="btn btn-text">Back</button>
-        <button type="button" id="onb-save" class="btn btn-primary"${state.strengths.length !== 3 ? ' disabled' : ''}>Save anchor</button>
-      </div>
-    `;
-  }
-
-  function wireStepButtons() {
-    document.getElementById('onb-skip')?.addEventListener('click', () => {
-      // Skip: write nothing. Welcome will reappear on next sign-in because
-      // hasCompletedAnchor returns false. Per captain 2026-06-16 (Decision 3).
-      onComplete({ quote: '', values: [], strengths: [] });
-      restoreDefaultActions();
-      closeModal();
-    });
-    document.getElementById('onb-continue')?.addEventListener('click', () => {
-      if (state.step === 1) {
-        state.quote = document.getElementById('onb-quote').value.trim();
-        state.step = 2;
-        render();
-      } else if (state.step === 2) {
+    document.getElementById('onb-continue')?.addEventListener('click', async () => {
+      if (step === 'breath') {
+        await advance(null);
+      } else if (step === 'strengths') {
+        if (state.strengths.length !== 3) return;
+        await advance(() => profileId ? setProfileStrengths(profileId, state.strengths) : Promise.resolve());
+      } else if (step === 'values') {
         if (state.values.length !== 3) return;
-        state.step = 3;
-        render();
+        await advance(() => profileId ? setProfileValues(profileId, state.values) : Promise.resolve());
+      } else {
+        captureHorizon();
+        const text = state.horizons[step] || '';
+        await advance(() => profileId ? setProfileHorizon(profileId, step, text) : Promise.resolve());
       }
-    });
-    document.getElementById('onb-back')?.addEventListener('click', () => {
-      if (state.step > 1) {
-        if (state.step === 2) state.quote = document.getElementById('onb-quote')?.value?.trim() || state.quote;
-        state.step -= 1;
-        render();
-      }
-    });
-    document.getElementById('onb-save')?.addEventListener('click', () => {
-      if (state.strengths.length !== 3) return;
-      onComplete({ quote: state.quote, values: state.values, strengths: state.strengths });
-      restoreDefaultActions();
-      closeModal();
     });
 
-    // Selection card toggling for steps 2 and 3.
+    // Selection-card toggling for the strengths/values steps.
     document.querySelectorAll('.onb-select-card').forEach((card) => {
       card.addEventListener('click', () => {
         const id = card.dataset.id;
-        const kind = card.dataset.kind;
-        const list = kind === 'value' ? state.values : state.strengths;
-        const idx = list.indexOf(id);
-        if (idx >= 0) {
-          list.splice(idx, 1);
+        const list = card.dataset.kind === 'value' ? state.values : state.strengths;
+        const at = list.indexOf(id);
+        if (at >= 0) {
+          list.splice(at, 1);
         } else {
           if (list.length >= 3) return; // soft cap - can't pick a 4th
           list.push(id);
@@ -1040,8 +1175,8 @@ export async function openOnboardingModal({ role = 'learner', onComplete }) {
   }
 
   function restoreDefaultActions() {
-    const defaultActions = document.querySelector('#goal-form .modal-actions');
-    if (defaultActions) defaultActions.style.display = '';
+    const da = document.querySelector('#goal-form .modal-actions');
+    if (da) da.style.display = '';
   }
 
   render();

@@ -36,6 +36,32 @@ create table profiles (
   quote_locked_until_session int default 7,
   values_top_3 text[] not null default '{}',
   via_strengths_top_3 text[] not null default '{}',
+  -- v0.3 horizon cascade + onboarding resume pointer. Per the 2026-06-22 fleet
+  -- meeting. Held on profiles so each person's vision is private to them via the
+  -- profiles_self policy (self-only); cross-role sharing, if ever built, must be
+  -- additive + learner-initiated, never a default. See the 2026-06-22 migration.
+  -- The telescoping life-vision steps (3-7 of the first-run cascade):
+  vision_beyond_5yr text not null default '',
+  vision_within_5yr text not null default '',
+  vision_within_1yr text not null default '',
+  -- Person-level "where you are now" + "halfway point". Named to echo the
+  -- per-goal baseline / halfway concepts (same idea, different altitude); not
+  -- overloaded onto the goal columns.
+  current_state text not null default '',
+  halfway_state text not null default '',
+  -- Resume pointer: which step the person lands on next. The enum is the
+  -- canonical flow order. 'breath' = body-first door; 'complete' = gate receded.
+  onboarding_step text not null default 'breath'
+    check (onboarding_step in (
+      'breath', 'strengths', 'values', 'beyond_5yr', 'within_5yr',
+      'within_1yr', 'current_state', 'halfway', 'complete'
+    )),
+  -- Steps the person said "not now" to (a positive, honored skip, not failure).
+  onboarding_skipped text[] not null default '{}',
+  -- Null until the cascade is walked once (set even if steps were skipped).
+  onboarding_completed_at timestamptz,
+  -- Bumped on every save so "right where you left off" stays fresh.
+  onboarding_updated_at timestamptz default now(),
   created_at timestamptz default now()
 );
 

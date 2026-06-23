@@ -190,6 +190,120 @@ export async function hasCompletedAnchor(profileId) {
 }
 
 // ============================================================================
+// v0.3 horizon cascade + onboarding resume pointer
+//
+// The telescoping life-vision steps and the durable record of where a person is
+// in the first-run cascade. Per the 2026-06-22 fleet meeting. All on profiles,
+// so all self-only via the profiles_self RLS policy (private by construction).
+// ============================================================================
+
+// Maps a cascade step key to its profiles column. The five horizon steps each
+// write one free-text column; 'breath' has no field, and strengths/values are
+// the existing anchor columns handled by setProfileStrengths/setProfileValues.
+const HORIZON_COLUMNS = {
+  beyond_5yr: 'vision_beyond_5yr',
+  within_5yr: 'vision_within_5yr',
+  within_1yr: 'vision_within_1yr',
+  current_state: 'current_state',
+  halfway: 'halfway_state',
+};
+
+// Read all five horizon fields back in one round-trip.
+export async function getProfileHorizons(profileId) {
+  const { data } = await getClient()
+    .from('profiles')
+    .select('vision_beyond_5yr, vision_within_5yr, vision_within_1yr, current_state, halfway_state')
+    .eq('id', profileId)
+    .single();
+  return {
+    beyond_5yr: data?.vision_beyond_5yr || '',
+    within_5yr: data?.vision_within_5yr || '',
+    within_1yr: data?.vision_within_1yr || '',
+    current_state: data?.current_state || '',
+    halfway: data?.halfway_state || '',
+  };
+}
+
+// Atomic per-step save (Decision 3): write one horizon field and bump the
+// resume freshness stamp in the same update. `stepKey` is one of HORIZON_COLUMNS.
+export async function setProfileHorizon(profileId, stepKey, text) {
+  const column = HORIZON_COLUMNS[stepKey];
+  if (!column) throw new Error(`setProfileHorizon: unknown step "${stepKey}"`);
+  await getClient()
+    .from('profiles')
+    .update({ [column]: text, onboarding_updated_at: new Date().toISOString() })
+    .eq('id', profileId);
+}
+
+// Read the whole resume pointer at once - used on sign-in to land the person on
+// their exact step.
+export async function getOnboardingState(profileId) {
+  const { data } = await getClient()
+    .from('profiles')
+    .select('onboarding_step, onboarding_skipped, onboarding_completed_at, onboarding_updated_at')
+    .eq('id', profileId)
+    .single();
+  return {
+    step: data?.onboarding_step || 'breath',
+    skipped: Array.isArray(data?.onboarding_skipped) ? data.onboarding_skipped : [],
+    completedAt: data?.onboarding_completed_at || null,
+    updatedAt: data?.onboarding_updated_at || null,
+  };
+}
+
+// Advance (or set) the resume pointer. Written on every step transition so a
+// pause never loses the person's place.
+export async function setOnboardingStep(profileId, step) {
+  await getClient()
+    .from('profiles')
+    .update({ onboarding_step: step, onboarding_updated_at: new Date().toISOString() })
+    .eq('id', profileId);
+}
+
+// Record a "not now" skip (Decision 2). Idempotent: a step is only added once.
+// Skipping is honored, never a failure and never a blocker. Returns the updated
+// skipped list.
+export async function markOnboardingStepSkipped(profileId, step) {
+  const { data } = await getClient()
+    .from('profiles')
+    .select('onboarding_skipped')
+    .eq('id', profileId)
+    .single();
+  const current = Array.isArray(data?.onboarding_skipped) ? data.onboarding_skipped : [];
+  if (current.includes(step)) return current;
+  const next = [...current, step];
+  await getClient()
+    .from('profiles')
+    .update({ onboarding_skipped: next, onboarding_updated_at: new Date().toISOString() })
+    .eq('id', profileId);
+  return next;
+}
+
+// The gate recedes (Decision 1). Called when the person reaches the end of the
+// cascade - even if some steps were skipped (Decision 2: walk-the-pages-once,
+// not answer-every-field). Sets step to 'complete' and stamps completion.
+export async function completeOnboarding(profileId) {
+  const now = new Date().toISOString();
+  await getClient()
+    .from('profiles')
+    .update({ onboarding_step: 'complete', onboarding_completed_at: now, onboarding_updated_at: now })
+    .eq('id', profileId);
+}
+
+// Has this person walked the cascade once? This is the v0.3 gate signal - it
+// supersedes hasCompletedAnchor as the "show the first-run flow?" check once the
+// cascade UI is wired. Completion = onboarding_completed_at is set, regardless
+// of which individual steps were answered vs skipped.
+export async function hasCompletedOnboarding(profileId) {
+  const { data } = await getClient()
+    .from('profiles')
+    .select('onboarding_completed_at')
+    .eq('id', profileId)
+    .single();
+  return Boolean(data?.onboarding_completed_at);
+}
+
+// ============================================================================
 // Goals
 // ============================================================================
 export async function getGoals(learnerId) {

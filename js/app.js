@@ -16,7 +16,7 @@ import { renderSetupView } from './setup.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
-import { getLearners, getYearQuote, getYearTraits, setYearQuote, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, setProfileValues, setProfileStrengths, hasCompletedAnchor } from './store.js';
+import { getLearners, getYearQuote, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding } from './store.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -163,21 +163,27 @@ async function onSignedIn() {
     showTab('session-view', learnerId);
   });
 
-  // First-run onboarding per Decisions 1+2+3 of the 2026-06-16 fleet meeting.
-  // Gating reads from Supabase via hasCompletedAnchor (true only when quote +
-  // 3 values + 3 character strengths are all populated on the profile row).
-  // The modal flow captures all three; partial completion still leaves the
-  // anchor incomplete and the welcome reappears on next sign-in.
-  // Own identity for the anchor writes: session.id is the profile id and is
-  // always set on persisted sessions. Same reliability fix as gateProfileId.
+  // First-run cascade per the 2026-06-22 fleet meeting. Gating reads from
+  // Supabase via hasCompletedOnboarding (true once the person has walked the
+  // cascade once - Decisions 1+2, walk-the-pages-once, not answer-every-field).
+  // The modal saves every step atomically and resumes on the saved step, so a
+  // pause - including the external VIA/Values round-trip - loses nothing.
+  // session.id is the profile id, always set on persisted sessions.
   const ownIdentity = session.id;
-  if (ownIdentity && !(await hasCompletedAnchor(ownIdentity))) {
+  if (ownIdentity && !(await hasCompletedOnboarding(ownIdentity))) {
+    // Studio drives developmental gating of the long-horizon steps (Decision 5).
+    // Guides/parents have no studio and get the full telescope.
+    let onbStudio = null;
+    if (session.role === 'learner' && session.learnerId) {
+      const { getLearner } = await import('./store.js');
+      const l = await getLearner(session.learnerId);
+      onbStudio = l?.studio || null;
+    }
     openOnboardingModal({
+      profileId: ownIdentity,
       role: session.role,
-      onComplete: async ({ quote, values, strengths }) => {
-        if (quote) await setYearQuote(ownIdentity, quote);
-        if (values.length === 3) await setProfileValues(ownIdentity, values);
-        if (strengths.length === 3) await setProfileStrengths(ownIdentity, strengths);
+      studio: onbStudio,
+      onComplete: async () => {
         await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
       },
     });

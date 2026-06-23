@@ -3055,6 +3055,66 @@ body.landscape-mountain {
   cursor: not-allowed;
 }
 
+/* v0.3 cascade: right-aligned cluster so "Not now" sits beside Continue while
+   Back stays on the far left. */
+.onb-step-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Body-first breath step (Salus's door): calm, slow, no measurement. */
+.onb-breath {
+  padding: 2rem 0.5rem 1rem;
+  text-align: center;
+}
+
+.onb-breath-copy {
+  color: var(--text);
+  line-height: 1.8;
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+
+/* Measured link-out (Decision 8): take the real assessment, then enter results. */
+.onb-linkout {
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.onb-linkout a {
+  color: var(--sage);
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.onb-linkout-note {
+  display: block;
+  color: var(--text-soft);
+  font-size: 0.8rem;
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+/* Telescoping horizon prompts: guided imagining, not a form. */
+.onb-horizon-prompt {
+  margin: 0.5rem 0 1rem;
+}
+
+.onb-horizon-heading {
+  color: var(--sage);
+  font-size: 1.05rem;
+  font-weight: 500;
+  margin: 0 0 0.4rem;
+}
+
+.onb-horizon-body {
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
 .btn {
   border: none;
   border-radius: var(--radius-sm);
