@@ -5,7 +5,9 @@ import {
   getProfileValues, setProfileValues, getProfileStrengths, setProfileStrengths,
   getProfileHorizons, setProfileHorizon,
   getOnboardingState, setOnboardingStep, markOnboardingStepSkipped, completeOnboarding,
+  setYearQuote, getQuoteState,
 } from './store.js';
+import { getYearCalendar } from './studios.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
@@ -925,9 +927,11 @@ const VIA_SURVEY_URL = 'https://www.viacharacter.org/survey/account/register';
 const VALUES_ASSESSMENT_URL = 'https://values.institute/values-app/';
 
 // The ordered cascade. The ids match the onboarding_step enum in the schema.
-const CASCADE_FULL = ['breath', 'strengths', 'values', 'beyond_5yr', 'within_5yr', 'within_1yr', 'current_state', 'halfway'];
+// 'quote' (2026-06-24): the line that anchors the top of the page for the cycle,
+// asked first - right after the grounding breath - and re-prompted each new year.
+const CASCADE_FULL = ['breath', 'quote', 'strengths', 'values', 'beyond_5yr', 'within_5yr', 'within_1yr', 'current_state', 'halfway'];
 // Youngest tiers (Decision 5): one near horizon only, no five-year telescope.
-const CASCADE_NEAR = ['breath', 'strengths', 'values', 'within_1yr'];
+const CASCADE_NEAR = ['breath', 'quote', 'strengths', 'values', 'within_1yr'];
 
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
@@ -961,8 +965,12 @@ const HORIZON_PROMPTS = {
 export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, onComplete }) {
   const steps = (studio === 'sparks' || studio === 'discovery') ? CASCADE_NEAR : CASCADE_FULL;
 
+  // The cycle this walk-through stamps onto the quote (year_calendar.yearStartISO).
+  const currentCycle = getYearCalendar().yearStartISO;
+
   const state = {
     idx: 0,
+    quote: '',
     values: [],
     strengths: [],
     valuesLexicon: [],
@@ -983,12 +991,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   // Load any saved progress and resume on the saved step (Decision 3).
   if (profileId) {
-    const [savedValues, savedStrengths, savedHorizons, onb] = await Promise.all([
+    const [savedQuote, savedValues, savedStrengths, savedHorizons, onb] = await Promise.all([
+      getQuoteState(profileId),
       getProfileValues(profileId),
       getProfileStrengths(profileId),
       getProfileHorizons(profileId),
       getOnboardingState(profileId),
     ]);
+    state.quote = savedQuote?.text || '';
     state.values = Array.isArray(savedValues) ? savedValues.slice(0, 3) : [];
     state.strengths = Array.isArray(savedStrengths) ? savedStrengths.slice(0, 3) : [];
     if (savedHorizons) state.horizons = { ...state.horizons, ...savedHorizons };
@@ -1014,6 +1024,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     }
   }
 
+  // Capture the in-progress quote textarea so Back/skip never loses it.
+  function captureQuote() {
+    if (curStep() === 'quote') {
+      const ta = document.getElementById('onb-quote');
+      if (ta) state.quote = ta.value;
+    }
+  }
+
   // Advance one step: persist the pointer, complete the cascade if we ran off
   // the end. saveFn (optional) writes the current step's field first.
   async function advance(saveFn) {
@@ -1032,6 +1050,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   async function skipStep() {
     const step = curStep();
     captureHorizon();
+    captureQuote();
     if (profileId && step !== 'breath') await markOnboardingStepSkipped(profileId, step);
     await advance(null);
   }
@@ -1039,6 +1058,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   function back() {
     if (state.idx === 0) return;
     captureHorizon();
+    captureQuote();
     state.idx -= 1;
     if (profileId) setOnboardingStep(profileId, steps[state.idx]);
     render();
@@ -1070,6 +1090,19 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
           <button type="button" id="onb-continue" class="btn btn-primary">I’m ready</button>
         </div>
       </div>
+    `;
+  }
+
+  function renderQuote() {
+    return `
+      <div class="onb-horizon-prompt">
+        <h3 class="onb-horizon-heading">Your quote.</h3>
+        <p class="onb-horizon-body">A line that carries you this year. It stays at the top of your page all year - next year, you’ll be asked again.</p>
+      </div>
+      <div class="form-field">
+        <textarea id="onb-quote" rows="3" placeholder="A line that carries you...">${escapeHtml(state.quote || '')}</textarea>
+      </div>
+      ${navButtons({ skippable: true, continueLabel: 'Continue' })}
     `;
   }
 
@@ -1128,11 +1161,13 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const formFields = document.getElementById('form-fields');
     const step = curStep();
     if (step === 'breath') formFields.innerHTML = renderBreath();
+    else if (step === 'quote') formFields.innerHTML = renderQuote();
     else if (step === 'strengths') formFields.innerHTML = renderSelectStep({ kind: 'strength', label: 'character strengths' });
     else if (step === 'values') formFields.innerHTML = renderSelectStep({ kind: 'value', label: 'values' });
     else formFields.innerHTML = renderHorizon(step);
     wireStep();
     if (HORIZON_PROMPTS[step]) setTimeout(() => document.getElementById('onb-horizon')?.focus(), 50);
+    if (step === 'quote') setTimeout(() => document.getElementById('onb-quote')?.focus(), 50);
   }
 
   function wireStep() {
@@ -1144,6 +1179,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     document.getElementById('onb-continue')?.addEventListener('click', async () => {
       if (step === 'breath') {
         await advance(null);
+      } else if (step === 'quote') {
+        captureQuote();
+        const text = state.quote || '';
+        await advance(() => profileId ? setYearQuote(profileId, text, currentCycle) : Promise.resolve());
       } else if (step === 'strengths') {
         if (state.strengths.length !== 3) return;
         await advance(() => profileId ? setProfileStrengths(profileId, state.strengths) : Promise.resolve());

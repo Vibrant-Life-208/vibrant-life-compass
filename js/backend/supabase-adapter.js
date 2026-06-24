@@ -94,8 +94,24 @@ export async function getYearQuote(profileId) {
   return data?.quote_text || '';
 }
 
-export async function setYearQuote(profileId, text) {
-  await getClient().from('profiles').update({ quote_text: text }).eq('id', profileId);
+export async function setYearQuote(profileId, text, cycle) {
+  const patch = { quote_text: text };
+  // Stamp the cycle only when the caller provides one (onboarding quote step +
+  // the annual re-prompt). Mid-cycle edits from the Year view omit it, so editing
+  // never silently re-dates the quote to a new cycle.
+  if (cycle !== undefined) patch.quote_cycle = cycle;
+  await getClient().from('profiles').update(patch).eq('id', profileId);
+}
+
+// Read the quote and the cycle it belongs to, in one round-trip. Used on sign-in
+// to decide whether the quote is fresh for the current cycle or needs re-prompting.
+export async function getQuoteState(profileId) {
+  const { data } = await getClient()
+    .from('profiles')
+    .select('quote_text, quote_cycle')
+    .eq('id', profileId)
+    .single();
+  return { text: data?.quote_text || '', cycle: data?.quote_cycle || '' };
 }
 
 export async function getYearVision(profileId) {

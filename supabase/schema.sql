@@ -34,6 +34,10 @@ create table profiles (
   quote_text text not null default '',
   quote_vision text not null default '',
   quote_locked_until_session int default 7,
+  -- The cycle (year_calendar.yearStartISO) the current quote_text was written
+  -- for. When it differs from the current cycle, the person is re-prompted for a
+  -- fresh quote next year. See the 2026-06-24 v0.4 migration.
+  quote_cycle text not null default '',
   values_top_3 text[] not null default '{}',
   via_strengths_top_3 text[] not null default '{}',
   -- v0.3 horizon cascade + onboarding resume pointer. Per the 2026-06-22 fleet

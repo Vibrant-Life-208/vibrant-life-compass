@@ -37,6 +37,7 @@ export const {
   addPost,
   getYearQuote,
   setYearQuote,
+  getQuoteState,
   getYearVision,
   setYearVision,
   getYearTraits,

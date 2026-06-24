@@ -8,15 +8,15 @@ import { renderYearView } from './year-view.js';
 import { renderSessionView, initSessionNav, setCurrentSession } from './session-view.js';
 import { breadcrumbLabel, computeYearPosition } from './year-map.js';
 import { initStillness } from './stillness.js';
-import { getLandscapeForSession } from './studios.js';
+import { getLandscapeForSession, getYearCalendar } from './studios.js';
 import { renderPatterns } from './patterns.js';
 import { renderPartnerPage } from './partner.js';
 import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderSetupView } from './setup.js';
 import { renderLogins, initLogins } from './logins.js';
-import { initModal, openOnboardingModal } from './modals.js';
+import { initModal, openOnboardingModal, openQuoteModal } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
-import { getLearners, getYearQuote, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding } from './store.js';
+import { getLearners, getYearQuote, getQuoteState, setYearQuote, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding } from './store.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -187,6 +187,20 @@ async function onSignedIn() {
         await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
       },
     });
+  } else if (ownIdentity) {
+    // Annual quote re-prompt. The quote anchors the top of the page for one
+    // cycle; when the saved quote belongs to a previous cycle (or is missing),
+    // re-prompt JUST the quote - reusing the standalone quote modal - without
+    // re-running the whole cascade. Stamped with the current cycle so it won't
+    // ask again until the calendar rolls (each Aug 17).
+    const currentCycle = getYearCalendar().yearStartISO;
+    const q = await getQuoteState(ownIdentity);
+    if (!q.text || q.cycle !== currentCycle) {
+      openQuoteModal(q.text || '', async (next) => {
+        if (next) await setYearQuote(ownIdentity, next, currentCycle);
+        await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
+      });
+    }
   }
 
   const defaultTab = TABS_BY_ROLE[session.role][0].id;

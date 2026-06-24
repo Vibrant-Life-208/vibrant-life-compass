@@ -259,13 +259,24 @@ export async function addPost(post) {
 // ============================================================================
 export async function getYearQuote(identityId) {
   const all = read(KEYS.yearQuotes) || {};
-  return all[identityId] || '';
+  const v = all[identityId];
+  // Back-compat: legacy entries are plain strings; v0.4 entries are {text, cycle}.
+  return typeof v === 'string' ? v : (v?.text || '');
 }
 
-export async function setYearQuote(identityId, text) {
+export async function setYearQuote(identityId, text, cycle) {
   const all = read(KEYS.yearQuotes) || {};
-  all[identityId] = text;
+  const prev = all[identityId];
+  const prevCycle = typeof prev === 'string' ? '' : (prev?.cycle || '');
+  all[identityId] = { text, cycle: cycle !== undefined ? cycle : prevCycle };
   write(KEYS.yearQuotes, all);
+}
+
+export async function getQuoteState(identityId) {
+  const all = read(KEYS.yearQuotes) || {};
+  const v = all[identityId];
+  if (typeof v === 'string') return { text: v, cycle: '' };
+  return { text: v?.text || '', cycle: v?.cycle || '' };
 }
 
 // ============================================================================

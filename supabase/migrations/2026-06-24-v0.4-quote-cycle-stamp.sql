@@ -1,0 +1,33 @@
+-- Hero's Compass - Migration: v0.4 quote-cycle stamp
+-- Date: 2026-06-24
+-- Refs: agents/meetings/2026/06/2026-06-24-compass-onboarding-cant-reach-next-page.md
+--
+-- Restores the quote to the first-run flow and makes it a once-per-cycle anchor.
+--
+-- Background: the v0.3 cascade (breath -> strengths -> values -> horizons) dropped
+-- the quote step, and the completion gate switched from hasCompletedAnchor (which
+-- required a quote) to hasCompletedOnboarding (onboarding_completed_at only). The
+-- result: a person could complete onboarding with no quote, and was never asked
+-- for one. The quote is the line that sits at the TOP of the page for the whole
+-- cycle, so it belongs first.
+--
+-- This migration adds ONE column:
+--
+--   quote_cycle text not null default ''
+--     The cycle (year_calendar.yearStartISO, e.g. '2025-08-17') that the current
+--     quote_text was written for. Read on sign-in: if quote_cycle != the current
+--     cycle (or quote_text is empty), the person is re-prompted for a fresh quote
+--     for the new year - WITHOUT re-running the whole cascade. The quote step in
+--     the first-run cascade stamps this column with the then-current cycle.
+--
+-- PRIVACY: quote_cycle lives on profiles and inherits the existing profiles_self
+-- RLS policy (using auth.uid() = id). It is self-only by construction, exactly
+-- like quote_text. No new policy needed.
+--
+-- Apply this migration to the deployed Supabase project via the SQL editor
+-- BEFORE deploying the v0.4 app code (the cascade quote step and the sign-in
+-- re-prompt both read/write quote_cycle). schema.sql is updated to match for
+-- fresh-project setup.
+
+alter table profiles
+  add column if not exists quote_cycle text not null default '';
