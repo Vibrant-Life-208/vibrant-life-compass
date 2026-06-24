@@ -38,6 +38,10 @@ create table profiles (
   -- for. When it differs from the current cycle, the person is re-prompted for a
   -- fresh quote next year. See the 2026-06-24 v0.4 migration.
   quote_cycle text not null default '',
+  -- "Who said it" + "what it means to you", captured in the quote flow and shown
+  -- with the quote on North. See the 2026-06-24 v0.5 migration.
+  quote_author text not null default '',
+  quote_note text not null default '',
   values_top_3 text[] not null default '{}',
   via_strengths_top_3 text[] not null default '{}',
   -- v0.3 horizon cascade + onboarding resume pointer. Per the 2026-06-22 fleet

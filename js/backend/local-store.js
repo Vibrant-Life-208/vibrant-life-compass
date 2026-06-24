@@ -275,8 +275,16 @@ export async function setYearQuote(identityId, text, cycle) {
 export async function getQuoteState(identityId) {
   const all = read(KEYS.yearQuotes) || {};
   const v = all[identityId];
-  if (typeof v === 'string') return { text: v, cycle: '' };
-  return { text: v?.text || '', cycle: v?.cycle || '' };
+  if (typeof v === 'string') return { text: v, author: '', note: '', cycle: '' };
+  return { text: v?.text || '', author: v?.author || '', note: v?.note || '', cycle: v?.cycle || '' };
+}
+
+export async function setQuoteAnchor(identityId, { text = '', author = '', note = '', cycle } = {}) {
+  const all = read(KEYS.yearQuotes) || {};
+  const prev = all[identityId];
+  const prevCycle = typeof prev === 'string' ? '' : (prev?.cycle || '');
+  all[identityId] = { text, author, note, cycle: cycle !== undefined ? cycle : prevCycle };
+  write(KEYS.yearQuotes, all);
 }
 
 // ============================================================================

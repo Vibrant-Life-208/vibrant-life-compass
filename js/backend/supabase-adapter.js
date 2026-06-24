@@ -103,15 +103,29 @@ export async function setYearQuote(profileId, text, cycle) {
   await getClient().from('profiles').update(patch).eq('id', profileId);
 }
 
-// Read the quote and the cycle it belongs to, in one round-trip. Used on sign-in
-// to decide whether the quote is fresh for the current cycle or needs re-prompting.
+// Read the full quote anchor (quote + who said it + the note + the cycle it
+// belongs to) in one round-trip. Used on sign-in to decide whether the quote is
+// fresh for the current cycle, and to prefill the quote flow.
 export async function getQuoteState(profileId) {
   const { data } = await getClient()
     .from('profiles')
-    .select('quote_text, quote_cycle')
+    .select('quote_text, quote_author, quote_note, quote_cycle')
     .eq('id', profileId)
     .single();
-  return { text: data?.quote_text || '', cycle: data?.quote_cycle || '' };
+  return {
+    text: data?.quote_text || '',
+    author: data?.quote_author || '',
+    note: data?.quote_note || '',
+    cycle: data?.quote_cycle || '',
+  };
+}
+
+// Save the whole quote anchor at once (quote flow). Stamps the cycle so the
+// person isn't re-prompted again until the calendar rolls.
+export async function setQuoteAnchor(profileId, { text = '', author = '', note = '', cycle } = {}) {
+  const patch = { quote_text: text, quote_author: author, quote_note: note };
+  if (cycle !== undefined) patch.quote_cycle = cycle;
+  await getClient().from('profiles').update(patch).eq('id', profileId);
 }
 
 export async function getYearVision(profileId) {

@@ -5,9 +5,8 @@ import {
   getProfileValues, setProfileValues, getProfileStrengths, setProfileStrengths,
   getProfileHorizons, setProfileHorizon,
   getOnboardingState, setOnboardingStep, markOnboardingStepSkipped, completeOnboarding,
-  setYearQuote, getQuoteState,
+  setQuoteAnchor,
 } from './store.js';
-import { getYearCalendar } from './studios.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
@@ -927,11 +926,11 @@ const VIA_SURVEY_URL = 'https://www.viacharacter.org/survey/account/register';
 const VALUES_ASSESSMENT_URL = 'https://values.institute/values-app/';
 
 // The ordered cascade. The ids match the onboarding_step enum in the schema.
-// 'quote' (2026-06-24): the line that anchors the top of the page for the cycle,
-// asked first - right after the grounding breath - and re-prompted each new year.
-const CASCADE_FULL = ['breath', 'quote', 'strengths', 'values', 'beyond_5yr', 'within_5yr', 'within_1yr', 'current_state', 'halfway'];
+// The quote is handled separately by openQuoteFlow (its own front-of-line flow),
+// not as a cascade step - so it can never be resumed-past.
+const CASCADE_FULL = ['breath', 'strengths', 'values', 'beyond_5yr', 'within_5yr', 'within_1yr', 'current_state', 'halfway'];
 // Youngest tiers (Decision 5): one near horizon only, no five-year telescope.
-const CASCADE_NEAR = ['breath', 'quote', 'strengths', 'values', 'within_1yr'];
+const CASCADE_NEAR = ['breath', 'strengths', 'values', 'within_1yr'];
 
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
@@ -965,12 +964,8 @@ const HORIZON_PROMPTS = {
 export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, onComplete }) {
   const steps = (studio === 'sparks' || studio === 'discovery') ? CASCADE_NEAR : CASCADE_FULL;
 
-  // The cycle this walk-through stamps onto the quote (year_calendar.yearStartISO).
-  const currentCycle = getYearCalendar().yearStartISO;
-
   const state = {
     idx: 0,
-    quote: '',
     values: [],
     strengths: [],
     valuesLexicon: [],
@@ -991,14 +986,12 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   // Load any saved progress and resume on the saved step (Decision 3).
   if (profileId) {
-    const [savedQuote, savedValues, savedStrengths, savedHorizons, onb] = await Promise.all([
-      getQuoteState(profileId),
+    const [savedValues, savedStrengths, savedHorizons, onb] = await Promise.all([
       getProfileValues(profileId),
       getProfileStrengths(profileId),
       getProfileHorizons(profileId),
       getOnboardingState(profileId),
     ]);
-    state.quote = savedQuote?.text || '';
     state.values = Array.isArray(savedValues) ? savedValues.slice(0, 3) : [];
     state.strengths = Array.isArray(savedStrengths) ? savedStrengths.slice(0, 3) : [];
     if (savedHorizons) state.horizons = { ...state.horizons, ...savedHorizons };
@@ -1024,14 +1017,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     }
   }
 
-  // Capture the in-progress quote textarea so Back/skip never loses it.
-  function captureQuote() {
-    if (curStep() === 'quote') {
-      const ta = document.getElementById('onb-quote');
-      if (ta) state.quote = ta.value;
-    }
-  }
-
   // Advance one step: persist the pointer, complete the cascade if we ran off
   // the end. saveFn (optional) writes the current step's field first.
   async function advance(saveFn) {
@@ -1050,7 +1035,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   async function skipStep() {
     const step = curStep();
     captureHorizon();
-    captureQuote();
     if (profileId && step !== 'breath') await markOnboardingStepSkipped(profileId, step);
     await advance(null);
   }
@@ -1058,7 +1042,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   function back() {
     if (state.idx === 0) return;
     captureHorizon();
-    captureQuote();
     state.idx -= 1;
     if (profileId) setOnboardingStep(profileId, steps[state.idx]);
     render();
@@ -1090,19 +1073,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
           <button type="button" id="onb-continue" class="btn btn-primary">I’m ready</button>
         </div>
       </div>
-    `;
-  }
-
-  function renderQuote() {
-    return `
-      <div class="onb-horizon-prompt">
-        <h3 class="onb-horizon-heading">Your quote.</h3>
-        <p class="onb-horizon-body">A line that carries you this year. It stays at the top of your page all year - next year, you’ll be asked again.</p>
-      </div>
-      <div class="form-field">
-        <textarea id="onb-quote" rows="3" placeholder="A line that carries you...">${escapeHtml(state.quote || '')}</textarea>
-      </div>
-      ${navButtons({ skippable: true, continueLabel: 'Continue' })}
     `;
   }
 
@@ -1161,13 +1131,11 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const formFields = document.getElementById('form-fields');
     const step = curStep();
     if (step === 'breath') formFields.innerHTML = renderBreath();
-    else if (step === 'quote') formFields.innerHTML = renderQuote();
     else if (step === 'strengths') formFields.innerHTML = renderSelectStep({ kind: 'strength', label: 'character strengths' });
     else if (step === 'values') formFields.innerHTML = renderSelectStep({ kind: 'value', label: 'values' });
     else formFields.innerHTML = renderHorizon(step);
     wireStep();
     if (HORIZON_PROMPTS[step]) setTimeout(() => document.getElementById('onb-horizon')?.focus(), 50);
-    if (step === 'quote') setTimeout(() => document.getElementById('onb-quote')?.focus(), 50);
   }
 
   function wireStep() {
@@ -1179,10 +1147,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     document.getElementById('onb-continue')?.addEventListener('click', async () => {
       if (step === 'breath') {
         await advance(null);
-      } else if (step === 'quote') {
-        captureQuote();
-        const text = state.quote || '';
-        await advance(() => profileId ? setYearQuote(profileId, text, currentCycle) : Promise.resolve());
       } else if (step === 'strengths') {
         if (state.strengths.length !== 3) return;
         await advance(() => profileId ? setProfileStrengths(profileId, state.strengths) : Promise.resolve());
@@ -1216,6 +1180,135 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   function restoreDefaultActions() {
     const da = document.querySelector('#goal-form .modal-actions');
     if (da) da.style.display = '';
+  }
+
+  render();
+  openModal();
+}
+
+// Quote flow (2026-06-24): the quote anchors the top of the page for the cycle.
+// Two teaching screens (why a quote, who inspires you) then one form (the quote,
+// who said it, what it means to you). Its OWN front-of-line flow so it always runs
+// from Begin when the quote is missing/stale - never resumed-past like a cascade
+// step. Saves all three fields + stamps the cycle. If the person closes the modal
+// without saving, it simply re-prompts next sign-in.
+export function openQuoteFlow({ profileId = null, currentCycle = '', existing = {}, onComplete } = {}) {
+  const SCREENS = ['why', 'inspires', 'form'];
+  const state = {
+    idx: 0,
+    text: existing.text || '',
+    author: existing.author || '',
+    note: existing.note || '',
+  };
+
+  setModalTitle('Your quote');
+  const defaultActions = document.querySelector('#goal-form .modal-actions');
+  if (defaultActions) defaultActions.style.display = 'none';
+  activeSubmit = null;
+
+  function finish() {
+    closeModal(); // closeModal restores the default modal actions for the next modal
+    if (onComplete) onComplete();
+  }
+
+  function captureForm() {
+    const t = document.getElementById('qf-text');
+    const a = document.getElementById('qf-author');
+    const n = document.getElementById('qf-note');
+    if (t) state.text = t.value.trim();
+    if (a) state.author = a.value.trim();
+    if (n) state.note = n.value.trim();
+  }
+
+  function renderWhy() {
+    return `
+      <div class="onb-horizon-prompt">
+        <h3 class="onb-horizon-heading">Why a quote?</h3>
+        <p class="onb-horizon-body">A single line, chosen on purpose, can carry you through a whole year. When the days get hard, it’s something to come back to - a bearing in words. The one you pick stays at the top of your page all year.</p>
+      </div>
+      <div class="onb-step-actions">
+        <span></span>
+        <div class="onb-step-actions-right">
+          <button type="button" id="qf-next" class="btn btn-primary">Continue</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderInspires() {
+    return `
+      <div class="onb-horizon-prompt">
+        <h3 class="onb-horizon-heading">Who inspires you?</h3>
+        <p class="onb-horizon-body">Think of someone whose words have stayed with you - a writer, a teacher, someone you love, a voice from your faith or your family. What did they say that you carry? On the next screen, you’ll write it down.</p>
+      </div>
+      <div class="onb-step-actions">
+        <button type="button" id="qf-back" class="btn btn-text">Back</button>
+        <div class="onb-step-actions-right">
+          <button type="button" id="qf-next" class="btn btn-primary">Continue</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderForm() {
+    return `
+      <div class="onb-horizon-prompt">
+        <h3 class="onb-horizon-heading">Your quote.</h3>
+        <p class="onb-horizon-body">Write the line that carries you, who said it, and what it means to you.</p>
+      </div>
+      <div class="form-field">
+        <label for="qf-text">The quote</label>
+        <textarea id="qf-text" rows="3" placeholder="A line that carries you...">${escapeHtml(state.text)}</textarea>
+      </div>
+      <div class="form-field">
+        <label for="qf-author">Who said it</label>
+        <input type="text" id="qf-author" placeholder="Who said it (or “unknown”)" value="${escapeAttr(state.author)}">
+      </div>
+      <div class="form-field">
+        <label for="qf-note">What it means to you</label>
+        <textarea id="qf-note" rows="3" placeholder="Why this line, for you...">${escapeHtml(state.note)}</textarea>
+      </div>
+      <p class="form-hint">The quote is the one line we need - who said it and what it means are yours to add or leave.</p>
+      <div class="onb-step-actions">
+        <button type="button" id="qf-back" class="btn btn-text">Back</button>
+        <div class="onb-step-actions-right">
+          <button type="button" id="qf-save" class="btn btn-primary"${state.text.trim() ? '' : ' disabled'}>Save my quote</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function render() {
+    const formFields = document.getElementById('form-fields');
+    const screen = SCREENS[state.idx];
+    if (screen === 'why') formFields.innerHTML = renderWhy();
+    else if (screen === 'inspires') formFields.innerHTML = renderInspires();
+    else formFields.innerHTML = renderForm();
+    wire();
+    if (screen === 'form') setTimeout(() => document.getElementById('qf-text')?.focus(), 50);
+  }
+
+  function wire() {
+    const screen = SCREENS[state.idx];
+    document.getElementById('qf-next')?.addEventListener('click', () => { state.idx += 1; render(); });
+    document.getElementById('qf-back')?.addEventListener('click', () => {
+      if (screen === 'form') captureForm();
+      state.idx -= 1;
+      render();
+    });
+    if (screen === 'form') {
+      const textEl = document.getElementById('qf-text');
+      const saveBtn = document.getElementById('qf-save');
+      // Live-enable Save once a quote is written - the button shows what it waits for.
+      const sync = () => { if (saveBtn) saveBtn.disabled = !textEl.value.trim(); };
+      textEl?.addEventListener('input', sync);
+      saveBtn?.addEventListener('click', async () => {
+        captureForm();
+        if (!state.text) return;
+        if (profileId) await setQuoteAnchor(profileId, { text: state.text, author: state.author, note: state.note, cycle: currentCycle });
+        finish();
+      });
+    }
   }
 
   render();

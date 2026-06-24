@@ -1,6 +1,6 @@
 // North view - the dashboard.
 
-import { getLearner, getGoals, getYearQuote } from './store.js';
+import { getLearner, getGoals, getQuoteState } from './store.js';
 import { getCategoriesForStudio } from './studios.js';
 import { renderToday, initTodayFab } from './tasks.js';
 import { renderGamePlan } from './game-plan.js';
@@ -40,19 +40,31 @@ async function renderQuoteSection(learnerId) {
   const section = document.getElementById('north-quote-section');
   const text = document.getElementById('north-quote-text');
   const footer = document.getElementById('north-quote-footer');
+  const noteEl = document.getElementById('north-quote-note');
   if (!section || !text) return;
   if (!learnerId) {
     section.style.display = 'none';
     return;
   }
-  const quote = await getYearQuote(learnerId);
+  const { text: quote, author, note } = await getQuoteState(learnerId);
   if (!quote) {
     section.style.display = 'none';
     return;
   }
   section.style.display = 'block';
   text.textContent = `“${quote}”`;
-  if (footer) footer.textContent = 'Your anchor for the cycle';
+  // Footer shows the attribution when present, falling back to the anchor label.
+  if (footer) footer.textContent = author ? `— ${author}` : 'Your anchor for the cycle';
+  // The note (what it means to you) shows beneath the quote when present.
+  if (noteEl) {
+    if (note) {
+      noteEl.textContent = note;
+      noteEl.hidden = false;
+    } else {
+      noteEl.textContent = '';
+      noteEl.hidden = true;
+    }
+  }
 }
 
 function formatToday() {

@@ -608,6 +608,16 @@ header h1 {
   font-style: normal;
 }
 
+/* "What it means to you" - the quote note, shown beneath the attribution. */
+.north-quote-note {
+  margin: 0.5rem auto 0;
+  max-width: 36rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 /* Confirmation modal action row */
 .confirm-actions {
   display: flex;

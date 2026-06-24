@@ -14,9 +14,9 @@ import { renderPartnerPage } from './partner.js';
 import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderSetupView } from './setup.js';
 import { renderLogins, initLogins } from './logins.js';
-import { initModal, openOnboardingModal, openQuoteModal } from './modals.js';
+import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
-import { getLearners, getYearQuote, getQuoteState, setYearQuote, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding } from './store.js';
+import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding } from './store.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -170,36 +170,46 @@ async function onSignedIn() {
   // pause - including the external VIA/Values round-trip - loses nothing.
   // session.id is the profile id, always set on persisted sessions.
   const ownIdentity = session.id;
-  if (ownIdentity && !(await hasCompletedOnboarding(ownIdentity))) {
+  if (ownIdentity) {
+    const currentCycle = getYearCalendar().yearStartISO;
+    const quote = await getQuoteState(ownIdentity);
+    // The quote is the front-of-line anchor: missing, or stamped for a past cycle.
+    const needsQuote = !quote.text || quote.cycle !== currentCycle;
+    // The cascade (strengths/values/horizons) is gated separately.
+    const needsCascade = !(await hasCompletedOnboarding(ownIdentity));
+
     // Studio drives developmental gating of the long-horizon steps (Decision 5).
     // Guides/parents have no studio and get the full telescope.
     let onbStudio = null;
-    if (session.role === 'learner' && session.learnerId) {
+    if (needsCascade && session.role === 'learner' && session.learnerId) {
       const { getLearner } = await import('./store.js');
       const l = await getLearner(session.learnerId);
       onbStudio = l?.studio || null;
     }
-    openOnboardingModal({
-      profileId: ownIdentity,
-      role: session.role,
-      studio: onbStudio,
-      onComplete: async () => {
-        await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
-      },
-    });
-  } else if (ownIdentity) {
-    // Annual quote re-prompt. The quote anchors the top of the page for one
-    // cycle; when the saved quote belongs to a previous cycle (or is missing),
-    // re-prompt JUST the quote - reusing the standalone quote modal - without
-    // re-running the whole cascade. Stamped with the current cycle so it won't
-    // ask again until the calendar rolls (each Aug 17).
-    const currentCycle = getYearCalendar().yearStartISO;
-    const q = await getQuoteState(ownIdentity);
-    if (!q.text || q.cycle !== currentCycle) {
-      openQuoteModal(q.text || '', async (next) => {
-        if (next) await setYearQuote(ownIdentity, next, currentCycle);
-        await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
+
+    const runCascade = () => {
+      if (!needsCascade) return; // dashboard already rendered below
+      openOnboardingModal({
+        profileId: ownIdentity,
+        role: session.role,
+        studio: onbStudio,
+        onComplete: async () => {
+          await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
+        },
       });
+    };
+
+    // Quote first (its own reliable flow that Begin always leads into), then the
+    // cascade if still needed. Quote saved + cycle-stamped inside openQuoteFlow.
+    if (needsQuote) {
+      openQuoteFlow({
+        profileId: ownIdentity,
+        currentCycle,
+        existing: quote,
+        onComplete: runCascade,
+      });
+    } else {
+      runCascade();
     }
   }
 

@@ -38,6 +38,7 @@ export const {
   getYearQuote,
   setYearQuote,
   getQuoteState,
+  setQuoteAnchor,
   getYearVision,
   setYearVision,
   getYearTraits,
