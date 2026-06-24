@@ -24,6 +24,9 @@ const KEYS = {
   parentLearnerLinks: 'hc_parent_learner_links',
   yearPlans: 'hc_year_plans',
   notifications: 'hc_notifications',
+  profileAnchor: 'hc_profile_anchor',     // {id: {values:[], strengths:[]}} (v0.2 anchor)
+  profileHorizons: 'hc_profile_horizons', // {id: {beyond_5yr,...}} (v0.3 cascade)
+  onboarding: 'hc_onboarding',            // {id: {step, skipped, completedAt, updatedAt}}
 };
 
 function read(key) {
@@ -684,4 +687,107 @@ export async function deleteTask(learnerId, id) {
   all[learnerId] = list;
   write(KEYS.tasks, all);
   return list;
+}
+
+// ============================================================================
+// v0.2 anchor + v0.3 onboarding (local mirror of the supabase-adapter API, so
+// the barrel's destructured exports are all defined in local/skeleton mode).
+// ============================================================================
+
+export async function getProfileValues(id) {
+  const all = read(KEYS.profileAnchor) || {};
+  return all[id]?.values || [];
+}
+export async function setProfileValues(id, valueIds) {
+  const all = read(KEYS.profileAnchor) || {};
+  all[id] = { ...(all[id] || {}), values: valueIds };
+  write(KEYS.profileAnchor, all);
+}
+export async function getProfileStrengths(id) {
+  const all = read(KEYS.profileAnchor) || {};
+  return all[id]?.strengths || [];
+}
+export async function setProfileStrengths(id, strengthIds) {
+  const all = read(KEYS.profileAnchor) || {};
+  all[id] = { ...(all[id] || {}), strengths: strengthIds };
+  write(KEYS.profileAnchor, all);
+}
+
+// Minimal reference vocabularies for skeleton review (production reads Supabase).
+export async function getValuesLexicon() {
+  return [
+    { id: 'truth', display_label_adult: 'Truth', sort_order: 1 },
+    { id: 'love', display_label_adult: 'Love', sort_order: 2 },
+    { id: 'courage', display_label_adult: 'Courage', sort_order: 3 },
+    { id: 'kindness', display_label_adult: 'Kindness', sort_order: 4 },
+    { id: 'unity', display_label_adult: 'Unity', sort_order: 5 },
+  ];
+}
+export async function getViaCharacterStrengths() {
+  return [
+    { id: 'curiosity', virtue_category: 'Wisdom', display_label_adult: 'Curiosity', sort_order: 1 },
+    { id: 'bravery', virtue_category: 'Courage', display_label_adult: 'Bravery', sort_order: 2 },
+    { id: 'kindness', virtue_category: 'Humanity', display_label_adult: 'Kindness', sort_order: 3 },
+    { id: 'fairness', virtue_category: 'Justice', display_label_adult: 'Fairness', sort_order: 4 },
+    { id: 'gratitude', virtue_category: 'Transcendence', display_label_adult: 'Gratitude', sort_order: 5 },
+  ];
+}
+
+export async function hasCompletedAnchor(id) {
+  const q = await getYearQuote(id);
+  const values = await getProfileValues(id);
+  const strengths = await getProfileStrengths(id);
+  return Boolean(q) && values.length === 3 && strengths.length === 3;
+}
+
+export async function getProfileHorizons(id) {
+  const all = read(KEYS.profileHorizons) || {};
+  const h = all[id] || {};
+  return {
+    beyond_5yr: h.beyond_5yr || '',
+    within_5yr: h.within_5yr || '',
+    within_1yr: h.within_1yr || '',
+    current_state: h.current_state || '',
+    halfway: h.halfway || '',
+  };
+}
+export async function setProfileHorizon(id, stepKey, text) {
+  const all = read(KEYS.profileHorizons) || {};
+  all[id] = { ...(all[id] || {}), [stepKey]: text };
+  write(KEYS.profileHorizons, all);
+}
+
+export async function getOnboardingState(id) {
+  const all = read(KEYS.onboarding) || {};
+  const o = all[id] || {};
+  return {
+    step: o.step || 'breath',
+    skipped: Array.isArray(o.skipped) ? o.skipped : [],
+    completedAt: o.completedAt || null,
+    updatedAt: o.updatedAt || null,
+  };
+}
+export async function setOnboardingStep(id, step) {
+  const all = read(KEYS.onboarding) || {};
+  all[id] = { ...(all[id] || {}), step, updatedAt: new Date().toISOString() };
+  write(KEYS.onboarding, all);
+}
+export async function markOnboardingStepSkipped(id, step) {
+  const all = read(KEYS.onboarding) || {};
+  const o = all[id] || {};
+  const skipped = Array.isArray(o.skipped) ? o.skipped : [];
+  if (!skipped.includes(step)) skipped.push(step);
+  all[id] = { ...o, skipped, updatedAt: new Date().toISOString() };
+  write(KEYS.onboarding, all);
+  return skipped;
+}
+export async function completeOnboarding(id) {
+  const all = read(KEYS.onboarding) || {};
+  const now = new Date().toISOString();
+  all[id] = { ...(all[id] || {}), step: 'complete', completedAt: now, updatedAt: now };
+  write(KEYS.onboarding, all);
+}
+export async function hasCompletedOnboarding(id) {
+  const all = read(KEYS.onboarding) || {};
+  return Boolean(all[id]?.completedAt);
 }

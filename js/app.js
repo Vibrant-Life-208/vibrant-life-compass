@@ -107,6 +107,17 @@ async function onSignedIn() {
   const session = await requireSession();
   if (!session) return;
 
+  // The signed-in person's own profile id. On reload getSession sets session.id;
+  // on a FRESH sign-in only the role-specific id is populated (guideId/parentId/
+  // learnerId) and session.id is undefined. Resolve across both so the welcome +
+  // quote/onboarding gates run for guides and parents too - not just on reload.
+  // (Bug: keying the gate off session.id alone skipped it entirely for guides,
+  // dropping them straight to the dashboard with no quote/onboarding.)
+  const ownIdentity = session.id
+    || (session.role === 'guide' ? session.guideId
+      : session.role === 'parent' ? session.parentId
+      : session.learnerId);
+
   // Welcome page FIRST - before the dashboard renders. The user sees the
   // welcome as the first page after sign-in until they complete their anchor
   // (quote + values + character strengths). Per captain 2026-06-15.
@@ -114,7 +125,7 @@ async function onSignedIn() {
   // session.id is profile.id (set by getSession) and works for guide, learner,
   // and parent persisted sessions; session.guideId/parentId/learnerId are only
   // populated by the fresh-sign-in auth path and are undefined on reload.
-  const gateProfileId = session.id;
+  const gateProfileId = ownIdentity;
   console.log('[welcome] onSignedIn: checking shouldShowWelcome for role:', session.role);
   const showWelcome = await shouldShowWelcome(session.role, gateProfileId);
   console.log('[welcome] shouldShowWelcome returned:', showWelcome);
@@ -169,7 +180,6 @@ async function onSignedIn() {
   // The modal saves every step atomically and resumes on the saved step, so a
   // pause - including the external VIA/Values round-trip - loses nothing.
   // session.id is the profile id, always set on persisted sessions.
-  const ownIdentity = session.id;
   if (ownIdentity) {
     const currentCycle = getYearCalendar().yearStartISO;
     const quote = await getQuoteState(ownIdentity);
