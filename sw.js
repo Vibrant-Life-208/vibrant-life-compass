@@ -1,4 +1,4 @@
-const CACHE = 'heros-compass-v75';
+const CACHE = 'heros-compass-v76';
 const CORE = [
   '/',
   '/index.html',
@@ -23,6 +23,7 @@ const CORE = [
   '/js/partner.js',
   '/js/parent-view.js',
   '/js/admin.js',
+  '/js/insights.js',
   '/js/setup.js',
   '/js/welcome.js',
   '/js/backend/config.js',

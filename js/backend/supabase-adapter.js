@@ -201,6 +201,16 @@ export async function getViaCharacterStrengths() {
   return _viaStrengthsCache;
 }
 
+// Guide insights: aggregated value/strength counts via the anchor_aggregates()
+// RPC. Counts only (no individual selections), guide-only + small-group
+// suppressed in the function itself. Returns [] on error so the panel degrades
+// gracefully and can never break the view.
+export async function getAnchorAggregates() {
+  const { data, error } = await getClient().rpc('anchor_aggregates');
+  if (error) { console.warn('getAnchorAggregates:', error.message); return []; }
+  return data || [];
+}
+
 // Has this profile completed the v0.2 anchor capture? Used by the Welcome
 // gating check and by app.js to decide whether to open the onboarding modal.
 // Per Decision 3 of the 2026-06-16 meeting: gating reads from Supabase, not

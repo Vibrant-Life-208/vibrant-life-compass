@@ -519,3 +519,54 @@ create trigger tasks_touch before update on tasks
   for each row execute function touch_updated_at();
 create trigger logins_touch before update on logins
   for each row execute function touch_updated_at();
+
+-- Guide insights: privacy-preserving anchor aggregates (counts only, guide-only,
+-- small-group suppressed >=5). See 2026-06-24 v0.6 migration for full notes.
+create or replace function public.anchor_aggregates()
+returns table (scope text, scope_key text, kind text, item_id text, label text, cnt integer, group_size integer)
+language plpgsql security definer set search_path = public as $$
+declare v_min constant integer := 5;
+begin
+  if (select role from profiles where id = auth.uid()) is distinct from 'guide' then
+    raise exception 'anchor_aggregates: guides only';
+  end if;
+  return query
+  with base as (
+    select p.id, p.values_top_3 as vals, p.via_strengths_top_3 as strs, l.studio
+    from profiles p left join learners l on l.id = p.id
+  ),
+  has_anchor as (
+    select * from base where coalesce(array_length(vals,1),0) > 0 or coalesce(array_length(strs,1),0) > 0
+  ),
+  school_size as (select count(*)::int n from has_anchor),
+  studio_size as (select studio, count(*)::int n from has_anchor where studio is not null group by studio),
+  sel as (
+    select b.id, b.studio, 'value'::text kind, unnest(b.vals) item_id from base b
+    union all
+    select b.id, b.studio, 'strength'::text kind, unnest(b.strs) item_id from base b
+  ),
+  lex as (
+    select 'value'::text kind, vl.id item_id, vl.display_label_adult label from values_lexicon vl
+    union all
+    select 'strength'::text kind, vs.id item_id, vs.display_label_adult label from via_character_strengths vs
+  ),
+  school as (
+    select 'school'::text scope, null::text scope_key, lex.kind, lex.item_id, lex.label,
+           count(s.id)::int cnt, (select n from school_size) group_size
+    from lex left join sel s on s.kind=lex.kind and s.item_id=lex.item_id
+    group by lex.kind, lex.item_id, lex.label
+  ),
+  studios as (
+    select 'studio'::text scope, ss.studio scope_key, lex.kind, lex.item_id, lex.label,
+           count(s.id)::int cnt, ss.n group_size
+    from studio_size ss cross join lex
+    left join sel s on s.kind=lex.kind and s.item_id=lex.item_id and s.studio=ss.studio
+    where ss.n >= v_min
+    group by ss.studio, ss.n, lex.kind, lex.item_id, lex.label
+  )
+  select * from school where (select n from school_size) >= v_min
+  union all select * from studios;
+end;
+$$;
+revoke all on function public.anchor_aggregates() from public, anon;
+grant execute on function public.anchor_aggregates() to authenticated;

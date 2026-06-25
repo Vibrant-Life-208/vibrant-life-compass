@@ -791,3 +791,42 @@ export async function hasCompletedOnboarding(id) {
   const all = read(KEYS.onboarding) || {};
   return Boolean(all[id]?.completedAt);
 }
+
+// Guide insights: local mirror of the anchor_aggregates() RPC. Same row shape
+// {scope, scope_key, kind, item_id, label, cnt, group_size}. Counts only.
+export async function getAnchorAggregates() {
+  const MIN = 5;
+  const anchors = read(KEYS.profileAnchor) || {};
+  const learners = read(KEYS.learners) || [];
+  const studioOf = {};
+  learners.forEach((l) => { studioOf[l.id] = l.studio; });
+  const lex = {
+    value: await getValuesLexicon(),
+    strength: await getViaCharacterStrengths(),
+  };
+  const entries = Object.entries(anchors).map(([id, a]) => ({
+    id,
+    studio: studioOf[id] || null,
+    values: Array.isArray(a.values) ? a.values : [],
+    strengths: Array.isArray(a.strengths) ? a.strengths : [],
+  })).filter((e) => e.values.length || e.strengths.length);
+
+  const rows = [];
+  const buildScope = (scope, scopeKey, members) => {
+    const groupSize = members.length;
+    if (groupSize < MIN) return;
+    for (const kind of ['value', 'strength']) {
+      const arrKey = kind === 'value' ? 'values' : 'strengths';
+      const counts = {};
+      lex[kind].forEach((it) => { counts[it.id] = 0; });
+      members.forEach((m) => { m[arrKey].forEach((itemId) => { if (itemId in counts) counts[itemId] += 1; }); });
+      lex[kind].forEach((it) => {
+        rows.push({ scope, scope_key: scopeKey, kind, item_id: it.id, label: it.display_label_adult, cnt: counts[it.id], group_size: groupSize });
+      });
+    }
+  };
+  buildScope('school', null, entries);
+  const studios = [...new Set(entries.map((e) => e.studio).filter(Boolean))];
+  studios.forEach((st) => buildScope('studio', st, entries.filter((e) => e.studio === st)));
+  return rows;
+}

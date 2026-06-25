@@ -12,6 +12,7 @@ import { getLandscapeForSession, getYearCalendar } from './studios.js';
 import { renderPatterns } from './patterns.js';
 import { renderPartnerPage } from './partner.js';
 import { renderAdminAccounts, initAdmin } from './admin.js';
+import { renderAnchorInsights } from './insights.js';
 import { renderSetupView } from './setup.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
@@ -368,6 +369,10 @@ async function renderRoleView(role, learnerId) {
     // Admin account-creation tool
     await renderAdminAccounts();
     initAdmin();
+
+    // Anchor insights (counts only; guide-only; small-group suppressed). Guarded
+    // so a backend hiccup can't break the rest of the guide view.
+    try { await renderAnchorInsights(); } catch (e) { console.warn('anchor insights:', e); }
 
     const learners = await getLearners();
     if (!learners.length) {
