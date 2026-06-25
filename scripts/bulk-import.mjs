@@ -48,12 +48,14 @@ let KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 // the environment (e.g. a copy-pasted `export ...="<...>"`), ignore it and prompt.
 if (/[<>\s]/.test(KEY)) KEY = '';
 
-function promptHidden(query) {
+function promptKey(query) {
   return new Promise((resolve) => {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-    process.stdout.write(query);
-    rl._writeToOutput = () => {}; // mute echo so the key isn't shown on screen
-    rl.question('', (answer) => { rl.close(); process.stdout.write('\n'); resolve(answer.trim()); });
+    rl.question(query, (answer) => {
+      rl.close();
+      // Trim whitespace and strip any surrounding quotes the user may have pasted.
+      resolve((answer || '').trim().replace(/^["']+|["']+$/g, ''));
+    });
   });
 }
 
@@ -202,8 +204,8 @@ async function importCsv(file) {
     }
     // Prompt for the secret key (hidden) only when we actually need it.
     if (!dryRun && !KEY) {
-      KEY = await promptHidden('Paste your Supabase service_role key (input is hidden), then press Enter:\n> ');
-      if (!KEY) { console.error('No key entered. Stopping.'); process.exit(1); }
+      KEY = await promptKey('Paste your Supabase secret/service_role key here, then press Enter:\n> ');
+      if (!KEY) { console.error('\nNothing was pasted. Copy your key from the Supabase website (Settings -> API Keys), then run this again.'); process.exit(1); }
     }
     if (resetIdx >= 0) await resetPassword(args[resetIdx + 1]);
     else await importCsv(file);
