@@ -1,6 +1,7 @@
 // North view - the dashboard.
 
 import { getLearner, getGoals, getQuoteState } from './store.js';
+import { openViaImportModal } from './via-import.js';
 import { getCategoriesForStudio } from './studios.js';
 import { renderToday, initTodayFab } from './tasks.js';
 import { renderGamePlan } from './game-plan.js';
@@ -26,6 +27,14 @@ export async function renderNorth(learnerId) {
   ]);
 
   initTodayFab(learnerId);
+
+  const importBtn = document.getElementById('north-import-strengths');
+  if (importBtn && !importBtn._wired) {
+    importBtn._wired = true;
+    importBtn.addEventListener('click', () => {
+      openViaImportModal({ profileId: learnerId, onSaved: () => renderNorth(learnerId) });
+    });
+  }
 
   if (!document._hcTasksListener) {
     document._hcTasksListener = true;

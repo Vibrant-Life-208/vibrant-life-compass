@@ -44,6 +44,10 @@ create table profiles (
   quote_note text not null default '',
   values_top_3 text[] not null default '{}',
   via_strengths_top_3 text[] not null default '{}',
+  -- Top 8 / bottom 8 of the VIA ranking (from the on-device PDF import). top_3
+  -- stays in sync as the first 3 of top_8. See the 2026-06-24 v0.7 migration.
+  via_strengths_top_8 text[] not null default '{}',
+  via_strengths_bottom_8 text[] not null default '{}',
   -- v0.3 horizon cascade + onboarding resume pointer. Per the 2026-06-22 fleet
   -- meeting. Held on profiles so each person's vision is private to them via the
   -- profiles_self policy (self-only); cross-role sharing, if ever built, must be

@@ -724,12 +724,32 @@ export async function getValuesLexicon() {
   ];
 }
 export async function getViaCharacterStrengths() {
+  // Full VIA 24 (mirrors the production seed) so skeleton/dev resolves all labels.
   return [
-    { id: 'curiosity', virtue_category: 'Wisdom', display_label_adult: 'Curiosity', sort_order: 1 },
-    { id: 'bravery', virtue_category: 'Courage', display_label_adult: 'Bravery', sort_order: 2 },
-    { id: 'kindness', virtue_category: 'Humanity', display_label_adult: 'Kindness', sort_order: 3 },
-    { id: 'fairness', virtue_category: 'Justice', display_label_adult: 'Fairness', sort_order: 4 },
-    { id: 'gratitude', virtue_category: 'Transcendence', display_label_adult: 'Gratitude', sort_order: 5 },
+    { id: 'creativity', virtue_category: 'Wisdom & Knowledge', display_label_adult: 'Creativity', sort_order: 1 },
+    { id: 'curiosity', virtue_category: 'Wisdom & Knowledge', display_label_adult: 'Curiosity', sort_order: 2 },
+    { id: 'judgment', virtue_category: 'Wisdom & Knowledge', display_label_adult: 'Judgment', sort_order: 3 },
+    { id: 'love_of_learning', virtue_category: 'Wisdom & Knowledge', display_label_adult: 'Love of Learning', sort_order: 4 },
+    { id: 'perspective', virtue_category: 'Wisdom & Knowledge', display_label_adult: 'Perspective', sort_order: 5 },
+    { id: 'bravery', virtue_category: 'Courage', display_label_adult: 'Bravery', sort_order: 6 },
+    { id: 'perseverance', virtue_category: 'Courage', display_label_adult: 'Perseverance', sort_order: 7 },
+    { id: 'honesty', virtue_category: 'Courage', display_label_adult: 'Honesty', sort_order: 8 },
+    { id: 'zest', virtue_category: 'Courage', display_label_adult: 'Zest', sort_order: 9 },
+    { id: 'love', virtue_category: 'Humanity', display_label_adult: 'Love', sort_order: 10 },
+    { id: 'kindness', virtue_category: 'Humanity', display_label_adult: 'Kindness', sort_order: 11 },
+    { id: 'social_intelligence', virtue_category: 'Humanity', display_label_adult: 'Social Intelligence', sort_order: 12 },
+    { id: 'teamwork', virtue_category: 'Justice', display_label_adult: 'Teamwork', sort_order: 13 },
+    { id: 'fairness', virtue_category: 'Justice', display_label_adult: 'Fairness', sort_order: 14 },
+    { id: 'leadership', virtue_category: 'Justice', display_label_adult: 'Leadership', sort_order: 15 },
+    { id: 'forgiveness', virtue_category: 'Temperance', display_label_adult: 'Forgiveness', sort_order: 16 },
+    { id: 'humility', virtue_category: 'Temperance', display_label_adult: 'Humility', sort_order: 17 },
+    { id: 'prudence', virtue_category: 'Temperance', display_label_adult: 'Prudence', sort_order: 18 },
+    { id: 'self_regulation', virtue_category: 'Temperance', display_label_adult: 'Self-Regulation', sort_order: 19 },
+    { id: 'appreciation_of_beauty', virtue_category: 'Transcendence', display_label_adult: 'Appreciation of Beauty & Excellence', sort_order: 20 },
+    { id: 'gratitude', virtue_category: 'Transcendence', display_label_adult: 'Gratitude', sort_order: 21 },
+    { id: 'hope', virtue_category: 'Transcendence', display_label_adult: 'Hope', sort_order: 22 },
+    { id: 'humor', virtue_category: 'Transcendence', display_label_adult: 'Humor', sort_order: 23 },
+    { id: 'spirituality', virtue_category: 'Transcendence', display_label_adult: 'Spirituality', sort_order: 24 },
   ];
 }
 
@@ -829,4 +849,17 @@ export async function getAnchorAggregates() {
   const studios = [...new Set(entries.map((e) => e.studio).filter(Boolean))];
   studios.forEach((st) => buildScope('studio', st, entries.filter((e) => e.studio === st)));
   return rows;
+}
+
+// Strength ranking (top 8 / bottom 8) - local mirror. Keeps strengths (top 3) in sync.
+export async function setStrengthRanking(identityId, { top8 = [], bottom8 = [] } = {}) {
+  const all = read(KEYS.profileAnchor) || {};
+  all[identityId] = { ...(all[identityId] || {}), strengths: top8.slice(0, 3), top8, bottom8 };
+  write(KEYS.profileAnchor, all);
+}
+
+export async function getStrengthRanking(identityId) {
+  const all = read(KEYS.profileAnchor) || {};
+  const a = all[identityId] || {};
+  return { top8: a.top8 || [], bottom8: a.bottom8 || [], top3: a.strengths || [] };
 }

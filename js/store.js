@@ -51,6 +51,8 @@ export const {
   getValuesLexicon,
   getViaCharacterStrengths,
   getAnchorAggregates,
+  setStrengthRanking,
+  getStrengthRanking,
   hasCompletedAnchor,
   // v0.3 horizon cascade + onboarding resume pointer (2026-06-22 fleet meeting)
   getProfileHorizons,

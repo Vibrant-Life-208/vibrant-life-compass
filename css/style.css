@@ -3176,3 +3176,19 @@ body.landscape-mountain {
 .insights-privacy { margin-top: 0.75rem; font-style: italic; }
 .insights-note { margin-top: 0.4rem; }
 @media (max-width: 640px) { .insights-cols { grid-template-columns: 1fr; } }
+
+/* VIA strengths PDF import */
+.north-anchor-tools { text-align: center; margin: 0.25rem 0 1rem; }
+.via-import-lead { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+.via-drop {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  min-height: 110px; margin: 0.75rem 0; padding: 1rem;
+  border: 2px dashed var(--border, #cdbfa6); border-radius: 12px; cursor: pointer;
+  color: var(--text-muted); background: rgba(0,0,0,0.02);
+}
+.via-drop.over { border-color: var(--sage, #7a8b6f); background: rgba(122,139,111,0.08); }
+.via-import-error { color: #9a5b86; font-size: 0.85rem; margin-top: 0.5rem; }
+.via-preview-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.75rem 0; }
+.via-preview-title { margin: 0 0 0.4rem; font-size: 0.9rem; }
+.via-preview-list { margin: 0; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.6; }
+@media (max-width: 640px) { .via-preview-cols { grid-template-columns: 1fr; } }

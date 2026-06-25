@@ -211,6 +211,29 @@ export async function getAnchorAggregates() {
   return data || [];
 }
 
+// Strength ranking (top 8 / bottom 8) from the VIA import. Keeps via_strengths_top_3
+// in sync (first 3 of top_8) so North + the cascade keep working unchanged.
+export async function setStrengthRanking(profileId, { top8 = [], bottom8 = [] } = {}) {
+  await getClient().from('profiles').update({
+    via_strengths_top_8: top8,
+    via_strengths_bottom_8: bottom8,
+    via_strengths_top_3: top8.slice(0, 3),
+  }).eq('id', profileId);
+}
+
+export async function getStrengthRanking(profileId) {
+  const { data } = await getClient()
+    .from('profiles')
+    .select('via_strengths_top_8, via_strengths_bottom_8, via_strengths_top_3')
+    .eq('id', profileId)
+    .single();
+  return {
+    top8: data?.via_strengths_top_8 || [],
+    bottom8: data?.via_strengths_bottom_8 || [],
+    top3: data?.via_strengths_top_3 || [],
+  };
+}
+
 // Has this profile completed the v0.2 anchor capture? Used by the Welcome
 // gating check and by app.js to decide whether to open the onboarding modal.
 // Per Decision 3 of the 2026-06-16 meeting: gating reads from Supabase, not
