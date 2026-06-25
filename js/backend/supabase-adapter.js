@@ -553,6 +553,16 @@ export async function clearSession() {
   await getClient().auth.signOut();
 }
 
+// Set the signed-in user's own password (first-run forced change / self-service)
+// and clear their must_change_password flag.
+export async function updatePassword(newPassword) {
+  const { error } = await getClient().auth.updateUser({ password: newPassword });
+  if (error) throw error;
+  const { data } = await getClient().auth.getUser();
+  const id = data?.user?.id;
+  if (id) await getClient().from('profiles').update({ must_change_password: false }).eq('id', id);
+}
+
 // ============================================================================
 // Authentication: hero-name + temp password -> Supabase Auth signIn.
 // Synthetic email pattern: `${heroName}@vibrantlife.local` (never sent,

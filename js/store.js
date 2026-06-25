@@ -17,6 +17,7 @@ export const {
   getSession,
   setSession,
   clearSession,
+  updatePassword,
   getLearners,
   getLearner,
   saveLearner,

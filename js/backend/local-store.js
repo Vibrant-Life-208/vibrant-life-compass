@@ -868,3 +868,10 @@ export async function getStrengthRanking(identityId) {
   const a = all[identityId] || {};
   return { top8: a.top8 || [], bottom8: a.bottom8 || [], top3: a.strengths || [] };
 }
+
+// Skeleton: "set password" just clears the must_change_password flag on the
+// current session (no real auth in local mode).
+export async function updatePassword(_newPassword) {
+  const session = read(KEYS.session);
+  if (session) { session.must_change_password = false; write(KEYS.session, session); }
+}

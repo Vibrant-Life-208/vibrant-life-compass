@@ -1,0 +1,6 @@
+hero_name,full_name,role,studio,links
+liam-d,Liam Diaz,learner,discovery,
+mara-a,Mara Aoki,learner,adventure,
+jenna-jones,Jenna Jones,guide,,liam-d;mara-a
+maria-diaz,Maria Diaz,parent,,liam-d
+carlos-diaz,Carlos Diaz,parent,,liam-d

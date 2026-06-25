@@ -56,6 +56,26 @@
     </div>
   </div>
 
+  <!-- Change Password Screen (forced on first sign-in after a temp password) -->
+  <div id="change-password-screen" class="screen">
+    <div class="signin-container">
+      <h1 class="signin-title">Set your password</h1>
+      <p class="signin-sub">You signed in with a temporary password. Choose your own to continue.</p>
+      <form id="change-password-form" class="signin-form">
+        <div class="form-field">
+          <label for="cp-password">New password</label>
+          <input type="password" id="cp-password" autocomplete="new-password" placeholder="At least 8 characters">
+        </div>
+        <div class="form-field">
+          <label for="cp-confirm">Confirm password</label>
+          <input type="password" id="cp-confirm" autocomplete="new-password" placeholder="Type it again">
+        </div>
+        <p id="cp-error" class="signin-error" style="display:none"></p>
+        <button type="button" id="cp-submit" class="btn btn-primary">Set password &amp; continue</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Sign-In Screen -->
   <div id="signin-screen" class="screen">
     <div class="signin-container">

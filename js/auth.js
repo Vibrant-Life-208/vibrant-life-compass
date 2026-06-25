@@ -2,7 +2,7 @@
 // Google OAuth) wires in next session per captain decision 2026-05-12.
 // Skeleton accepts any email + any password; password is never compared.
 
-import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides, findAccountByHeroName, signInWithHeroName, getParentLearnerLinks } from './store.js';
+import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides, findAccountByHeroName, signInWithHeroName, getParentLearnerLinks, updatePassword } from './store.js';
 import { verifyPassword } from './crypto.js';
 import { BACKEND_TYPE } from './backend/config.js';
 
@@ -89,6 +89,48 @@ export function wireSignOut() {
       location.reload();
     });
   }
+}
+
+// Forced password change on first sign-in (must_change_password). Shows the
+// change-password screen and resolves only once the user sets a new password.
+export function showChangePasswordScreen() {
+  return new Promise((resolve) => {
+    const screen = document.getElementById('change-password-screen');
+    if (!screen) { resolve(); return; }
+    document.querySelectorAll('.screen').forEach((s) => {
+      if (s !== screen) { s.classList.remove('active'); s.style.display = ''; }
+    });
+    screen.classList.add('active');
+    screen.style.display = 'flex';
+
+    const pw = document.getElementById('cp-password');
+    const confirm = document.getElementById('cp-confirm');
+    const err = document.getElementById('cp-error');
+    const btn = document.getElementById('cp-submit');
+    if (pw) pw.value = '';
+    if (confirm) confirm.value = '';
+    // Replace the button to clear any prior listeners (one-shot wiring).
+    const fresh = btn.cloneNode(true);
+    btn.parentNode.replaceChild(fresh, btn);
+
+    fresh.addEventListener('click', async () => {
+      const a = pw.value || '';
+      const b = confirm.value || '';
+      const fail = (m) => { err.textContent = m; err.style.display = 'block'; };
+      if (a.length < 8) return fail('Use at least 8 characters.');
+      if (a !== b) return fail('The two passwords don\'t match.');
+      fresh.disabled = true;
+      try {
+        await updatePassword(a);
+      } catch (e) {
+        fresh.disabled = false;
+        return fail('Could not set your password. Please try again.');
+      }
+      screen.classList.remove('active');
+      screen.style.display = '';
+      resolve();
+    });
+  });
 }
 
 function showSigninError(msg) {

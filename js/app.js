@@ -2,7 +2,7 @@
 // Boot order: Bearing -> Sign-in -> first-run onboarding (if learner) -> role-based view.
 
 import { initBearing } from './arrive.js';
-import { initAuth, requireSession, showSignIn, showApp, switchRole, startIdleTimeout, wireSignOut } from './auth.js';
+import { initAuth, requireSession, showSignIn, showApp, switchRole, startIdleTimeout, wireSignOut, showChangePasswordScreen } from './auth.js';
 import { renderNorth, setYearMapClickHandler } from './north.js';
 import { renderYearView } from './year-view.js';
 import { renderSessionView, initSessionNav, setCurrentSession } from './session-view.js';
@@ -107,6 +107,12 @@ async function afterBearing() {
 async function onSignedIn() {
   const session = await requireSession();
   if (!session) return;
+
+  // Forced password change after a temp password (bulk-created / reset accounts).
+  // Must happen before anything else loads.
+  if (session.must_change_password) {
+    await showChangePasswordScreen();
+  }
 
   // The signed-in person's own profile id. On reload getSession sets session.id;
   // on a FRESH sign-in only the role-specific id is populated (guideId/parentId/
