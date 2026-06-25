@@ -44,6 +44,9 @@ const dryRun = args.includes('--dry-run');
 // shell history, or in a file.
 const URL = process.env.SUPABASE_URL || 'https://obnivpzwunxiyupnarca.supabase.co';
 let KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+// A real key has no spaces or angle brackets. If a stale/placeholder value is in
+// the environment (e.g. a copy-pasted `export ...="<...>"`), ignore it and prompt.
+if (/[<>\s]/.test(KEY)) KEY = '';
 
 function promptHidden(query) {
   return new Promise((resolve) => {
