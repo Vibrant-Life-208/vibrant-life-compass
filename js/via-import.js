@@ -27,10 +27,39 @@ export async function extractPdfText(arrayBuffer) {
   return text;
 }
 
-// File -> parsed VIA ranking. Returns the parser result ({ ok, top8, bottom8, ... }).
+// Security parameters: only read a genuine VIA Character Strengths Profile PDF.
+const MAX_PDF_BYTES = 10 * 1024 * 1024; // a VIA profile is a few MB; reject larger
+// Text markers that only a real VIA report carries (every page footer + title).
+const VIA_MARKERS = ['character strengths', 'institute on character'];
+
+// File -> parsed VIA ranking, with guardrails. Returns the parser result
+// ({ ok, top8, bottom8, ... }) or { ok:false, reason } if the file is rejected.
 export async function parseViaPdf(file) {
+  // 1) Must be a PDF (declared type or .pdf name).
+  const looksPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
+  if (!looksPdf) {
+    return { ok: false, reason: 'That is not a PDF. Please choose your VIA Character Strengths Profile PDF.' };
+  }
+  // 2) Size guard (cheap abuse / wrong-file protection).
+  if (file.size > MAX_PDF_BYTES) {
+    return { ok: false, reason: 'That file is too large to be a VIA profile. Please choose the VIA PDF.' };
+  }
   const buf = await file.arrayBuffer();
-  const text = await extractPdfText(buf);
+  // 3) Real PDFs begin with the "%PDF-" magic header. Reject a renamed non-PDF.
+  const magic = String.fromCharCode.apply(null, new Uint8Array(buf.slice(0, 5)));
+  if (magic !== '%PDF-') {
+    return { ok: false, reason: 'That file is not a valid PDF.' };
+  }
+  // 4) Extract text on-device.
+  let text;
+  try { text = await extractPdfText(buf); }
+  catch (e) { return { ok: false, reason: 'Could not read that PDF.' }; }
+  // 5) Provenance: must carry the VIA report's own markers, not just any PDF.
+  const low = text.toLowerCase();
+  if (!VIA_MARKERS.every((m) => low.includes(m))) {
+    return { ok: false, reason: 'This does not look like a VIA Character Strengths Profile. Please upload the PDF you downloaded from viacharacter.org.' };
+  }
+  // 6) Parse (also requires all 24 strengths, a further integrity check).
   return parseViaStrengths(text);
 }
 
