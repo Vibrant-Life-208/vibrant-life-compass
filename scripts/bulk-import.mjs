@@ -6,17 +6,15 @@
 // bypasses RLS, which is why account creation must run here and not in the
 // browser. The key NEVER goes in the repo or the app - you pass it via env.
 //
-// SETUP (one time):
-//   Get your service-role key: Supabase dashboard -> Project Settings -> API ->
-//   "service_role" secret (NOT the publishable/anon key).
-//
-// RUN:
-//   SUPABASE_URL="https://obnivpzwunxiyupnarca.supabase.co" \
-//   SUPABASE_SERVICE_ROLE_KEY="<your service_role key>" \
+// RUN (simple - the script asks for the key, hidden, when it needs it):
 //   node scripts/bulk-import.mjs accounts.csv
+//   -> it prompts: "Paste your Supabase service_role key" - paste + Enter.
 //
-//   Add --dry-run to validate the CSV + print what WOULD happen, creating nothing.
-//   Reset one password:  node scripts/bulk-import.mjs --reset <hero_name>
+//   The key is found in the Supabase WEBSITE: dashboard -> Project Settings ->
+//   API -> "service_role" (secret). Copy that long string; paste at the prompt.
+//
+//   Validate a CSV without the key:  node scripts/bulk-import.mjs accounts.csv --dry-run
+//   Reset one password:              node scripts/bulk-import.mjs --reset <hero_name>
 //
 // CSV columns (header row required), one row per person:
 //   hero_name,full_name,role,studio,links
@@ -36,16 +34,26 @@
 const SYNTH_DOMAIN = 'vibrantlife.local';
 const STUDIOS = ['sparks', 'discovery', 'adventure', 'launchpad'];
 
+import readline from 'node:readline';
+
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 
-const URL = process.env.SUPABASE_URL;
-const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-// --dry-run only validates the CSV (no network), so it does NOT need the key.
-if (!dryRun && (!URL || !KEY)) {
-  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in the environment. (Not needed for --dry-run.)');
-  process.exit(1);
+// URL defaults to this project; only the secret key needs to be supplied, and we
+// prompt for it (hidden) at run time so it never goes on the command line, in
+// shell history, or in a file.
+const URL = process.env.SUPABASE_URL || 'https://obnivpzwunxiyupnarca.supabase.co';
+let KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+function promptHidden(query) {
+  return new Promise((resolve) => {
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    process.stdout.write(query);
+    rl._writeToOutput = () => {}; // mute echo so the key isn't shown on screen
+    rl.question('', (answer) => { rl.close(); process.stdout.write('\n'); resolve(answer.trim()); });
+  });
 }
+
 const heroEmail = (h) => `${String(h).trim().toLowerCase()}@${SYNTH_DOMAIN}`;
 const prettyName = (h) => h.split(/[-_]+/).filter(Boolean).map((p) => p[0].toUpperCase() + p.slice(1).toLowerCase()).join(' ');
 
@@ -57,11 +65,11 @@ function tempPassword() {
   return s;
 }
 
-const authHeaders = { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' };
+const authHeaders = () => ({ apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' });
 
 async function adminCreateUser(email, password) {
   const res = await fetch(`${URL}/auth/v1/admin/users`, {
-    method: 'POST', headers: authHeaders,
+    method: 'POST', headers: authHeaders(),
     body: JSON.stringify({ email, password, email_confirm: true }),
   });
   if (!res.ok) throw new Error(`createUser ${email}: ${res.status} ${await res.text()}`);
@@ -69,7 +77,7 @@ async function adminCreateUser(email, password) {
 }
 
 async function findUserIdByEmail(email) {
-  const res = await fetch(`${URL}/auth/v1/admin/users?per_page=200`, { headers: authHeaders });
+  const res = await fetch(`${URL}/auth/v1/admin/users?per_page=200`, { headers: authHeaders() });
   if (!res.ok) throw new Error(`listUsers: ${res.status} ${await res.text()}`);
   const body = await res.json();
   const users = Array.isArray(body) ? body : body.users || [];
@@ -78,14 +86,14 @@ async function findUserIdByEmail(email) {
 
 async function adminUpdatePassword(userId, password) {
   const res = await fetch(`${URL}/auth/v1/admin/users/${userId}`, {
-    method: 'PUT', headers: authHeaders, body: JSON.stringify({ password }),
+    method: 'PUT', headers: authHeaders(), body: JSON.stringify({ password }),
   });
   if (!res.ok) throw new Error(`updatePassword: ${res.status} ${await res.text()}`);
 }
 
 async function rest(path, method, body) {
   const res = await fetch(`${URL}/rest/v1/${path}`, {
-    method, headers: { ...authHeaders, Prefer: 'resolution=merge-duplicates,return=minimal' },
+    method, headers: { ...authHeaders(), Prefer: 'resolution=merge-duplicates,return=minimal' },
     body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) throw new Error(`${method} ${path}: ${res.status} ${await res.text()}`);
@@ -184,11 +192,17 @@ async function importCsv(file) {
 (async () => {
   try {
     const resetIdx = args.indexOf('--reset');
-    if (resetIdx >= 0) await resetPassword(args[resetIdx + 1]);
-    else {
-      const file = args.find((a) => !a.startsWith('--'));
-      if (!file) { console.error('Usage: node scripts/bulk-import.mjs <accounts.csv> [--dry-run]  |  --reset <hero_name>'); process.exit(1); }
-      await importCsv(file);
+    const file = args.find((a) => !a.startsWith('--'));
+    if (resetIdx < 0 && !file) {
+      console.error('Usage: node scripts/bulk-import.mjs <accounts.csv> [--dry-run]  |  --reset <hero_name>');
+      process.exit(1);
     }
+    // Prompt for the secret key (hidden) only when we actually need it.
+    if (!dryRun && !KEY) {
+      KEY = await promptHidden('Paste your Supabase service_role key (input is hidden), then press Enter:\n> ');
+      if (!KEY) { console.error('No key entered. Stopping.'); process.exit(1); }
+    }
+    if (resetIdx >= 0) await resetPassword(args[resetIdx + 1]);
+    else await importCsv(file);
   } catch (e) { console.error('\nFAILED:', e.message); process.exit(1); }
 })();
