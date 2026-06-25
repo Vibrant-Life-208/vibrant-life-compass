@@ -36,15 +36,16 @@
 const SYNTH_DOMAIN = 'vibrantlife.local';
 const STUDIOS = ['sparks', 'discovery', 'adventure', 'launchpad'];
 
-const URL = process.env.SUPABASE_URL;
-const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-if (!URL || !KEY) {
-  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in the environment.');
-  process.exit(1);
-}
-
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
+
+const URL = process.env.SUPABASE_URL;
+const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// --dry-run only validates the CSV (no network), so it does NOT need the key.
+if (!dryRun && (!URL || !KEY)) {
+  console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in the environment. (Not needed for --dry-run.)');
+  process.exit(1);
+}
 const heroEmail = (h) => `${String(h).trim().toLowerCase()}@${SYNTH_DOMAIN}`;
 const prettyName = (h) => h.split(/[-_]+/).filter(Boolean).map((p) => p[0].toUpperCase() + p.slice(1).toLowerCase()).join(' ');
 

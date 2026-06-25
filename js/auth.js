@@ -62,18 +62,6 @@ export function initAuth(onSignedIn) {
     });
   }
 
-  // Default-account role buttons (skeleton review only).
-  const roleButtons = document.querySelectorAll('.role-btn');
-  roleButtons.forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const role = btn.dataset.role;
-      if (!ROLES.includes(role)) return;
-      const email = `${role}@vibrantlife.local`;
-      await signInAs(role, email);
-      onSignedIn();
-    });
-  });
-
   wireSignOut();
 }
 
