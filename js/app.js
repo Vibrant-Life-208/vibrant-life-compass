@@ -166,7 +166,15 @@ async function onSignedIn() {
   initLogins(learnerId);
   initStillness();
   wireBearingAgain();
-  await updateBreadcrumb(learnerId);
+  // Defensive: a backend hiccup in the breadcrumb fetch must never abort the
+  // rest of sign-in (the onboarding/quote gate + the initial tab render that
+  // wires the dashboard). Previously a thrown getLearners() here killed all of
+  // it, leaving "nothing works but sign out".
+  try {
+    await updateBreadcrumb(learnerId);
+  } catch (e) {
+    console.error('[onSignedIn] updateBreadcrumb failed (non-fatal):', e);
+  }
   applyLandscape();
 
   setYearMapClickHandler((sessionNumber) => {

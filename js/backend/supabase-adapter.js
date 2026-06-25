@@ -54,7 +54,7 @@ export async function signOut() {
 // Learners
 // ============================================================================
 export async function getLearners() {
-  const { data, error } = await getClient().from('learners').select('id, studio, profiles(name, email)');
+  const { data, error } = await getClient().from('learners').select('id, studio, profiles!learners_id_fkey(name, email)');
   if (error) throw error;
   return (data || []).map((row) => ({
     id: row.id,
@@ -67,7 +67,7 @@ export async function getLearners() {
 export async function getLearner(id) {
   const { data, error } = await getClient()
     .from('learners')
-    .select('id, studio, profiles(name, email)')
+    .select('id, studio, profiles!learners_id_fkey(name, email)')
     .eq('id', id)
     .single();
   if (error) return null;
