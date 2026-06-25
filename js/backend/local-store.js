@@ -820,27 +820,32 @@ export async function getAnchorAggregates() {
   const learners = read(KEYS.learners) || [];
   const studioOf = {};
   learners.forEach((l) => { studioOf[l.id] = l.studio; });
-  const lex = {
-    value: await getValuesLexicon(),
-    strength: await getViaCharacterStrengths(),
+  const valuesLex = await getValuesLexicon();
+  const strengthLex = await getViaCharacterStrengths();
+  // kind -> { lexicon, source-array-getter } (mirrors the v0.8 RPC)
+  const KINDS = {
+    value: { lex: valuesLex, get: (m) => m.values },
+    strength_top: { lex: strengthLex, get: (m) => (m.top8.length ? m.top8 : m.values_strengths) },
+    strength_bottom: { lex: strengthLex, get: (m) => m.bottom8 },
   };
   const entries = Object.entries(anchors).map(([id, a]) => ({
     id,
     studio: studioOf[id] || null,
     values: Array.isArray(a.values) ? a.values : [],
-    strengths: Array.isArray(a.strengths) ? a.strengths : [],
-  })).filter((e) => e.values.length || e.strengths.length);
+    values_strengths: Array.isArray(a.strengths) ? a.strengths : [], // manual top-3
+    top8: Array.isArray(a.top8) ? a.top8 : [],
+    bottom8: Array.isArray(a.bottom8) ? a.bottom8 : [],
+  })).filter((e) => e.values.length || e.top8.length || e.values_strengths.length);
 
   const rows = [];
   const buildScope = (scope, scopeKey, members) => {
     const groupSize = members.length;
     if (groupSize < MIN) return;
-    for (const kind of ['value', 'strength']) {
-      const arrKey = kind === 'value' ? 'values' : 'strengths';
+    for (const [kind, def] of Object.entries(KINDS)) {
       const counts = {};
-      lex[kind].forEach((it) => { counts[it.id] = 0; });
-      members.forEach((m) => { m[arrKey].forEach((itemId) => { if (itemId in counts) counts[itemId] += 1; }); });
-      lex[kind].forEach((it) => {
+      def.lex.forEach((it) => { counts[it.id] = 0; });
+      members.forEach((m) => { (def.get(m) || []).forEach((itemId) => { if (itemId in counts) counts[itemId] += 1; }); });
+      def.lex.forEach((it) => {
         rows.push({ scope, scope_key: scopeKey, kind, item_id: it.id, label: it.display_label_adult, cnt: counts[it.id], group_size: groupSize });
       });
     }

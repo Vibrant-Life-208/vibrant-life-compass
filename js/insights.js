@@ -32,8 +32,8 @@ export async function renderAnchorInsights() {
   const scopes = new Map();
   for (const r of rows) {
     const key = r.scope === 'school' ? 'school' : r.scope_key;
-    if (!scopes.has(key)) scopes.set(key, { group_size: r.group_size, value: [], strength: [] });
-    scopes.get(key)[r.kind].push(r);
+    if (!scopes.has(key)) scopes.set(key, { group_size: r.group_size, value: [], strength_top: [], strength_bottom: [] });
+    if (scopes.get(key)[r.kind]) scopes.get(key)[r.kind].push(r);
   }
 
   const available = ['school', ...STUDIO_ORDER.filter((s) => scopes.has(s))];
@@ -49,19 +49,30 @@ export async function renderAnchorInsights() {
   ).join('')}</div>`;
 
   const li = (i) => `<li><span class="insights-item-label">${escapeHtml(i.label)}</span><span class="insights-item-count">${i.cnt}</span></li>`;
-  const colHtml = (kind, title) => {
-    const items = (data[kind] || []);
-    const most = items.filter((i) => i.cnt > 0).sort((a, b) => b.cnt - a.cnt || a.label.localeCompare(b.label)).slice(0, 5);
-    const least = items.slice().sort((a, b) => a.cnt - b.cnt || a.label.localeCompare(b.label)).slice(0, 5);
-    return `
+  const topList = (items) => items.filter((i) => i.cnt > 0).sort((a, b) => b.cnt - a.cnt || a.label.localeCompare(b.label)).slice(0, 5);
+  // Values: "least chosen" = the low end of the selection counts (includes 0s).
+  // Strengths: "least developed" = most often in people's bottom 8 (high bottom count).
+  const lowValues = (items) => items.slice().sort((a, b) => a.cnt - b.cnt || a.label.localeCompare(b.label)).slice(0, 5);
+
+  const col = ({ title, mostLabel, mostItems, leastLabel, leastItems }) => `
       <div class="insights-col">
         <h4 class="insights-col-title">${escapeHtml(title)}</h4>
-        <p class="insights-sub">Most chosen</p>
-        <ol class="insights-list">${most.length ? most.map(li).join('') : '<li class="insights-none">None chosen yet</li>'}</ol>
-        <p class="insights-sub">Least chosen</p>
-        <ol class="insights-list insights-list-least">${least.map(li).join('')}</ol>
+        <p class="insights-sub">${escapeHtml(mostLabel)}</p>
+        <ol class="insights-list">${mostItems.length ? mostItems.map(li).join('') : '<li class="insights-none">None yet</li>'}</ol>
+        <p class="insights-sub">${escapeHtml(leastLabel)}</p>
+        <ol class="insights-list insights-list-least">${leastItems.length ? leastItems.map(li).join('') : '<li class="insights-none">None yet</li>'}</ol>
       </div>`;
-  };
+
+  const valuesCol = col({
+    title: 'Values',
+    mostLabel: 'Most chosen', mostItems: topList(data.value || []),
+    leastLabel: 'Least chosen', leastItems: lowValues(data.value || []),
+  });
+  const strengthsCol = col({
+    title: 'Character strengths',
+    mostLabel: 'Most developed (signature)', mostItems: topList(data.strength_top || []),
+    leastLabel: 'Least developed', leastItems: topList(data.strength_bottom || []),
+  });
 
   const contextWho = selected === 'school' ? 'learners, guides, and parents' : 'learners in this studio';
   const suppressionNote = missingStudios.length
@@ -72,10 +83,10 @@ export async function renderAnchorInsights() {
     ${selector}
     <p class="insights-context">${escapeHtml(scopeLabel(selected))} · ${data.group_size} ${data.group_size === 1 ? 'person' : 'people'} with an anchor (${contextWho})</p>
     <div class="insights-cols">
-      ${colHtml('value', 'Values')}
-      ${colHtml('strength', 'Character strengths')}
+      ${valuesCol}
+      ${strengthsCol}
     </div>
-    <p class="insights-privacy">Counts only - no individual's choices are ever shown.</p>
+    <p class="insights-privacy">Counts only - no individual's choices are ever shown. "Least developed" reflects how often a strength sits in people's lower range.</p>
     ${suppressionNote}`;
 
   body.querySelectorAll('.insights-scope-btn').forEach((btn) => {
