@@ -3192,3 +3192,5 @@ body.landscape-mountain {
 .via-preview-title { margin: 0 0 0.4rem; font-size: 0.9rem; }
 .via-preview-list { margin: 0; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.6; }
 @media (max-width: 640px) { .via-preview-cols { grid-template-columns: 1fr; } }
+
+.onb-optional { color: var(--text-muted); font-weight: normal; font-size: 0.85em; }

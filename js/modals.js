@@ -5,7 +5,7 @@ import {
   getProfileValues, setProfileValues, getProfileStrengths, setProfileStrengths,
   getProfileHorizons, setProfileHorizon,
   getOnboardingState, setOnboardingStep, markOnboardingStepSkipped, completeOnboarding,
-  setQuoteAnchor, setStrengthRanking,
+  setQuoteAnchor, setStrengthRanking, setValuesFreetext, getValuesFreetext,
 } from './store.js';
 import { parseViaPdf } from './via-import.js';
 
@@ -964,10 +964,14 @@ const HORIZON_PROMPTS = {
 
 export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, onComplete }) {
   const steps = (studio === 'sparks' || studio === 'discovery') ? CASCADE_NEAR : CASCADE_FULL;
+  // Adventure + Launch Pad learners, guides, and parents TYPE their values (free
+  // text + archetype); Sparks + Discovery pick from the curated list.
+  const typeValues = role !== 'learner' || studio === 'adventure' || studio === 'launchpad';
 
   const state = {
     idx: 0,
     values: [],
+    valuesTyped: { values: [], archetype: '' }, // typed values + archetype (adults / older)
     strengths: [],
     strengthResult: null, // parsed VIA PDF {top8, bottom8, top3}
     strengthError: '',
@@ -989,12 +993,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   // Load any saved progress and resume on the saved step (Decision 3).
   if (profileId) {
-    const [savedValues, savedStrengths, savedHorizons, onb] = await Promise.all([
+    const [savedValues, savedTyped, savedStrengths, savedHorizons, onb] = await Promise.all([
       getProfileValues(profileId),
+      typeValues ? getValuesFreetext(profileId) : Promise.resolve(null),
       getProfileStrengths(profileId),
       getProfileHorizons(profileId),
       getOnboardingState(profileId),
     ]);
+    if (savedTyped) state.valuesTyped = { values: savedTyped.values || [], archetype: savedTyped.archetype || '' };
     state.values = Array.isArray(savedValues) ? savedValues.slice(0, 3) : [];
     state.strengths = Array.isArray(savedStrengths) ? savedStrengths.slice(0, 3) : [];
     if (savedHorizons) state.horizons = { ...state.horizons, ...savedHorizons };
@@ -1038,6 +1044,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   async function skipStep() {
     const step = curStep();
     captureHorizon();
+    captureValuesTyped();
     if (profileId && step !== 'breath') await markOnboardingStepSkipped(profileId, step);
     await advance(null);
   }
@@ -1045,6 +1052,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   function back() {
     if (state.idx === 0) return;
     captureHorizon();
+    captureValuesTyped();
     state.idx -= 1;
     if (profileId) setOnboardingStep(profileId, steps[state.idx]);
     render();
@@ -1099,6 +1107,30 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       ${errored}
       ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: !r })}
     `;
+  }
+
+  // Values step for adults + older learners: type top 3 + optional archetype
+  // (their values.institute results, which don't map to our curated list).
+  function renderValuesType() {
+    const v = state.valuesTyped;
+    return `
+      <p class="onb-step-instruction">Your top three values. If you took the Values assessment, type your results in - the archetype is optional.</p>
+      <p class="onb-linkout"><a href="${escapeAttr(VALUES_ASSESSMENT_URL)}" target="_blank" rel="noopener noreferrer">Take the Values assessment ↗</a><span class="onb-linkout-note">Opens in a new tab. Come back and type your top three.</span></p>
+      <div class="form-field"><label for="val-1">Value 1</label><input type="text" id="val-1" value="${escapeAttr(v.values[0] || '')}" placeholder="e.g. Peace"></div>
+      <div class="form-field"><label for="val-2">Value 2</label><input type="text" id="val-2" value="${escapeAttr(v.values[1] || '')}" placeholder="e.g. Intimacy"></div>
+      <div class="form-field"><label for="val-3">Value 3</label><input type="text" id="val-3" value="${escapeAttr(v.values[2] || '')}" placeholder="e.g. Awe"></div>
+      <div class="form-field"><label for="val-arch">Archetype <span class="onb-optional">(optional)</span></label><input type="text" id="val-arch" value="${escapeAttr(v.archetype || '')}" placeholder="e.g. The Seeker"></div>
+      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
+    `;
+  }
+
+  function captureValuesTyped() {
+    if (!typeValues || curStep() !== 'values') return;
+    const g = (id) => (document.getElementById(id)?.value || '').trim();
+    state.valuesTyped = {
+      values: [g('val-1'), g('val-2'), g('val-3')].filter(Boolean),
+      archetype: g('val-arch'),
+    };
   }
 
   function renderSelectStep({ kind, label }) {
@@ -1157,7 +1189,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const step = curStep();
     if (step === 'breath') formFields.innerHTML = renderBreath();
     else if (step === 'strengths') formFields.innerHTML = renderStrengthsUpload();
-    else if (step === 'values') formFields.innerHTML = renderSelectStep({ kind: 'value', label: 'values' });
+    else if (step === 'values') formFields.innerHTML = typeValues ? renderValuesType() : renderSelectStep({ kind: 'value', label: 'values' });
     else formFields.innerHTML = renderHorizon(step);
     wireStep();
     if (HORIZON_PROMPTS[step]) setTimeout(() => document.getElementById('onb-horizon')?.focus(), 50);
@@ -1198,8 +1230,13 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         if (!r) return; // need an uploaded VIA PDF first
         await advance(() => profileId ? setStrengthRanking(profileId, { top8: r.top8, bottom8: r.bottom8 }) : Promise.resolve());
       } else if (step === 'values') {
-        if (state.values.length !== 3) return;
-        await advance(() => profileId ? setProfileValues(profileId, state.values) : Promise.resolve());
+        if (typeValues) {
+          captureValuesTyped();
+          await advance(() => profileId ? setValuesFreetext(profileId, state.valuesTyped) : Promise.resolve());
+        } else {
+          if (state.values.length !== 3) return;
+          await advance(() => profileId ? setProfileValues(profileId, state.values) : Promise.resolve());
+        }
       } else {
         captureHorizon();
         const text = state.horizons[step] || '';

@@ -47,6 +47,8 @@ export const {
   // v0.2 anchor (per 2026-06-16 fleet meeting, Phase 1)
   getProfileValues,
   setProfileValues,
+  setValuesFreetext,
+  getValuesFreetext,
   getProfileStrengths,
   setProfileStrengths,
   getValuesLexicon,

@@ -875,3 +875,15 @@ export async function updatePassword(_newPassword) {
   const session = read(KEYS.session);
   if (session) { session.must_change_password = false; write(KEYS.session, session); }
 }
+
+// Typed values + archetype (older learners + adults) - local mirror.
+export async function setValuesFreetext(identityId, { values = [], archetype = '' } = {}) {
+  const all = read(KEYS.profileAnchor) || {};
+  all[identityId] = { ...(all[identityId] || {}), valuesFreetext: values, valuesArchetype: archetype };
+  write(KEYS.profileAnchor, all);
+}
+export async function getValuesFreetext(identityId) {
+  const all = read(KEYS.profileAnchor) || {};
+  const a = all[identityId] || {};
+  return { values: a.valuesFreetext || [], archetype: a.valuesArchetype || '' };
+}

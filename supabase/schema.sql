@@ -43,6 +43,11 @@ create table profiles (
   quote_author text not null default '',
   quote_note text not null default '',
   values_top_3 text[] not null default '{}',
+  -- Older learners + adults TYPE their values (values.institute vocabulary) plus
+  -- an optional archetype, instead of picking from values_lexicon. Kept separate
+  -- so the aggregate (which counts values_top_3 ids) stays clean. See v0.10.
+  values_freetext text[] not null default '{}',
+  values_archetype text not null default '',
   via_strengths_top_3 text[] not null default '{}',
   -- Top 8 / bottom 8 of the VIA ranking (from the on-device PDF import). top_3
   -- stays in sync as the first 3 of top_8. See the 2026-06-24 v0.7 migration.

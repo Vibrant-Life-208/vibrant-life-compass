@@ -167,6 +167,23 @@ export async function setProfileValues(profileId, valueIds) {
   await getClient().from('profiles').update({ values_top_3: valueIds }).eq('id', profileId);
 }
 
+// Typed values + archetype (older learners + adults). Separate from values_top_3
+// (the lexicon-id picks) so the aggregate stays clean.
+export async function setValuesFreetext(profileId, { values = [], archetype = '' } = {}) {
+  await getClient().from('profiles')
+    .update({ values_freetext: values, values_archetype: archetype })
+    .eq('id', profileId);
+}
+
+export async function getValuesFreetext(profileId) {
+  const { data } = await getClient()
+    .from('profiles')
+    .select('values_freetext, values_archetype')
+    .eq('id', profileId)
+    .single();
+  return { values: data?.values_freetext || [], archetype: data?.values_archetype || '' };
+}
+
 export async function getProfileStrengths(profileId) {
   const { data } = await getClient().from('profiles').select('via_strengths_top_3').eq('id', profileId).single();
   return data?.via_strengths_top_3 || [];
