@@ -1114,11 +1114,13 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   function renderValuesType() {
     const v = state.valuesTyped;
     return `
-      <p class="onb-step-instruction">Your top three values. If you took the Values assessment, type your results in - the archetype is optional.</p>
-      <p class="onb-linkout"><a href="${escapeAttr(VALUES_ASSESSMENT_URL)}" target="_blank" rel="noopener noreferrer">Take the Values assessment ↗</a><span class="onb-linkout-note">Opens in a new tab. Come back and type your top three.</span></p>
+      <p class="onb-step-instruction">Your top five values (your value pyramid). If you took the Values assessment, type your results in - the archetype is optional.</p>
+      <p class="onb-linkout"><a href="${escapeAttr(VALUES_ASSESSMENT_URL)}" target="_blank" rel="noopener noreferrer">Take the Values assessment ↗</a><span class="onb-linkout-note">Opens in a new tab. Come back and type your top five.</span></p>
       <div class="form-field"><label for="val-1">Value 1</label><input type="text" id="val-1" value="${escapeAttr(v.values[0] || '')}" placeholder="e.g. Peace"></div>
       <div class="form-field"><label for="val-2">Value 2</label><input type="text" id="val-2" value="${escapeAttr(v.values[1] || '')}" placeholder="e.g. Intimacy"></div>
-      <div class="form-field"><label for="val-3">Value 3</label><input type="text" id="val-3" value="${escapeAttr(v.values[2] || '')}" placeholder="e.g. Awe"></div>
+      <div class="form-field"><label for="val-3">Value 3</label><input type="text" id="val-3" value="${escapeAttr(v.values[2] || '')}" placeholder="e.g. Wealth"></div>
+      <div class="form-field"><label for="val-4">Value 4</label><input type="text" id="val-4" value="${escapeAttr(v.values[3] || '')}" placeholder="e.g. Awe"></div>
+      <div class="form-field"><label for="val-5">Value 5</label><input type="text" id="val-5" value="${escapeAttr(v.values[4] || '')}" placeholder="e.g. Vitality"></div>
       <div class="form-field"><label for="val-arch">Archetype <span class="onb-optional">(optional)</span></label><input type="text" id="val-arch" value="${escapeAttr(v.archetype || '')}" placeholder="e.g. The Seeker"></div>
       ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
     `;
@@ -1128,7 +1130,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     if (!typeValues || curStep() !== 'values') return;
     const g = (id) => (document.getElementById(id)?.value || '').trim();
     state.valuesTyped = {
-      values: [g('val-1'), g('val-2'), g('val-3')].filter(Boolean),
+      values: [g('val-1'), g('val-2'), g('val-3'), g('val-4'), g('val-5')].filter(Boolean),
       archetype: g('val-arch'),
     };
   }
@@ -1163,10 +1165,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       }).join('')}</div>`;
     }
     return `
-      <p class="onb-step-instruction">Enter your top three ${escapeHtml(label)} from your results. <span class="onb-count">(${list.length} of 3 selected)</span></p>
+      <p class="onb-step-instruction">Choose your top five ${escapeHtml(label)}. <span class="onb-count">(${list.length} of 5 selected)</span></p>
       ${linkBlock}
       ${grid}
-      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: list.length !== 3 })}
+      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: list.length !== 5 })}
     `;
   }
 
@@ -1234,7 +1236,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
           captureValuesTyped();
           await advance(() => profileId ? setValuesFreetext(profileId, state.valuesTyped) : Promise.resolve());
         } else {
-          if (state.values.length !== 3) return;
+          if (state.values.length !== 5) return;
           await advance(() => profileId ? setProfileValues(profileId, state.values) : Promise.resolve());
         }
       } else {
@@ -1253,7 +1255,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         if (at >= 0) {
           list.splice(at, 1);
         } else {
-          if (list.length >= 3) return; // soft cap - can't pick a 4th
+          if (list.length >= 5) return; // soft cap - can't pick a 6th
           list.push(id);
         }
         render();
