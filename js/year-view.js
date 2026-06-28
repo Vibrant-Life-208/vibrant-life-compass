@@ -5,6 +5,7 @@ import { getCategoriesForStudio, getStudioName } from './studios.js';
 import { openGoalModal, openQuoteModal, openVisionModal, openTraitsModal, openConfirmModal, openYearGoalModal } from './modals.js';
 import { renderYearMap } from './year-map.js';
 import { getYearMapClickHandler } from './north.js';
+import { renderLifeWheel } from './wheel.js';
 
 let wired = false;
 
@@ -15,6 +16,9 @@ export async function renderYearView(learnerId) {
     list.innerHTML = '<p class="learners-empty">No learner profile yet.</p>';
     return;
   }
+  // Wheel of Life: reflection-only, shown above the goals for guides/adults (whose
+  // goal categories ARE the 12 life areas). Hidden for young learners.
+  renderLifeWheel(learner.studio === 'guide-summer');
 
   // Year Map at top of Compass page (moved from North per captain 2026-05-12).
   const yearMapEl = document.getElementById('compass-year-map');
