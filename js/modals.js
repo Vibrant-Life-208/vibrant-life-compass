@@ -5,8 +5,9 @@ import {
   getProfileValues, setProfileValues, getProfileStrengths, setProfileStrengths,
   getProfileHorizons, setProfileHorizon,
   getOnboardingState, setOnboardingStep, markOnboardingStepSkipped, completeOnboarding,
-  setQuoteAnchor,
+  setQuoteAnchor, setStrengthRanking,
 } from './store.js';
+import { parseViaPdf } from './via-import.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
@@ -968,6 +969,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     idx: 0,
     values: [],
     strengths: [],
+    strengthResult: null, // parsed VIA PDF {top8, bottom8, top3}
+    strengthError: '',
     valuesLexicon: [],
     viaStrengths: [],
     horizons: { beyond_5yr: '', within_5yr: '', within_1yr: '', current_state: '', halfway: '' },
@@ -1076,6 +1079,28 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     `;
   }
 
+  // Strengths step: VIA survey link-out + on-device PDF upload (no hand-picking).
+  function renderStrengthsUpload() {
+    const labels = {};
+    state.viaStrengths.forEach((s) => { labels[s.id] = s.display_label_adult; });
+    const r = state.strengthResult;
+    const preview = r
+      ? `<div class="onb-via-found"><p class="onb-step-instruction">Got it - your top strengths:</p><ol class="via-preview-list">${r.top8.slice(0, 5).map((id) => `<li>${escapeHtml(labels[id] || id)}</li>`).join('')}</ol></div>`
+      : '';
+    const errored = state.strengthError ? `<p class="via-import-error">${escapeHtml(state.strengthError)}</p>` : '';
+    return `
+      <p class="onb-step-instruction">Your character strengths come from the free VIA Survey. Take it, download your results PDF, and drop it below - it's read on your device and never uploaded.</p>
+      <p class="onb-linkout"><a href="${escapeAttr(VIA_SURVEY_URL)}" target="_blank" rel="noopener noreferrer">Take the free VIA Survey ↗</a><span class="onb-linkout-note">Opens in a new tab. Come back with your PDF.</span></p>
+      <label class="via-drop" id="onb-via-drop">
+        <input type="file" id="onb-via-file" accept="application/pdf" hidden>
+        <span>Drop your VIA PDF here, or <strong>choose a file</strong></span>
+      </label>
+      ${preview}
+      ${errored}
+      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: !r })}
+    `;
+  }
+
   function renderSelectStep({ kind, label }) {
     const list = kind === 'value' ? state.values : state.strengths;
     const linkUrl = kind === 'value' ? VALUES_ASSESSMENT_URL : VIA_SURVEY_URL;
@@ -1131,7 +1156,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const formFields = document.getElementById('form-fields');
     const step = curStep();
     if (step === 'breath') formFields.innerHTML = renderBreath();
-    else if (step === 'strengths') formFields.innerHTML = renderSelectStep({ kind: 'strength', label: 'character strengths' });
+    else if (step === 'strengths') formFields.innerHTML = renderStrengthsUpload();
     else if (step === 'values') formFields.innerHTML = renderSelectStep({ kind: 'value', label: 'values' });
     else formFields.innerHTML = renderHorizon(step);
     wireStep();
@@ -1144,12 +1169,34 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     document.getElementById('onb-back')?.addEventListener('click', back);
     document.getElementById('onb-skip')?.addEventListener('click', skipStep);
 
+    // Strengths step: VIA PDF upload (on-device parse, then advance).
+    if (step === 'strengths') {
+      const input = document.getElementById('onb-via-file');
+      const drop = document.getElementById('onb-via-drop');
+      const handle = async (file) => {
+        state.strengthError = '';
+        if (drop) drop.querySelector('span').textContent = 'Reading your PDF on your device…';
+        let result;
+        try { result = await parseViaPdf(file); }
+        catch (e) { state.strengthError = 'Could not read that PDF. Make sure it is your VIA Character Strengths Profile.'; render(); return; }
+        if (!result.ok) { state.strengthResult = null; state.strengthError = result.reason || 'That is not a VIA Character Strengths PDF.'; render(); return; }
+        state.strengthResult = result;
+        state.strengths = result.top8.slice(0, 3); // keep legacy field in sync
+        render();
+      };
+      input?.addEventListener('change', () => { if (input.files[0]) handle(input.files[0]); });
+      ['dragover', 'dragenter'].forEach((ev) => drop?.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+      drop?.addEventListener('dragleave', () => drop.classList.remove('over'));
+      drop?.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) handle(f); });
+    }
+
     document.getElementById('onb-continue')?.addEventListener('click', async () => {
       if (step === 'breath') {
         await advance(null);
       } else if (step === 'strengths') {
-        if (state.strengths.length !== 3) return;
-        await advance(() => profileId ? setProfileStrengths(profileId, state.strengths) : Promise.resolve());
+        const r = state.strengthResult;
+        if (!r) return; // need an uploaded VIA PDF first
+        await advance(() => profileId ? setStrengthRanking(profileId, { top8: r.top8, bottom8: r.bottom8 }) : Promise.resolve());
       } else if (step === 'values') {
         if (state.values.length !== 3) return;
         await advance(() => profileId ? setProfileValues(profileId, state.values) : Promise.resolve());
