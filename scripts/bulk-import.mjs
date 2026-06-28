@@ -124,6 +124,25 @@ function parseCsv(text) {
   return rows.filter((r) => r.some((c) => c.trim() !== ''));
 }
 
+// Wipe a person's onboarding + anchor + goals so they start over from the very
+// beginning on next sign-in (keeps their account + password).
+async function resetOnboarding(heroName) {
+  if (dryRun) { console.log(`[dry-run] would reset onboarding + goals for ${heroName}`); return; }
+  const email = heroEmail(heroName);
+  const id = await findUserIdByEmail(email);
+  if (!id) { console.error(`No account found for "${heroName}" (${email}).`); process.exit(1); }
+  await rest(`profiles?id=eq.${id}`, 'PATCH', {
+    onboarding_completed_at: null, onboarding_step: 'breath', onboarding_skipped: [],
+    quote_text: '', quote_cycle: '', quote_author: '', quote_note: '', quote_vision: '',
+    values_top_3: [], values_freetext: [], values_archetype: '',
+    via_strengths_top_3: [], via_strengths_top_8: [], via_strengths_bottom_8: [],
+    vision_beyond_5yr: '', vision_within_5yr: '', vision_within_1yr: '', current_state: '', halfway_state: '',
+  });
+  await rest(`goals?learner_id=eq.${id}`, 'DELETE');
+  await rest(`tasks?learner_id=eq.${id}`, 'DELETE');
+  console.log(`\nReset done. ${heroName} starts onboarding from the beginning on next sign-in. (Account + password kept.)\n`);
+}
+
 async function resetPassword(heroName) {
   const email = heroEmail(heroName);
   const id = await findUserIdByEmail(email);
@@ -197,9 +216,10 @@ async function importCsv(file) {
 (async () => {
   try {
     const resetIdx = args.indexOf('--reset');
+    const resetOnbIdx = args.indexOf('--reset-onboarding');
     const file = args.find((a) => !a.startsWith('--'));
-    if (resetIdx < 0 && !file) {
-      console.error('Usage: node scripts/bulk-import.mjs <accounts.csv> [--dry-run]  |  --reset <hero_name>');
+    if (resetIdx < 0 && resetOnbIdx < 0 && !file) {
+      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
       process.exit(1);
     }
     // Prompt for the secret key (hidden) only when we actually need it.
@@ -207,7 +227,8 @@ async function importCsv(file) {
       KEY = await promptKey('Paste your Supabase secret/service_role key here, then press Enter:\n> ');
       if (!KEY) { console.error('\nNothing was pasted. Copy your key from the Supabase website (Settings -> API Keys), then run this again.'); process.exit(1); }
     }
-    if (resetIdx >= 0) await resetPassword(args[resetIdx + 1]);
+    if (resetOnbIdx >= 0) await resetOnboarding(args[resetOnbIdx + 1]);
+    else if (resetIdx >= 0) await resetPassword(args[resetIdx + 1]);
     else await importCsv(file);
   } catch (e) { console.error('\nFAILED:', e.message); process.exit(1); }
 })();

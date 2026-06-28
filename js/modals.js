@@ -936,28 +936,28 @@ const CASCADE_NEAR = ['breath', 'strengths', 'values', 'within_1yr'];
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
   beyond_5yr: {
-    heading: 'Look far down the road.',
-    body: 'Beyond five years from now - who have you become? What does your life look like? Let yourself imagine. There is no wrong answer.',
-    placeholder: 'Beyond five years from now...',
+    heading: 'See yourself in 10 years.',
+    body: 'Ten years from now - who have you become? What does your life look like? Let yourself imagine. There is no wrong answer.',
+    placeholder: 'In ten years...',
   },
   within_5yr: {
-    heading: 'Now bring it closer.',
-    body: 'Within the next five years - what do you want to be true?',
-    placeholder: 'Within five years...',
+    heading: 'See yourself in 5 years.',
+    body: 'Now bring it closer. Five years from now - what do you want to be true?',
+    placeholder: 'In five years...',
   },
   within_1yr: {
-    heading: 'This year.',
+    heading: 'See yourself in 1 year.',
     body: 'Twelve months from now - what do you want to have grown into?',
     placeholder: 'By this time next year...',
   },
   current_state: {
-    heading: 'And right now.',
+    heading: 'Where are you now?',
     body: 'Honestly - where are you today? This is the mirror, not the dream. You can stop here anytime; this step is yours to take at your pace.',
     placeholder: 'Where I am right now...',
   },
   halfway: {
-    heading: 'The halfway point.',
-    body: 'Between where you are now and this year’s horizon - what does halfway look like? How will you know you are on your way?',
+    heading: 'Halfway from now to one year.',
+    body: 'Look at the two below - where you want to be in a year, and where you are now. Halfway between them, what does it look like? How will you know you are on your way?',
     placeholder: 'Halfway, I will...',
   },
 };
@@ -1174,11 +1174,20 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   function renderHorizon(step) {
     const p = HORIZON_PROMPTS[step];
+    // At the halfway step, show "in 1 year" and "right now" side by side so the
+    // person can look at both and find the midpoint between them.
+    const compare = step === 'halfway'
+      ? `<div class="onb-compare">
+           <div class="onb-compare-col"><h4 class="onb-compare-title">In 1 year</h4><p class="onb-compare-text">${escapeHtml(state.horizons.within_1yr || '—')}</p></div>
+           <div class="onb-compare-col"><h4 class="onb-compare-title">Right now</h4><p class="onb-compare-text">${escapeHtml(state.horizons.current_state || '—')}</p></div>
+         </div>`
+      : '';
     return `
       <div class="onb-horizon-prompt">
         <h3 class="onb-horizon-heading">${escapeHtml(p.heading)}</h3>
         <p class="onb-horizon-body">${escapeHtml(p.body)}</p>
       </div>
+      ${compare}
       <div class="form-field">
         <textarea id="onb-horizon" rows="4" placeholder="${escapeAttr(p.placeholder)}">${escapeHtml(state.horizons[step] || '')}</textarea>
       </div>
