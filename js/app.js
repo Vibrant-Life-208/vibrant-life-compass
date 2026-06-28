@@ -2,7 +2,7 @@
 // Boot order: Bearing -> Sign-in -> first-run onboarding (if learner) -> role-based view.
 
 import { initBearing } from './arrive.js';
-import { initAuth, requireSession, showSignIn, showApp, switchRole, startIdleTimeout, wireSignOut, showChangePasswordScreen } from './auth.js';
+import { initAuth, requireSession, showSignIn, showApp, switchRole, startIdleTimeout, wireSignOut, showChangePasswordScreen, reopenFamilyPicker } from './auth.js';
 import { renderNorth, setYearMapClickHandler } from './north.js';
 import { renderYearView } from './year-view.js';
 import { renderSessionView, initSessionNav, setCurrentSession } from './session-view.js';
@@ -144,7 +144,24 @@ async function onSignedIn() {
   showApp();
 
   startIdleTimeout(); // auto-logout after 30 min inactivity
-  document.getElementById('who-label').textContent = `${session.name} · ${session.role}`;
+  document.getElementById('who-label').textContent = session.familyName
+    ? `${session.name} · ${session.familyName}`
+    : `${session.name} · ${session.role}`;
+
+  // Family sessions get a "Switch member" control that reopens the picker
+  // without re-authenticating. Idempotent wiring.
+  const switchBtn = document.getElementById('switch-member-btn');
+  if (switchBtn) {
+    if (session.familyId) {
+      switchBtn.hidden = false;
+      if (!switchBtn.dataset.wired) {
+        switchBtn.dataset.wired = '1';
+        switchBtn.addEventListener('click', () => reopenFamilyPicker(onSignedIn));
+      }
+    } else {
+      switchBtn.hidden = true;
+    }
+  }
 
   // First-run gate: learner role without setupCompletedAt sees ONLY the
   // setup view until they finish (age + studio + 5 goals + top 3).

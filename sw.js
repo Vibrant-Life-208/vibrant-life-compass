@@ -1,4 +1,4 @@
-const CACHE = 'heros-compass-v86';
+const CACHE = 'heros-compass-v87';
 const CORE = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const CORE = [
   '/js/app.js',
   '/js/arrive.js',
   '/js/auth.js',
+  '/js/family.js',
   '/js/studios.js',
   '/js/store.js',
   '/js/crypto.js',

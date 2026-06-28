@@ -22,6 +22,7 @@ const KEYS = {
   partnerLinks: 'hc_partner_links',
   parents: 'hc_parents',
   parentLearnerLinks: 'hc_parent_learner_links',
+  families: 'hc_families',                 // [{id, name, username, passwordHash?, passwordSalt?, members:[...]}]
   yearPlans: 'hc_year_plans',
   notifications: 'hc_notifications',
   profileAnchor: 'hc_profile_anchor',     // {id: {values:[], strengths:[]}} (v0.2 anchor)
@@ -135,6 +136,20 @@ export async function linkParentToLearner(parentId, learnerId) {
 }
 
 // ============================================================================
+// Families (one shared login per family; members are existing profiles)
+// ============================================================================
+export async function getFamily(familyId) {
+  const families = read(KEYS.families) || [];
+  return families.find((f) => f.id === familyId) || null;
+}
+
+export async function getFamilyByUsername(username) {
+  const name = String(username || '').trim().toLowerCase();
+  const families = read(KEYS.families) || [];
+  return families.find((f) => (f.username || '').toLowerCase() === name) || null;
+}
+
+// ============================================================================
 // Account lookup by hero name (the username in the local-auth model).
 // Searches learners, parents, and guides. Returns the matched account
 // with its role, or null.
@@ -159,6 +174,21 @@ export async function findAccountByHeroName(heroName) {
 // function regardless of localStorage vs Supabase Auth.
 import { verifyPassword as _verifyPasswordLocal } from '../crypto.js';
 export async function signInWithHeroName(heroName, password) {
+  // Family logins first: a family username returns a family account whose
+  // role drives auth.js into the member picker instead of a person session.
+  const family = await getFamilyByUsername(heroName);
+  if (family) {
+    // Skeleton convenience: a seeded family without a hash accepts any password
+    // (mirrors this file's "skeleton accepts any password" stance). When a hash
+    // is present we verify it. Production auth runs server-side in Supabase.
+    if (family.passwordHash && family.passwordSalt) {
+      const ok = await _verifyPasswordLocal(password, {
+        hash: family.passwordHash, salt: family.passwordSalt,
+      });
+      if (!ok) return null;
+    }
+    return { role: 'family', familyId: family.id, name: family.name, username: family.username };
+  }
   const account = await findAccountByHeroName(heroName);
   if (!account) return null;
   if (!account.passwordHash || !account.passwordSalt) return null;

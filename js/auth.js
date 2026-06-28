@@ -2,9 +2,10 @@
 // Google OAuth) wires in next session per captain decision 2026-05-12.
 // Skeleton accepts any email + any password; password is never compared.
 
-import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides, findAccountByHeroName, signInWithHeroName, getParentLearnerLinks, updatePassword } from './store.js';
+import { getSession, setSession, clearSession, saveLearner, getLearners, saveGuide, getGuides, findAccountByHeroName, signInWithHeroName, getParentLearnerLinks, updatePassword, getFamily } from './store.js';
 import { verifyPassword } from './crypto.js';
 import { BACKEND_TYPE } from './backend/config.js';
+import { renderMemberPicker, renderFamilyView, enterAsMember } from './family.js';
 
 const ROLES = ['learner', 'parent', 'guide'];
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes - studio iPads are shared
@@ -44,6 +45,13 @@ export function initAuth(onSignedIn) {
       }
       const errorEl = document.getElementById('signin-error');
       if (errorEl) errorEl.style.display = 'none';
+      // Family login -> show the member picker; a single person -> straight in.
+      if (account.role === 'family') {
+        const family = await getFamily(account.familyId);
+        if (family) { showFamilyPicker(family, onSignedIn); return; }
+        showSigninError('Could not load your family. Please try again.');
+        return;
+      }
       await signInWithAccount(account);
       onSignedIn();
     });
@@ -126,6 +134,31 @@ function showSigninError(msg) {
   if (!el) return;
   el.textContent = msg;
   el.style.display = 'block';
+}
+
+// Family flow: show the "Who's exploring?" picker, then enter the app as the
+// chosen member, open the reflection-only family view, or sign out.
+export function showFamilyPicker(family, onSignedIn) {
+  renderMemberPicker(family, {
+    onPick: async (member) => {
+      await enterAsMember(family, member);
+      showApp();
+      onSignedIn();
+    },
+    onFamily: () => {
+      renderFamilyView(family.id, { onBack: () => showFamilyPicker(family, onSignedIn) });
+    },
+    onSignOut: async () => { await clearSession(); location.reload(); },
+  });
+}
+
+// Re-open the picker for an already-signed-in family session (the in-app
+// "Switch member" control), without re-authenticating.
+export async function reopenFamilyPicker(onSignedIn) {
+  const session = await getSession();
+  if (!session?.familyId) return;
+  const family = await getFamily(session.familyId);
+  if (family) showFamilyPicker(family, onSignedIn);
 }
 
 async function signInWithAccount(account) {

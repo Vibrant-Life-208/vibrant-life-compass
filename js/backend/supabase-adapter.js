@@ -592,12 +592,58 @@ function heroEmail(heroName) {
 }
 
 export async function signInWithHeroName(heroName, password) {
+  // Family login first. getFamilyByUsername fails safe (returns null) when the
+  // families table doesn't exist yet, so this branch is inert until the
+  // family migration lands - existing person sign-in is untouched.
+  let family = null;
+  try { family = await getFamilyByUsername(heroName); } catch { family = null; }
+  if (family) {
+    const email = heroEmail(heroName);
+    const { data, error } = await getClient().auth.signInWithPassword({ email, password });
+    if (error || !data?.session) return null;
+    return { role: 'family', familyId: family.id, name: family.name, username: family.username };
+  }
   const email = heroEmail(heroName);
   const { data, error } = await getClient().auth.signInWithPassword({ email, password });
   if (error || !data?.session) return null;
   const userId = data.session.user.id;
   const { data: profile } = await getClient().from('profiles').select('*').eq('id', userId).single();
   return profile ? { ...profile, id: userId } : null;
+}
+
+// ============================================================================
+// Families (one shared login per family; members are existing profiles).
+// Defensive: every read fails safe to null/[] so a deploy before the family
+// migration cannot break sign-in.
+// ============================================================================
+export async function getFamily(familyId) {
+  try {
+    const c = getClient();
+    const { data: fam } = await c.from('families').select('id, name, username').eq('id', familyId).single();
+    if (!fam) return null;
+    const { data: members } = await c.from('family_members')
+      .select('profile_id, kind, display_name, sort, profiles!family_members_profile_id_fkey(name, email, role)')
+      .eq('family_id', familyId).order('sort');
+    fam.members = (members || []).map((m) => ({
+      profileId: m.profile_id,
+      kind: m.kind,
+      displayName: m.display_name,
+      name: m.profiles?.name,
+      email: m.profiles?.email,
+      role: m.profiles?.role || m.kind,
+    }));
+    return fam;
+  } catch { return null; }
+}
+
+export async function getFamilyByUsername(username) {
+  try {
+    const c = getClient();
+    const { data: fam, error } = await c.from('families')
+      .select('id').eq('username', String(username || '').trim().toLowerCase()).single();
+    if (error || !fam) return null;
+    return await getFamily(fam.id);
+  } catch { return null; }
 }
 
 // ============================================================================

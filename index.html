@@ -76,6 +76,12 @@
     </div>
   </div>
 
+  <!-- Family member picker ("Who's exploring?") - populated by family.js -->
+  <div id="member-picker-screen" class="screen"></div>
+
+  <!-- Family reflection view (everyone's values + strengths) - populated by family.js -->
+  <div id="family-view-screen" class="screen"></div>
+
   <!-- Sign-In Screen -->
   <div id="signin-screen" class="screen">
     <div class="signin-container">
@@ -112,6 +118,7 @@
           <button type="button" class="role-switch-btn" data-switch-role="guide">G</button>
         </div>
         <span id="who-label" class="who-label"></span>
+        <button id="switch-member-btn" class="header-btn-text" hidden>Switch member</button>
         <button id="stillness-trigger" class="header-btn" aria-label="Stillness">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="9"/>
