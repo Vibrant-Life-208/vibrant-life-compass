@@ -121,6 +121,34 @@ create policy "logins_family_write" on logins for all
   using (learner_id in (select learner_id from my_family_learners))
   with check (learner_id in (select learner_id from my_family_learners));
 
+-- ── Identity-column protection (TCC review 2026-06-28: Worf + Tutela) ────────
+-- profiles_family_write (and the pre-existing profiles_self) are row-scoped, not
+-- column-scoped: they would let a family login - or a learner on themselves -
+-- rewrite role / email / id. Tending a member's values is allowed; redefining
+-- who a member IS is not. This trigger makes role/email/id immutable to any
+-- non-service write (self OR family), while the service_role seed path can still
+-- set them at INSERT. must_change_password stays writable (a person clears their
+-- own forced reset). Closes the family escalation surface AND the pre-existing
+-- self-escalation hole. (Worf's binding condition for v0.11.)
+create or replace function protect_profile_identity_columns()
+returns trigger language plpgsql as $$
+begin
+  if coalesce(auth.role(), '') <> 'service_role' and (
+       new.role  is distinct from old.role
+    or new.email is distinct from old.email
+    or new.id    is distinct from old.id
+  ) then
+    raise exception 'profiles.role/email/id are not user-writable (TCC v0.11)';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_protect_profile_identity on profiles;
+create trigger trg_protect_profile_identity
+  before update on profiles
+  for each row execute function protect_profile_identity_columns();
+
 -- Verify after applying (anon probe should 200 once columns/tables exist):
 --   curl -s "$SUPABASE_URL/rest/v1/families?select=id&limit=1" \
 --     -H "apikey: $ANON" -H "Authorization: Bearer $ANON"  -> 200 (RLS yields [])
