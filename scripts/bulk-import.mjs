@@ -81,6 +81,48 @@ async function adminCreateUser(email, password) {
   return (await res.json()).id;
 }
 
+async function listAllUsers() {
+  const users = [];
+  for (let page = 1; page <= 30; page += 1) {
+    const res = await fetch(`${URL}/auth/v1/admin/users?per_page=200&page=${page}`, { headers: authHeaders() });
+    if (!res.ok) throw new Error(`listUsers: ${res.status} ${await res.text()}`);
+    const body = await res.json();
+    const batch = Array.isArray(body) ? body : body.users || [];
+    users.push(...batch);
+    if (batch.length < 200) break;
+  }
+  return users;
+}
+
+async function getJson(path) {
+  const res = await fetch(`${URL}/rest/v1/${path}`, { headers: authHeaders() });
+  return res.ok ? res.json() : [];
+}
+
+// Read-only: show every account whose email contains <substr>, and what each one
+// IS (family login / family member / standalone profile). Untangles "which login
+// is which" without touching anything.
+async function whois(substr) {
+  const s = String(substr || '').toLowerCase();
+  const matches = (await listAllUsers()).filter((u) => (u.email || '').toLowerCase().includes(s));
+  if (!matches.length) { console.log(`\nNo accounts whose email contains "${substr}".\n`); return; }
+  console.log(`\nAccounts matching "${substr}":\n`);
+  for (const u of matches) {
+    const [prof] = await getJson(`profiles?id=eq.${u.id}&select=role,name`);
+    const [fam] = await getJson(`families?id=eq.${u.id}&select=username,name`);
+    const [mem] = await getJson(`family_members?profile_id=eq.${u.id}&select=kind,display_name,family_id`);
+    let what;
+    if (fam) what = `FAMILY LOGIN  (hero name: ${fam.username})`;
+    else if (mem) {
+      const [parent] = await getJson(`families?id=eq.${mem.family_id}&select=username`);
+      what = `${mem.kind} "${mem.display_name}" in ${parent?.username || 'a family'}  (member - no direct login needed)`;
+    } else if (prof) what = `${prof.role} profile "${prof.name || ''}" (standalone login)`;
+    else what = 'auth user with no profile';
+    console.log(`  ${(u.email || '').padEnd(40)} ${what}`);
+  }
+  console.log('');
+}
+
 async function findUserIdByEmail(email) {
   const res = await fetch(`${URL}/auth/v1/admin/users?per_page=200`, { headers: authHeaders() });
   if (!res.ok) throw new Error(`listUsers: ${res.status} ${await res.text()}`);
@@ -310,9 +352,10 @@ async function importCsv(file) {
     const resetIdx = args.indexOf('--reset');
     const resetOnbIdx = args.indexOf('--reset-onboarding');
     const familiesIdx = args.indexOf('--families');
+    const whoisIdx = args.indexOf('--whois');
     const file = args.find((a) => !a.startsWith('--'));
-    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && !file) {
-      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --families <families.csv> [--dry-run]\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
+    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && whoisIdx < 0 && !file) {
+      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --families <families.csv> [--dry-run]\n  node scripts/bulk-import.mjs --whois <text>                 (show accounts matching an email substring)\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
       process.exit(1);
     }
     // Prompt for the secret key (hidden) only when we actually need it.
@@ -320,7 +363,8 @@ async function importCsv(file) {
       KEY = await promptKey('Paste your Supabase secret/service_role key here, then press Enter:\n> ');
       if (!KEY) { console.error('\nNothing was pasted. Copy your key from the Supabase website (Settings -> API Keys), then run this again.'); process.exit(1); }
     }
-    if (resetOnbIdx >= 0) await resetOnboarding(args[resetOnbIdx + 1]);
+    if (whoisIdx >= 0) await whois(args[whoisIdx + 1]);
+    else if (resetOnbIdx >= 0) await resetOnboarding(args[resetOnbIdx + 1]);
     else if (resetIdx >= 0) await resetPassword(args[resetIdx + 1]);
     else if (familiesIdx >= 0) await importFamilies(args[familiesIdx + 1] || file);
     else await importCsv(file);
