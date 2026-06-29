@@ -37,13 +37,34 @@ async function currentUserId() {
 // ============================================================================
 // Session / auth
 // ============================================================================
+// A family login has an auth user but NO profile row (its row is in `families`).
+// Supabase Auth persists only the auth token, so which family MEMBER is active is
+// kept here, client-side, and restored on reload.
+const ACTIVE_MEMBER_KEY = 'hc_active_member';
+function readActiveMember() {
+  try { return JSON.parse(localStorage.getItem(ACTIVE_MEMBER_KEY) || 'null'); } catch { return null; }
+}
+
 export async function getSession() {
   const c = getClient();
   const { data } = await c.auth.getSession();
-  if (!data?.session) return null;
+  if (!data?.session) {
+    try { localStorage.removeItem(ACTIVE_MEMBER_KEY); } catch { /* ignore */ }
+    return null;
+  }
   const userId = data.session.user.id;
   const { data: profile } = await c.from('profiles').select('*').eq('id', userId).single();
-  return profile ? { ...profile, learnerId: profile.role === 'learner' ? userId : null } : null;
+  if (profile) {
+    try { localStorage.removeItem(ACTIVE_MEMBER_KEY); } catch { /* ignore */ }
+    return { ...profile, learnerId: profile.role === 'learner' ? userId : null };
+  }
+  // No profile -> a family login. Restore the active member if one was picked,
+  // else hand back a family marker so the app re-shows the "Who's exploring?" picker.
+  const active = readActiveMember();
+  if (active && active.familyId === userId) return active;
+  const fam = await getFamily(userId);
+  if (fam) return { role: 'family', familyId: userId, familyName: fam.name, username: fam.username, name: fam.name, needsPicker: true };
+  return null;
 }
 
 export async function signOut() {
@@ -561,12 +582,18 @@ export async function addPost(post) {
 // ============================================================================
 // Session (Supabase Auth handles tokens via cookies; we keep API parity).
 // ============================================================================
-export async function setSession(_session) {
-  // Supabase Auth manages the session itself after signInWithPassword.
-  // This is a no-op kept for API parity with localStorage.
+export async function setSession(session) {
+  // Supabase Auth manages the auth token after signInWithPassword. We persist
+  // ONLY the active-family-member choice (a family login's uid can't say which
+  // member is exploring); person logins reconstruct from auth + profile.
+  try {
+    if (session && session.familyId) localStorage.setItem(ACTIVE_MEMBER_KEY, JSON.stringify(session));
+    else localStorage.removeItem(ACTIVE_MEMBER_KEY);
+  } catch { /* ignore */ }
 }
 
 export async function clearSession() {
+  try { localStorage.removeItem(ACTIVE_MEMBER_KEY); } catch { /* ignore */ }
   await getClient().auth.signOut();
 }
 
@@ -624,14 +651,24 @@ export async function getFamily(familyId) {
     const { data: members } = await c.from('family_members')
       .select('profile_id, kind, display_name, sort, profiles!family_members_profile_id_fkey(name, email, role)')
       .eq('family_id', familyId).order('sort');
-    fam.members = (members || []).map((m) => ({
+    const list = (members || []).map((m) => ({
       profileId: m.profile_id,
       kind: m.kind,
       displayName: m.display_name,
       name: m.profiles?.name,
       email: m.profiles?.email,
       role: m.profiles?.role || m.kind,
+      studio: null,
     }));
+    // Attach studio for learner members; Tots have no learners row, so studio
+    // stays null (they show in the family but aren't pickable as explorers).
+    const learnerIds = list.filter((m) => m.kind === 'learner').map((m) => m.profileId);
+    if (learnerIds.length) {
+      const { data: lrs } = await c.from('learners').select('id, studio').in('id', learnerIds);
+      const byId = Object.fromEntries((lrs || []).map((l) => [l.id, l.studio]));
+      list.forEach((m) => { if (m.profileId in byId) m.studio = byId[m.profileId]; });
+    }
+    fam.members = list;
     return fam;
   } catch { return null; }
 }

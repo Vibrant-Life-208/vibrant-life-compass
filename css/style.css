@@ -372,6 +372,8 @@ html, body {
 .member-name { font-size: 0.95rem; color: #3a3a34; }
 .member-kind { font-size: 0.75rem; color: #9a9a90; text-transform: uppercase; letter-spacing: 0.04em; }
 .member-tile-family { border-style: dashed; }
+.member-tile-inactive { opacity: 0.5; cursor: default; }
+.member-tile-inactive:hover { transform: none; box-shadow: none; border-color: #e3ddd0; }
 .picker-signout {
   background: none;
   border: none;

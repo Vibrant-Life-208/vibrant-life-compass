@@ -56,12 +56,18 @@ export function renderMemberPicker(family, { onPick, onFamily, onSignOut }) {
   showOnly(screen);
 
   const members = family.members || [];
-  const tiles = members.map((m, i) => `
-    <button type="button" class="member-tile" data-member="${i}">
+  // A learner with no studio is a Tot (or not-yet-in-Compass): shown so the
+  // family is whole, but not pickable as an explorer (no goals path yet).
+  const isExplorer = (m) => m.kind === 'parent' || (m.kind === 'learner' && m.studio);
+  const tiles = members.map((m, i) => {
+    const active = isExplorer(m);
+    return `
+    <button type="button" class="member-tile${active ? '' : ' member-tile-inactive'}" ${active ? `data-member="${i}"` : 'disabled'}>
       <span class="member-avatar member-avatar-${m.kind}">${initials(m.displayName || m.name)}</span>
       <span class="member-name">${m.displayName || m.name}</span>
-      <span class="member-kind">${m.kind === 'parent' ? 'Parent' : 'Learner'}</span>
-    </button>`).join('');
+      <span class="member-kind">${active ? (m.kind === 'parent' ? 'Parent' : 'Learner') : 'Joining soon'}</span>
+    </button>`;
+  }).join('');
 
   screen.innerHTML = `
     <div class="picker-container">

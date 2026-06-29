@@ -99,6 +99,9 @@ async function afterBearing() {
   if (!session) {
     showSignIn();
     initAuth(onSignedIn);
+  } else if (session.needsPicker) {
+    // Persisted family login with no member chosen yet -> re-show the picker.
+    await reopenFamilyPicker(onSignedIn);
   } else {
     await onSignedIn();
   }
