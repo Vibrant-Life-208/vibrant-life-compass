@@ -154,6 +154,98 @@ async function resetPassword(heroName) {
   console.log(`\nReset done. Give ${heroName} this temp password (they set their own on next sign-in):\n  ${heroName}  ->  ${pw}\n`);
 }
 
+// ── Family seeding (--families <families.csv>) ──────────────────────────────
+// One shared login per family + a member picker. Members (parents + learners)
+// are profiles; the family login is the only credential handed out. Seeds fresh
+// (captain decision 2026-06-28): old per-person accounts are left dormant.
+//
+// Families CSV columns: family_username,family_name,member_kind,member_name,studio
+//   member_kind : parent | learner
+//   studio      : learners only. Tot|Spark|Discovery|Adventure|LaunchPad.
+//                 'Tot' -> no studio (family member only, no Compass path).
+//
+// Member emails are namespaced under the family (family_username-slug@domain) so
+// they never collide with last year's individual accounts. Idempotent: re-runs
+// reuse any family/member whose email already exists.
+const STUDIO_MAP = {
+  tot: null, // family member only, no Compass studio/goals (captain 2026-06-28)
+  spark: 'sparks', sparks: 'sparks',
+  discovery: 'discovery', adventure: 'adventure',
+  launchpad: 'launchpad', launchpadblue: 'launchpad',
+};
+const slugify = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '');
+const memberDisplay = (full) => {
+  const m = full.match(/\(([^)]+)\)/);          // nickname in parens wins
+  return (m ? m[1] : full.trim().split(/\s+/)[0]).trim();
+};
+const memberFullName = (full) => full.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+
+async function importFamilies(file) {
+  const fs = await import('node:fs/promises');
+  const rows = parseCsv(await fs.readFile(file, 'utf8'));
+  const header = rows.shift().map((h) => h.trim().toLowerCase());
+  const col = (r, name) => (r[header.indexOf(name)] || '').trim();
+
+  // Group rows into families, preserving order.
+  const fams = new Map();
+  for (const r of rows) {
+    const username = col(r, 'family_username').toLowerCase();
+    if (!username) continue;
+    if (!fams.has(username)) fams.set(username, { username, name: col(r, 'family_name'), members: [] });
+    fams.get(username).members.push({
+      kind: col(r, 'member_kind').toLowerCase(),
+      name: col(r, 'member_name'),
+      studioRaw: col(r, 'studio').toLowerCase(),
+    });
+  }
+
+  // Validate
+  const errors = [];
+  for (const f of fams.values()) {
+    if (!f.members.length) errors.push(`${f.username}: no members`);
+    const slugs = new Set();
+    for (const m of f.members) {
+      if (!['parent', 'learner'].includes(m.kind)) errors.push(`${f.username}/${m.name}: bad kind "${m.kind}"`);
+      if (m.kind === 'learner' && m.studioRaw && !(m.studioRaw in STUDIO_MAP)) errors.push(`${f.username}/${m.name}: unknown studio "${m.studioRaw}"`);
+      let s = slugify(memberDisplay(m.name)); let n = 1;
+      while (slugs.has(s)) { n += 1; s = `${slugify(memberDisplay(m.name))}${n}`; } // de-dupe within family
+      slugs.add(s); m.slug = s;
+      m.display = memberDisplay(m.name);
+      m.full = memberFullName(m.name);
+      m.studio = m.kind === 'learner' ? STUDIO_MAP[m.studioRaw] ?? null : null;
+    }
+  }
+  const learners = [...fams.values()].flatMap((f) => f.members.filter((m) => m.kind === 'learner'));
+  if (errors.length) { console.error('Family CSV problems:\n - ' + errors.join('\n - ')); process.exit(1); }
+  console.log(`${fams.size} families | ${learners.length} learners (${learners.filter((m) => m.studio).length} with a studio, ${learners.filter((m) => !m.studio).length} Tot/no-studio) | ${[...fams.values()].flatMap((f) => f.members).filter((m) => m.kind === 'parent').length} parents`);
+  if (dryRun) { console.log('[dry-run] Family CSV valid. Nothing created.'); return; }
+
+  const creds = [];
+  for (const f of fams.values()) {
+    const famEmail = heroEmail(f.username);
+    let famId = await findUserIdByEmail(famEmail);
+    if (!famId) { const pw = tempPassword(); famId = await adminCreateUser(famEmail, pw); creds.push({ username: f.username, name: f.name, pw }); }
+    else { creds.push({ username: f.username, name: f.name, pw: '(existing - unchanged)' }); }
+    await rest('families', 'POST', { id: famId, name: f.name, username: f.username });
+
+    let sort = 0;
+    for (const m of f.members) {
+      const memEmail = `${f.username}-${m.slug}@${SYNTH_DOMAIN}`;
+      let memId = await findUserIdByEmail(memEmail);
+      if (!memId) memId = await adminCreateUser(memEmail, tempPassword()); // member pw never used (login is the family)
+      await rest('profiles', 'POST', { id: memId, role: m.kind === 'parent' ? 'parent' : 'learner', name: m.full, email: memEmail });
+      if (m.kind === 'learner' && m.studio) await rest('learners', 'POST', { id: memId, studio: m.studio });
+      await rest('family_members', 'POST', { family_id: famId, profile_id: memId, kind: m.kind, display_name: m.display, sort: sort++ });
+    }
+    console.log(`  ${f.name.padEnd(28)} ${f.members.length} members`);
+  }
+
+  console.log('\n=== FAMILY LOGINS (hand these out; the family signs in once and picks who is exploring) ===');
+  console.log('  hero name                  temp password');
+  for (const c of creds) console.log(`  ${c.username.padEnd(26)} ${c.pw}`);
+  console.log(`\nDone. ${fams.size} families seeded.`);
+}
+
 async function importCsv(file) {
   const fs = await import('node:fs/promises');
   const text = await fs.readFile(file, 'utf8');
@@ -217,9 +309,10 @@ async function importCsv(file) {
   try {
     const resetIdx = args.indexOf('--reset');
     const resetOnbIdx = args.indexOf('--reset-onboarding');
+    const familiesIdx = args.indexOf('--families');
     const file = args.find((a) => !a.startsWith('--'));
-    if (resetIdx < 0 && resetOnbIdx < 0 && !file) {
-      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
+    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && !file) {
+      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --families <families.csv> [--dry-run]\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
       process.exit(1);
     }
     // Prompt for the secret key (hidden) only when we actually need it.
@@ -229,6 +322,7 @@ async function importCsv(file) {
     }
     if (resetOnbIdx >= 0) await resetOnboarding(args[resetOnbIdx + 1]);
     else if (resetIdx >= 0) await resetPassword(args[resetIdx + 1]);
+    else if (familiesIdx >= 0) await importFamilies(args[familiesIdx + 1] || file);
     else await importCsv(file);
   } catch (e) { console.error('\nFAILED:', e.message); process.exit(1); }
 })();
