@@ -288,6 +288,66 @@ async function importFamilies(file) {
   console.log(`\nDone. ${fams.size} families seeded.`);
 }
 
+// ── Guide seeding (--guides <guides.csv>) ───────────────────────────────────
+// Guides see their own tribe (the studio they run) + whole-school insights; the
+// owner (Jenna) sees every tribe + her family. Each guide also gets a guide-summer
+// learners row so they can walk their own Compass.
+//
+// Guides CSV columns: hero_name,full_name,tribe,is_owner
+//   tribe    : the studio they run (tot|spark|discovery|adventure|launchpad).
+//              Leave blank for a guide who should see all tribes.
+//   is_owner : yes/true for the school owner (Jenna); blank otherwise.
+const TRIBE_MAP = {
+  tot: 'tot', spark: 'sparks', sparks: 'sparks', discovery: 'discovery',
+  adventure: 'adventure', launchpad: 'launchpad', 'launch pad': 'launchpad',
+};
+const truthy = (s) => /^(y|yes|true|1|owner)$/i.test(String(s).trim());
+
+async function importGuides(file) {
+  const fs = await import('node:fs/promises');
+  const rows = parseCsv(await fs.readFile(file, 'utf8'));
+  const header = rows.shift().map((h) => h.trim().toLowerCase());
+  const col = (r, name) => (r[header.indexOf(name)] || '').trim();
+
+  const guides = rows.map((r) => ({
+    heroName: col(r, 'hero_name').toLowerCase(),
+    fullName: col(r, 'full_name'),
+    tribeRaw: col(r, 'tribe').toLowerCase(),
+    isOwner: truthy(col(r, 'is_owner')),
+  }));
+  const errors = [];
+  const seen = new Set();
+  for (const g of guides) {
+    if (!g.heroName) errors.push('row missing hero_name');
+    if (seen.has(g.heroName)) errors.push(`duplicate hero_name: ${g.heroName}`);
+    seen.add(g.heroName);
+    if (g.tribeRaw && !(g.tribeRaw in TRIBE_MAP)) errors.push(`${g.heroName}: unknown tribe "${g.tribeRaw}"`);
+    g.tribe = g.tribeRaw ? TRIBE_MAP[g.tribeRaw] : null;
+  }
+  if (errors.length) { console.error('Guides CSV problems:\n - ' + errors.join('\n - ')); process.exit(1); }
+  console.log(`${guides.length} guides (${guides.filter((g) => g.isOwner).length} owner, ${guides.filter((g) => g.tribe).length} with a tribe, ${guides.filter((g) => !g.tribe && !g.isOwner).length} see-all)`);
+  if (dryRun) { console.log('[dry-run] Guides CSV valid. Nothing created.'); return; }
+
+  const creds = [];
+  for (const g of guides) {
+    const email = heroEmail(g.heroName);
+    let id = await findUserIdByEmail(email);
+    let pw = '(existing - unchanged)';
+    if (!id) { pw = tempPassword(); id = await adminCreateUser(email, pw); }
+    await rest('profiles', 'POST', {
+      id, role: 'guide', name: g.fullName || prettyName(g.heroName), email,
+      tribe: g.tribe, is_owner: g.isOwner, must_change_password: true,
+    });
+    await rest('learners', 'POST', { id, studio: 'guide-summer' }); // their own Compass journey
+    creds.push({ heroName: g.heroName, tribe: g.tribe || (g.isOwner ? 'OWNER (all)' : 'all'), pw });
+    console.log(`  guide ${g.heroName.padEnd(22)} ${g.tribe || (g.isOwner ? 'owner' : 'see-all')}`);
+  }
+
+  console.log('\n=== GUIDE LOGINS (hand out; they set their own password on first sign-in) ===');
+  for (const c of creds) console.log(`  ${c.heroName.padEnd(24)} ${String(c.tribe).padEnd(16)} ${c.pw}`);
+  console.log(`\nDone. ${guides.length} guides seeded.`);
+}
+
 async function importCsv(file) {
   const fs = await import('node:fs/promises');
   const text = await fs.readFile(file, 'utf8');
@@ -352,10 +412,11 @@ async function importCsv(file) {
     const resetIdx = args.indexOf('--reset');
     const resetOnbIdx = args.indexOf('--reset-onboarding');
     const familiesIdx = args.indexOf('--families');
+    const guidesIdx = args.indexOf('--guides');
     const whoisIdx = args.indexOf('--whois');
     const file = args.find((a) => !a.startsWith('--'));
-    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && whoisIdx < 0 && !file) {
-      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --families <families.csv> [--dry-run]\n  node scripts/bulk-import.mjs --whois <text>                 (show accounts matching an email substring)\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
+    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && guidesIdx < 0 && whoisIdx < 0 && !file) {
+      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --families <families.csv> [--dry-run]\n  node scripts/bulk-import.mjs --guides <guides.csv> [--dry-run]\n  node scripts/bulk-import.mjs --whois <text>                 (show accounts matching an email substring)\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
       process.exit(1);
     }
     // Prompt for the secret key (hidden) only when we actually need it.
@@ -367,6 +428,7 @@ async function importCsv(file) {
     else if (resetOnbIdx >= 0) await resetOnboarding(args[resetOnbIdx + 1]);
     else if (resetIdx >= 0) await resetPassword(args[resetIdx + 1]);
     else if (familiesIdx >= 0) await importFamilies(args[familiesIdx + 1] || file);
+    else if (guidesIdx >= 0) await importGuides(args[guidesIdx + 1] || file);
     else await importCsv(file);
   } catch (e) { console.error('\nFAILED:', e.message); process.exit(1); }
 })();

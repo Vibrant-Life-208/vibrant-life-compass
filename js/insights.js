@@ -3,7 +3,7 @@
 // individual's selections are ever shown; the data comes from the privacy-
 // preserving anchor_aggregates() aggregate (guide-only, small-group suppressed).
 
-import { getAnchorAggregates } from './store.js';
+import { getAnchorAggregates, getSession } from './store.js';
 
 const STUDIO_LABELS = { sparks: 'Sparks', discovery: 'Discovery', adventure: 'Adventure', launchpad: 'Launch Pad' };
 const STUDIO_ORDER = ['sparks', 'discovery', 'adventure', 'launchpad'];
@@ -36,11 +36,21 @@ export async function renderAnchorInsights() {
     if (scopes.get(key)[r.kind]) scopes.get(key)[r.kind].push(r);
   }
 
-  const available = ['school', ...STUDIO_ORDER.filter((s) => scopes.has(s))];
-  const missingStudios = STUDIO_ORDER.filter((s) => !scopes.has(s));
+  // Tribe scoping: a guide sees their own tribe + school-wide; the owner (and any
+  // guide with no tribe set) sees every tribe. Whole-school is always available.
+  const session = await getSession();
+  const isOwner = !!session?.is_owner;
+  const tribe = session?.tribe || null;
+  const allowStudio = (s) => isOwner || !tribe || s === tribe;
 
-  // Selected scope persists on the section element across re-renders.
-  if (!section.dataset.scope || !scopes.has(section.dataset.scope)) section.dataset.scope = 'school';
+  const available = ['school', ...STUDIO_ORDER.filter((s) => scopes.has(s) && allowStudio(s))];
+  const missingStudios = STUDIO_ORDER.filter((s) => !scopes.has(s) && allowStudio(s));
+
+  // Selected scope persists on the section element across re-renders; never let it
+  // fall outside what this viewer is allowed to see.
+  if (!section.dataset.scope || !available.includes(section.dataset.scope)) {
+    section.dataset.scope = (tribe && !isOwner && available.includes(tribe)) ? tribe : 'school';
+  }
   const selected = section.dataset.scope;
   const data = scopes.get(selected);
 
