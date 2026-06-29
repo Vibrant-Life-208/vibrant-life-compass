@@ -683,6 +683,25 @@ export async function getFamilyByUsername(username) {
   } catch { return null; }
 }
 
+// Family updates: learner-shared, receive-only feed (v0.12).
+export async function addFamilyUpdate(familyId, learnerId, kind, body) {
+  const { error } = await getClient().from('family_updates')
+    .insert({ family_id: familyId, learner_id: learnerId, kind, body: String(body).slice(0, 500) });
+  if (error) throw error;
+}
+
+export async function getFamilyUpdates(familyId) {
+  try {
+    const { data } = await getClient().from('family_updates')
+      .select('id, learner_id, kind, body, created_at, profiles!family_updates_learner_id_fkey(name)')
+      .eq('family_id', familyId).order('created_at', { ascending: false }).limit(50);
+    return (data || []).map((u) => ({
+      id: u.id, learnerId: u.learner_id, learnerName: u.profiles?.name,
+      kind: u.kind, body: u.body, createdAt: u.created_at,
+    }));
+  } catch { return []; }
+}
+
 // ============================================================================
 // Account lookup (read-only). Used by guide-side admin tools.
 // Auth-bypass path: a guide signed in has read access via RLS.

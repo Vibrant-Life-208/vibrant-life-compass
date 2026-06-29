@@ -117,6 +117,15 @@ async function onSignedIn() {
     await showChangePasswordScreen();
   }
 
+  // Family parent: their home is the calm family view + shared updates - never
+  // the learner goal app (anti-helicoptering, captain 2026-06-28). Handles both
+  // a fresh pick and a reload.
+  if (session.familyId && session.role === 'parent') {
+    const { renderFamilyView } = await import('./family.js');
+    await renderFamilyView(session.familyId, { onBack: () => reopenFamilyPicker(onSignedIn) });
+    return;
+  }
+
   // The signed-in person's own profile id. On reload getSession sets session.id;
   // on a FRESH sign-in only the role-specific id is populated (guideId/parentId/
   // learnerId) and session.id is undefined. Resolve across both so the welcome +
@@ -163,6 +172,26 @@ async function onSignedIn() {
       }
     } else {
       switchBtn.hidden = true;
+    }
+  }
+
+  // Family learners get a "Share with my family" control. Learner-initiated only;
+  // the session is read fresh on click so the control follows the active member.
+  const shareBtn = document.getElementById('share-family-btn');
+  if (shareBtn) {
+    if (session.familyId && session.role === 'learner') {
+      shareBtn.hidden = false;
+      if (!shareBtn.dataset.wired) {
+        shareBtn.dataset.wired = '1';
+        shareBtn.addEventListener('click', async () => {
+          const s = await requireSession();
+          if (!s?.familyId) return;
+          const { openShareModal } = await import('./family.js');
+          openShareModal({ familyId: s.familyId, learnerId: s.activeProfileId || s.learnerId });
+        });
+      }
+    } else {
+      shareBtn.hidden = true;
     }
   }
 

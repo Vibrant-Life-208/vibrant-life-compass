@@ -12,6 +12,7 @@ import {
   getFamily, setSession, getParentLearnerLinks,
   getProfileValues, getValuesFreetext, getStrengthRanking,
   getValuesLexicon, getViaCharacterStrengths,
+  getFamilyUpdates, addFamilyUpdate,
 } from './store.js';
 
 export function isFamilySession(session) {
@@ -126,7 +127,9 @@ export async function renderFamilyView(familyId, { onBack } = {}) {
 
   const family = await getFamily(familyId);
   if (!family) { screen.innerHTML = '<div class="picker-container"><p>Family not found.</p></div>'; return; }
-  const [lexicon, viaList] = await Promise.all([getValuesLexicon(), getViaCharacterStrengths()]);
+  const [lexicon, viaList, updates] = await Promise.all([
+    getValuesLexicon(), getViaCharacterStrengths(), getFamilyUpdates(familyId),
+  ]);
   const summaries = await Promise.all((family.members || []).map((m) => memberSummary(m, lexicon, viaList)));
 
   const sharedValues = tally(summaries.flatMap((s) => s.values)).filter(([, n]) => n >= 2);
@@ -151,11 +154,26 @@ export async function renderFamilyView(familyId, { onBack } = {}) {
         <span class="family-chips">${chips(sharedStrengths.map(([v]) => v))}</span></div>` : ''}
     </div>` : '';
 
+  // Updates feed: only what the learners chose to share. Receive-only - no reply,
+  // no reaction, and nothing about streaks or unfinished work ever appears here.
+  const feed = updates.length ? updates.map((u) => `
+    <div class="family-update">
+      <span class="family-update-icon">${u.kind === 'goal' ? '✨' : '\u{1F4AC}'}</span>
+      <div class="family-update-body">
+        <p class="family-update-text">${escapeHtml(u.body)}</p>
+        <p class="family-update-meta">${escapeHtml(u.learnerName || 'A learner')}${u.kind === 'goal' ? ' · reached a goal' : ''} · ${formatDay(u.createdAt)}</p>
+      </div>
+    </div>`).join('') : '<p class="family-empty">No updates yet. When a learner shares something, it will appear here.</p>';
+
   screen.innerHTML = `
     <div class="picker-container family-view">
       <h1 class="picker-title">${family.name}</h1>
       <p class="picker-sub">Your family's values and character strengths, side by side. Reflection only - nothing is scored.</p>
       ${shared}
+      <div class="family-updates">
+        <h3>Updates from your learners</h3>
+        ${feed}
+      </div>
       <div class="family-members">${cards}</div>
       <button type="button" class="picker-signout" data-back="1">Back</button>
     </div>`;
@@ -164,7 +182,63 @@ export async function renderFamilyView(familyId, { onBack } = {}) {
 
 function chips(items, emptyText) {
   if (!items || !items.length) return `<em class="family-empty">${emptyText || '—'}</em>`;
-  return items.map((x) => `<span class="family-chip">${x}</span>`).join('');
+  return items.map((x) => `<span class="family-chip">${escapeHtml(x)}</span>`).join('');
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+
+function formatDay(iso) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  } catch { return ''; }
+}
+
+// Learner-initiated "Share with my family" - a goal celebration or a short note.
+// Receive-only on the parent side; this is the only place an update is created.
+export function openShareModal({ familyId, learnerId, onShared } = {}) {
+  if (!familyId || !learnerId) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'share-overlay';
+  wrap.innerHTML = `
+    <div class="share-modal" role="dialog" aria-modal="true">
+      <h2 class="share-title">Share with your family</h2>
+      <p class="share-sub">Only what you choose to share is seen. Your goals and daily steps stay yours.</p>
+      <div class="share-kinds">
+        <button type="button" class="share-kind is-on" data-kind="goal">✨ I reached a goal</button>
+        <button type="button" class="share-kind" data-kind="note">💬 A little update</button>
+      </div>
+      <textarea class="share-text" maxlength="500" rows="3" placeholder="Say it in your own words…"></textarea>
+      <div class="share-actions">
+        <button type="button" class="btn share-cancel">Cancel</button>
+        <button type="button" class="btn btn-primary share-send" disabled>Share</button>
+      </div>
+    </div>`;
+  document.body.appendChild(wrap);
+  let kind = 'goal';
+  const text = wrap.querySelector('.share-text');
+  const send = wrap.querySelector('.share-send');
+  const close = () => wrap.remove();
+  wrap.querySelectorAll('.share-kind').forEach((b) => b.addEventListener('click', () => {
+    kind = b.dataset.kind;
+    wrap.querySelectorAll('.share-kind').forEach((x) => x.classList.toggle('is-on', x === b));
+  }));
+  text.addEventListener('input', () => { send.disabled = !text.value.trim(); });
+  wrap.querySelector('.share-cancel').addEventListener('click', close);
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+  send.addEventListener('click', async () => {
+    const body = text.value.trim();
+    if (!body) return;
+    send.disabled = true;
+    try { await addFamilyUpdate(familyId, learnerId, kind, body); } catch { /* surfaced below */ }
+    close();
+    if (onShared) onShared();
+  });
+  text.focus();
 }
 
 function showOnly(screen) {

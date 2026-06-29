@@ -432,6 +432,62 @@ html, body {
 }
 .family-empty { color: #b0b0a6; font-size: 0.85rem; }
 
+/* Family updates feed (learner-shared, receive-only) */
+.family-updates { margin: 1.5rem 0; }
+.family-updates h3 { margin: 0 0 0.6rem; color: var(--sage); font-weight: 500; }
+.family-update {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #e3ddd0;
+  border-radius: 12px;
+  background: #fff;
+  margin-bottom: 0.5rem;
+}
+.family-update-icon { font-size: 1.2rem; line-height: 1.4; }
+.family-update-body { flex: 1; }
+.family-update-text { margin: 0 0 0.2rem; color: #3a3a34; }
+.family-update-meta { margin: 0; font-size: 0.8rem; color: #9a9a90; }
+
+/* Learner "Share with my family" modal */
+.share-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(40, 38, 34, 0.45);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+}
+.share-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 420px;
+  width: 100%;
+}
+.share-title { margin: 0 0 0.3rem; color: var(--sage); font-weight: 500; font-size: 1.25rem; }
+.share-sub { margin: 0 0 1rem; color: #6a6a62; font-size: 0.9rem; }
+.share-kinds { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; }
+.share-kind {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #e3ddd0;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.share-kind.is-on { border-color: #cdbfa6; background: #f3f0ea; }
+.share-text {
+  width: 100%;
+  border: 1px solid #e3ddd0;
+  border-radius: 10px;
+  padding: 0.6rem;
+  font: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.share-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1rem; }
+
 .signin-title {
   color: var(--sage);
   font-size: 2rem;

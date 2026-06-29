@@ -23,6 +23,7 @@ const KEYS = {
   parents: 'hc_parents',
   parentLearnerLinks: 'hc_parent_learner_links',
   families: 'hc_families',                 // [{id, name, username, passwordHash?, passwordSalt?, members:[...]}]
+  familyUpdates: 'hc_family_updates',      // [{id, familyId, learnerId, kind, body, createdAt}] (v0.12)
   yearPlans: 'hc_year_plans',
   notifications: 'hc_notifications',
   profileAnchor: 'hc_profile_anchor',     // {id: {values:[], strengths:[]}} (v0.2 anchor)
@@ -147,6 +148,26 @@ export async function getFamilyByUsername(username) {
   const name = String(username || '').trim().toLowerCase();
   const families = read(KEYS.families) || [];
   return families.find((f) => (f.username || '').toLowerCase() === name) || null;
+}
+
+// Family updates: learner-shared, receive-only feed (v0.12 local mirror).
+export async function addFamilyUpdate(familyId, learnerId, kind, body) {
+  const all = read(KEYS.familyUpdates) || [];
+  all.push({ id: generateId(), familyId, learnerId, kind, body: String(body).slice(0, 500), createdAt: new Date().toISOString() });
+  write(KEYS.familyUpdates, all);
+}
+
+export async function getFamilyUpdates(familyId) {
+  const all = read(KEYS.familyUpdates) || [];
+  const families = read(KEYS.families) || [];
+  const fam = families.find((f) => f.id === familyId);
+  const nameOf = (pid) => {
+    const m = (fam?.members || []).find((x) => x.profileId === pid);
+    return m ? (m.displayName || m.name) : 'A learner';
+  };
+  return all.filter((u) => u.familyId === familyId)
+    .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
+    .map((u) => ({ ...u, learnerName: nameOf(u.learnerId) }));
 }
 
 // ============================================================================

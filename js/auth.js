@@ -142,8 +142,7 @@ export function showFamilyPicker(family, onSignedIn) {
   renderMemberPicker(family, {
     onPick: async (member) => {
       await enterAsMember(family, member);
-      showApp();
-      onSignedIn();
+      onSignedIn(); // routes parents to the family view, learners into Compass
     },
     onFamily: () => {
       renderFamilyView(family.id, { onBack: () => showFamilyPicker(family, onSignedIn) });

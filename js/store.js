@@ -29,6 +29,8 @@ export const {
   signInWithHeroName,
   getFamily,
   getFamilyByUsername,
+  addFamilyUpdate,
+  getFamilyUpdates,
   getGuides,
   getGuide,
   saveGuide,
