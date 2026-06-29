@@ -5,8 +5,8 @@
 
 import { getAnchorAggregates, getSession } from './store.js';
 
-const STUDIO_LABELS = { sparks: 'Sparks', discovery: 'Discovery', adventure: 'Adventure', launchpad: 'Launch Pad' };
-const STUDIO_ORDER = ['sparks', 'discovery', 'adventure', 'launchpad'];
+const STUDIO_LABELS = { tot: 'Tots', sparks: 'Sparks', discovery: 'Discovery', adventure: 'Adventure', launchpad: 'Launch Pad' };
+const STUDIO_ORDER = ['tot', 'sparks', 'discovery', 'adventure', 'launchpad'];
 
 function escapeHtml(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -40,8 +40,10 @@ export async function renderAnchorInsights() {
   // guide with no tribe set) sees every tribe. Whole-school is always available.
   const session = await getSession();
   const isOwner = !!session?.is_owner;
-  const tribe = session?.tribe || null;
-  const allowStudio = (s) => isOwner || !tribe || s === tribe;
+  const tribes = Array.isArray(session?.tribes) ? session.tribes : [];
+  // A guide sees the tribes they run; the owner (or a guide with no tribes set)
+  // sees all. Whole-school is always available.
+  const allowStudio = (s) => isOwner || !tribes.length || tribes.includes(s);
 
   const available = ['school', ...STUDIO_ORDER.filter((s) => scopes.has(s) && allowStudio(s))];
   const missingStudios = STUDIO_ORDER.filter((s) => !scopes.has(s) && allowStudio(s));
@@ -49,7 +51,8 @@ export async function renderAnchorInsights() {
   // Selected scope persists on the section element across re-renders; never let it
   // fall outside what this viewer is allowed to see.
   if (!section.dataset.scope || !available.includes(section.dataset.scope)) {
-    section.dataset.scope = (tribe && !isOwner && available.includes(tribe)) ? tribe : 'school';
+    const firstTribe = tribes.find((t) => available.includes(t));
+    section.dataset.scope = (!isOwner && firstTribe) ? firstTribe : 'school';
   }
   const selected = section.dataset.scope;
   const data = scopes.get(selected);

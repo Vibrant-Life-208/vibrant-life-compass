@@ -294,11 +294,11 @@ async function importFamilies(file) {
 // learners row so they can walk their own Compass.
 //
 // Guides CSV columns: hero_name,full_name,tribe,is_owner
-//   tribe    : the studio they run (tot|spark|discovery|adventure|launchpad).
-//              Leave blank for a guide who should see all tribes.
+//   tribe    : the studio(s) they run, semicolon-separated for more than one
+//              (tot|spark|discovery|adventure|launchpad). Leave blank to see all.
 //   is_owner : yes/true for the school owner (Jenna); blank otherwise.
 const TRIBE_MAP = {
-  tot: 'tot', spark: 'sparks', sparks: 'sparks', discovery: 'discovery',
+  tot: 'tot', tots: 'tot', spark: 'sparks', sparks: 'sparks', discovery: 'discovery',
   adventure: 'adventure', launchpad: 'launchpad', 'launch pad': 'launchpad',
 };
 const truthy = (s) => /^(y|yes|true|1|owner)$/i.test(String(s).trim());
@@ -321,12 +321,16 @@ async function importGuides(file) {
     if (!g.heroName) errors.push('row missing hero_name');
     if (seen.has(g.heroName)) errors.push(`duplicate hero_name: ${g.heroName}`);
     seen.add(g.heroName);
-    if (g.tribeRaw && !(g.tribeRaw in TRIBE_MAP)) errors.push(`${g.heroName}: unknown tribe "${g.tribeRaw}"`);
-    g.tribe = g.tribeRaw ? TRIBE_MAP[g.tribeRaw] : null;
+    const parts = g.tribeRaw.split(/[;+]+/).map((s) => s.trim()).filter(Boolean);
+    for (const p of parts) if (!(p in TRIBE_MAP)) errors.push(`${g.heroName}: unknown tribe "${p}"`);
+    g.tribes = parts.map((p) => TRIBE_MAP[p]).filter(Boolean);
   }
   if (errors.length) { console.error('Guides CSV problems:\n - ' + errors.join('\n - ')); process.exit(1); }
-  console.log(`${guides.length} guides (${guides.filter((g) => g.isOwner).length} owner, ${guides.filter((g) => g.tribe).length} with a tribe, ${guides.filter((g) => !g.tribe && !g.isOwner).length} see-all)`);
-  if (dryRun) { console.log('[dry-run] Guides CSV valid. Nothing created.'); return; }
+  console.log(`${guides.length} guides (${guides.filter((g) => g.isOwner).length} owner, ${guides.filter((g) => g.tribes.length).length} with tribes, ${guides.filter((g) => !g.tribes.length && !g.isOwner).length} see-all)`);
+  if (dryRun) {
+    for (const g of guides) console.log(`  ${g.heroName.padEnd(22)} ${g.isOwner ? 'OWNER (all)' : (g.tribes.join('+') || 'see-all')}`);
+    console.log('[dry-run] Guides CSV valid. Nothing created.'); return;
+  }
 
   const creds = [];
   for (const g of guides) {
@@ -336,15 +340,16 @@ async function importGuides(file) {
     if (!id) { pw = tempPassword(); id = await adminCreateUser(email, pw); }
     await rest('profiles', 'POST', {
       id, role: 'guide', name: g.fullName || prettyName(g.heroName), email,
-      tribe: g.tribe, is_owner: g.isOwner, must_change_password: true,
+      tribes: g.tribes, is_owner: g.isOwner, must_change_password: true,
     });
     await rest('learners', 'POST', { id, studio: 'guide-summer' }); // their own Compass journey
-    creds.push({ heroName: g.heroName, tribe: g.tribe || (g.isOwner ? 'OWNER (all)' : 'all'), pw });
-    console.log(`  guide ${g.heroName.padEnd(22)} ${g.tribe || (g.isOwner ? 'owner' : 'see-all')}`);
+    const label = g.isOwner ? 'OWNER (all)' : (g.tribes.join('+') || 'all');
+    creds.push({ heroName: g.heroName, tribe: label, pw });
+    console.log(`  guide ${g.heroName.padEnd(22)} ${label}`);
   }
 
   console.log('\n=== GUIDE LOGINS (hand out; they set their own password on first sign-in) ===');
-  for (const c of creds) console.log(`  ${c.heroName.padEnd(24)} ${String(c.tribe).padEnd(16)} ${c.pw}`);
+  for (const c of creds) console.log(`  ${c.heroName.padEnd(24)} ${String(c.tribe).padEnd(22)} ${c.pw}`);
   console.log(`\nDone. ${guides.length} guides seeded.`);
 }
 
