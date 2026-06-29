@@ -683,6 +683,16 @@ export async function getFamilyByUsername(username) {
   } catch { return null; }
 }
 
+// Which family is this profile a member of? (owner's "My Family"; a learner
+// resolving their family to share with.)
+export async function getFamilyIdForProfile(profileId) {
+  try {
+    const { data } = await getClient().from('family_members')
+      .select('family_id').eq('profile_id', profileId).limit(1).single();
+    return data?.family_id || null;
+  } catch { return null; }
+}
+
 // Family updates: learner-shared, receive-only feed (v0.12).
 export async function addFamilyUpdate(familyId, learnerId, kind, body) {
   const { error } = await getClient().from('family_updates')

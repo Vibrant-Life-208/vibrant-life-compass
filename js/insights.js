@@ -14,10 +14,10 @@ function escapeHtml(s) {
 
 const scopeLabel = (k) => (k === 'school' ? 'School-wide' : (STUDIO_LABELS[k] || k));
 
-export async function renderAnchorInsights() {
-  const section = document.getElementById('anchor-insights-section');
+export async function renderAnchorInsights(sectionId = 'anchor-insights-section', bodyId = 'anchor-insights-body') {
+  const section = document.getElementById(sectionId);
   if (!section) return;
-  const body = document.getElementById('anchor-insights-body');
+  const body = document.getElementById(bodyId);
   if (!body) return;
 
   let rows;
@@ -103,6 +103,6 @@ export async function renderAnchorInsights() {
     ${suppressionNote}`;
 
   body.querySelectorAll('.insights-scope-btn').forEach((btn) => {
-    btn.addEventListener('click', () => { section.dataset.scope = btn.dataset.scope; renderAnchorInsights(); });
+    btn.addEventListener('click', () => { section.dataset.scope = btn.dataset.scope; renderAnchorInsights(sectionId, bodyId); });
   });
 }

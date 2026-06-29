@@ -150,6 +150,14 @@ export async function getFamilyByUsername(username) {
   return families.find((f) => (f.username || '').toLowerCase() === name) || null;
 }
 
+// Which family is this profile a member of? (for the owner's "My Family" + a
+// learner resolving their family to share with.)
+export async function getFamilyIdForProfile(profileId) {
+  const families = read(KEYS.families) || [];
+  const fam = families.find((f) => (f.members || []).some((m) => m.profileId === profileId));
+  return fam ? fam.id : null;
+}
+
 // Family updates: learner-shared, receive-only feed (v0.12 local mirror).
 export async function addFamilyUpdate(familyId, learnerId, kind, body) {
   const all = read(KEYS.familyUpdates) || [];

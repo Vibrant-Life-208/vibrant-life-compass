@@ -107,6 +107,10 @@ async function afterBearing() {
   }
 }
 
+// When the owner picks "My Compass", we re-enter onSignedIn but skip the owner
+// menu so the normal app loads. The Menu button resets this.
+let ownerWantsCompass = false;
+
 async function onSignedIn() {
   const session = await requireSession();
   if (!session) return;
@@ -123,6 +127,15 @@ async function onSignedIn() {
   if (session.familyId && session.role === 'parent') {
     const { renderFamilyView } = await import('./family.js');
     await renderFamilyView(session.familyId, { onBack: () => reopenFamilyPicker(onSignedIn) });
+    return;
+  }
+
+  // Owner (Jenna): one login, a calm three-card menu (Whole School / My Family /
+  // My Compass). School + Family are their own quiet screens; "My Compass" hands
+  // control back here to the normal app. Built clean for a non-technical owner.
+  if (session.is_owner && !ownerWantsCompass) {
+    const { renderOwnerHome } = await import('./owner.js');
+    await renderOwnerHome({ onCompass: () => { ownerWantsCompass = true; onSignedIn(); } });
     return;
   }
 
@@ -172,6 +185,24 @@ async function onSignedIn() {
       }
     } else {
       switchBtn.hidden = true;
+    }
+  }
+
+  // Owner in "My Compass" mode gets a Menu button back to her three-card home.
+  const ownerMenuBtn = document.getElementById('owner-menu-btn');
+  if (ownerMenuBtn) {
+    if (session.is_owner) {
+      ownerMenuBtn.hidden = false;
+      if (!ownerMenuBtn.dataset.wired) {
+        ownerMenuBtn.dataset.wired = '1';
+        ownerMenuBtn.addEventListener('click', async () => {
+          ownerWantsCompass = false;
+          const { renderOwnerHome } = await import('./owner.js');
+          renderOwnerHome({ onCompass: () => { ownerWantsCompass = true; onSignedIn(); } });
+        });
+      }
+    } else {
+      ownerMenuBtn.hidden = true;
     }
   }
 

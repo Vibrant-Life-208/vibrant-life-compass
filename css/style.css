@@ -383,6 +383,38 @@ html, body {
   font-size: 0.9rem;
 }
 
+/* Owner (Jenna) home - big, calm, clearly-labeled cards, one choice at a time */
+#owner-home-screen, #owner-context-screen { align-items: center; justify-content: center; }
+.owner-home { max-width: 460px; }
+.owner-cards { display: flex; flex-direction: column; gap: 1rem; margin: 1.5rem 0; }
+.owner-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  padding: 1.3rem 1.4rem;
+  border: 1px solid #e3ddd0;
+  border-radius: 16px;
+  background: #fff;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+.owner-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  border-color: #cdbfa6;
+}
+.owner-card-icon { font-size: 2rem; line-height: 1; flex: 0 0 auto; }
+.owner-card-title { font-size: 1.2rem; color: #3a3a34; display: block; }
+.owner-card-sub { font-size: 0.85rem; color: #8a8a80; display: block; margin-top: 0.15rem; }
+.owner-card > span:nth-child(2) { flex: 1; }
+.owner-context { max-width: 640px; text-align: left; }
+.owner-context .picker-title { text-align: center; }
+.owner-back {
+  background: none; border: none; color: #6a6a62; cursor: pointer;
+  font-size: 0.95rem; padding: 0.3rem 0; margin-bottom: 0.5rem;
+}
+
 /* Family reflection view */
 .family-view { max-width: 640px; text-align: left; }
 .family-view .picker-title, .family-view .picker-sub { text-align: center; }
