@@ -649,7 +649,7 @@ export async function getFamily(familyId) {
     const { data: fam } = await c.from('families').select('id, name, username').eq('id', familyId).single();
     if (!fam) return null;
     const { data: members } = await c.from('family_members')
-      .select('profile_id, kind, display_name, sort, profiles!family_members_profile_id_fkey(name, email, role)')
+      .select('profile_id, kind, display_name, sort, profiles!family_members_profile_id_fkey(name, email, role, is_owner)')
       .eq('family_id', familyId).order('sort');
     const list = (members || []).map((m) => ({
       profileId: m.profile_id,
@@ -658,6 +658,7 @@ export async function getFamily(familyId) {
       name: m.profiles?.name,
       email: m.profiles?.email,
       role: m.profiles?.role || m.kind,
+      is_owner: !!m.profiles?.is_owner,
       studio: null,
     }));
     // Attach studio for learner members; Tots have no learners row, so studio

@@ -32,6 +32,7 @@ export async function enterAsMember(family, member) {
     familyId: family.id,
     familyName: family.name,
     activeProfileId: member.profileId,
+    is_owner: !!member.is_owner, // owner-parents (e.g. Jenna + Wes) route to the owner home
   };
   if (member.role === 'learner') session.learnerId = member.profileId;
   if (member.role === 'guide') session.guideId = member.profileId;

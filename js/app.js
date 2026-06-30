@@ -121,21 +121,22 @@ async function onSignedIn() {
     await showChangePasswordScreen();
   }
 
-  // Family parent: their home is the calm family view + shared updates - never
-  // the learner goal app (anti-helicoptering, captain 2026-06-28). Handles both
-  // a fresh pick and a reload.
-  if (session.familyId && session.role === 'parent') {
-    const { renderFamilyView } = await import('./family.js');
-    await renderFamilyView(session.familyId, { onBack: () => reopenFamilyPicker(onSignedIn) });
-    return;
-  }
-
-  // Owner (Jenna): one login, a calm three-card menu (Whole School / My Family /
-  // My Compass). School + Family are their own quiet screens; "My Compass" hands
-  // control back here to the normal app. Built clean for a non-technical owner.
+  // Owner (Jenna + Wes): one login, a calm three-card menu (Whole School / My
+  // Family / My Compass). Checked BEFORE the parent branch so an owner-parent
+  // lands on the owner home, not the plain family view. "My Compass" hands control
+  // back here to the normal app. Built clean for non-technical owners.
   if (session.is_owner && !ownerWantsCompass) {
     const { renderOwnerHome } = await import('./owner.js');
     await renderOwnerHome({ onCompass: () => { ownerWantsCompass = true; onSignedIn(); } });
+    return;
+  }
+
+  // Family parent (non-owner): their home is the calm family view + shared updates
+  // - never the learner goal app (anti-helicoptering, captain 2026-06-28). Handles
+  // both a fresh pick and a reload.
+  if (session.familyId && session.role === 'parent') {
+    const { renderFamilyView } = await import('./family.js');
+    await renderFamilyView(session.familyId, { onBack: () => reopenFamilyPicker(onSignedIn) });
     return;
   }
 
