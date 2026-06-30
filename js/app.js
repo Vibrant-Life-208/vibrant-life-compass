@@ -452,18 +452,14 @@ async function renderRoleView(role, learnerId) {
       }
     }
 
-    // Account administration is OWNER-only (separation of duties, captain
-    // 2026-06-30): guides run their tribe, not the account system. Regular guides
-    // never see create / bulk / the account list.
-    const sessForAdmin = await requireSession();
+    // Flat staff power (captain 2026-06-30): owner and guides hold the SAME
+    // abilities so no one is a bottleneck (esp. since the owner isn't the most
+    // technical). Every staff member gets the account tools. The owner label only
+    // means broader insight scope (all tribes), not exclusive keys.
     const adminSection = document.getElementById('admin-accounts-section');
-    if (sessForAdmin?.is_owner) {
-      if (adminSection) adminSection.hidden = false;
-      await renderAdminAccounts();
-      initAdmin();
-    } else if (adminSection) {
-      adminSection.hidden = true;
-    }
+    if (adminSection) adminSection.hidden = false;
+    await renderAdminAccounts();
+    initAdmin();
 
     // Anchor insights (counts only; guide-only; small-group suppressed). Guarded
     // so a backend hiccup can't break the rest of the guide view.

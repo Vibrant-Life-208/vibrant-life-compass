@@ -24,7 +24,7 @@ export async function renderAdminAccounts() {
   // Supabase adapter ignores, so it never changed the real password - it handed
   // out dead temp passwords. Removed until the secure 2FA-gated reset flow ships
   // (Phase 2). For now, resets are owner-run via the admin reset tool.
-  let html = '<p class="admin-note">Password resets are handled by the owner for now. The secure in-app reset (with two-factor) is on the way. To reset someone today, ask the owner.</p>';
+  let html = '<p class="admin-note">Password resets are run from the admin reset tool for now - the secure in-app reset (with two-factor) is on the way. Any staff member can help.</p>';
 
   html += renderGroup('Hero geniuses (learners)', learners.map(l => ({
     id: l.id,
