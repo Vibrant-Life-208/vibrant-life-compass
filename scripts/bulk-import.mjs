@@ -444,6 +444,10 @@ async function relinkLearners(file) {
     return;
   }
 
+  // Final confirmation - the deletes are permanent.
+  const ans = await promptKey('\nType EXECUTE to apply the plan above (deletes are permanent), or anything else to cancel:\n> ');
+  if (ans !== 'EXECUTE') { console.log('Cancelled. Nothing written.'); return; }
+
   // ── Execute ───────────────────────────────────────────────────────────────
   const creds = [];
   for (const p of plan) {
