@@ -203,6 +203,32 @@ async function resetOnboarding(heroName) {
   console.log(`\nReset done. ${heroName} starts onboarding from the beginning on next sign-in. (Account + password kept.)\n`);
 }
 
+// Promote an existing account to an owner-guide: sees all tribes' insights and
+// gets their own guide-summer Compass. Used to wire Jenna + Wes as the Jones
+// owners so their tiles open the owner home. (service_role bypasses the v0.14
+// identity trigger that otherwise makes role/is_owner immutable.)
+async function makeOwner(heroName) {
+  const email = heroEmail(heroName);
+  const id = await findUserIdByEmail(email);
+  if (!id) { console.error(`No account found for "${heroName}" (${email}).`); process.exit(1); }
+  if (dryRun) { console.log(`[dry-run] would make ${heroName} an owner-guide`); return; }
+  await rest(`profiles?id=eq.${id}`, 'PATCH', { role: 'guide', is_owner: true });
+  await rest('learners', 'POST', { id, studio: 'guide-summer' }); // their own Compass (upsert)
+  console.log(`\n${heroName} is now an owner-guide - sees every tribe + has their own Compass.`);
+}
+
+// Permanently delete one account (e.g. the redundant standalone owner account).
+async function deleteAccount(heroName) {
+  const email = heroEmail(heroName);
+  const id = await findUserIdByEmail(email);
+  if (!id) { console.error(`No account found for "${heroName}" (${email}).`); process.exit(1); }
+  if (dryRun) { console.log(`[dry-run] would delete ${heroName}`); return; }
+  const ans = await promptKey(`\nType DELETE to permanently remove "${heroName}", or anything else to cancel:\n> `);
+  if (ans !== 'DELETE') { console.log('Cancelled. Nothing deleted.'); return; }
+  await adminDeleteUser(id);
+  console.log(`\nDeleted ${heroName}.`);
+}
+
 async function resetPassword(heroName) {
   const email = heroEmail(heroName);
   const id = await findUserIdByEmail(email);
@@ -551,10 +577,12 @@ async function importCsv(file) {
     const familiesIdx = args.indexOf('--families');
     const guidesIdx = args.indexOf('--guides');
     const relinkIdx = args.indexOf('--relink-learners');
+    const makeOwnerIdx = args.indexOf('--make-owner');
+    const deleteIdx = args.indexOf('--delete');
     const whoisIdx = args.indexOf('--whois');
     const file = args.find((a) => !a.startsWith('--'));
-    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && guidesIdx < 0 && relinkIdx < 0 && whoisIdx < 0 && !file) {
-      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --families <families.csv> [--dry-run]\n  node scripts/bulk-import.mjs --guides <guides.csv> [--dry-run]\n  node scripts/bulk-import.mjs --relink-learners <families.csv> [--execute]\n  node scripts/bulk-import.mjs --whois <text>                 (show accounts matching an email substring)\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
+    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && guidesIdx < 0 && relinkIdx < 0 && makeOwnerIdx < 0 && deleteIdx < 0 && whoisIdx < 0 && !file) {
+      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --families <families.csv> [--dry-run]\n  node scripts/bulk-import.mjs --guides <guides.csv> [--dry-run]\n  node scripts/bulk-import.mjs --relink-learners <families.csv> [--execute]\n  node scripts/bulk-import.mjs --make-owner <hero_name>       (promote to owner-guide)\n  node scripts/bulk-import.mjs --delete <hero_name>           (permanently delete an account)\n  node scripts/bulk-import.mjs --whois <text>                 (show accounts matching an email substring)\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
       process.exit(1);
     }
     // The re-link dry-run runs without a key (CSV-only plan); it only needs the
@@ -567,6 +595,8 @@ async function importCsv(file) {
       if (!KEY) { console.error('\nNothing was pasted. Copy your key from the Supabase website (Settings -> API Keys), then run this again.'); process.exit(1); }
     }
     if (whoisIdx >= 0) await whois(args[whoisIdx + 1]);
+    else if (makeOwnerIdx >= 0) await makeOwner(args[makeOwnerIdx + 1]);
+    else if (deleteIdx >= 0) await deleteAccount(args[deleteIdx + 1]);
     else if (resetOnbIdx >= 0) await resetOnboarding(args[resetOnbIdx + 1]);
     else if (resetIdx >= 0) await resetPassword(args[resetIdx + 1]);
     else if (familiesIdx >= 0) await importFamilies(args[familiesIdx + 1] || file);
