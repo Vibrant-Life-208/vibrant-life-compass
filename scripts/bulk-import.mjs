@@ -131,6 +131,24 @@ async function findUserIdByEmail(email) {
   return (users.find((u) => (u.email || '').toLowerCase() === email.toLowerCase()) || {}).id || null;
 }
 
+async function adminDeleteUser(id) {
+  const res = await fetch(`${URL}/auth/v1/admin/users/${id}`, { method: 'DELETE', headers: authHeaders() });
+  if (!res.ok && res.status !== 404) throw new Error(`deleteUser ${id}: ${res.status} ${await res.text()}`);
+}
+
+// Candidate existing hero-names for a learner: first name (and any nickname) +
+// last-name initial - matches how last year's logins were formed (kyra-j, nina-s).
+function candidateHeroNames(full) {
+  const nicks = (full.match(/\(([^)]+)\)/g) || []).map((s) => s.replace(/[()]/g, ''));
+  const base = full.replace(/\([^)]*\)/g, ' ').trim();
+  const toks = base.split(/\s+/).filter(Boolean);
+  if (!toks.length) return [];
+  const li = toks[toks.length - 1].toLowerCase().replace(/[^a-z]/g, '').slice(0, 1);
+  const out = new Set([`${slugify(toks[0])}-${li}`]);
+  nicks.forEach((n) => out.add(`${slugify(n)}-${li}`));
+  return [...out];
+}
+
 async function adminUpdatePassword(userId, password) {
   const res = await fetch(`${URL}/auth/v1/admin/users/${userId}`, {
     method: 'PUT', headers: authHeaders(), body: JSON.stringify({ password }),
@@ -353,6 +371,116 @@ async function importGuides(file) {
   console.log(`\nDone. ${guides.length} guides seeded.`);
 }
 
+// ── Learner re-link (--relink-learners <families.csv> [--execute]) ──────────
+// Settle the learner accounts (captain 2026-06-30):
+//   * Discovery / Adventure / Launch Pad  -> reuse last year's own login
+//     (brady-j etc.); re-point the family to it; delete the duplicate
+//     jones-family-<slug> member account the family seed made; create the few
+//     genuinely-new ones.
+//   * Tot + Spark -> no login. Delete the seed member account AND last year's
+//     login (re-added if/when they move up to Discovery). Sparks' optional
+//     child-quiz creates a profile on demand later.
+// DRY-RUN BY DEFAULT. Writes only with --execute. Deletes touch only the
+// jones-family-<slug> seed accounts and last year's matching learner logins.
+async function relinkLearners(file) {
+  const execute = args.includes('--execute');
+  const fs = await import('node:fs/promises');
+  const rows = parseCsv(await fs.readFile(file, 'utf8'));
+  const header = rows.shift().map((h) => h.trim().toLowerCase());
+  const col = (r, name) => (r[header.indexOf(name)] || '').trim();
+
+  // Group learners by family (reuse the family seed's slug + studio rules).
+  const fams = new Map();
+  for (const r of rows) {
+    const username = col(r, 'family_username').toLowerCase();
+    if (!username || col(r, 'member_kind').toLowerCase() !== 'learner') continue;
+    if (!fams.has(username)) fams.set(username, []);
+    fams.get(username).push({ name: col(r, 'member_name'), studioRaw: col(r, 'studio').toLowerCase() });
+  }
+
+  // Only Discovery / Adventure / Launch Pad get their own login. Tot + Spark do
+  // not (captain 2026-06-30) - they're deleted, re-added on promotion to Discovery.
+  const LOGIN_STUDIOS = new Set(['discovery', 'adventure', 'launchpad']);
+  const plan = [];
+  for (const [username, learners] of fams) {
+    const slugs = new Set();
+    for (const l of learners) {
+      let slug = slugify(memberDisplay(l.name)); let n = 1;
+      while (slugs.has(slug)) { n += 1; slug = `${slugify(memberDisplay(l.name))}${n}`; }
+      slugs.add(slug);
+      const seedEmail = `${username}-${slug}@${SYNTH_DOMAIN}`;
+      const studio = l.studioRaw ? (STUDIO_MAP[l.studioRaw] ?? null) : null;
+      const cands = candidateHeroNames(l.name);
+      if (!studio || !LOGIN_STUDIOS.has(studio)) {
+        plan.push({ op: 'DELETE', name: l.name, studioRaw: l.studioRaw || 'tot', seedEmail, cands, family: username });
+      } else {
+        plan.push({ op: 'RELINK', name: l.name, studio, seedEmail, cands, family: username });
+      }
+    }
+  }
+
+  // With a key, resolve RELINK -> reuse (existing login) vs create (new).
+  if (KEY) {
+    for (const p of plan) {
+      if (p.op !== 'RELINK') continue;
+      for (const c of p.cands) { if (await findUserIdByEmail(heroEmail(c))) { p.reuse = c; break; } }
+    }
+  }
+
+  // Report
+  const del = plan.filter((p) => p.op === 'DELETE');
+  const rel = plan.filter((p) => p.op === 'RELINK');
+  console.log(`\nLearner re-link plan${execute ? ' (EXECUTING)' : ' (dry-run - no writes)'}\n`);
+  console.log(`Keep a login (Discovery/Adventure/Launch Pad): ${rel.length}`);
+  for (const p of rel) {
+    const tag = !KEY ? `reuse ${p.cands[0]} (or create)` : (p.reuse ? `reuse ${p.reuse}` : `CREATE ${p.cands[0]} (new)`);
+    console.log(`  ${p.name.padEnd(34)} [${p.studio}]  ${tag}  · drop dup ${p.seedEmail.split('@')[0]}`);
+  }
+  console.log(`\nNo login - DELETE seed acct + last-year login (Tot/Spark): ${del.length}`);
+  for (const p of del) console.log(`  ${p.name.padEnd(34)} [${p.studioRaw}]  delete ${p.seedEmail.split('@')[0]} + ${p.cands[0]} (if present)`);
+
+  if (!execute) {
+    console.log(`\n[dry-run] Nothing written. Re-run with --execute (and your key) to apply.`);
+    return;
+  }
+
+  // ── Execute ───────────────────────────────────────────────────────────────
+  const creds = [];
+  for (const p of plan) {
+    const seedId = await findUserIdByEmail(p.seedEmail);
+    if (p.op === 'DELETE') {
+      if (seedId) await adminDeleteUser(seedId);                 // remove the seed member account
+      for (const c of p.cands) { const id = await findUserIdByEmail(heroEmail(c)); if (id) await adminDeleteUser(id); } // + last-year login
+      console.log(`  deleted ${p.name}`);
+      continue;
+    }
+    // RELINK: reuse existing login, or create a new one
+    let learnerId = p.reuse ? await findUserIdByEmail(heroEmail(p.reuse)) : null;
+    let pw = '(existing - unchanged)';
+    if (!learnerId) {
+      const hero = p.cands[0]; pw = tempPassword();
+      learnerId = await adminCreateUser(heroEmail(hero), pw);
+      await rest('profiles', 'POST', { id: learnerId, role: 'learner', name: p.name, email: heroEmail(hero), must_change_password: true });
+      creds.push({ hero, pw });
+    }
+    await rest('learners', 'POST', { id: learnerId, studio: p.studio });               // ensure/refresh studio
+    // Re-point the family's member row from the seed account to the real login.
+    const [fam] = await getJson(`families?username=eq.${p.family}&select=id`);
+    if (fam) {
+      const [seedMember] = seedId ? await getJson(`family_members?family_id=eq.${fam.id}&profile_id=eq.${seedId}&select=kind,display_name,sort`) : [];
+      await rest('family_members', 'POST', { family_id: fam.id, profile_id: learnerId, kind: 'learner', display_name: seedMember?.display_name || memberDisplay(p.name), sort: seedMember?.sort ?? 0 });
+    }
+    if (seedId) await adminDeleteUser(seedId);                   // drop the duplicate seed account (cascades its member row)
+    console.log(`  ${p.reuse ? 'reused' : 'created'} ${p.name} -> ${p.reuse || p.cands[0]}`);
+  }
+
+  if (creds.length) {
+    console.log('\n=== NEW LEARNER LOGINS (hand out) ===');
+    for (const c of creds) console.log(`  ${c.hero.padEnd(20)} ${c.pw}`);
+  }
+  console.log(`\nDone. ${rel.length} learners with logins, ${del.length} removed (Tot/Spark).`);
+}
+
 async function importCsv(file) {
   const fs = await import('node:fs/promises');
   const text = await fs.readFile(file, 'utf8');
@@ -418,14 +546,19 @@ async function importCsv(file) {
     const resetOnbIdx = args.indexOf('--reset-onboarding');
     const familiesIdx = args.indexOf('--families');
     const guidesIdx = args.indexOf('--guides');
+    const relinkIdx = args.indexOf('--relink-learners');
     const whoisIdx = args.indexOf('--whois');
     const file = args.find((a) => !a.startsWith('--'));
-    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && guidesIdx < 0 && whoisIdx < 0 && !file) {
-      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --families <families.csv> [--dry-run]\n  node scripts/bulk-import.mjs --guides <guides.csv> [--dry-run]\n  node scripts/bulk-import.mjs --whois <text>                 (show accounts matching an email substring)\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
+    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && guidesIdx < 0 && relinkIdx < 0 && whoisIdx < 0 && !file) {
+      console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --families <families.csv> [--dry-run]\n  node scripts/bulk-import.mjs --guides <guides.csv> [--dry-run]\n  node scripts/bulk-import.mjs --relink-learners <families.csv> [--execute]\n  node scripts/bulk-import.mjs --whois <text>                 (show accounts matching an email substring)\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
       process.exit(1);
     }
-    // Prompt for the secret key (hidden) only when we actually need it.
-    if (!dryRun && !KEY) {
+    // The re-link dry-run runs without a key (CSV-only plan); it only needs the
+    // key for the with-key dry-run or --execute. Everything else needs the key
+    // unless it's a --dry-run.
+    const relinkDryRun = relinkIdx >= 0 && !args.includes('--execute');
+    const needsKey = relinkDryRun ? false : !dryRun;
+    if (needsKey && !KEY) {
       KEY = await promptKey('Paste your Supabase secret/service_role key here, then press Enter:\n> ');
       if (!KEY) { console.error('\nNothing was pasted. Copy your key from the Supabase website (Settings -> API Keys), then run this again.'); process.exit(1); }
     }
@@ -434,6 +567,7 @@ async function importCsv(file) {
     else if (resetIdx >= 0) await resetPassword(args[resetIdx + 1]);
     else if (familiesIdx >= 0) await importFamilies(args[familiesIdx + 1] || file);
     else if (guidesIdx >= 0) await importGuides(args[guidesIdx + 1] || file);
+    else if (relinkIdx >= 0) await relinkLearners(args[relinkIdx + 1] || file);
     else await importCsv(file);
   } catch (e) { console.error('\nFAILED:', e.message); process.exit(1); }
 })();
