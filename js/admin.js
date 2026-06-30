@@ -20,7 +20,11 @@ export async function renderAdminAccounts() {
     getLearners(), getParents(), getGuides(), getParentLearnerLinks(),
   ]);
 
-  let html = '';
+  // Ring 2 decision 2026-06-30: the old in-app reset wrote PBKDF2 fields the
+  // Supabase adapter ignores, so it never changed the real password - it handed
+  // out dead temp passwords. Removed until the secure 2FA-gated reset flow ships
+  // (Phase 2). For now, resets are owner-run via the admin reset tool.
+  let html = '<p class="admin-note">Password resets are handled by the owner for now. The secure in-app reset (with two-factor) is on the way. To reset someone today, ask the owner.</p>';
 
   html += renderGroup('Hero geniuses (learners)', learners.map(l => ({
     id: l.id,
@@ -60,7 +64,6 @@ function renderGroup(title, items) {
             <li class="admin-account-row">
               <span class="admin-account-name">${escapeHtml(a.name)}</span>
               <span class="admin-account-sub">${escapeHtml(a.sub)}</span>
-              <button type="button" class="btn btn-text admin-reset-btn" data-role="${a.role}" data-id="${a.id}" data-name="${escapeHtml(a.name)}">Reset password</button>
             </li>
           `).join('') + '</ul>'
       }
@@ -126,25 +129,11 @@ export function initAdmin() {
     });
   }
 
-  // Reset password handler - real implementation now
-  document.getElementById('admin-accounts')?.addEventListener('click', async (e) => {
-    if (!e.target.classList.contains('admin-reset-btn')) return;
-    const id = e.target.dataset.id;
-    const role = e.target.dataset.role;
-    const name = e.target.dataset.name;
-    const tempPassword = generateTempPassword();
-    const hashed = await hashPassword(tempPassword);
-    const update = { id, passwordHash: hashed.hash, passwordSalt: hashed.salt };
-    if (role === 'learner') await saveLearner(update);
-    else if (role === 'parent') await saveParent(update);
-    else if (role === 'guide') await saveGuide(update);
-    openTempPasswordModal({
-      heroName: name,
-      tempPassword,
-      isReset: true,
-      onClose: async () => { await renderAdminAccounts(); },
-    });
-  });
+  // In-app reset removed (Ring 2 2026-06-30): the prior handler hashed a temp
+  // password into PBKDF2 fields the Supabase adapter ignores, so the real Auth
+  // password never changed. The secure replacement (constant-time request ->
+  // tribe-guide/owner notification; 2FA-gated guide reset) is Phase 2. Until
+  // then, resets are owner-run via `bulk-import.mjs --reset <hero_name>`.
 }
 
 async function createAccount(data) {

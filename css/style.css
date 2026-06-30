@@ -3433,3 +3433,13 @@ body.landscape-mountain {
 .onb-compare-title { margin: 0 0 0.25rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
 .onb-compare-text { margin: 0; font-size: 0.9rem; line-height: 1.4; white-space: pre-wrap; }
 @media (max-width: 640px) { .onb-compare { grid-template-columns: 1fr; } }
+
+/* Admin note - explains resets are owner-run until the secure flow ships */
+.admin-note {
+  background: #f3f0ea;
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.9rem;
+  color: #6a6a62;
+  margin-bottom: 1rem;
+}
