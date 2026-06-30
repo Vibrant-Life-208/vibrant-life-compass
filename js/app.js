@@ -452,9 +452,18 @@ async function renderRoleView(role, learnerId) {
       }
     }
 
-    // Admin account-creation tool
-    await renderAdminAccounts();
-    initAdmin();
+    // Account administration is OWNER-only (separation of duties, captain
+    // 2026-06-30): guides run their tribe, not the account system. Regular guides
+    // never see create / bulk / the account list.
+    const sessForAdmin = await requireSession();
+    const adminSection = document.getElementById('admin-accounts-section');
+    if (sessForAdmin?.is_owner) {
+      if (adminSection) adminSection.hidden = false;
+      await renderAdminAccounts();
+      initAdmin();
+    } else if (adminSection) {
+      adminSection.hidden = true;
+    }
 
     // Anchor insights (counts only; guide-only; small-group suppressed). Guarded
     // so a backend hiccup can't break the rest of the guide view.
