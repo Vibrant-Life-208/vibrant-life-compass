@@ -217,6 +217,38 @@ async function makeOwner(heroName) {
   console.log(`\n${heroName} is now an owner-guide - sees every tribe + has their own Compass.`);
 }
 
+// Stand up a self-contained TEST family: a family login + a test parent, with the
+// existing test-discovery / test-adventure learner accounts linked in - so the
+// whole family-overview + picker + updates experience can be walked with no real
+// child's data. Idempotent (upserts).
+async function makeTestFamily() {
+  const famEmail = heroEmail('test-family');
+  let famId = await findUserIdByEmail(famEmail); let famPw = tempPassword();
+  if (!famId) famId = await adminCreateUser(famEmail, famPw); else famPw = '(existing - unchanged)';
+  await rest('families', 'POST', { id: famId, name: 'Test Family', username: 'test-family' });
+
+  const parentEmail = heroEmail('test-parent');
+  let parentId = await findUserIdByEmail(parentEmail); let parentPw = tempPassword();
+  if (!parentId) {
+    parentId = await adminCreateUser(parentEmail, parentPw);
+    await rest('profiles', 'POST', { id: parentId, role: 'parent', name: 'Test Parent', email: parentEmail, must_change_password: true });
+  } else parentPw = '(existing - unchanged)';
+  await rest('family_members', 'POST', { family_id: famId, profile_id: parentId, kind: 'parent', display_name: 'Test Parent', sort: 0 });
+
+  let sort = 1; const missing = [];
+  for (const hero of ['test-discovery', 'test-adventure']) {
+    const id = await findUserIdByEmail(heroEmail(hero));
+    if (!id) { missing.push(hero); continue; }
+    await rest('family_members', 'POST', { family_id: famId, profile_id: id, kind: 'learner', display_name: prettyName(hero), sort: sort++ });
+    console.log(`  linked ${hero}`);
+  }
+  if (missing.length) console.log(`\n  NOTE: ${missing.join(', ')} not found - seed test-learners.csv first, then re-run this.`);
+  console.log(`\nTest family ready.`);
+  console.log(`  family login:  test-family    ${famPw}`);
+  console.log(`  test parent:   test-parent    ${parentPw}   (or just pick "Test Parent" from the family picker)`);
+  console.log(`  learners linked: test-discovery, test-adventure (they show in the family overview once they set values/strengths).`);
+}
+
 // Permanently delete one account (e.g. the redundant standalone owner account).
 async function deleteAccount(heroName) {
   const email = heroEmail(heroName);
@@ -579,9 +611,10 @@ async function importCsv(file) {
     const relinkIdx = args.indexOf('--relink-learners');
     const makeOwnerIdx = args.indexOf('--make-owner');
     const deleteIdx = args.indexOf('--delete');
+    const testFamilyIdx = args.indexOf('--test-family');
     const whoisIdx = args.indexOf('--whois');
     const file = args.find((a) => !a.startsWith('--'));
-    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && guidesIdx < 0 && relinkIdx < 0 && makeOwnerIdx < 0 && deleteIdx < 0 && whoisIdx < 0 && !file) {
+    if (resetIdx < 0 && resetOnbIdx < 0 && familiesIdx < 0 && guidesIdx < 0 && relinkIdx < 0 && makeOwnerIdx < 0 && deleteIdx < 0 && testFamilyIdx < 0 && whoisIdx < 0 && !file) {
       console.error('Usage:\n  node scripts/bulk-import.mjs <accounts.csv> [--dry-run]\n  node scripts/bulk-import.mjs --families <families.csv> [--dry-run]\n  node scripts/bulk-import.mjs --guides <guides.csv> [--dry-run]\n  node scripts/bulk-import.mjs --relink-learners <families.csv> [--execute]\n  node scripts/bulk-import.mjs --make-owner <hero_name>       (promote to owner-guide)\n  node scripts/bulk-import.mjs --delete <hero_name>           (permanently delete an account)\n  node scripts/bulk-import.mjs --whois <text>                 (show accounts matching an email substring)\n  node scripts/bulk-import.mjs --reset <hero_name>            (new temp password)\n  node scripts/bulk-import.mjs --reset-onboarding <hero_name> (start onboarding over)');
       process.exit(1);
     }
@@ -595,6 +628,7 @@ async function importCsv(file) {
       if (!KEY) { console.error('\nNothing was pasted. Copy your key from the Supabase website (Settings -> API Keys), then run this again.'); process.exit(1); }
     }
     if (whoisIdx >= 0) await whois(args[whoisIdx + 1]);
+    else if (testFamilyIdx >= 0) await makeTestFamily();
     else if (makeOwnerIdx >= 0) await makeOwner(args[makeOwnerIdx + 1]);
     else if (deleteIdx >= 0) await deleteAccount(args[deleteIdx + 1]);
     else if (resetOnbIdx >= 0) await resetOnboarding(args[resetOnbIdx + 1]);
