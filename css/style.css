@@ -344,16 +344,16 @@ html, body {
   align-items: center;
   gap: 0.4rem;
   padding: 1.1rem 0.5rem;
-  border: 1px solid #e3ddd0;
+  border: 1.5px solid #cdbfa6;              /* always-visible border */
   border-radius: 14px;
   background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);   /* resting shadow so it reads as a card at rest */
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 .member-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
-  border-color: #cdbfa6;
+  transform: scale(1.05);                    /* just gets bigger on hover */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.13);
 }
 .member-avatar {
   width: 56px;
@@ -393,16 +393,16 @@ html, body {
   gap: 1rem;
   text-align: left;
   padding: 1.3rem 1.4rem;
-  border: 1px solid #e3ddd0;
+  border: 1.5px solid #cdbfa6;
   border-radius: 16px;
   background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 .owner-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-  border-color: #cdbfa6;
+  transform: scale(1.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.13);
 }
 .owner-card-icon { font-size: 2rem; line-height: 1; flex: 0 0 auto; }
 .owner-card-title { font-size: 1.2rem; color: #3a3a34; display: block; }

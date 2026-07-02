@@ -619,23 +619,19 @@ function heroEmail(heroName) {
 }
 
 export async function signInWithHeroName(heroName, password) {
-  // Family login first. getFamilyByUsername fails safe (returns null) when the
-  // families table doesn't exist yet, so this branch is inert until the
-  // family migration lands - existing person sign-in is untouched.
-  let family = null;
-  try { family = await getFamilyByUsername(heroName); } catch { family = null; }
-  if (family) {
-    const email = heroEmail(heroName);
-    const { data, error } = await getClient().auth.signInWithPassword({ email, password });
-    if (error || !data?.session) return null;
-    return { role: 'family', familyId: family.id, name: family.name, username: family.username };
-  }
+  // Authenticate FIRST, then decide person vs family. A family's `families` row is
+  // only readable once authenticated (RLS: id = auth.uid()), so we can't look it
+  // up before sign-in - doing so made every family login fail. Same shape as
+  // getSession: profile -> person; no profile but a families row -> family login.
   const email = heroEmail(heroName);
   const { data, error } = await getClient().auth.signInWithPassword({ email, password });
   if (error || !data?.session) return null;
   const userId = data.session.user.id;
   const { data: profile } = await getClient().from('profiles').select('*').eq('id', userId).single();
-  return profile ? { ...profile, id: userId } : null;
+  if (profile) return { ...profile, id: userId };
+  const fam = await getFamily(userId); // RLS (id = auth.uid()) passes now that we're signed in
+  if (fam) return { role: 'family', familyId: userId, name: fam.name, username: fam.username };
+  return null;
 }
 
 // ============================================================================
