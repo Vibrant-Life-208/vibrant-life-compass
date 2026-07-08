@@ -196,7 +196,8 @@ quote author/note, anchor_aggregates, must_change_password, values_freetext.)*
   kid-values draft).
 - **~10-day learner "share a goal update" nudge.**
 - **Phase 2 auth** — forgot-password flow (Edge Functions + TOTP + CAPTCHA + audit).
-- **Jenna/Wes owner-wiring** on prod (the `--make-owner` calls), if not yet run.
+
+*(Done 2026-07-08: Jenna + Wes wired as owner-guides on prod — the Jones login opens the owner home for both.)*
 
 ---
 
