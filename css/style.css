@@ -2096,6 +2096,146 @@ textarea[data-autogrow] {
   font-size: 0.95rem;
 }
 
+/* --- Parents & Tots recognition arc ---------------------------------------
+   Visually distinct from learner cards (warm Tots orange, not sage/earth) so
+   the two badge tracks are never confused. Recognition, never a scored ladder:
+   there is deliberately no progress bar, count, or checkbox in these styles. */
+.parent-pt-card {
+  --pt-orange: #d9740f;      /* Tots orange, darkened for text contrast on cream */
+  --pt-orange-soft: #ff8c1a;
+  --pt-pale: #fff5ea;
+  background: var(--pt-pale);
+  border: 1px solid #f4dcc0;
+  border-left: 3px solid var(--pt-orange-soft);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.parent-pt-optin .pt-optin-line {
+  margin: 0.4rem 0 0.7rem;
+  color: var(--text);
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+.pt-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.pt-manage {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  cursor: pointer;
+  padding: 0.1rem 0.2rem;
+  text-decoration: underline;
+}
+.pt-recognition-note {
+  margin: 0.35rem 0 0.8rem;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+/* The Path - a loop of session markers, not a filled bar. */
+.pt-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  padding: 0.5rem 0 0.8rem;
+  border-bottom: 1px dashed #f0d9bf;
+  margin-bottom: 0.85rem;
+}
+.pt-step {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.pt-step-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #e9c9a3;
+  flex: none;
+}
+.pt-step.is-here { color: var(--pt-orange); font-weight: 600; }
+.pt-step.is-here .pt-step-dot { background: var(--pt-orange-soft); box-shadow: 0 0 0 3px #ff8c1a33; }
+.pt-badge-kicker {
+  color: var(--pt-orange);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 600;
+}
+.pt-badge-name {
+  margin: 0.15rem 0 0.4rem;
+  font-size: 1.35rem;
+  color: var(--text);
+}
+.pt-badge-quote {
+  margin: 0 0 0.6rem;
+  font-style: italic;
+  color: #7a4e14;
+  line-height: 1.45;
+}
+.pt-badge-practice { margin: 0 0 0.4rem; color: var(--text); line-height: 1.55; font-size: 0.95rem; }
+.pt-badge-practice b { color: var(--pt-orange); }
+.pt-badge-why { margin: 0 0 0.9rem; color: var(--text-soft); line-height: 1.55; font-size: 0.95rem; }
+.pt-btn {
+  background: var(--pt-orange-soft);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pt-btn.is-holding {
+  background: #fff;
+  color: var(--pt-orange);
+  border: 1.5px solid var(--pt-orange-soft);
+  cursor: pointer;
+}
+.pt-btn-quiet {
+  background: #fff;
+  color: var(--pt-orange);
+  border: 1.5px solid #f0c99b;
+}
+.pt-goals-wrap { margin-top: 0.9rem; }
+.pt-goals-label {
+  margin: 0 0 0.4rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pt-goals { list-style: none; padding: 0; margin: 0; }
+.pt-goal {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f4e2cc;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.pt-goal:last-child { border-bottom: none; }
+.pt-goal-name { color: var(--text); font-weight: 600; font-size: 0.95rem; }
+.pt-goal-why { color: var(--text-soft); font-size: 0.85rem; line-height: 1.45; }
+.pt-honesty { margin-top: 0.9rem; }
+.pt-honesty summary {
+  cursor: pointer;
+  color: var(--pt-orange);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.pt-honesty ul { margin: 0.5rem 0; padding-left: 1.1rem; color: var(--text-soft); font-size: 0.85rem; line-height: 1.5; }
+.pt-honesty li { margin-bottom: 0.3rem; }
+.pt-sources { margin: 0.4rem 0 0; color: var(--text-muted); font-size: 0.8rem; font-style: italic; line-height: 1.45; }
+
 /* Scene stage - two stacked layers. When the session changes, the current
    layer cross-fades to the next. Both layers carry the forward-approach
    zoom so the scene feels like it's coming at you. */
@@ -3442,4 +3582,22 @@ body.landscape-mountain {
   font-size: 0.9rem;
   color: #6a6a62;
   margin-bottom: 1rem;
+}
+
+/* Parents & Tots · Recognition Arc (guide reference — content only, never a tracker) */
+.pt-badges { list-style: none; margin: 0.5rem 0 0; padding: 0; }
+.pt-badge { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.6rem 0; border-top: 1px solid #efe9dd; }
+.pt-badge:first-child { border-top: none; }
+.pt-badge-num {
+  flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
+  background: #e7e0ea; color: #7a6a8a; display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+}
+.pt-badge-body { flex: 1; }
+.pt-badge-name { margin: 0 0 0.15rem; color: #3a3a34; font-weight: 500; }
+.pt-badge-when { color: #9a9a90; font-size: 0.78rem; font-weight: 400; margin-left: 0.5rem; }
+.pt-badge-why { margin: 0; color: #6a6a62; font-size: 0.9rem; line-height: 1.45; }
+.pt-guardrail {
+  margin: 0.9rem 0 0; padding: 0.6rem 0.8rem; border-radius: 10px;
+  background: #f3f0ea; color: #6a6a62; font-size: 0.85rem; line-height: 1.5;
 }

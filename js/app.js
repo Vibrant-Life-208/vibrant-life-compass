@@ -466,6 +466,15 @@ async function renderRoleView(role, learnerId) {
     // so a backend hiccup can't break the rest of the guide view.
     try { await renderAnchorInsights(); } catch (e) { console.warn('anchor insights:', e); }
 
+    // Parents & Tots recognition arc - REFERENCE only, content-only, no per-parent
+    // state (Polaris ruling 2026-07-08). Shown to Tots guides + owners only.
+    try {
+      const s = await requireSession();
+      const showPt = !!(s?.is_owner || (Array.isArray(s?.tribes) && s.tribes.includes('tot')));
+      const { renderParentBadgesReference } = await import('./parent-badges.js');
+      renderParentBadgesReference(showPt);
+    } catch (e) { console.warn('pt reference:', e); }
+
     const learners = await getLearners();
     if (!learners.length) {
       list.innerHTML = '<p class="learners-empty">No learners assigned yet.</p>';
