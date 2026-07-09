@@ -50,7 +50,11 @@ export async function getSession() {
     return null;
   }
   const userId = data.session.user.id;
-  const { data: profile } = await c.from('profiles').select('*').eq('id', userId).single();
+  // maybeSingle (not single): a family login has an auth user but NO profiles
+  // row, so 0 rows is EXPECTED here and is how we detect a family. .single()
+  // turns 0 rows into an HTTP 406 (logged red in the console though harmless);
+  // .maybeSingle() returns null cleanly. Same branch logic, no false alarm.
+  const { data: profile } = await c.from('profiles').select('*').eq('id', userId).maybeSingle();
   if (profile) {
     try { localStorage.removeItem(ACTIVE_MEMBER_KEY); } catch { /* ignore */ }
     return { ...profile, learnerId: profile.role === 'learner' ? userId : null };
@@ -61,6 +65,12 @@ export async function getSession() {
   if (active && active.familyId === userId) return active;
   const fam = await getFamily(userId);
   if (fam) return { role: 'family', familyId: userId, familyName: fam.name, username: fam.username, name: fam.name, needsPicker: true };
+  // Authenticated but NO profile row AND no family: an orphaned auth token (e.g.
+  // the account's data row was removed in an account cleanup). Left in place it
+  // re-fails on every load and can wedge the app before sign-in. Purge it so the
+  // session self-heals to a clean sign-in instead of looping. (2026-07-09.)
+  try { await c.auth.signOut(); } catch { /* ignore */ }
+  try { localStorage.removeItem(ACTIVE_MEMBER_KEY); } catch { /* ignore */ }
   return null;
 }
 
