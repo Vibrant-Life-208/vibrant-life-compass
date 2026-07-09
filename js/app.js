@@ -95,15 +95,32 @@ async function afterBearing() {
   // Wire sign-out unconditionally so the button works whether the user came
   // through sign-in (initAuth path) or landed via a persisted Supabase session.
   wireSignOut();
-  const session = await requireSession();
-  if (!session) {
+  // The whole session-check path is guarded: finish() (arrive.js) removes the
+  // bearing screen BEFORE calling us, so any throw here (e.g. the Supabase
+  // client failed to load, or the network is down) would otherwise leave EVERY
+  // screen inactive - a blank white page with no way back. Instead, always land
+  // the user on the sign-in screen with a readable message they can retry from.
+  // Never a zero-active-screen state (fleet meeting 2026-07-09).
+  try {
+    const session = await requireSession();
+    if (!session) {
+      showSignIn();
+      initAuth(onSignedIn);
+    } else if (session.needsPicker) {
+      // Persisted family login with no member chosen yet -> re-show the picker.
+      await reopenFamilyPicker(onSignedIn);
+    } else {
+      await onSignedIn();
+    }
+  } catch (err) {
+    console.error('[boot] afterBearing failed; showing sign-in fallback:', err);
     showSignIn();
+    const errEl = document.getElementById('signin-error');
+    if (errEl) {
+      errEl.textContent = "Couldn't reach the server. Check your connection and tap Sign in to try again.";
+      errEl.style.display = '';
+    }
     initAuth(onSignedIn);
-  } else if (session.needsPicker) {
-    // Persisted family login with no member chosen yet -> re-show the picker.
-    await reopenFamilyPicker(onSignedIn);
-  } else {
-    await onSignedIn();
   }
 }
 
