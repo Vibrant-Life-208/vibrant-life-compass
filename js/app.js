@@ -102,7 +102,14 @@ async function afterBearing() {
   // the user on the sign-in screen with a readable message they can retry from.
   // Never a zero-active-screen state (fleet meeting 2026-07-09).
   try {
-    const session = await requireSession();
+    // Cap the session check: a stalled network call (token refresh, logout, a
+    // slow query) must never wedge the boot on the bare landscape with no
+    // screen. On timeout we throw into the catch below and land on sign-in.
+    const session = await Promise.race([
+      requireSession(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('session check timed out')), 8000)),
+    ]);
     if (!session) {
       showSignIn();
       initAuth(onSignedIn);

@@ -68,8 +68,12 @@ export async function getSession() {
   // Authenticated but NO profile row AND no family: an orphaned auth token (e.g.
   // the account's data row was removed in an account cleanup). Left in place it
   // re-fails on every load and can wedge the app before sign-in. Purge it so the
-  // session self-heals to a clean sign-in instead of looping. (2026-07-09.)
-  try { await c.auth.signOut(); } catch { /* ignore */ }
+  // session self-heals to a clean sign-in instead of looping.
+  // scope:'local' clears ONLY the stored token with NO network call - a global
+  // signOut hits the logout endpoint, which for an invalid token can stall and
+  // wedge the boot path (it awaits here). Local is instant and can't hang.
+  // (2026-07-09.)
+  try { await c.auth.signOut({ scope: 'local' }); } catch { /* ignore */ }
   try { localStorage.removeItem(ACTIVE_MEMBER_KEY); } catch { /* ignore */ }
   return null;
 }
