@@ -2,15 +2,12 @@
 // Activated by switching BACKEND_TYPE in config.js to 'supabase'.
 // The schema this adapter expects is in /supabase/schema.sql.
 //
-// This module imports the Supabase JS client at runtime to avoid a hard
-// dependency at skeleton time. When activated, add to index.html:
-//   <script type="module">
-//     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-//     window.__supabaseCreateClient = createClient;
-//   </script>
-//
-// Or use a bundler. The skeleton stays on local; this file becomes live
-// only when BACKEND_TYPE === 'supabase'.
+// This module reads the Supabase JS client off window.__supabaseCreateClient,
+// which index.html sets from the vendored, self-hosted UMD build
+// (js/vendor/supabase.umd.js) - NOT a runtime CDN import. A CDN import in the
+// boot path could fail to load and blank the app after Begin (fleet meeting
+// 2026-07-09). The skeleton stays on local; this file becomes live only when
+// BACKEND_TYPE === 'supabase'.
 
 import { SUPABASE_CONFIG } from './config.js';
 

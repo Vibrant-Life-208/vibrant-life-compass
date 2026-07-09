@@ -1,9 +1,10 @@
-const CACHE = 'heros-compass-v98';
+const CACHE = 'heros-compass-v99';
 const CORE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/css/style.css',
+  '/js/vendor/supabase.umd.js',
   '/js/app.js',
   '/js/arrive.js',
   '/js/auth.js',
