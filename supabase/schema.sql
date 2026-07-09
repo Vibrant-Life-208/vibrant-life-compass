@@ -377,14 +377,31 @@ create policy "profiles_self" on profiles
   for all using (auth.uid() = id) with check (auth.uid() = id);
 
 -- Helper view: which learners can the current auth.uid() see?
--- Returns learner_id rows for: the learner themselves, their parents,
--- and their assigned guides.
+-- Returns learner_id rows for: the learner themselves, their parents, their
+-- assigned guides, and (v0.11) their family's learner members.
+--
+-- LINT NOTE (supabase security_definer_view): this view is INTENTIONALLY a
+-- SECURITY DEFINER (non-invoker) view, and that is safe here:
+--   1. Every branch self-filters on auth.uid(), so it can only ever return the
+--      CALLER's own visible learner_ids - never another user's. It exposes one
+--      column (a UUID), no PII. An anon caller (null auth.uid()) gets 0 rows.
+--   2. It is referenced INSIDE the learners_read policy while itself reading
+--      `learners`. Setting security_invoker=true would make that read re-trigger
+--      learners_read -> read this view -> read learners -> "infinite recursion
+--      detected in policy for relation learners". Definer behavior breaks that
+--      cycle. Do NOT flip to security_invoker; it would break every learner read.
+-- The blessed long-term fix (move to a SECURITY DEFINER function in a private,
+-- non-API schema) is drafted as migration v0.16; apply it with the v0.13 batch.
+-- Until then this lint is acknowledged, not ignored. (Fleet check-in 2026-07-09.)
 create or replace view my_visible_learners as
   select id as learner_id from learners where id = auth.uid()
   union
   select learner_id from parent_learner_link where parent_id = auth.uid()
   union
-  select learner_id from guide_learner_assignment where guide_id = auth.uid();
+  select learner_id from guide_learner_assignment where guide_id = auth.uid()
+  union
+  select profile_id as learner_id from family_members
+    where family_id = auth.uid() and kind = 'learner';
 
 -- Learners: visible per my_visible_learners; writes only by self.
 create policy "learners_read" on learners
