@@ -26,7 +26,7 @@ export const CATEGORIES = {
     examples: {
       discovery: 'Finish the 3rd-grade addition unit by Session 4. One skill a day, ask my guide when I get stuck three in a row.',
       adventure: 'Finish the 5th-grade fractions unit by Session 4. Three skills per week, mastery quiz passed before moving on.',
-      launchpad: 'Complete the Pre-Algebra Mission by Session 6. Set my own weekly pace; track my streak in the dashboard.',
+      launchpad: 'Complete the Pre-Algebra Mission by Session 6. Set my own weekly pace; move on when I can teach it back.',
     },
   },
   lexia: {
@@ -69,8 +69,8 @@ export const CATEGORIES = {
     name: 'Reading',
     kind: 'core',
     examples: {
-      discovery: 'Read for 15 minutes every school day. Finish 12 books by the end of the year - track them on my bookshelf.',
-      adventure: 'Read for 20 minutes every school day. Track 24 books finished by Session 7.',
+      discovery: 'Read for 15 minutes every school day. Aim for 12 books this year, and keep a shelf of the ones I loved with a line from each I want to remember.',
+      adventure: 'Read for 20 minutes every school day. Aim for 24 books by Session 7, and when a book stays with me, write down why in my reading journal.',
       launchpad: 'Read 20 books across genres I have not tried before. Pair each with a short reflection.',
     },
   },
