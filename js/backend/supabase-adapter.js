@@ -97,13 +97,32 @@ export async function getLearners() {
 }
 
 export async function getLearner(id) {
-  const { data, error } = await getClient()
+  const c = getClient();
+  let { data, error } = await c
     .from('learners')
-    .select('id, studio, profiles!learners_id_fkey(name, email)')
+    .select('id, studio, birth_month, birth_year, pitch_target_studio, pitch_intent_at, profiles!learners_id_fkey(name, email)')
     .eq('id', id)
     .single();
-  if (error) return null;
-  return { id: data.id, name: data.profiles?.name, email: data.profiles?.email, studio: data.studio };
+  if (error) {
+    // Deploy-before-migration safety: the v0.17 pitch/birthdate columns may not
+    // exist yet. Re-read the base columns so learner loading never breaks.
+    ({ data, error } = await c
+      .from('learners')
+      .select('id, studio, profiles!learners_id_fkey(name, email)')
+      .eq('id', id)
+      .single());
+    if (error) return null;
+  }
+  return {
+    id: data.id,
+    name: data.profiles?.name,
+    email: data.profiles?.email,
+    studio: data.studio,
+    birthMonth: data.birth_month ?? null,
+    birthYear: data.birth_year ?? null,
+    pitchTargetStudio: data.pitch_target_studio ?? null,
+    pitchIntentAt: data.pitch_intent_at ?? null,
+  };
 }
 
 // ============================================================================
@@ -766,6 +785,10 @@ export async function saveLearner(data) {
   }
   const learnerRow = {};
   if (data.studio !== undefined) learnerRow.studio = data.studio;
+  if (data.birthMonth !== undefined) learnerRow.birth_month = data.birthMonth;
+  if (data.birthYear !== undefined) learnerRow.birth_year = data.birthYear;
+  if (data.pitchTargetStudio !== undefined) learnerRow.pitch_target_studio = data.pitchTargetStudio;
+  if (data.pitchIntentAt !== undefined) learnerRow.pitch_intent_at = data.pitchIntentAt;
   if (Object.keys(learnerRow).length > 0) {
     await getClient().from('learners').update(learnerRow).eq('id', data.id);
   }

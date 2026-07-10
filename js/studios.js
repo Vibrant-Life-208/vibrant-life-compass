@@ -345,6 +345,36 @@ export function getStudioName(studioId) {
   return STUDIOS[studioId]?.name || 'Unknown';
 }
 
+// ── Pitch readiness: studio progression + age gate ──────────────────────────
+// See docs/design/2026-07-09-pitch-readiness-thresholds-spec-v0.1.md.
+// The learner tiers a person moves UP through. Sparks is parent-only in Compass,
+// so the in-app pitch targets are adventure and launchpad only.
+const STUDIO_ORDER = ['sparks', 'discovery', 'adventure', 'launchpad'];
+const STUDIO_ENTRY_AGE = { adventure: 11, launchpad: 15 };
+
+// The studio one tier up that a learner could pitch INTO, or null (top tier,
+// or a studio with no in-app pitch target).
+export function nextStudio(studio) {
+  const i = STUDIO_ORDER.indexOf(studio);
+  if (i < 0 || i === STUDIO_ORDER.length - 1) return null;
+  const next = STUDIO_ORDER[i + 1];
+  return STUDIO_ENTRY_AGE[next] ? next : null;
+}
+
+// Age gate (captain 2026-07-09): a learner can apply to pitch up if they will
+// have turned the target studio's entry age within 4 months after the NEXT school
+// year's start. Reads the calendar so it self-updates each year. birthMonth 1-12,
+// birthYear full year. Month granularity is enough for this cutoff.
+export function pitchGateOk(birthMonth, birthYear, targetStudio) {
+  const entryAge = STUDIO_ENTRY_AGE[targetStudio];
+  if (!entryAge || !birthMonth || !birthYear) return false;
+  const start = new Date(getYearCalendar().yearStartISO);
+  const nextYearStart = new Date(start.getFullYear() + 1, start.getMonth(), start.getDate());
+  const cutoff = new Date(nextYearStart.getFullYear(), nextYearStart.getMonth() + 4, nextYearStart.getDate());
+  const turnsEntryAgeOn = new Date(birthYear + entryAge, birthMonth - 1, 1);
+  return turnsEntryAgeOn <= cutoff;
+}
+
 // Session structure: 8 sessions, unified for all roles (guides, learners, parents).
 // Captain decision 2026-06-15: Session 8 is Summer, treated as its own cycle.
 // Previous guide-summer separate calendar removed - everyone uses one calendar.
