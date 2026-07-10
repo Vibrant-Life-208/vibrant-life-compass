@@ -9,11 +9,12 @@
 // person can switch members or open the family view without signing out.
 
 import {
-  getFamily, setSession, getParentLearnerLinks,
+  getFamily, setSession, getSession, getParentLearnerLinks,
   getProfileValues, getValuesFreetext, getStrengthRanking,
   getValuesLexicon, getViaCharacterStrengths,
   getFamilyUpdates, addFamilyUpdate,
 } from './store.js';
+import { renderParentBadgesJourney } from './parent-badges.js';
 
 export function isFamilySession(session) {
   return !!(session && session.familyId);
@@ -173,9 +174,18 @@ export async function renderFamilyView(familyId, { onBack } = {}) {
         ${feed}
       </div>
       <div class="family-members">${cards}</div>
+      <div id="pt-journey" class="pt-journey"></div>
       <button type="button" class="picker-signout" data-back="1">Back</button>
     </div>`;
   screen.querySelector('[data-back]')?.addEventListener('click', () => onBack && onBack());
+
+  // Parent-side Parents & Tots journey - private to the active PARENT member only
+  // (self-disclosed, local; never a shared or guide-visible thing).
+  const session = await getSession();
+  const activeMember = (family.members || []).find((m) => m.profileId === session?.activeProfileId);
+  if (activeMember && activeMember.kind === 'parent') {
+    renderParentBadgesJourney(document.getElementById('pt-journey'), activeMember.profileId);
+  }
 }
 
 function chips(items, emptyText) {

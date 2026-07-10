@@ -122,3 +122,55 @@ export function renderParentBadgesReference(show) {
     <ol class="pt-badges">${steps}</ol>
     <p class="pt-guardrail">These honor the <strong>parent</strong>. They never count - no completion, no streak, no scoreboard, no per-parent view - and they live apart from the children's mastery badges, always.</p>`;
 }
+
+// ---------------------------------------------------------------------------
+// PARENT-SIDE journey (the parent's OWN private space). This is where a P&T
+// parent (self-identified) sees their four postures and, if they wish, quietly
+// marks "I'm holding this" — recognition, for themselves, never a score. State
+// is self-disclosed + local-only (isPtFamily / isHoldingBadge); it is never sent
+// to a server, never aggregated, never visible to a guide. Opt-in, so it appears
+// only for a parent who says they're a Parents & Tots family.
+// ---------------------------------------------------------------------------
+export function renderParentBadgesJourney(host, parentId) {
+  if (!host) return;
+  if (!parentId) { host.innerHTML = ''; return; }
+
+  if (!isPtFamily(parentId)) {
+    host.innerHTML = `
+      <div class="pt-optin">
+        <p class="pt-optin-text">Have a little one in <strong>Parents &amp; Tots</strong>? Your own recognition journey can live here - private to you.</p>
+        <button type="button" class="btn pt-optin-btn" data-pt-optin>Show my journey</button>
+      </div>`;
+    host.querySelector('[data-pt-optin]')?.addEventListener('click', () => {
+      setPtFamily(parentId, true);
+      renderParentBadgesJourney(host, parentId);
+    });
+    return;
+  }
+
+  const steps = PARENT_BADGE_ARC.map((b) => {
+    const held = isHoldingBadge(parentId, b.id);
+    return `
+      <li class="pt-step${held ? ' is-held' : ''}">
+        <p class="pt-step-name">${esc(b.name)}<span class="pt-step-when">Session ${b.session} · ${esc(b.stage)}</span></p>
+        <p class="pt-step-quote">"${esc(b.quote)}"</p>
+        <p class="pt-step-why">${esc(b.why)}</p>
+        <p class="pt-step-practice"><strong>Try:</strong> ${esc(b.practice)}</p>
+        <button type="button" class="pt-hold-btn${held ? ' is-held' : ''}" data-hold="${esc(b.id)}">${held ? '✓ I’m holding this' : 'I’m holding this'}</button>
+      </li>`;
+  }).join('');
+
+  host.innerHTML = `
+    <h3 class="pt-journey-title">Your Parents &amp; Tots journey · The Path</h3>
+    <p class="pt-journey-sub">Recognition of a posture you're already practicing - private to you, never scored, seen by no one else.</p>
+    <ol class="pt-path">${steps}</ol>
+    <details class="pt-honesty"><summary>What these are, honestly</summary>
+      <ul>${BADGE_HONESTY.map((h) => `<li>${esc(h)}</li>`).join('')}</ul>
+    </details>`;
+
+  host.querySelectorAll('[data-hold]').forEach((btn) => btn.addEventListener('click', () => {
+    const id = btn.dataset.hold;
+    setHoldingBadge(parentId, id, !isHoldingBadge(parentId, id));
+    renderParentBadgesJourney(host, parentId);
+  }));
+}

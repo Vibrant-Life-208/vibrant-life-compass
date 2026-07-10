@@ -2206,6 +2206,22 @@ textarea[data-autogrow] {
   color: var(--pt-orange);
   border: 1.5px solid #f0c99b;
 }
+/* Hard-day reassurance - surfaced beside the toggle (owner review 2026-07-08,
+   Salus), never buried in the fold-out. Protection sits where pressure lands. */
+.pt-hard-day {
+  margin: 0.65rem 0 0.3rem;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+/* Local-only disclosure (owner review 2026-07-08, Lux): the parent should know
+   this is device-local, not synced to a server. */
+.pt-device-note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-style: italic;
+}
 .pt-goals-wrap { margin-top: 0.9rem; }
 .pt-goals-label {
   margin: 0 0 0.4rem;
@@ -3613,3 +3629,29 @@ body.landscape-mountain {
   margin: 0.9rem 0 0; padding: 0.6rem 0.8rem; border-radius: 10px;
   background: #f3f0ea; color: #6a6a62; font-size: 0.85rem; line-height: 1.5;
 }
+
+/* Parents & Tots · parent-side journey (private, self-disclosed, never scored) */
+.pt-journey { margin: 1.5rem 0 0.5rem; }
+.pt-optin { background: #f3f0ea; border-radius: 12px; padding: 0.9rem 1rem; text-align: center; }
+.pt-optin-text { margin: 0 0 0.6rem; color: #5a5a52; font-size: 0.92rem; }
+.pt-journey-title { margin: 0 0 0.25rem; color: var(--sage); font-weight: 500; }
+.pt-journey-sub { margin: 0 0 0.9rem; color: #8a8a80; font-size: 0.88rem; }
+.pt-path { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.7rem; }
+.pt-step {
+  border: 1px solid #e3ddd0; border-left: 3px solid #cdbfa6; border-radius: 12px;
+  padding: 0.8rem 1rem; background: #fff;
+}
+.pt-step.is-held { border-left-color: #7a6a8a; background: #faf8fb; }
+.pt-step-name { margin: 0 0 0.2rem; color: #3a3a34; font-weight: 500; }
+.pt-step-when { color: #9a9a90; font-size: 0.76rem; font-weight: 400; margin-left: 0.5rem; }
+.pt-step-quote { margin: 0 0 0.3rem; color: #6a6a62; font-style: italic; font-size: 0.9rem; }
+.pt-step-why { margin: 0 0 0.3rem; color: #6a6a62; font-size: 0.88rem; line-height: 1.45; }
+.pt-step-practice { margin: 0 0 0.5rem; color: #5a5a52; font-size: 0.85rem; }
+.pt-hold-btn {
+  border: 1px solid #cdbfa6; background: #fff; color: #5a5a52; border-radius: 999px;
+  padding: 0.3rem 0.9rem; font-size: 0.85rem; cursor: pointer;
+}
+.pt-hold-btn.is-held { background: #efe7ea; border-color: #7a6a8a; color: #7a6a8a; }
+.pt-honesty { margin-top: 0.8rem; font-size: 0.83rem; color: #8a8a80; }
+.pt-honesty summary { cursor: pointer; }
+.pt-honesty ul { margin: 0.5rem 0 0; padding-left: 1.1rem; line-height: 1.5; }
