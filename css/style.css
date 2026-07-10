@@ -3577,6 +3577,15 @@ body.landscape-mountain {
 .onb-compare-text { margin: 0; font-size: 0.9rem; line-height: 1.4; white-space: pre-wrap; }
 @media (max-width: 640px) { .onb-compare { grid-template-columns: 1fr; } }
 
+/* Telescope context stack: prior horizon answers as compact full-text cards
+   above the current box, so the thread stays in view as the person narrows from
+   10 years down to now. Pruned to the near frame (1 year + now) at halfway.
+   (Captain design 2026-07-09.) */
+.onb-horizon-stack { display: flex; flex-direction: column; gap: 0.45rem; margin: 0.25rem 0 1rem; padding-left: 0.8rem; border-left: 2px solid var(--border, #cdbfa6); }
+.onb-stack-card { padding: 0.5rem 0.7rem; border: 1px solid var(--border, #cdbfa6); border-radius: 10px; background: rgba(0,0,0,0.02); }
+.onb-stack-label { display: block; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.2rem; }
+.onb-stack-text { margin: 0; font-size: 0.9rem; line-height: 1.4; color: var(--text-soft); white-space: pre-wrap; }
+
 /* Admin note - explains resets are owner-run until the secure flow ships */
 .admin-note {
   background: #f3f0ea;

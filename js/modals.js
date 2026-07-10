@@ -957,9 +957,24 @@ const HORIZON_PROMPTS = {
   },
   halfway: {
     heading: 'Halfway from now to one year.',
-    body: 'Look at the two below - where you want to be in a year, and where you are now. Halfway between them, what does it look like? How will you know you are on your way?',
+    body: 'Look at the two above - where you want to be in a year, and where you are now. Halfway between them, what does it look like? How will you know you are on your way?',
     placeholder: 'Halfway, I will...',
   },
+};
+
+// Telescope order for the stacked "what you've said so far" context. Each
+// horizon step shows the prior answers as compact full-text cards above its box,
+// so the thread stays in view as the person narrows from 10 years down to now.
+// At the halfway step the far horizons drop away, leaving only the near frame
+// (1 year + now) - the two the midpoint sits between. Young tiers never answer
+// the far horizons, so those cards are simply absent (empty values filtered).
+// (Captain design 2026-07-09.)
+const HORIZON_ORDER = ['beyond_5yr', 'within_5yr', 'within_1yr', 'current_state'];
+const HORIZON_STACK_LABEL = {
+  beyond_5yr: '10 years',
+  within_5yr: '5 years',
+  within_1yr: '1 year',
+  current_state: 'Right now',
 };
 
 export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, onComplete }) {
@@ -1174,20 +1189,32 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   function renderHorizon(step) {
     const p = HORIZON_PROMPTS[step];
-    // At the halfway step, show "in 1 year" and "right now" side by side so the
-    // person can look at both and find the midpoint between them.
-    const compare = step === 'halfway'
-      ? `<div class="onb-compare">
-           <div class="onb-compare-col"><h4 class="onb-compare-title">In 1 year</h4><p class="onb-compare-text">${escapeHtml(state.horizons.within_1yr || '—')}</p></div>
-           <div class="onb-compare-col"><h4 class="onb-compare-title">Right now</h4><p class="onb-compare-text">${escapeHtml(state.horizons.current_state || '—')}</p></div>
-         </div>`
-      : '';
+    // Progressive context stack: prior horizon answers shown as compact
+    // full-text cards above the box, so the thread the person has been building
+    // stays in view as they narrow in. The halfway step prunes the far horizons
+    // and keeps only the near frame (1 year + now) - the two the midpoint sits
+    // between. Empty answers (e.g. horizons a young tier never saw) are dropped.
+    const priors = step === 'halfway'
+      ? ['within_1yr', 'current_state']
+      : HORIZON_ORDER.slice(0, HORIZON_ORDER.indexOf(step));
+    const stackCards = priors
+      .map((h) => {
+        const val = (state.horizons[h] || '').trim();
+        if (!val) return '';
+        return `<div class="onb-stack-card">
+             <span class="onb-stack-label">${escapeHtml(HORIZON_STACK_LABEL[h])}</span>
+             <p class="onb-stack-text">${escapeHtml(val)}</p>
+           </div>`;
+      })
+      .filter(Boolean)
+      .join('');
+    const stack = stackCards ? `<div class="onb-horizon-stack">${stackCards}</div>` : '';
     return `
+      ${stack}
       <div class="onb-horizon-prompt">
         <h3 class="onb-horizon-heading">${escapeHtml(p.heading)}</h3>
         <p class="onb-horizon-body">${escapeHtml(p.body)}</p>
       </div>
-      ${compare}
       <div class="form-field">
         <textarea id="onb-horizon" rows="4" placeholder="${escapeAttr(p.placeholder)}">${escapeHtml(state.horizons[step] || '')}</textarea>
       </div>
