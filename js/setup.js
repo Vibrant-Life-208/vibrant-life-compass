@@ -265,7 +265,7 @@ function renderGoalsGrid(learner, filledGoals) {
   const cats = getCategoriesForStudio(learner.studio);
 
   grid.innerHTML = '';
-  cats.forEach((cat) => {
+  const renderCard = (cat) => {
     const filled = filledGoals.find((g) => g.categoryId === cat.id);
     const card = document.createElement('button');
     card.type = 'button';
@@ -327,7 +327,31 @@ function renderGoalsGrid(learner, filledGoals) {
       });
     });
     grid.appendChild(card);
+  };
+
+  // Group goals into families so they read "categorized as such" (Captain
+  // 2026-07-10): Core (school work) vs Slices of Life (whole-life) vs Pathway /
+  // Practice. A learner might fill several Core goals or lean into their Slices
+  // of Life - each family gets its own header. Empty families are skipped.
+  const KIND_SECTIONS = [
+    ['core', 'Core'],
+    ['personal', 'Slices of Life'],
+    ['pathway', 'Pathway'],
+    ['practice', 'Practice'],
+    ['conditional', 'When assigned'],
+  ];
+  const seen = new Set();
+  KIND_SECTIONS.forEach(([kind, label]) => {
+    const inKind = cats.filter((c) => c.kind === kind);
+    if (!inKind.length) return;
+    const h = document.createElement('h3');
+    h.className = 'setup-goals-section';
+    h.textContent = label;
+    grid.appendChild(h);
+    inKind.forEach((c) => { renderCard(c); seen.add(c.id); });
   });
+  // Any category with an unmapped kind still shows, ungrouped, at the end.
+  cats.filter((c) => !seen.has(c.id)).forEach(renderCard);
 }
 
 function renderPriorityList(learner, filledGoals, priorityIds) {

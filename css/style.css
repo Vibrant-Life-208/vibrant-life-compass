@@ -1240,6 +1240,17 @@ header h1 {
   gap: 0.7rem;
   margin-top: 0.8rem;
 }
+/* Goal-family header (Core / Slices of Life / ...) spans the whole grid row. */
+.setup-goals-section {
+  grid-column: 1 / -1;
+  margin: 0.9rem 0 0.1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+.setup-goals-section:first-child { margin-top: 0; }
 .setup-goal-card {
   background: var(--cream);
   border: 1px solid var(--earth-light);
