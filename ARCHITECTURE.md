@@ -196,8 +196,18 @@ quote author/note, anchor_aggregates, must_change_password, values_freetext.)*
   kid-values draft).
 - **~10-day learner "share a goal update" nudge.**
 - **Phase 2 auth** — forgot-password flow (Edge Functions + TOTP + CAPTCHA + audit).
+- **P&T cross-device persistence** — the parent-side P&T journey (`js/parent-badges.js`
+  `isPtFamily` / `isHoldingBadge`) is currently **local-only** (`vl.pt.*` localStorage),
+  so a parent's "holding" marks don't follow them across devices. Next step: move to a
+  **parent-private** server store (small migration + adapter functions, replace the
+  localStorage calls; keep a local fallback offline). **Guardrails (category wall +
+  Polaris standing condition, decision log 2026-07-08):** parent-private only — RLS
+  scoped so a family login reads/writes **only its own parent members'** marks;
+  **never** readable by a guide/owner-as-guide, **never** aggregated, **never** counted
+  (a boolean per posture, nothing more). Route the RLS past TCC/Polaris like v0.11/v0.14
+  before applying. The guide-view *reference* stays content-only and never touches this.
 
-*(Done 2026-07-08: Jenna + Wes wired as owner-guides on prod — the Jones login opens the owner home for both.)*
+*(Done 2026-07-08: Jenna + Wes wired as owner-guides on prod — the Jones login opens the owner home for both. Done 2026-07-10: both P&T surfaces live — guide-view reference + parent-side private journey, SW v99.)*
 
 ---
 
