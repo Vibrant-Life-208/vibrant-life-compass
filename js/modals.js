@@ -93,7 +93,7 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
   const weeklyRow = (sessionIndex, week, dateLabel, value, max) =>
     `<div class="week-row">
        <span class="week-row-label">S${sessionIndex} W${week} <span class="week-row-date">${escapeHtml(dateLabel)}</span></span>
-       <input type="text" class="week-row-input" data-session="${sessionIndex}" data-week="${week}" placeholder="One step for this week" value="${value ? escapeAttr(value) : ''}">
+       <input type="text" class="week-row-input" data-session="${sessionIndex}" data-week="${week}" placeholder="On [when], I'll [what]" value="${value ? escapeAttr(value) : ''}">
      </div>`;
 
   fields.innerHTML = `
@@ -212,8 +212,8 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         </div>
       </div>
       <div class="form-field">
-        <label>Stage 6 · Session 1 — 4 weeks, one step per week</label>
-        <p class="form-hint">Session 1 has four weeks (Aug 17 - Sept 11). How do you break your work into one step per week, building toward End of Session 1?</p>
+        <label>Stage 6 · Session 1 — 4 weeks, one small step per week</label>
+        <p class="form-hint">Session 1 has four weeks (Aug 17 - Sept 11). Break it into one <strong>small</strong> step per week toward End of Session 1 - start small in Week 1 and build from there. Phrase each as a when-then: <em>"On Tuesday after breakfast, I'll do 10 minutes."</em> Every week is optional; a missed one is information, not failure.</p>
         <div class="week-rows">
           ${weeklyRow(1, 1, s1Dates[0], existingS1[0])}
           ${weeklyRow(1, 2, s1Dates[1], existingS1[1])}
