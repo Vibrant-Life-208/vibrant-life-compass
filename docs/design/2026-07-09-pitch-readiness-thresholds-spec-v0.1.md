@@ -37,14 +37,20 @@ learner security). The child self-reports against a cutoff date; the guide rules
    answer is stored as `pitch_age_self_report`. Their actual age never is.
 2. If **yes:** "Want to start getting ready to pitch this year?"
    - **Yes** -> set `pitch_target_studio` + `pitch_intent_at`; set
-     `pitch_age_status = 'pending'`; **send the guide a request** to approve/deny
-     the age status. Continue the cascade.
+     `pitch_age_status = 'pending'`; **the pitch page turns on immediately**
+     (captain 2026-07-10 - the learner is never blocked waiting on a guide); and
+     **send the guide a request** to approve/deny in parallel. Continue the cascade.
    - **No** -> continue unchanged. (Ask again next year.)
 3. If self-report is **no**: warm one-liner ("You'll get there!"), continue.
 
-**The guide is the age authority.** The pitch page turns on only once the guide
-sets `pitch_age_status = 'approved'`. Denial -> a gentle "not this year" and the
-intent clears. This keeps the child's birthdate out of the system entirely.
+**The guide rules in parallel, not as a gate (captain 2026-07-10):**
+- **Approved** -> a quiet confirmation; the pitch page stays on.
+- **Denied** -> the learner is **prompted to set new goals** for their current
+  studio (a graceful pivot, not a dead end); the pitch page archives. Denial
+  redirects to goal-setting rather than saying "not this year."
+
+The child's birthdate never enters the system - the guide is the age authority,
+but their ruling shapes the landing, it does not block the start.
 
 **Why here:** it frames the year's goal-setting ("what am I working toward?")
 without turning onboarding into a checklist. Thresholds are never shown inline -
@@ -220,14 +226,17 @@ Sparks -> Discovery pitch. Removed from scope.
 
 ## 8. Phasing
 
-- **Phase 0** - Age persistence: migration + adapter (`learners.age`). Unblocks
-  the gate. Small.
-- **Phase 1** - Onboarding branch: `nextStudio` helper + age-gate + opt-in +
-  pitch-intent flag. No thresholds shown yet.
-- **Phase 2** - Dedicated "Pitch to [Next Studio]" page: Adventure content as a
-  reference (read-only).
-- **Phase 3** - Threshold progress tracking (status + dates), learner-owned.
-- **Phase 4** - Adventure -> Launch Pad content; Sparks -> Discovery content.
+- **Phase 0 - DONE (2026-07-10).** Migration v0.17 applied (pitch-intent + guide
+  age-approval columns, no birthdate); adapter + `nextStudio`/`pitchCutoff`
+  helpers live.
+- **Phase 1** - Onboarding branch: the yes/no self-report step + opt-in (page
+  turns on immediately) + send guide request. Guide surface: pending age
+  approvals -> approve/deny. **Denied -> prompt the learner to set new goals** for
+  their current studio. Needs the onboarding_step resume enum handled.
+- **Phase 2** - The "Pitch to [Next Studio]" page: Adventure content, read-only.
+- **Phase 3** - Threshold progress tracking (status + dates), learner-owned,
+  guide + accountability-partner visible at halfway.
+- **Phase 4** - Adventure -> Launch Pad content.
 
 ---
 
