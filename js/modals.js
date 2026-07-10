@@ -6,8 +6,10 @@ import {
   getProfileHorizons, setProfileHorizon,
   getOnboardingState, setOnboardingStep, markOnboardingStepSkipped, completeOnboarding,
   setQuoteAnchor, setStrengthRanking, setValuesFreetext, getValuesFreetext,
+  saveLearner,
 } from './store.js';
 import { parseViaPdf } from './via-import.js';
+import { nextStudio, pitchCutoff, getStudioName } from './studios.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
@@ -978,7 +980,17 @@ const HORIZON_STACK_LABEL = {
 };
 
 export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, onComplete }) {
-  const steps = (studio === 'sparks' || studio === 'discovery') ? CASCADE_NEAR : CASCADE_FULL;
+  const steps = [...((studio === 'sparks' || studio === 'discovery') ? CASCADE_NEAR : CASCADE_FULL)];
+  // Pitch-readiness step (learners with a studio above them): a yes/no age
+  // self-report + opt-in, inserted right before the 1-year horizon. It is NOT in
+  // the onboarding_step resume enum, so advance()/back() never persist it as the
+  // resume pointer - its data lives on the learner row, so re-showing on resume
+  // is idempotent. (Captain design 2026-07-10.)
+  const pitchTarget = role === 'learner' ? nextStudio(studio) : null;
+  if (pitchTarget) {
+    const at = steps.indexOf('within_1yr');
+    if (at >= 0) steps.splice(at, 0, 'pitch');
+  }
   // Adventure + Launch Pad learners, guides, and parents TYPE their values (free
   // text + archetype); Sparks + Discovery pick from the curated list.
   const typeValues = role !== 'learner' || studio === 'adventure' || studio === 'launchpad';
@@ -993,6 +1005,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     valuesLexicon: [],
     viaStrengths: [],
     horizons: { beyond_5yr: '', within_5yr: '', within_1yr: '', current_state: '', halfway: '' },
+    pitchStage: 'ask-age', // ask-age -> ask-optin | age-no -> confirmed
   };
 
   setModalTitle(role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass');
@@ -1051,7 +1064,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       finish();
       return;
     }
-    if (profileId) await setOnboardingStep(profileId, steps[state.idx]);
+    // 'pitch' is not in the resume enum - don't persist it as the pointer.
+    if (steps[state.idx] === 'pitch') state.pitchStage = 'ask-age';
+    if (profileId && steps[state.idx] !== 'pitch') await setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
 
@@ -1069,7 +1084,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     captureHorizon();
     captureValuesTyped();
     state.idx -= 1;
-    if (profileId) setOnboardingStep(profileId, steps[state.idx]);
+    if (steps[state.idx] === 'pitch') state.pitchStage = 'ask-age';
+    if (profileId && steps[state.idx] !== 'pitch') setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
 
@@ -1187,6 +1203,59 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     `;
   }
 
+  // Pitch-readiness step: a yes/no age self-report (no birthdate collected), then
+  // an opt-in. On opt-in the pitch page turns on immediately and the guide is
+  // asked to confirm the age status. Sub-stages live in state.pitchStage.
+  function renderPitch() {
+    const targetName = getStudioName(pitchTarget);
+    const cut = pitchCutoff(pitchTarget) || { entryAge: '', cutoffLabel: 'next year' };
+    const stage = state.pitchStage;
+
+    if (stage === 'ask-optin') {
+      return `
+        <div class="onb-horizon-prompt">
+          <h3 class="onb-horizon-heading">Want to start getting ready?</h3>
+          <p class="onb-horizon-body">You could spend this year working toward your pitch to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
+        </div>
+        <div class="onb-pitch-choices">
+          <button type="button" class="btn btn-primary" data-pitch="optin-yes">Yes, let's go</button>
+          <button type="button" class="btn btn-text" data-pitch="optin-no">Maybe later</button>
+        </div>
+        <div class="onb-step-actions"><button type="button" id="onb-back" class="btn btn-text">Back</button><span></span></div>
+      `;
+    }
+    if (stage === 'age-no') {
+      return `
+        <div class="onb-horizon-prompt">
+          <h3 class="onb-horizon-heading">That's okay - you'll get there.</h3>
+          <p class="onb-horizon-body"><strong>${escapeHtml(targetName)}</strong> will be there when it's your time. For now, let's keep building this year.</p>
+        </div>
+        ${navButtons({ skippable: false, continueLabel: 'Continue' })}
+      `;
+    }
+    if (stage === 'confirmed') {
+      return `
+        <div class="onb-horizon-prompt">
+          <h3 class="onb-horizon-heading">You're on your way.</h3>
+          <p class="onb-horizon-body">Your <strong>${escapeHtml(targetName)}</strong> pitch is open, and your guide has been asked to confirm. Let's set your year.</p>
+        </div>
+        ${navButtons({ skippable: false, continueLabel: 'Continue' })}
+      `;
+    }
+    // ask-age (default)
+    return `
+      <div class="onb-horizon-prompt">
+        <h3 class="onb-horizon-heading">Thinking about ${escapeHtml(targetName)}?</h3>
+        <p class="onb-horizon-body">To pitch up to <strong>${escapeHtml(targetName)}</strong> next year, you'll need to have turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Will you have?</p>
+      </div>
+      <div class="onb-pitch-choices">
+        <button type="button" class="btn btn-primary" data-pitch="age-yes">Yes, I will</button>
+        <button type="button" class="btn btn-text" data-pitch="age-no">Not yet</button>
+      </div>
+      <div class="onb-step-actions"><button type="button" id="onb-back" class="btn btn-text">Back</button><span></span></div>
+    `;
+  }
+
   function renderHorizon(step) {
     const p = HORIZON_PROMPTS[step];
     // Progressive context stack: prior horizon answers shown as compact
@@ -1228,6 +1297,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     if (step === 'breath') formFields.innerHTML = renderBreath();
     else if (step === 'strengths') formFields.innerHTML = renderStrengthsUpload();
     else if (step === 'values') formFields.innerHTML = typeValues ? renderValuesType() : renderSelectStep({ kind: 'value', label: 'values' });
+    else if (step === 'pitch') formFields.innerHTML = renderPitch();
     else formFields.innerHTML = renderHorizon(step);
     wireStep();
     if (HORIZON_PROMPTS[step]) setTimeout(() => document.getElementById('onb-horizon')?.focus(), 50);
@@ -1260,6 +1330,34 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       drop?.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) handle(f); });
     }
 
+    // Pitch step: yes/no choices drive the sub-stages; opt-in saves the intent
+    // (page turns on) and flags the guide (pitch_age_status = 'pending').
+    if (step === 'pitch') {
+      document.querySelectorAll('[data-pitch]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const action = btn.dataset.pitch;
+          if (action === 'age-yes') { state.pitchStage = 'ask-optin'; render(); }
+          else if (action === 'age-no') { state.pitchStage = 'age-no'; render(); }
+          else if (action === 'optin-no') { await advance(null); }
+          else if (action === 'optin-yes') {
+            if (profileId) {
+              try {
+                await saveLearner({
+                  id: profileId,
+                  pitchTargetStudio: pitchTarget,
+                  pitchIntentAt: new Date().toISOString(),
+                  pitchAgeSelfReport: true,
+                  pitchAgeStatus: 'pending',
+                });
+              } catch (e) { /* non-blocking: the confirmation still shows */ }
+            }
+            state.pitchStage = 'confirmed';
+            render();
+          }
+        });
+      });
+    }
+
     document.getElementById('onb-continue')?.addEventListener('click', async () => {
       if (step === 'breath') {
         await advance(null);
@@ -1275,6 +1373,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
           if (state.values.length !== 5) return;
           await advance(() => profileId ? setProfileValues(profileId, state.values) : Promise.resolve());
         }
+      } else if (step === 'pitch') {
+        await advance(null);
       } else {
         captureHorizon();
         const text = state.horizons[step] || '';
