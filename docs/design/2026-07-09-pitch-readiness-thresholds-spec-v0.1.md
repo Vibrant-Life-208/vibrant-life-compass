@@ -27,24 +27,28 @@ crammed into the onboarding cascade; **spec before code**.
 
 ## 2. The onboarding branch (learners only, before the 1-year goal)
 
-Inserted into the horizon cascade for a **learner** whose age clears the next
-studio's gate:
+Inserted into the horizon cascade for any **learner with a next studio**
+(discovery, adventure). **No birthdate is collected** (captain 2026-07-10 -
+learner security). The child self-reports against a cutoff date; the guide rules.
 
-1. **Age-gate (soft):** "You're old enough to think about pitching up to
-   **[Next Studio]** next year. Want to hear about it?"
-   - Gate = learner's age >= next studio's entry age (see 5, Age gate).
-   - Not a hard determination - readiness is thresholds + guide acceptance. This
-     is only "are you thinking about it?"
-2. If **yes:** "Would you like to start getting ready to pitch this year?"
-   - **Yes** -> set the pitch-intent flag; the "Pitch to [Next Studio]" page turns
-     on; a one-line "you're working toward [Next Studio]" appears; continue the
-     cascade (1-year goal, etc.).
-   - **No** -> continue the cascade unchanged. (Ask again next year.)
-3. If age-gate is **no** (too young): the branch never appears.
+1. **Age self-report (yes/no):** "To pitch up to **[Next Studio]** next year,
+   you'll need to have turned **[entryAge]** by **[cutoff date]**. Will you have?"
+   -> **yes / no**. The date + entry age come from `pitchCutoff()`; the child's
+   answer is stored as `pitch_age_self_report`. Their actual age never is.
+2. If **yes:** "Want to start getting ready to pitch this year?"
+   - **Yes** -> set `pitch_target_studio` + `pitch_intent_at`; set
+     `pitch_age_status = 'pending'`; **send the guide a request** to approve/deny
+     the age status. Continue the cascade.
+   - **No** -> continue unchanged. (Ask again next year.)
+3. If self-report is **no**: warm one-liner ("You'll get there!"), continue.
+
+**The guide is the age authority.** The pitch page turns on only once the guide
+sets `pitch_age_status = 'approved'`. Denial -> a gentle "not this year" and the
+intent clears. This keeps the child's birthdate out of the system entirely.
 
 **Why here:** it frames the year's goal-setting ("what am I working toward?")
-without turning onboarding into a checklist. The thresholds themselves are never
-shown inline - only the invitation.
+without turning onboarding into a checklist. Thresholds are never shown inline -
+only the invitation.
 
 ---
 
@@ -79,17 +83,19 @@ the next step on the Hero's Journey - never a pass/fail gate the app enforces.
 
 ## 4. Data model
 
-### 4.0 BLOCKER - birthdate is not persisted (Phase 0)
-Setup captures `learner.age` but it lives only in the local skeleton; the Supabase
-`learners` table has **no age/birth column** and the adapter never saves it.
+### 4.0 No birthdate - guide approves age status (captain 2026-07-10)
+**The system never stores a learner's birthdate** (learner security). The child
+self-reports yes/no against a cutoff date; their guide approves or denies. This
+replaces the earlier "store birth month/year" idea entirely.
 
-**Decision (captain 2026-07-09): store birth month + year, not a bare age.** The
-gate is a cutoff computation (see 5), so it needs a birthdate, and birth-month/year
-means it never has to be re-entered yearly.
-
-- Migration: `alter table learners add column if not exists birth_month smallint check (birth_month between 1 and 12), add column if not exists birth_year smallint;`
-- Adapter: `saveLearner`/`getLearner` read+write both.
-- Setup UI: replace the "How old are you?" number with birth month + year selects.
+Shipped v0.17 (migration written; not yet applied):
+- `pitch_target_studio`, `pitch_intent_at` - the opt-in.
+- `pitch_age_self_report boolean` - the child's yes/no.
+- `pitch_age_status` ('pending'|'approved'|'denied'), `pitch_age_reviewed_by`,
+  `pitch_age_reviewed_at` - the guide's ruling.
+- `studios.pitchCutoff(targetStudio)` supplies entryAge + cutoff date for the
+  question (display only, no birthdate math).
+- Adapter reads/writes all fields; `getLearner` falls back if v0.17 unapplied.
 
 ### 4.1 Pitch intent
 On profiles or learners:
@@ -120,15 +126,12 @@ helper (returns null for launchpad).
 
 Entry ages: adventure 11, launchpad 15. (discovery 8 is moot - see below.)
 
-**Gate rule (captain 2026-07-09):** a learner can apply if they will have turned
-the next studio's entry age **within 4 months after the next school year's start**.
-i.e. `birthdate <= (nextYearStart + 4 months)` mapped to the entry-age year.
-
-Concretely: cutoff = `getYearCalendar().yearStartISO` for the coming year, plus 4
-months. If the learner reaches `entryAge` on or before that cutoff, the invitation
-appears. Generalizes the Adventure doc's "turned 11 by end of August" into a rule
-that reads the calendar rather than a hardcoded date. Soft only - surfaces the
-invitation, never blocks or forces.
+**Gate = self-report against a cutoff date + guide ruling (captain 2026-07-10).**
+The cutoff shown to the child is `nextYearStart + 4 months` (from
+`pitchCutoff()`, reading the calendar). The child answers **yes/no** to "will you
+have turned [entryAge] by [cutoff]?" - the system stores the answer, never the
+birthdate. The **guide** then approves or denies `pitch_age_status`. Nothing is
+computed against a stored age; the guide is the authority.
 
 **No Sparks in Compass (captain 2026-07-09):** Sparks (4-7) learners do **not**
 use Compass - only their parents do. So the only in-app transitions are
@@ -231,7 +234,9 @@ Sparks -> Discovery pitch. Removed from scope.
 ## 9. Open questions
 
 **Resolved 2026-07-09:**
-1. Age source -> **birth month + year** (durable; gate is a cutoff computation).
+1. Age source -> **no birthdate stored** (captain 2026-07-10, superseding the
+   earlier birth month/year idea). The child self-reports yes/no against a cutoff
+   date; the **guide approves/denies** `pitch_age_status`. Learner security first.
 2. Visibility -> **guide + accountability partner, shared at the halfway point**
    (End of Session 3); learner-private before that. See 6.a.
 3. Character scaling -> **capture** the learner's self-score + SMART goal in-app.

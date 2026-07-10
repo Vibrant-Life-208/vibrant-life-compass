@@ -361,18 +361,22 @@ export function nextStudio(studio) {
   return STUDIO_ENTRY_AGE[next] ? next : null;
 }
 
-// Age gate (captain 2026-07-09): a learner can apply to pitch up if they will
-// have turned the target studio's entry age within 4 months after the NEXT school
-// year's start. Reads the calendar so it self-updates each year. birthMonth 1-12,
-// birthYear full year. Month granularity is enough for this cutoff.
-export function pitchGateOk(birthMonth, birthYear, targetStudio) {
+// The age cutoff for a pitch, for DISPLAY only (captain 2026-07-10). We never
+// store or compute against a learner's birthdate - the child self-reports yes/no
+// against this cutoff, and their guide approves/denies. This just supplies the
+// entry age + the cutoff date to show in the question: "will you have turned
+// [entryAge] by [cutoffLabel]?" Cutoff = 4 months after next school-year start.
+export function pitchCutoff(targetStudio) {
   const entryAge = STUDIO_ENTRY_AGE[targetStudio];
-  if (!entryAge || !birthMonth || !birthYear) return false;
+  if (!entryAge) return null;
   const start = new Date(getYearCalendar().yearStartISO);
   const nextYearStart = new Date(start.getFullYear() + 1, start.getMonth(), start.getDate());
   const cutoff = new Date(nextYearStart.getFullYear(), nextYearStart.getMonth() + 4, nextYearStart.getDate());
-  const turnsEntryAgeOn = new Date(birthYear + entryAge, birthMonth - 1, 1);
-  return turnsEntryAgeOn <= cutoff;
+  return {
+    entryAge,
+    cutoffISO: cutoff.toISOString().slice(0, 10),
+    cutoffLabel: cutoff.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+  };
 }
 
 // Session structure: 8 sessions, unified for all roles (guides, learners, parents).
