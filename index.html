@@ -73,6 +73,9 @@
         <p id="cp-error" class="signin-error" style="display:none"></p>
         <button type="button" id="cp-submit" class="btn btn-primary">Set password &amp; continue</button>
       </form>
+      <!-- Escape hatch: a temp-password prompt on a shared studio iPad may belong
+           to someone else. Never trap a person on this gate. -->
+      <button type="button" id="cp-signout" style="margin-top:0.9rem;background:none;border:none;color:var(--text-muted);text-decoration:underline;cursor:pointer;font-size:0.85rem;">Not you? Sign out</button>
     </div>
   </div>
 

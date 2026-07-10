@@ -126,6 +126,19 @@ export function showChangePasswordScreen() {
       screen.style.display = '';
       resolve();
     });
+
+    // Escape hatch: sign out instead of setting a password. A temp-password gate
+    // on a shared studio iPad may not belong to the person sitting there; never
+    // trap them. Clone to clear any prior listener (one-shot wiring).
+    const signoutBtn = document.getElementById('cp-signout');
+    if (signoutBtn) {
+      const freshOut = signoutBtn.cloneNode(true);
+      signoutBtn.parentNode.replaceChild(freshOut, signoutBtn);
+      freshOut.addEventListener('click', async () => {
+        try { await clearSession(); } catch { /* ignore */ }
+        location.reload();
+      });
+    }
   });
 }
 
