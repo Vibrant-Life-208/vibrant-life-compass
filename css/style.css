@@ -3255,7 +3255,10 @@ body.landscape-mountain {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   width: 100%;
-  max-width: 480px;
+  /* 640px (was 480): the onboarding cascade, telescope stack, wheel, and weekly
+     rows all render in here - 480 read as a phone column on a desktop. Wider
+     gives comfortable reading lines without sprawling. (MAC review 2026-07-10.) */
+  max-width: 640px;
   border-radius: var(--radius) var(--radius) 0 0;
   padding: 1.5rem 1.25rem;
   max-height: 90vh;
@@ -3604,6 +3607,10 @@ body.landscape-mountain {
 
 /* Pitch-readiness step: the yes/no choice buttons stack under the question. */
 .onb-pitch-choices { display: flex; flex-direction: column; gap: 0.6rem; margin: 0.5rem 0 1rem; }
+
+/* Wheel pinned atop the onboarding telescope - small, centered; drops at halfway. */
+.onb-wheel-pin { display: flex; justify-content: center; margin: 0 0 0.85rem; }
+.onb-wheel-pin svg { width: 150px; height: 150px; }
 
 /* Admin note - explains resets are owner-run until the secure flow ships */
 .admin-note {

@@ -52,6 +52,12 @@ function lifeWheelSvg(areas) {
   </svg>`;
 }
 
+// The wheel SVG for a studio as a string, for inlining elsewhere (e.g. pinned
+// atop the onboarding telescope). Same age-appropriate ring as renderLifeWheel.
+export function lifeWheelSvgFor(studio) {
+  return lifeWheelSvg(getWheelAreas(studio));
+}
+
 // Render the wheel for the given studio into #life-wheel. Every tier gets its own
 // age-appropriate ring. Pass studio (string); unknown studios get the adult ring.
 export function renderLifeWheel(studio) {

@@ -10,6 +10,7 @@ import {
 } from './store.js';
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName } from './studios.js';
+import { lifeWheelSvgFor } from './wheel.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
@@ -1278,7 +1279,12 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       .filter(Boolean)
       .join('');
     const stack = stackCards ? `<div class="onb-horizon-stack">${stackCards}</div>` : '';
+    // Wheel pinned atop the telescope (captain 2026-07-09; MAC review 2026-07-10):
+    // "hold your whole life in view" as you narrow from 10 years to now. It drops
+    // away at the halfway step, with the far horizons.
+    const wheel = step !== 'halfway' ? `<div class="onb-wheel-pin">${lifeWheelSvgFor(studio)}</div>` : '';
     return `
+      ${wheel}
       ${stack}
       <div class="onb-horizon-prompt">
         <h3 class="onb-horizon-heading">${escapeHtml(p.heading)}</h3>
