@@ -2249,8 +2249,11 @@ textarea[data-autogrow] {
   pointer-events: none;
 }
 
-/* Screens sit above the scene stage so content reads cleanly */
-#bearing-screen, #signin-screen, #app-screen { position: relative; z-index: 1; }
+/* Screens sit above the scene stage so content reads cleanly. Applies to EVERY
+   screen, not a hand-picked few - change-password / member-picker / family-view
+   / owner-home were being painted UNDER the landscape and rendered invisible
+   (2026-07-09). #welcome-screen keeps its own fixed z-index:1000 via ID specificity. */
+.screen { position: relative; z-index: 1; }
 
 .scene-layer {
   position: absolute;
