@@ -6,13 +6,38 @@
 import {
   getLearner, saveLearner, getGoals, submitYearPlan,
   getActivePartnerOf, getPendingProposalsFor, getLearners, getPartnerLinks,
-  proposePartner, respondToPartnerProposal,
+  proposePartner, respondToPartnerProposal, saveTask,
 } from './store.js';
-import { STUDIOS, getCategoriesForStudio } from './studios.js';
+import { STUDIOS, getCategoriesForStudio, getCalendarForStudio } from './studios.js';
 import { openYearGoalModal, openConfirmModal } from './modals.js';
 
 const MIN_GOALS = 5;
 const TOP_PRIORITIES = 3;
+
+// Turn a goal's weekly steps into dated tasks in North (learner-initiated via the
+// review-stage "Add to my North" checkbox). Each non-empty step becomes a task on
+// its week's start date, tagged with the goal's category. Never automatic - the
+// learner opts in per goal. (Captain 2026-07-11.)
+async function sendWeeklyStepsToNorth(learner, categoryId, weeklySteps) {
+  const cal = getCalendarForStudio(learner.studio);
+  const weekStartISO = (sessionIndex, weekIdx) => {
+    const start = cal.sessionStarts[sessionIndex - 1];
+    if (!start) return null;
+    const d = new Date(start + 'T00:00:00');
+    d.setDate(d.getDate() + (weekIdx - 1) * 7);
+    return d.toISOString().slice(0, 10);
+  };
+  for (const [sessionIndex, steps] of Object.entries(weeklySteps || {})) {
+    const arr = Array.isArray(steps) ? steps : [];
+    for (let i = 0; i < arr.length; i++) {
+      const text = (arr[i] || '').trim();
+      if (!text) continue;
+      const plannedFor = weekStartISO(Number(sessionIndex), i + 1);
+      if (!plannedFor) continue;
+      await saveTask(learner.id, { text, plannedFor, categoryId });
+    }
+  }
+}
 
 export async function renderSetupView(learnerId) {
   const container = document.getElementById('setup-view-content');
@@ -322,6 +347,7 @@ function renderGoalsGrid(learner, filledGoals) {
           await seedSession(3, data.halfwayPoint);
           await seedSession(2, data.quarterPoint);
           await seedSession(1, data.eos1Point);
+          if (data.addToNorth) await sendWeeklyStepsToNorth(learner, cat.id, data.weeklySteps);
           await renderSetupView(learner.id);
         },
       });

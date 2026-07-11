@@ -906,6 +906,17 @@ header h1 {
   gap: 1rem;
   margin: 0.75rem 0;
 }
+/* Opt-in: send this goal's weekly steps to North as dated tasks. */
+.review-tonorth {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+.review-tonorth input { margin-top: 0.2rem; }
 .review-section {
   background: var(--cream);
   border: 1px solid var(--earth-pale);

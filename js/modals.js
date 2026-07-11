@@ -287,6 +287,10 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         <p class="form-hint">Your full plan to End of Session 3 is below. Everything is editable <strong>except End of Session 3</strong> (your commitment anchor). If Session 3 feels heavy, move work into Sessions 1 or 2. Save when it feels honest.</p>
       </div>
       <div id="review-surface" class="review-surface"></div>
+      <label class="review-tonorth">
+        <input type="checkbox" id="yg-add-to-north">
+        Add my weekly steps to my North, so they show up as tasks on their week.
+      </label>
       <div class="stage-actions">
         <button type="button" class="btn btn-text" data-action="back">Back</button>
         <button type="button" class="btn btn-primary" data-action="save">Save full plan</button>
@@ -434,7 +438,8 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         const quarterPoint = reviewQuarter || v.quarterPoint;
         const eos1Point = reviewEos1 || v.eos1Point;
         if (!text || !halfwayPoint) return;
-        onSave({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps });
+        const addToNorth = !!document.getElementById('yg-add-to-north')?.checked;
+        onSave({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps, addToNorth });
         closeModal();
       }
     });
