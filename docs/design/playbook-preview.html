@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vibrant Life Family Playbook 2026-2027</title>
+<style>
+  :root{
+    --sky:#cfecfb; --sun:#ffcf4d; --grass:#7cc36a; --grass2:#4e9d54;
+    --coral:#ff7a59; --ink:#2f3a3a; --cream:#fffdf7; --cardline:#eadfc7;
+    --tots:#ff8c1a; --spark:#f4b400; --discovery:#9b6dd6; --adventure:#5cb85c; --launch:#3f7fd6;
+  }
+  @page{ size:Letter; margin:13mm 12mm; }
+  *{ box-sizing:border-box; }
+  body{ font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif; color:var(--ink); margin:0; background:var(--cream); line-height:1.5; font-size:11pt; }
+  h1,h2,h3{ margin:0 0 .3em; line-height:1.15; }
+  p{ margin:.3em 0 .65em; }
+  .wrap{ max-width:760px; margin:0 auto; }
+  .avoid{ page-break-inside:avoid; }
+  .pb{ page-break-before:always; }
+  .small{ font-size:9.7pt; color:#8a8068; }
+  em{ color:#6b5a2a; }
+
+  .hero{ position:relative; border-radius:22px; overflow:hidden; margin-bottom:14px; box-shadow:0 6px 0 #f0e6d0; }
+  .hero .sky{ display:block; width:100%; }
+  .hero .title{ position:absolute; top:22px; left:0; right:0; text-align:center; }
+  .hero .title h1{ font-size:30pt; color:#2f7a41; text-shadow:0 1px 2px #ffffffcc; letter-spacing:.6px; }
+  .hero .title .sub{ display:inline-block; margin-top:6px; background:#ffffffd8; color:var(--grass2); font-weight:bold; padding:4px 14px; border-radius:999px; font-size:10.5pt; }
+  .herotag{ text-align:center; font-style:italic; color:var(--coral); font-size:11pt; margin:-4px 0 4px; }
+  .herotag b{ color:var(--grass2); font-style:normal; }
+
+  .missionband{ background:linear-gradient(135deg,#4e9d54,#3f7fd6); color:#fff; border-radius:18px; padding:18px 22px; margin:14px 0; text-align:center; }
+  .missionband h2{ font-size:17pt; }
+  .missionband p{ font-size:10.5pt; opacity:.96; }
+  .missionband .become{ font-size:12pt; font-style:italic; margin-top:8px; }
+
+  .card{ background:#fff; border:2px solid var(--cardline); border-radius:18px; padding:15px 18px; margin:15px 0; }
+  .card h2{ font-size:15.5pt; display:flex; align-items:center; gap:10px; }
+  .card h2 .ic{ flex:0 0 auto; }
+  .promise{ background:linear-gradient(180deg,#fff6e0,#fffdf7); border:2px dashed var(--sun); border-radius:14px; padding:12px 16px; font-style:italic; color:#6b5a2a; }
+
+  ol.principles{ margin:.4em 0; padding-left:1.2em; }
+  ol.principles li{ margin:.3em 0; font-size:10.4pt; }
+  ol.principles b{ color:var(--grass2); }
+
+  .threebox{ display:flex; gap:9px; margin:10px 0; }
+  .threebox div{ flex:1; border-radius:13px; padding:10px 11px; color:#fff; text-align:center; font-size:9.6pt; }
+  .threebox div b{ display:block; font-size:10.5pt; margin-bottom:2px; }
+  /* Learn/Do/Be: non-studio triad (teal family) so studio colors stay sacred. */
+  .b1{ background:var(--coral);} .b2{ background:#13b5a6;} .b3{ background:#0e8f83;}
+
+  .guards{ display:flex; gap:9px; margin:8px 0; }
+  .guards div{ flex:1; background:#eef7ec; border:2px solid var(--adventure); border-radius:12px; padding:9px; text-align:center; font-weight:bold; color:var(--grass2); font-size:10pt; }
+
+  .watch{ display:flex; align-items:center; gap:11px; background:linear-gradient(180deg,#fff0eb,#ffe3da); border:2px solid var(--coral); border-radius:13px; padding:9px 13px; margin:11px 0; }
+  .watch b{ color:var(--coral); } .watch small{ color:#9a8f78; }
+
+  .studios{ display:flex; flex-wrap:wrap; gap:9px; }
+  .studio{ flex:1 1 47%; border-radius:13px; padding:11px 13px; color:#fff; }
+  .studio h3{ font-size:12.5pt; display:flex; justify-content:space-between; align-items:center; }
+  .studio .age{ background:#ffffff44; padding:1px 8px; border-radius:999px; font-size:8.5pt; }
+  .studio p{ font-size:9.2pt; margin:.25em 0 0; line-height:1.38; }
+  .s-tots{background:var(--tots);} .s-disc{background:var(--discovery);} .s-adv{background:var(--adventure);} .s-lp{background:var(--launch);}
+  .s-spark{background:var(--spark); color:#4a3d00;} .s-spark .age{background:#0000001f;} .s-spark p{color:#5a4a08;}
+
+  .day{ list-style:none; padding:0; margin:6px 0 0; }
+  .day li{ display:flex; gap:11px; align-items:flex-start; padding:5px 0; border-bottom:1px dashed #ece3cf; }
+  .day .t{ flex:0 0 110px; font-weight:bold; color:var(--coral); font-size:9.6pt; }
+  .day .d{ font-size:9.8pt; }
+  .dot{ width:11px;height:11px;border-radius:50%;flex:0 0 auto;margin-top:3px; }
+
+  ul.ask{ list-style:none; padding:0; margin:6px 0 0; }
+  ul.ask li{ padding:5px 0 5px 26px; position:relative; font-size:10.2pt; border-bottom:1px solid #f3edda; }
+  ul.ask li:before{ content:"\2605"; position:absolute; left:3px; top:5px; color:var(--sun); }
+  ul.ask li b{ color:var(--grass2); }
+
+  table.lang{ width:100%; border-collapse:collapse; margin-top:4px; }
+  table.lang td{ padding:4px 9px; border-bottom:1px solid #f0ead8; font-size:9.8pt; }
+  table.lang td:first-child{ color:#9a8f78; } table.lang td:last-child{ font-weight:bold; color:var(--grass2); }
+
+  /* Creator (hero mindset) is the MAIN, prominent and on top; the victim stance
+     we step out of is a smaller, quieter secondary note beneath it. */
+  .mindset{ display:flex; flex-direction:column; gap:7px; margin-top:7px; }
+  .mindset div{ border-radius:11px; }
+  .m-hero{ background:#eef7ec; border:2px solid var(--adventure); padding:12px 15px; font-size:10.2pt; }
+  .m-hero b{ color:var(--adventure); font-size:11pt; }
+  .m-stuck{ background:#f6f3ec; border:1px solid #ddd3bd; padding:7px 12px; font-size:8.8pt; color:#8a8068; }
+  .m-stuck b{ color:#8a8068; font-size:9pt; }
+
+  .quote{ background:var(--grass2); color:#fff; border-radius:16px; padding:16px 20px; text-align:center; font-size:11.5pt; }
+  .quote .tg{ display:block; margin-top:10px; color:#d8f3cf; font-weight:bold; letter-spacing:1px; font-size:10pt; }
+  .footer{ text-align:center; color:#b3a98e; font-size:8.3pt; margin-top:8px; }
+  .ref h3{ color:var(--coral); font-size:11.5pt; margin-top:2px; } .ref p{ font-size:9.7pt; }
+  .reflect{ background:#f3f8ee; border-left:4px solid var(--grass); border-radius:8px; padding:8px 12px; font-style:italic; color:#5b6b4e; font-size:9.5pt; margin:9px 0; }
+  .reflect b{ font-style:normal; color:var(--grass2); }
+  .guidebox{ background:#e7f6f4; border:2px solid #13b5a6; border-radius:14px; padding:13px 16px; margin:15px 0; }
+  .guidebox h2{ color:#0e8f83; font-size:14pt; }
+  .guidebox ul{ margin:4px 0 0; padding-left:18px; } .guidebox li{ font-size:9.6pt; margin:2px 0; }
+  .qline{ font-style:italic; color:#8a8068; font-size:9.5pt; margin:6px 0 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero avoid">
+    <svg class="sky" viewBox="0 0 760 220" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3f5"/><stop offset="1" stop-color="#eaf7ff"/></linearGradient></defs>
+      <rect width="760" height="220" fill="url(#sk)"/>
+      <g transform="translate(648,50)"><circle r="25" fill="#ffcf4d"/><g stroke="#ffcf4d" stroke-width="5" stroke-linecap="round">
+        <line x1="0" y1="-38" x2="0" y2="-31"/><line x1="0" y1="38" x2="0" y2="31"/><line x1="-38" y1="0" x2="-31" y2="0"/><line x1="38" y1="0" x2="31" y2="0"/>
+        <line x1="-27" y1="-27" x2="-22" y2="-22"/><line x1="27" y1="27" x2="22" y2="22"/><line x1="-27" y1="27" x2="-22" y2="22"/><line x1="27" y1="-27" x2="-22" y2="-22"/></g></g>
+      <g fill="#ffffff"><ellipse cx="120" cy="48" rx="32" ry="15"/><ellipse cx="148" cy="44" rx="24" ry="13"/><ellipse cx="560" cy="34" rx="26" ry="12"/></g>
+      <path d="M0,165 Q190,116 380,160 T760,155 V220 H0 Z" fill="#7cc36a"/>
+      <path d="M0,190 Q230,146 470,184 T760,182 V220 H0 Z" fill="#4e9d54"/>
+      <g transform="translate(70,146)"><rect x="-4" y="14" width="8" height="22" fill="#9c6b3f"/><circle cy="6" r="19" fill="#3f8c46"/></g>
+      <g transform="translate(700,164)"><rect x="-3" y="10" width="7" height="18" fill="#9c6b3f"/><circle cy="2" r="14" fill="#3f8c46"/></g>
+      <g transform="translate(296,178)"><circle cy="-13" r="8" fill="#ffd9b3"/><rect x="-7" y="-5" width="14" height="19" rx="6" fill="#ff8c1a"/></g>
+      <g transform="translate(326,182)"><circle cy="-12" r="7" fill="#f6c89a"/><rect x="-6" y="-5" width="12" height="17" rx="5" fill="#9b6dd6"/></g>
+      <g transform="translate(356,180)"><circle cy="-12" r="7" fill="#ffd9b3"/><rect x="-6" y="-5" width="12" height="17" rx="5" fill="#3f7fd6"/></g>
+    </svg>
+    <div class="title"><h1>Vibrant Life</h1><span class="sub">Family Playbook &nbsp;&bull;&nbsp; 2026-2027</span></div>
+  </div>
+  <div class="herotag">A place where learners grow brave, families grow connected, and purpose comes alive.<br><b>Welcome to the adventure. - Jenna</b></div>
+
+  <!-- MISSION -->
+  <div class="missionband avoid">
+    <h2>Our Mission</h2>
+    <p>To inspire each person who enters our doors to <b>find a calling and change the world.</b> We empower families to grow - and grow together - and prepare learners to hear a call to adventure and begin a Hero's Journey.</p>
+    <p class="become">Every child is born with a gift. This journey isn't just about learning. It's about becoming.</p>
+  </div>
+
+  <!-- WELCOME -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ffcf4d"/><path d="M12 5l2 5 5 .4-3.8 3.2 1.2 4.9L12 16l-4.6 2.5 1.2-4.9L4.8 10.4 9.8 10z" fill="#fff"/></svg> Welcome to the Playbook</h2>
+    <p>This isn't a rulebook. It's a guide - a shared understanding of how we move through this journey together as families, learners, and guides. It will keep evolving as we change.</p>
+    <div class="promise">These are the things we are committed to, and here is why. You do not have to adopt them. You do have to know them, so your choice is a real one. And we will keep thinking about them together, all year.</div>
+    <p class="small" style="margin-top:8px">We made it to help you feel grounded, to build clarity and trust, and to honor the heart of what we're building.</p>
+    <div class="reflect"><b>Reflect with us:</b> What do you appreciate about your own education? How does family culture help shape a child's beliefs about learning and growth?</div>
+    <div class="watch"><svg width="32" height="32" viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#ff7a59"/><path d="M13 10l12 7-12 7z" fill="#fff"/></svg>
+      <div><b>Watch: Welcome to Vibrant Life</b> <small>(60-90s)</small><br><small>The mission, our language, and the promise.</small></div></div>
+  </div>
+
+  <!-- WHAT WE STAND FOR -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#13b5a6"/><path d="M8 12l3 3 5-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> What We Stand For</h2>
+    <ol class="principles">
+      <li><b>Learners are whole people.</b> They arrive with creativity, emotions, curiosity, and voice. They are geniuses.</li>
+      <li><b>Families are partners and the primary educators.</b> Parents hold the primary responsibility; we walk beside you and support it.</li>
+      <li><b>The learning environment matters.</b> Inspiring spaces where learners feel safe, challenged, and have a voice.</li>
+      <li><b>Purpose leads the way.</b> We help learners discover who they are and what they're called to bring to the world.</li>
+    </ol>
+    <p class="small"><b>What we hold, and what's yours:</b> because families are the primary educators, we keep our focus on academics, character, emotional development, and community. We don't instruct on charged political topics, human sexuality, or gender identity - families guide those at home - and we respect each family's economic, political, and religious freedom.</p>
+    <p class="small"><b>How to use this book:</b> Read it. Use it. Revisit it. If you ask a question we've answered here, we'll lovingly guide you back to it - that's the learner-led way.</p>
+  </div>
+
+  <!-- PHILOSOPHY / PROGRAM -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#13b5a6"/><path d="M6 9h12M6 12h12M6 15h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Philosophy &amp; Program at a Glance</h2>
+    <p class="small"><b>How (not what) to think.</b> We help young people learn how to think, not what to think. We do focused core work to master foundations and lean into real-world learning, so core skills surface through projects, play, and community.</p>
+    <p class="small"><b>Program model.</b> An accredited Acton Academy, part-time with a wellness niche. Your membership includes the curriculum and materials - no buying extra or teaching at home. Older studios do some self-directed work at home with built-in instruction.</p>
+  </div>
+
+  <!-- LEARN DO BE -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ff9f1c"/><path d="M12 4l2.2 4.6L19 9.3l-3.5 3.4.8 4.9L12 15.3 7.7 17.6l.8-4.9L5 9.3l4.8-.7z" fill="#fff"/></svg> Learning to Learn, Do &amp; Be</h2>
+    <div class="threebox">
+      <div class="b1"><b>Learn</b>processes &amp; habits of critical thinking</div>
+      <div class="b2"><b>Do</b>skills, academics &amp; real-world action</div>
+      <div class="b3"><b>Be</b>character &amp; matters of the heart</div>
+    </div>
+    <p class="small"><em>"We delight in the beauty of the butterfly but rarely admit the changes it has gone through to achieve that beauty." - Maya Angelou</em> &nbsp; The most important part of the Hero's Journey isn't the Grail - it's how the hero is changed along the way.</p>
+    <div class="reflect"><b>Reflect with us:</b> What family habits have etched positive character into your life? What energy-draining habits do you want to transform?</div>
+  </div>
+
+  <!-- THE RULES / GAME -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#5cb85c"/><circle cx="12" cy="12" r="6" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 6v12M6 12h12" stroke="#fff" stroke-width="1.4"/></svg> The Rules: We Play as a Team</h2>
+    <p>The learner-led way is best thought of as a <b>game.</b> Imagine you're playing soccer and someone starts using their hands - are you still playing soccer? Vibrant Life is <b>different by design.</b> Clear agreements let us serve your family well. Guides and Jenna hold three <b>guardrails:</b></p>
+    <div class="guards"><div>Hold Studio Sacred</div><div>Be Kind &amp; Respectful</div><div>Minimize Distraction</div></div>
+    <p class="small">Each learner also agrees to studio <b>commitments</b> - integrity, respect &amp; communication, excellence, inner work, community, and responsibility - until the tribe writes its own Session-1 contract.</p>
+  </div>
+
+  <!-- YOUR GUIDE -->
+  <div class="guidebox avoid">
+    <h2>What a Guide promises you</h2>
+    <p class="qline">"If you change the way you look at things, the things you look at change." - Wayne Dyer</p>
+    <ul>
+      <li>To see your child as a genius with a gift to offer the world.</li>
+      <li>To turn responsibility over to the learners as fast as they're ready.</li>
+      <li>To hold the studio guardrails that keep everyone safe.</li>
+      <li>To answer with Socratic questions, not answers - so the accomplishment stays the learner's.</li>
+      <li>To celebrate effort and progress, and stay on their own Hero's Journey right alongside your child.</li>
+    </ul>
+  </div>
+
+  <!-- FIELDS OF PLAY -->
+  <div class="card">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#13b5a6"/><path d="M5 14l7-7 7 7M7 13v5h10v-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> Fields of Play: Our Studios</h2>
+    <p class="small">Mixed-age studios with a shared vision. Learners are grouped by readiness, not strictly by age - increasingly learner-led from Tots up.</p>
+    <div class="studios">
+      <div class="studio s-tots"><h3>Tots Tribe <span class="age">3-4</span></h3><p>Play and experience are the child's important work. Welcome circle, movement, nature, practical-life skills, story. This year: a four-part parent recognition arc (Safe Base, Steady Hand, Witness, Held-Then-Let-Go).</p></div>
+      <div class="studio s-spark"><h3>Spark <span class="age">5-7</span></h3><p>Curiosity and purposeful play growing into self-directed work: early reading and writing, Montessori math, nature and science, low-tech Quests. Grows kindness, courage, and the first tools for big feelings.</p></div>
+      <div class="studio s-disc"><h3>Discovery <span class="age">8-10</span></h3><p>Quests blending science, art, math, and writing into a public exhibition; a writing workshop; deep reading; Socratic history. Grows goal-setting and owning results.</p></div>
+      <div class="studio s-adv"><h3>Adventure <span class="age">11-14</span></h3><p>Longer Quests in STEM, arts, and entrepreneurship; primary-source history; science labs; apprenticeships; badges. Grows servant-leadership, feedback, and grit.</p></div>
+      <div class="studio s-lp"><h3>Launch Pad <span class="age">15-18 &bull; soon</span></h3><p>Know who you are, trust your capability, design your next great adventure: mastery through real audiences, mentors and internships, graduating with a portfolio and a public Launch Plan.</p></div>
+    </div>
+    <div class="watch"><svg width="32" height="32" viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#ff7a59"/><path d="M13 10l12 7-12 7z" fill="#fff"/></svg>
+      <div><b>Watch: Studio Shorts</b> <small>(30-45s each)</small><br><small>A quick look at each studio - watch your child's, or each of your children's.</small></div></div>
+  </div>
+
+  <!-- THIS YEAR'S JOURNEY - BY STUDIO -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#f4b400"/><path d="M12 5l1.8 4 4.2.3-3.2 2.7 1 4.1L12 14.6 8.2 16.4l1-4.1L6 9.6l4.2-.3z" fill="#fff"/></svg> This Year's Journey <span style="font-weight:normal;font-size:10.5pt;color:#8a8068">- by Studio, 2026-2027</span></h2>
+    <p class="small">Every studio walks the same Hero's Journey - at the scale that fits the learner. The Tots Tribe walks a parent-held threshold; Spark follows the seasons; Discovery and Adventure run Quests with a Civilization spine.</p>
+    <p class="small"><b style="color:#d9740f">Tots Tribe - a threshold walked with a parent.</b> <i>Not topical quests - a rhythm in two cycles.</i> Cycle 1 (Sessions 1-4), the parent recognition arc: Safe Base, Steady Hand, Witness, Held-Then-Let-Go. Cycle 2 (Sessions 5-7), the learner's Threshold Badges open (Community Service, Big Bathroom, Independence, Participation, Heart Awareness), leading to each tot's <b>Pitch into Sparks</b>.</p>
+    <p class="small"><b style="color:#b8860b">Spark - following the seasons.</b> 1 - Build the Tribe &bull; 2 (Fall) - Geography &amp; Our Community &bull; 3 (Cozy) - The Body &bull; 4 (Winter) - Music &amp; Art &bull; 5 - Debate &bull; 6 (Spring) - Farm to Table &bull; 7 (Summer) - Under the Sea.</p>
+    <p class="small"><b style="color:var(--discovery)">Discovery: Y2 - Quests + Story of the World.</b> 1 - Build the Tribe (Lip Dub) &bull; 2 - E-Ship &bull; 3 - Colonial Acton &bull; 4 - Game Design &bull; 5 - Marine Science &bull; 6 - The Story of Energy &bull; 7 - Growing Curiosity. <i>Reading spine: Story of the World, Vol. 3 - Early Modern Times.</i></p>
+    <p class="small"><b style="color:var(--grass2)">Adventure - Quests + Civilization.</b> 1 - Friendship &amp; Strategies for Life &bull; 2 - Plan a Trip &amp; Historical Speech &bull; 3 - Trial of Socrates &amp; Greek Myth &bull; 4 - Apprenticeship &bull; 5 - Biology I: Evolution &amp; Hero Biography &bull; 6 - Biology II: Medical &amp; Research Funding Pitch &bull; 7 - Art &amp; Creativity. <i>Civilization spine: Big Bang &bull; Ancient Greece &amp; Rome &bull; Athens &amp; Socrates &bull; Middle Ages &bull; Guns, Germs &amp; Steel &bull; Tracing Goods &bull; Deep Book Bio.</i></p>
+  </div>
+
+  <!-- DAILY LIFE -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ff9f1c"/><circle cx="12" cy="12" r="7" fill="none" stroke="#fff" stroke-width="2"/><path d="M12 8v4l3 2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg> Daily Life at Acton</h2>
+    <p class="small"><b>Mon-Thurs</b> (Tots Tribe Mon/Wed 9-11:30). Address: 14031 Silver Ridge Road, Caldwell ID. Non-urgent: BAND; urgent: call/text Jenna 208-204-8819.</p>
+    <ul class="day">
+      <li><span class="dot" style="background:var(--coral)"></span><span class="t">8:30-8:45</span><span class="d">Outdoor play &amp; drop-off (all weather)</span></li>
+      <li><span class="dot" style="background:var(--coral)"></span><span class="t">8:45-9:00</span><span class="d">Brain Gym at the grassy field, announcements, a wellness exercise</span></li>
+      <li><span class="dot" style="background:var(--coral)"></span><span class="t">9:00 Game Begins</span><span class="d"><b>Work Block</b> - morning circle, music, town hall, goals; reading, math works, writing workshop, Socratic Launch, Quests, closing circle &amp; reflection</span></li>
+      <li><span class="dot" style="background:var(--coral)"></span><span class="t">Midday-2:00</span><span class="d">Lunch &amp; outdoor play, eaten outside (work block ends ~11:30 Tots / 12:30 Spark &amp; Discovery / 1:15 Adventure)</span></li>
+      <li><span class="dot" style="background:var(--coral)"></span><span class="t">by 2:00</span><span class="d">Pick-up at the roundabout (starts 1:50)</span></li>
+    </ul>
+    <p class="small" style="margin-top:7px"><b>How we start:</b> "Good morning!" / "Yes it is!" - then Brain Gym, Heart Coherence, and the Wheel of Awareness. <b>Bring:</b> labeled water bottle, lunch &amp; snack, backpack, weather layers.</p>
+    <div class="watch"><svg width="32" height="32" viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#ff7a59"/><path d="M13 10l12 7-12 7z" fill="#fff"/></svg>
+      <div><b>Watch: A Day at Vibrant Life</b> <small>(60-90s)</small><br><small>The rhythm, from morning circle to pickup.</small></div></div>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#13b5a6"/><rect x="6" y="7" width="12" height="11" rx="2" fill="none" stroke="#fff" stroke-width="2"/><path d="M6 10h12M9 5v3M15 5v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Calendar &amp; Key Dates</h2>
+    <p><b>Orientation Aug 4-7 &bull; First Day Aug 17 &bull; Last Day May 27.</b> Seven sessions with a break between each (Sept 14-17, Oct 26-29, Feb 15-18, Apr 5-8), plus Thanksgiving Break Nov 23-27 and Winter Break Dec 21-31. No programs on Labor Day (Sept 7), Columbus Day (Oct 12), and MLK Day (Jan 18).</p>
+    <p class="small">Full month-by-month calendar shared separately; exhibition dates confirmed in August.</p>
+  </div>
+
+  <!-- GAME SETUP CLUSTER -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#5cb85c"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> The Everyday: Food, Outside Play, Tech &amp; Health</h2>
+    <p class="small"><b>Food &amp; water:</b> nourishing food and a labeled water bottle daily; lighter on sugar (not "never"); different dietary philosophies respected. <b>Birthdays:</b> a Circle of Appreciation and a peacock feather for each learner.</p>
+    <p class="small"><b>Outside play:</b> central, with managed risk - climbing, bare feet, muddy boots. We let learners assess their own risk; you'll hear from us about anything serious, not every boo-boo. An Outside Play Contract keeps it safe, with restorative steps. <b>Exhibitions of Learning</b> are living report cards - learners showcase their work and guides don't step in, because the exhibition is the learning.</p>
+    <p class="qline">"Encourage your child to have muddy, grassy, or sandy feet by the end of each day - that's the childhood they deserve." - Penny Whitehouse &nbsp;&bull;&nbsp; "I took a walk in the woods and came out taller than the trees." - Thoreau</p>
+    <p class="small"><b>Technology:</b> a tool, not a toy - social-media- and game-free in studio, with safety filters. Tots screen-free; Spark guide-led; Discovery &amp; Adventure sign a tech agreement and use a labeled Chromebook. <b>Health:</b> keep your child home for the symptoms in the onboarding guide; we trust each family's judgment. <b>Dress:</b> school-, weather-, and movement-appropriate.</p>
+  </div>
+
+  <!-- STUDIO SYSTEMS & VOCAB -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#13b5a6"/><path d="M7 8h10M7 12h10M7 16h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Studio Systems &amp; The Words We Use</h2>
+    <p class="small"><b>Studio Contracts</b> (the learners' main governing document) &bull; <b>V-Bucks</b> (recognizing responsibility and contribution) &bull; <b>Badges</b> (mastery credentials, not prizes) &bull; <b>Town Hall</b> &amp; 360 feedback. <b>3 B's before G:</b> a learner tries their Brains, Books, and a Buddy before asking a Guide - who answers with leading questions, not the answer.</p>
+    <table class="lang">
+      <tr><td>Student / Teacher</td><td>Learner (Hero) / Guide</td></tr>
+      <tr><td>Classroom / Classmates</td><td>Studio / Tribe mates</td></tr>
+      <tr><td>Grades / Report cards</td><td>Showing Mastery, Badges &amp; Exhibitions</td></tr>
+      <tr><td>Worksheets / Textbooks</td><td>Quests, mentors &amp; real-life experiences</td></tr>
+    </table>
+  </div>
+
+  <!-- MINDSET / TED -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#13b5a6"/><path d="M12 6a4 4 0 00-2 7.5V16h4v-2.5A4 4 0 0012 6z" fill="#fff"/><path d="M10 18h4" stroke="#fff" stroke-width="1.6"/></svg> Growth Mindset &amp; Habits</h2>
+    <p class="small">This year (2026-2027), our community is reading <i>The Power of TED</i> (David Emerald) together. It teaches that "victim" is not who we are - it's a stance we can step out of: <b>Victim &rarr; Creator</b> (the hero mindset), Persecutor &rarr; Challenger, Rescuer &rarr; Coach. The point is the choice in the moment, not a label on a person.</p>
+    <div class="mindset">
+      <div class="m-hero"><b>Hero mindset (Creator)</b><br>Welcome challenges, embrace responsibility, celebrate excellence, practice kindness, hold firm boundaries.</div>
+      <div class="m-stuck"><b>Victim mindset (a stance we shift out of)</b><br>Avoid hard work, look for the easy way out, blame or make excuses - a pattern we can change.</div>
+    </div>
+    <p class="small" style="margin-top:7px"><b>Partner, don't rescue:</b> when your child struggles, resist the urge to rescue - "What did you try? What's your next step?" Your calm is contagious.</p>
+    <div class="reflect"><b>Reflect with us:</b> When has a failure led to a greater lesson for you? Share it with your child. And - what makes a hero a hero?</div>
+  </div>
+
+  <!-- KEEPING SCORE -->
+  <div class="card avoid">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ff7a59"/><path d="M12 4l2.2 4.6L19 9.3l-3.5 3.4.8 4.9L12 15.3 7.7 17.6l.8-4.9L5 9.3l4.8-.7z" fill="#fff"/></svg> Keeping Score: Real Growth, Not Just Grades</h2>
+    <p>We don't "keep score" like other schools. <b>Learners advance by readiness, not by birthdays.</b> Instead of grades, learners earn badges tracked in the online Journey Tracker. Learning is self-paced - <b>the only comparison is you, yesterday.</b> When readiness thresholds are met, a learner prepares a Pitch to the Next Studio.</p>
+    <p class="small">Tools we use daily: Brain Gym, Heart Coherence, the Wheel of Awareness, 4-7-8 breathing, tapping, aromatherapy, and a Living Library of "living books."</p>
+    <div class="reflect"><b>Reflect with us (a weekly habit to share):</b> What was your achievement this week - and your failure? When did you serve as a guide to someone, and who guided you?</div>
+  </div>
+
+  <!-- PARENT JOURNEY / WHAT WE ASK -->
+  <div class="card">
+    <h2><svg class="ic" width="25" height="25" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#ff7a59"/><path d="M12 17s-6-3.6-6-7.6A3.4 3.4 0 0112 7a3.4 3.4 0 016 2.4c0 4-6 7.6-6 7.6z" fill="#fff"/></svg> Forming a Team: What We Ask of You</h2>
+    <p class="small">We want VL to be a connecting place for the whole family. Choosing Vibrant Life is a family commitment, not a drop-off.</p>
+    <ul class="ask">
+      <li><b>Be reachable</b> during the day for a bathroom need or a moment of extra support.</li>
+      <li><b>Join the community</b> - a volunteer team and the Skills directory.</li>
+      <li><b>Come to parent meetings &amp; Journey Meetings</b> - quarterly parent meetings (at least 3 of 4), and your learner's goal-setting conference twice a year (around Sessions 2 &amp; 5), ideally both parents.</li>
+      <li><b>Partner, don't rescue;</b> let your learner fail early, cheaply, and often.</li>
+      <li><b>Bring an all-weather mindset;</b> use BAND and Open Forums / nonviolent communication.</li>
+      <li><b>Provide gear &amp; a device</b> - outdoor layers, plus a Chromebook for older studios.</li>
+    </ul>
+    <p class="small"><b>If it's ever not the right fit:</b> we talk it through first - two meetings with the guide and two with Jenna - and part ways, if we must, with grace. Current-month tuition is prorated and refunded.</p>
+    <div class="watch"><svg width="32" height="32" viewBox="0 0 34 34"><circle cx="17" cy="17" r="17" fill="#ff7a59"/><path d="M13 10l12 7-12 7z" fill="#fff"/></svg>
+      <div><b>Watch: What We Ask of You</b> <small>(60s)</small><br><small>The honest commitment - so you can decide if it fits your season.</small></div></div>
+  </div>
+
+  <!-- CLOSING MOTIF: hills rhyme with the cover, a gentle arrival -->
+  <svg class="hills" viewBox="0 0 760 46" preserveAspectRatio="none" style="display:block;width:100%;height:34px;margin:6px 0 -2px">
+    <path d="M0,30 Q190,6 380,26 T760,22 V46 H0 Z" fill="#7cc36a"/>
+    <path d="M0,38 Q230,18 470,34 T760,34 V46 H0 Z" fill="#4e9d54"/>
+  </svg>
+
+  <!-- WINNING -->
+  <div class="quote avoid">
+    We're here to raise self-governed humans - young people who know their purpose, work for themselves, and choose courage and integrity when it's hard. The "win" isn't a GPA or a badge; it's a learner who can own their choices, repair quickly, think creatively, serve others, and keep going - because character has been practiced, not preached, in a real community.
+    <span class="tg">Find a calling, change the world.</span>
+  </div>
+
+  <div class="footer">Vibrant Life 208 &nbsp;&bull;&nbsp; Find a calling, change the world. &nbsp;&bull;&nbsp; 2026-2027</div>
+</div>
+</body>
+</html>
