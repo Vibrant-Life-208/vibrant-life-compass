@@ -1555,7 +1555,7 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
 // Thresholds-to-thrive page: shows the next studio's readiness criteria as items
 // the learner can plan and self-track. Guide/committee/signatures happen in
 // person - this page never adjudicates. (Captain 2026-07-11.)
-export function openThresholdsModal(targetStudio) {
+export function openThresholdsModal(targetStudio, learner) {
   setModalTitle('Pitch readiness');
   const fields = document.getElementById('form-fields');
   if (!fields) return;
@@ -1573,10 +1573,50 @@ export function openThresholdsModal(targetStudio) {
       btn.textContent = LABELS[next];
     });
   });
+  // Break a threshold into weekly steps -> tasks in North (learner-initiated, same
+  // start-now / prep-for-Session-1 timing as goals). Closes the pitch pipeline:
+  // pitch -> thresholds -> decompose -> weekly tasks in North. (Captain 2026-07-11.)
+  fields.querySelectorAll('[data-threshold-plan]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      if (!learner) return;
+      const item = btn.closest('.threshold-item');
+      const steps = [...item.querySelectorAll('.threshold-step-input')].map((i) => i.value.trim()).filter(Boolean);
+      if (!steps.length) return;
+      const mode = item.querySelector('input[type="radio"]:checked')?.value || 'now';
+      btn.disabled = true;
+      try {
+        await addThresholdStepsToNorth(learner, targetStudio, steps, mode);
+        btn.textContent = 'Added to your North ✓';
+      } catch (e) { btn.disabled = false; }
+    });
+  });
   // Reuse the goal-modal shell; hide its default Save action.
   const da = document.querySelector('#goal-form .modal-actions');
   if (da) da.style.display = 'none';
   openModal();
+}
+
+// Schedule threshold baby-steps as dated tasks in North. 'now' = consecutive
+// weeks from this week; 'session1' = consecutive weeks from the school year start.
+async function addThresholdStepsToNorth(learner, targetStudio, steps, mode) {
+  const { saveTask } = await import('./store.js');
+  const { getCalendarForStudio } = await import('./studios.js');
+  const cal = getCalendarForStudio(learner.studio);
+  const toISO = (d) => d.toISOString().slice(0, 10);
+  let base;
+  if (mode === 'session1' && cal.sessionStarts?.[0]) {
+    base = new Date(cal.sessionStarts[0] + 'T00:00:00');
+  } else {
+    const t = new Date();
+    const day = t.getDay();
+    base = new Date(t);
+    base.setDate(t.getDate() + (day === 0 ? -6 : 1 - day));
+  }
+  for (let i = 0; i < steps.length; i++) {
+    const d = new Date(base);
+    d.setDate(base.getDate() + i * 7);
+    await saveTask(learner.id, { text: steps[i], plannedFor: toISO(d), categoryId: 'pitch_' + targetStudio });
+  }
 }
 
 function setModalTitle(text) {

@@ -30,7 +30,7 @@ export async function renderNorth(learnerId) {
       pitchBtn.dataset.wired = '1';
       pitchBtn.addEventListener('click', async () => {
         const { openThresholdsModal } = await import('./modals.js');
-        openThresholdsModal(learner.pitchTargetStudio);
+        openThresholdsModal(learner.pitchTargetStudio, learner);
       });
     }
   } else if (pitchSection) {
