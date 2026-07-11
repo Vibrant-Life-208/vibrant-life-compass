@@ -19,6 +19,24 @@ export async function renderNorth(learnerId) {
   if (greeting) greeting.textContent = learner ? `North · ${learner.name}` : 'North';
   if (dateLabel) dateLabel.textContent = formatToday();
 
+  // Pitch card: learners who opted in to pitch up get a card to their thresholds.
+  const pitchSection = document.getElementById('north-pitch');
+  const pitchBtn = document.getElementById('north-pitch-open');
+  if (pitchSection && pitchBtn && learner?.pitchTargetStudio) {
+    const { getStudioName } = await import('./studios.js');
+    pitchBtn.textContent = `Your pitch to ${getStudioName(learner.pitchTargetStudio)} - see your thresholds`;
+    pitchSection.hidden = false;
+    if (!pitchBtn.dataset.wired) {
+      pitchBtn.dataset.wired = '1';
+      pitchBtn.addEventListener('click', async () => {
+        const { openThresholdsModal } = await import('./modals.js');
+        openThresholdsModal(learner.pitchTargetStudio);
+      });
+    }
+  } else if (pitchSection) {
+    pitchSection.hidden = true;
+  }
+
   await Promise.all([
     renderQuoteSection(learnerId),
     renderToday(learnerId),

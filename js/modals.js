@@ -11,6 +11,7 @@ import {
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName } from './studios.js';
 import { lifeWheelSvgFor } from './wheel.js';
+import { renderThresholdsHtml } from './thresholds.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
@@ -1545,6 +1546,33 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
   }
 
   render();
+  openModal();
+}
+
+// Thresholds-to-thrive page: shows the next studio's readiness criteria as items
+// the learner can plan and self-track. Guide/committee/signatures happen in
+// person - this page never adjudicates. (Captain 2026-07-11.)
+export function openThresholdsModal(targetStudio) {
+  setModalTitle('Pitch readiness');
+  const fields = document.getElementById('form-fields');
+  if (!fields) return;
+  fields.innerHTML = renderThresholdsHtml(targetStudio, {});
+  // Status pills cycle Not started -> Working on it -> Done (local for now;
+  // durable per-threshold tracking is the next phase).
+  const LABELS = { not_started: 'Not started', working: 'Working on it', done: 'Done' };
+  const NEXT = { not_started: 'working', working: 'done', done: 'not_started' };
+  fields.querySelectorAll('[data-threshold]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const cur = ['not_started', 'working', 'done'].find((s) => btn.classList.contains('status-' + s)) || 'not_started';
+      const next = NEXT[cur];
+      btn.classList.remove('status-not_started', 'status-working', 'status-done');
+      btn.classList.add('status-' + next);
+      btn.textContent = LABELS[next];
+    });
+  });
+  // Reuse the goal-modal shell; hide its default Save action.
+  const da = document.querySelector('#goal-form .modal-actions');
+  if (da) da.style.display = 'none';
   openModal();
 }
 

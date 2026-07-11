@@ -3634,6 +3634,42 @@ body.landscape-mountain {
 .onb-wheel-pin { display: flex; justify-content: center; margin: 0 0 0.85rem; }
 .onb-wheel-pin svg { width: 150px; height: 150px; }
 
+/* ── Pitch readiness: North card + thresholds page ──────────────────────── */
+.north-pitch { margin: 0.5rem 0 1rem; }
+.north-pitch-card {
+  width: 100%; text-align: left; cursor: pointer;
+  padding: 0.85rem 1rem; border: 1.5px solid var(--sage, #8ca07a); border-radius: 12px;
+  background: var(--sage-pale, #eef3e8); color: var(--text, #3a3a34);
+  font-size: 0.95rem; font-weight: 600;
+}
+.north-pitch-card:hover { background: #e6eede; }
+
+.thresholds-page { text-align: left; }
+.thresholds-title { margin: 0 0 0.4rem; color: var(--sage-deep, #4a5a40); }
+.thresholds-intro { margin: 0 0 0.6rem; color: var(--text-soft); line-height: 1.5; }
+.thresholds-deadline { margin: 0 0 1rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+.thresholds-group { margin: 1.1rem 0 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.thresholds-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+.threshold-item { border: 1px solid var(--border, #cdbfa6); border-radius: 10px; padding: 0.7rem 0.85rem; background: rgba(255,255,255,0.5); }
+.threshold-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+.threshold-name { font-weight: 600; color: var(--text); }
+.threshold-explain { margin: 0.35rem 0 0.2rem; font-size: 0.88rem; line-height: 1.45; color: var(--text-soft); }
+.threshold-help { font-size: 0.82rem; color: var(--text-muted); }
+.threshold-help summary { cursor: pointer; }
+.threshold-help p { margin: 0.3rem 0 0; }
+.threshold-status {
+  flex: none; cursor: pointer; border: 1px solid var(--border, #cdbfa6);
+  border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.75rem; background: #fff; color: var(--text-muted);
+}
+.threshold-status.status-working { background: #fdf3e0; border-color: #e8c98c; color: #a9741f; }
+.threshold-status.status-done { background: #e6efe0; border-color: #9bbd86; color: #4a5a40; }
+.thresholds-opps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.threshold-opp { border: 1px dashed var(--border, #cdbfa6); border-radius: 10px; padding: 0.6rem 0.8rem; color: var(--text-soft); }
+.threshold-opp .opp-name { font-weight: 600; color: var(--text); }
+.threshold-opp .opp-when { font-size: 0.78rem; color: var(--text-muted); margin-left: 0.4rem; }
+.threshold-opp p { margin: 0.25rem 0 0; font-size: 0.85rem; line-height: 1.4; }
+.thresholds-empty { color: var(--text-muted); text-align: center; padding: 1rem; }
+
 /* Admin note - explains resets are owner-run until the secure flow ships */
 .admin-note {
   background: #f3f0ea;
