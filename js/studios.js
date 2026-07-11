@@ -1,3 +1,5 @@
+import { getWheelAreas } from './wheel.js';
+
 // Per-studio category configuration.
 // PLACEHOLDER — confirm with guides before code-finalizing.
 // Each studio names which categories are visible and which are conditional (visible only when assigned).
@@ -322,6 +324,19 @@ export function getStudio(studioId) {
   return STUDIOS[studioId] || null;
 }
 
+// Slices-of-life goal categories for a learner, generated from their wheel tier
+// so the goal areas match the wheel exactly (Discovery 6, Adventure 8, Launch Pad
+// 11). kind 'personal' groups them under "Slices of Life". Guide-summer keeps its
+// own GUIDE_CATEGORIES. (Captain 2026-07-10.)
+function sliceCategoriesForStudio(studioId) {
+  return getWheelAreas(studioId).map((label) => ({
+    id: 'slice_' + label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, ''),
+    name: label,
+    kind: 'personal',
+    example: '',
+  }));
+}
+
 export function getCategoriesForStudio(studioId) {
   const studio = STUDIOS[studioId];
   if (!studio) return [];
@@ -334,11 +349,13 @@ export function getCategoriesForStudio(studioId) {
       example: GUIDE_CATEGORIES[id]?.example || '',
     }));
   }
-  return [...studio.visible, ...studio.conditional].map((id) => ({
+  const academic = [...studio.visible, ...studio.conditional].map((id) => ({
     id,
     ...CATEGORIES[id],
     example: getExampleForCategory(id, studioId), // pre-resolve the studio-tuned example for renderers
   }));
+  // Learners also get their slices of life, so goals read as Core + Slices.
+  return [...academic, ...sliceCategoriesForStudio(studioId)];
 }
 
 export function getStudioName(studioId) {
