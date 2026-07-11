@@ -288,10 +288,12 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         <p class="form-hint">Your full plan to End of Session 3 is below. Everything is editable <strong>except End of Session 3</strong> (your commitment anchor). If Session 3 feels heavy, move work into Sessions 1 or 2. Save when it feels honest.</p>
       </div>
       <div id="review-surface" class="review-surface"></div>
-      <label class="review-tonorth">
-        <input type="checkbox" id="yg-add-to-north">
-        Add my weekly steps to my North, so they show up as tasks on their week.
-      </label>
+      <fieldset class="review-tonorth">
+        <legend>Add these weekly steps to my North?</legend>
+        <label><input type="radio" name="yg-north-when" value="none" checked> Not now</label>
+        <label><input type="radio" name="yg-north-when" value="now"> Start now - one step a week from this week</label>
+        <label><input type="radio" name="yg-north-when" value="session1"> Prep for Session 1 - on the school-year weeks</label>
+      </fieldset>
       <div class="stage-actions">
         <button type="button" class="btn btn-text" data-action="back">Back</button>
         <button type="button" class="btn btn-primary" data-action="save">Save full plan</button>
@@ -439,7 +441,8 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         const quarterPoint = reviewQuarter || v.quarterPoint;
         const eos1Point = reviewEos1 || v.eos1Point;
         if (!text || !halfwayPoint) return;
-        const addToNorth = !!document.getElementById('yg-add-to-north')?.checked;
+        const northWhen = document.querySelector('input[name="yg-north-when"]:checked')?.value || 'none';
+        const addToNorth = northWhen === 'none' ? null : northWhen; // null | 'now' | 'session1'
         onSave({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps, addToNorth });
         closeModal();
       }

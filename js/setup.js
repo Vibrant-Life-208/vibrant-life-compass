@@ -15,27 +15,45 @@ const MIN_GOALS = 5;
 const TOP_PRIORITIES = 3;
 
 // Turn a goal's weekly steps into dated tasks in North (learner-initiated via the
-// review-stage "Add to my North" checkbox). Each non-empty step becomes a task on
-// its week's start date, tagged with the goal's category. Never automatic - the
-// learner opts in per goal. (Captain 2026-07-11.)
-async function sendWeeklyStepsToNorth(learner, categoryId, weeklySteps) {
+// review-stage choice). Each non-empty step becomes a task tagged with the goal's
+// category. Two timings (captain 2026-07-11):
+//   mode 'now'      - start this week: steps land on consecutive weeks from now.
+//   mode 'session1' - prep for the school year: steps land on their own
+//                     session/week calendar dates.
+// Never automatic - the learner opts in per goal.
+async function sendWeeklyStepsToNorth(learner, categoryId, weeklySteps, mode) {
   const cal = getCalendarForStudio(learner.studio);
-  const weekStartISO = (sessionIndex, weekIdx) => {
-    const start = cal.sessionStarts[sessionIndex - 1];
-    if (!start) return null;
-    const d = new Date(start + 'T00:00:00');
-    d.setDate(d.getDate() + (weekIdx - 1) * 7);
-    return d.toISOString().slice(0, 10);
-  };
+  const toISO = (d) => d.toISOString().slice(0, 10);
+  // Flatten non-empty steps in session/week order.
+  const ordered = [];
   for (const [sessionIndex, steps] of Object.entries(weeklySteps || {})) {
-    const arr = Array.isArray(steps) ? steps : [];
-    for (let i = 0; i < arr.length; i++) {
-      const text = (arr[i] || '').trim();
-      if (!text) continue;
-      const plannedFor = weekStartISO(Number(sessionIndex), i + 1);
-      if (!plannedFor) continue;
-      await saveTask(learner.id, { text, plannedFor, categoryId });
+    (Array.isArray(steps) ? steps : []).forEach((step, i) => {
+      const text = (step || '').trim();
+      if (text) ordered.push({ sessionIndex: Number(sessionIndex), weekIdx: i + 1, text });
+    });
+  }
+  let mondayNow = null;
+  if (mode === 'now') {
+    const t = new Date();
+    const day = t.getDay(); // 0 = Sunday
+    mondayNow = new Date(t);
+    mondayNow.setDate(t.getDate() + (day === 0 ? -6 : 1 - day));
+  }
+  for (let idx = 0; idx < ordered.length; idx++) {
+    const { sessionIndex, weekIdx, text } = ordered[idx];
+    let plannedFor;
+    if (mode === 'now') {
+      const d = new Date(mondayNow);
+      d.setDate(mondayNow.getDate() + idx * 7);
+      plannedFor = toISO(d);
+    } else {
+      const start = cal.sessionStarts[sessionIndex - 1];
+      if (!start) continue;
+      const d = new Date(start + 'T00:00:00');
+      d.setDate(d.getDate() + (weekIdx - 1) * 7);
+      plannedFor = toISO(d);
     }
+    await saveTask(learner.id, { text, plannedFor, categoryId });
   }
 }
 
@@ -347,7 +365,7 @@ function renderGoalsGrid(learner, filledGoals) {
           await seedSession(3, data.halfwayPoint);
           await seedSession(2, data.quarterPoint);
           await seedSession(1, data.eos1Point);
-          if (data.addToNorth) await sendWeeklyStepsToNorth(learner, cat.id, data.weeklySteps);
+          if (data.addToNorth) await sendWeeklyStepsToNorth(learner, cat.id, data.weeklySteps, data.addToNorth);
           await renderSetupView(learner.id);
         },
       });
