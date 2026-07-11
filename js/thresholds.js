@@ -89,6 +89,20 @@ export function renderThresholdsHtml(targetStudio, status = {}) {
       </div>
       <p class="threshold-explain">${escapeHtml(it.explain)}</p>
       <details class="threshold-help"><summary>If I'm struggling</summary><p>${escapeHtml(it.struggling)}</p></details>
+      <details class="threshold-plan">
+        <summary>Break into weekly steps</summary>
+        <p class="threshold-plan-hint">What are the small weekly moves toward this? Start small, build from there.</p>
+        <div class="threshold-steps">
+          <input type="text" class="threshold-step-input" placeholder="On [when], I'll [what]">
+          <input type="text" class="threshold-step-input" placeholder="On [when], I'll [what]">
+          <input type="text" class="threshold-step-input" placeholder="On [when], I'll [what]">
+        </div>
+        <div class="threshold-when">
+          <label><input type="radio" name="tstep-when-${escapeHtml(it.id)}" value="now" checked> Start now</label>
+          <label><input type="radio" name="tstep-when-${escapeHtml(it.id)}" value="session1"> Prep for Session 1</label>
+        </div>
+        <button type="button" class="btn btn-primary threshold-plan-add" data-threshold-plan="${escapeHtml(it.id)}">Add to my North</button>
+      </details>
     </li>`;
   const opp = (o) => `<li class="threshold-opp"><span class="opp-name">${escapeHtml(o.name)}</span> <span class="opp-when">${escapeHtml(o.when)}</span><p>${escapeHtml(o.detail)}</p></li>`;
   return `
