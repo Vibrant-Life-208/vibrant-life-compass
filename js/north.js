@@ -19,19 +19,31 @@ export async function renderNorth(learnerId) {
   if (greeting) greeting.textContent = learner ? `North · ${learner.name}` : 'North';
   if (dateLabel) dateLabel.textContent = formatToday();
 
-  // Pitch card: learners who opted in to pitch up get a card to their thresholds.
+  // Pitch card. Two states, shown to EVERY eligible learner (not just onboarding):
+  //   - opted in  -> a card to their thresholds page.
+  //   - not yet   -> an invitation to explore pitching up (opens the opt-in).
+  // Only learners with a studio above them (Discovery, Adventure) are eligible.
   const pitchSection = document.getElementById('north-pitch');
   const pitchBtn = document.getElementById('north-pitch-open');
-  if (pitchSection && pitchBtn && learner?.pitchTargetStudio) {
-    const { getStudioName } = await import('./studios.js');
-    pitchBtn.textContent = `Your pitch to ${getStudioName(learner.pitchTargetStudio)} - see your thresholds`;
-    pitchSection.hidden = false;
-    if (!pitchBtn.dataset.wired) {
-      pitchBtn.dataset.wired = '1';
-      pitchBtn.addEventListener('click', async () => {
+  if (pitchSection && pitchBtn && learner) {
+    const { getStudioName, nextStudio } = await import('./studios.js');
+    const up = nextStudio(learner.studio);
+    if (learner.pitchTargetStudio) {
+      pitchBtn.textContent = `Your pitch to ${getStudioName(learner.pitchTargetStudio)} - see your thresholds`;
+      pitchSection.hidden = false;
+      pitchBtn.onclick = async () => {
         const { openThresholdsModal } = await import('./modals.js');
         openThresholdsModal(learner.pitchTargetStudio, learner);
-      });
+      };
+    } else if (up) {
+      pitchBtn.textContent = `Thinking about ${getStudioName(up)}? Explore pitching up`;
+      pitchSection.hidden = false;
+      pitchBtn.onclick = async () => {
+        const { openPitchOptInModal } = await import('./modals.js');
+        openPitchOptInModal(learner, () => renderNorth(learnerId));
+      };
+    } else {
+      pitchSection.hidden = true;
     }
   } else if (pitchSection) {
     pitchSection.hidden = true;

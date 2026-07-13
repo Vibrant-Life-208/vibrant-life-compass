@@ -1552,6 +1552,69 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
   openModal();
 }
 
+// Standalone pitch opt-in: the same age self-report + opt-in as the onboarding
+// step, reachable any time from the North invitation - so it reaches EVERY
+// eligible learner, not just those in first-run onboarding. (Captain 2026-07-13.)
+export function openPitchOptInModal(learner, onDone) {
+  const target = learner && nextStudio(learner.studio);
+  if (!target) return;
+  const targetName = getStudioName(target);
+  const cut = pitchCutoff(target) || { entryAge: '', cutoffLabel: 'next year' };
+  setModalTitle('Pitch readiness');
+  const fields = document.getElementById('form-fields');
+  if (!fields) return;
+  let stage = 'ask-age';
+  const render = () => {
+    if (stage === 'ask-optin') {
+      fields.innerHTML = `
+        <div class="onb-horizon-prompt">
+          <h3 class="onb-horizon-heading">Want to start getting ready?</h3>
+          <p class="onb-horizon-body">You could spend this year working toward your pitch to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
+        </div>
+        <div class="onb-pitch-choices">
+          <button type="button" class="btn btn-primary" data-pitch="optin-yes">Yes, let's go</button>
+          <button type="button" class="btn btn-text" data-pitch="optin-no">Maybe later</button>
+        </div>`;
+    } else if (stage === 'age-no') {
+      fields.innerHTML = `
+        <div class="onb-horizon-prompt">
+          <h3 class="onb-horizon-heading">That's okay - you'll get there.</h3>
+          <p class="onb-horizon-body"><strong>${escapeHtml(targetName)}</strong> will be there when it's your time.</p>
+        </div>
+        <div class="onb-pitch-choices"><button type="button" class="btn btn-primary" data-pitch="close">Close</button></div>`;
+    } else {
+      fields.innerHTML = `
+        <div class="onb-horizon-prompt">
+          <h3 class="onb-horizon-heading">Thinking about ${escapeHtml(targetName)}?</h3>
+          <p class="onb-horizon-body">To pitch up to <strong>${escapeHtml(targetName)}</strong> next year, you'll need to have turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Will you have?</p>
+        </div>
+        <div class="onb-pitch-choices">
+          <button type="button" class="btn btn-primary" data-pitch="age-yes">Yes, I will</button>
+          <button type="button" class="btn btn-text" data-pitch="age-no">Not yet</button>
+        </div>`;
+    }
+    fields.querySelectorAll('[data-pitch]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const a = btn.dataset.pitch;
+        if (a === 'age-yes') { stage = 'ask-optin'; render(); }
+        else if (a === 'age-no') { stage = 'age-no'; render(); }
+        else if (a === 'optin-no' || a === 'close') { closeModal(); }
+        else if (a === 'optin-yes') {
+          try {
+            await saveLearner({ id: learner.id, pitchTargetStudio: target, pitchIntentAt: new Date().toISOString(), pitchAgeSelfReport: true, pitchAgeStatus: 'pending' });
+          } catch (e) { /* non-blocking */ }
+          closeModal();
+          if (onDone) onDone();
+        }
+      });
+    });
+  };
+  const da = document.querySelector('#goal-form .modal-actions');
+  if (da) da.style.display = 'none';
+  render();
+  openModal();
+}
+
 // Thresholds-to-thrive page: shows the next studio's readiness criteria as items
 // the learner can plan and self-track. Guide/committee/signatures happen in
 // person - this page never adjudicates. (Captain 2026-07-11.)
