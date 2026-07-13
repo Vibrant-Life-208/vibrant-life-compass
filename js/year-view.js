@@ -1,11 +1,11 @@
 // Compass (year view).
 
 import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getYearVision, setYearVision, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval, addNotification, getParentLearnerLinks } from './store.js';
-import { getCategoriesForStudio, getStudioName } from './studios.js';
+import { getCategoriesForStudio, getStudioName, lifeAreaForCategory } from './studios.js';
 import { openGoalModal, openQuoteModal, openVisionModal, openTraitsModal, openConfirmModal, openYearGoalModal } from './modals.js';
 import { renderYearMap } from './year-map.js';
 import { getYearMapClickHandler } from './north.js';
-import { renderLifeWheel } from './wheel.js';
+import { renderLifeWheel, getWheelAreas } from './wheel.js';
 
 let wired = false;
 
@@ -124,8 +124,10 @@ export async function renderYearView(learnerId) {
   // first-time invitation in the year-goal modal (PDC D1 2026-05-13).
   const noFilledGoalsYet = !goals.some((g) => g.scope === 'year' && g.text && g.text.trim().length > 0);
 
-  categories.forEach((cat) => {
-    const goal = goals.find((g) => g.categoryId === cat.id);
+  // Build one year-goal card for a category. Extracted so both the flat list
+  // (learner studios) and the wheel-slice grouping (guide-summer) can reuse it
+  // without duplicating the handlers. (Fleet meeting 2026-07-12, Decision 3.)
+  function buildCategoryCard(cat, goal) {
     const card = document.createElement('div');
     const status = goal?.status || (goal ? 'active' : null);
     card.className = 'category-card' + (status ? ` goal-${status}` : '');
@@ -275,8 +277,82 @@ export async function renderYearView(learnerId) {
       });
     }
 
-    list.appendChild(card);
+    return card;
+  }
+
+  // Which wheel slice does this category live in? A goal's own lifeArea wins
+  // over the category's declared home, so a placement can be overridden per goal.
+  const sliceForCategory = (cat, goal) => (goal?.lifeArea || lifeAreaForCategory(cat.id)) || null;
+
+  // Guide-summer (adult proving ground, Decision 3) gets the 1-year-by-wheel-
+  // slice view. Learner studios keep the flat list until the learner mapping is
+  // authored and reviewed (Decision 4, GATED). This branch IS the scope wall.
+  const useSlices = learner.studio === 'guide-summer';
+
+  if (!useSlices) {
+    categories.forEach((cat) => {
+      const goal = goals.find((g) => g.categoryId === cat.id);
+      list.appendChild(buildCategoryCard(cat, goal));
+    });
+    return;
+  }
+
+  // ── Wheel-slice grouping (guide-summer) ────────────────────────────────────
+  // COVERAGE FRAME, NOT COMPLETENESS FRAME (meeting guardrail, 4 agents / 3
+  // circles). A slice with no goal is an open field - "quiet right now, and
+  // that's allowed" - never a count, never a fill-meter, never a red 0. The
+  // shape must not teach "behind." (Accord + Jake's frame; Wesley's render line.)
+  const wheelAreas = getWheelAreas(learner.studio); // ordered life-area slices
+  const bySlice = new Map(wheelAreas.map((area) => [area, []]));
+  const offWheel = []; // categories with no life-area (e.g. Acton practice)
+
+  categories.forEach((cat) => {
+    const goal = goals.find((g) => g.categoryId === cat.id);
+    const slice = sliceForCategory(cat, goal);
+    const entry = { cat, card: buildCategoryCard(cat, goal) };
+    if (slice && bySlice.has(slice)) bySlice.get(slice).push(entry);
+    else offWheel.push(entry);
   });
+
+  wheelAreas.forEach((area) => {
+    const section = document.createElement('section');
+    section.className = 'wheel-slice';
+
+    const header = document.createElement('h3');
+    header.className = 'wheel-slice-name';
+    header.textContent = area;
+    section.appendChild(header);
+
+    const entries = bySlice.get(area);
+    if (entries.length) {
+      entries.forEach(({ card }) => section.appendChild(card));
+    } else {
+      // Empty slice = invitation, never deficit. No count, no meter.
+      const quiet = document.createElement('p');
+      quiet.className = 'wheel-slice-quiet';
+      quiet.textContent = 'Quiet right now - and that is allowed. Room to grow here when you are ready.';
+      section.appendChild(quiet);
+    }
+    list.appendChild(section);
+  });
+
+  // Off-wheel categories (guide practice: pedagogy, studio, learners, socratic).
+  // Rendered plainly, clearly outside the wheel - the wheel is life; this is
+  // professional prep for the year. Not a slice, so no coverage-frame line.
+  if (offWheel.length) {
+    const section = document.createElement('section');
+    section.className = 'wheel-slice wheel-slice-offwheel';
+    const header = document.createElement('h3');
+    header.className = 'wheel-slice-name';
+    header.textContent = 'Guide Practice';
+    section.appendChild(header);
+    const note = document.createElement('p');
+    note.className = 'wheel-slice-note';
+    note.textContent = 'Professional prep for the year - alongside your life, not inside the wheel.';
+    section.appendChild(note);
+    offWheel.forEach(({ card }) => section.appendChild(card));
+    list.appendChild(section);
+  }
 }
 
 function escapeHtml(s) {

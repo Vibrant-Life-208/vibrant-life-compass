@@ -462,6 +462,7 @@ function rowToGoal(row) {
     scope: row.scope,
     sessionIndex: row.session_index,
     text: row.text,
+    lifeArea: row.life_area || null,  // wheel slice; NULL = not placed (v0.18)
     status: row.status,
     createdAt: row.created_at,
   };
@@ -474,6 +475,7 @@ function goalToRow(goal) {
     scope: goal.scope,
     session_index: goal.sessionIndex || null,
     text: goal.text,
+    life_area: goal.lifeArea || null,  // wheel slice; NULL = not placed (v0.18)
     status: goal.status || 'active',
   };
 }
@@ -505,6 +507,7 @@ export async function saveTask(learnerId, task) {
     planned_for: task.plannedFor,
     goal_id: task.goalId || null,
     category_id: task.categoryId || null,
+    life_area: task.lifeArea || null,  // wheel slice; NULL = not placed (v0.18)
     status: task.status || 'open',
   };
   if (task.id && !task.id.startsWith('hc_')) {
@@ -540,6 +543,7 @@ function rowToTask(row) {
     plannedFor: row.planned_for,
     goalId: row.goal_id,
     categoryId: row.category_id,
+    lifeArea: row.life_area || null,  // wheel slice; NULL = not placed (v0.18)
     status: row.status,
     completedAt: row.completed_at,
     createdAt: row.created_at,

@@ -294,6 +294,53 @@ export const GUIDE_CATEGORIES = {
   },
 };
 
+// ── Category -> wheel slice (life area) map ──────────────────────────────────
+// The 1-year horizon groups goals by wheel slice (js/wheel.js). This map says
+// which slice a category belongs to. Authored as DATA, not inferred in code -
+// the placement of a category into a life-area is a values judgment and must be
+// visible and reviewable here, never buried in a migration or a render.
+// (Fleet meeting 2026-07-12, Decisions 3 + 4; Gnosis's condition.)
+//
+// GUIDE-SUMMER (adult proving ground, Decision 3): the 12 life-area categories
+// map 1:1 onto the adult wheel. The 4 Acton practice categories are NOT life-
+// wheel areas - they map to null and render in their own "Guide Practice" group,
+// outside the wheel. That is honest: the wheel is life; practice is professional
+// prep for the year.
+//
+// LEARNER TIERS (Sparks / Discovery / Adventure / Launchpad): GATED (Decision 4).
+// The curriculum core-task -> proper-slice mapping is the captain's to author as
+// data, with Jake + Accord sign-off on the coverage frame and TCC review, before
+// any learner sees a sliced year. Deliberately left empty here - an absent
+// mapping means "not placed yet," which the render treats as invitation, never
+// deficit. Do NOT guess these.
+export const CATEGORY_LIFE_AREA = {
+  // guide-summer -> adult 12-area wheel (labels match getWheelAreas('guide-summer'))
+  guide_body: 'Body',
+  guide_mind: 'Mind',
+  guide_spirit: 'Spirit',
+  guide_time: 'Time',
+  guide_joy: 'Joy',
+  guide_emotions: 'Emotions',
+  guide_family: 'Family',
+  guide_friends: 'Friends',
+  guide_intimate: 'Partner',
+  guide_home: 'Home',
+  guide_finances: 'Finances',
+  guide_career: 'Career',
+  // Acton practice categories: intentionally no wheel slice (null).
+  guide_pedagogy: null,
+  guide_studio: null,
+  guide_learners: null,
+  guide_socratic: null,
+};
+
+// The wheel slice a category belongs to, or null if unmapped ("not placed").
+// A caller-supplied override (e.g. a goal's own lifeArea) should win over this
+// default - this is only the category's declared home.
+export function lifeAreaForCategory(categoryId) {
+  return CATEGORY_LIFE_AREA[categoryId] ?? null;
+}
+
 // Overflow prompt copy, tuned per studio voice. Praesens + Polaris design.
 // Always framed as offer, never as failure.
 export const OVERFLOW_COPY = {

@@ -13,28 +13,38 @@
 // rendered from local self-disclosure. No schema change. Persistence hardening
 // (parent-private RLS boolean) is a later, separate step.
 
-// The four-badge arc (first cycle, Sessions 1-4). Safe Base is the worked example.
+// The four parent postures. The Safe Base is the worked example.
+//
+// NO CALENDAR FRAMING (Decision 3, 2026-07-09 True Play v0.2): the parent
+// recognition must NEVER carry a "Session N of 7" label. A parent must never
+// read "you're on Session 2" as "you're behind." Session rhythm belongs to the
+// child's learning only; a parent's posture is not a place on a timeline. The
+// stage names below are the child's Hero's-Journey arc the parent accompanies,
+// not a rank the parent is graded against.
+// Decision 4 is now honored in the render (equal weight, unordered wrap grid,
+// no rank number, no ordered list). The remaining piece — the door-at-center
+// ring composition — belongs to the True Play token's MAC pass, not this arc.
 export const PARENT_BADGE_ARC = [
   {
-    id: 'safe-base', name: 'The Safe Base', session: 1, stage: 'The Departure begins',
+    id: 'safe-base', name: 'The Safe Base', stage: 'The Departure begins',
     quote: "I can walk away because I trust you'll be here when I come back.",
     practice: "Five minutes of child-led play - sit near, hands still, follow, don't lead.",
     why: "Your calm is their first permission. You don't have to do more. You have to be there.",
   },
   {
-    id: 'steady-hand', name: 'The Steady Hand', session: 2, stage: 'The Initiation',
+    id: 'steady-hand', name: 'The Steady Hand', stage: 'The Initiation',
     quote: 'I can let it be hard, because the reaching is theirs to do.',
     practice: 'When it\'s hard, stay close and don\'t rescue - "What did you try? What\'s one small next step?"',
     why: "Confidence is born in the moment you don't step in. Same love, different move.",
   },
   {
-    id: 'the-witness', name: 'The Witness', session: 3, stage: 'The Return',
+    id: 'the-witness', name: 'The Witness', stage: 'The Return',
     quote: 'I see who you are becoming - and it is yours to author.',
     practice: "Notice out loud who they are becoming. Describe what you see; don't steer it.",
     why: "Your seeing makes it real. It does not make it yours. Who they're becoming belongs to them.",
   },
   {
-    id: 'held-then-let-go', name: 'Held, Then Let Go', session: 4, stage: 'Freedom to Live',
+    id: 'held-then-let-go', name: 'Held, Then Let Go', stage: 'Freedom to Live',
     quote: 'I held on with everything I had, so I could open my hands well.',
     practice: 'The clean goodbye - spoken, visible, unhurried. Held first. Then released.',
     why: "A good ending is a gift. The goodbye moves at your child's readiness, never our convenience.",
@@ -108,18 +118,20 @@ export function renderParentBadgesReference(show) {
   if (!el) return;
   if (!show) { el.innerHTML = ''; el.hidden = true; return; }
   el.hidden = false;
-  const steps = PARENT_BADGE_ARC.map((b, i) => `
+  // Decision 4 (2026-07-09): equal and unordered — no rank number, no ordered
+  // list. Four postures of equal weight; none is "next." (The door-at-center
+  // ring is the True Play token's MAC composition, a separate build — not here.)
+  const steps = PARENT_BADGE_ARC.map((b) => `
     <li class="pt-badge">
-      <span class="pt-badge-num">${i + 1}</span>
       <div class="pt-badge-body">
-        <p class="pt-badge-name">${esc(b.name)}<span class="pt-badge-when">Session ${b.session} · ${esc(b.stage)}</span></p>
+        <p class="pt-badge-name">${esc(b.name)}<span class="pt-badge-when">${esc(b.stage)}</span></p>
         <p class="pt-badge-why">${esc(b.why)}</p>
       </div>
     </li>`).join('');
   el.innerHTML = `
     <div class="admin-header"><h3 class="admin-title">Parents &amp; Tots · the Recognition Arc</h3></div>
     <p class="admin-sub">A reference for the recognition you offer aloud in the parent circle - spoken first, never scored. This shows no family's state, and never will.</p>
-    <ol class="pt-badges">${steps}</ol>
+    <ul class="pt-badges pt-grid">${steps}</ul>
     <p class="pt-guardrail">These honor the <strong>parent</strong>. They never count - no completion, no streak, no scoreboard, no per-parent view - and they live apart from the children's mastery badges, always.</p>`;
 }
 
@@ -152,7 +164,7 @@ export function renderParentBadgesJourney(host, parentId) {
     const held = isHoldingBadge(parentId, b.id);
     return `
       <li class="pt-step${held ? ' is-held' : ''}">
-        <p class="pt-step-name">${esc(b.name)}<span class="pt-step-when">Session ${b.session} · ${esc(b.stage)}</span></p>
+        <p class="pt-step-name">${esc(b.name)}<span class="pt-step-when">${esc(b.stage)}</span></p>
         <p class="pt-step-quote">"${esc(b.quote)}"</p>
         <p class="pt-step-why">${esc(b.why)}</p>
         <p class="pt-step-practice"><strong>Try:</strong> ${esc(b.practice)}</p>
@@ -163,7 +175,7 @@ export function renderParentBadgesJourney(host, parentId) {
   host.innerHTML = `
     <h3 class="pt-journey-title">Your Parents &amp; Tots journey · The Path</h3>
     <p class="pt-journey-sub">Recognition of a posture you're already practicing - private to you, never scored, seen by no one else.</p>
-    <ol class="pt-path">${steps}</ol>
+    <ul class="pt-path pt-grid">${steps}</ul>
     <details class="pt-honesty"><summary>What these are, honestly</summary>
       <ul>${BADGE_HONESTY.map((h) => `<li>${esc(h)}</li>`).join('')}</ul>
     </details>`;

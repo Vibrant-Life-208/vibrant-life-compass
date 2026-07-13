@@ -3105,6 +3105,48 @@ body.landscape-mountain {
   font-style: italic;
 }
 
+/* Wheel-slice grouping (1-year horizon by life area, guide-summer).
+   Coverage frame, not completeness frame - a quiet slice reads as room to grow,
+   never a deficit. No counts, no fill-meters, no alarm colors, ever.
+   (Fleet meeting 2026-07-12, Decision 3.) */
+.wheel-slice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.wheel-slice-name {
+  margin: 0.75rem 0 0.25rem;
+  color: var(--sage);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* An empty slice: soft, unhurried, no red 0. The shape must not teach "behind." */
+.wheel-slice-quiet {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border: 1px dashed var(--earth-pale);
+  border-radius: var(--radius);
+  background: transparent;
+}
+
+/* Off-wheel group (guide practice): plainly outside the wheel, not a slice. */
+.wheel-slice-offwheel { margin-top: 1.25rem; }
+
+.wheel-slice-note {
+  margin: 0 0 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
 /* Session View */
 .session-header {
   display: flex;
@@ -3737,3 +3779,21 @@ body.landscape-mountain {
 .pt-honesty { margin-top: 0.8rem; font-size: 0.83rem; color: #8a8a80; }
 .pt-honesty summary { cursor: pointer; }
 .pt-honesty ul { margin: 0.5rem 0 0; padding-left: 1.1rem; line-height: 1.5; }
+
+/* Equal + unordered (Decision 4, 2026-07-09 True Play v0.2). The four parent
+   postures are of equal weight; none is "next." A wrap grid, never a numbered
+   top-to-bottom column that reads as rank (Troi's condition). Scoped via
+   .pt-grid so it cannot collide with the older ".pt-path" session-marker loop.
+   (The door-at-center ring composition is the True Play token's MAC pass —
+   deliberately not faked here.) */
+.pt-badges.pt-grid,
+.pt-path.pt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.7rem;
+  align-items: start;
+}
+.pt-grid .pt-badge {
+  border: 1px solid #e3ddd0; border-radius: 12px;
+  padding: 0.7rem 0.8rem; background: #fff;
+}

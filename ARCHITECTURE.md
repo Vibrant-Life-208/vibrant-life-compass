@@ -152,6 +152,9 @@ quote author/note, anchor_aggregates, must_change_password, values_freetext.)*
 | **v0.13** learner-authored updates | tightens v0.12: only a signed-in learner posts; family login can't | ⚠️ **confirm applied** |
 | **v0.14** guide tribe + owner | `profiles.tribes[]` + `is_owner`; trigger extended to protect them | ✅ |
 | **v0.15** allow guide-summer | widens `learners_studio_check` to include `guide-summer` | ✅ |
+| **v0.16** visible-learners function | moves `my_visible_learners` view into a private SECURITY DEFINER function; repoints 8 read policies | ⚠️ **confirm applied** |
+| **v0.17** pitch intent + guide age-approval | pitch-readiness self-report + guide confirm columns | ⚠️ **confirm applied** |
+| **v0.18** life_area on goals + tasks | nullable `life_area` (wheel slice) on `goals` and `tasks`; additive, no RLS/data change. Powers the 1-year-by-wheel-slice view (guide-summer). Learner seeding GATED (see §10). | ⬜ **pending — apply for the sliced view** |
 
 ---
 
@@ -195,6 +198,14 @@ quote author/note, anchor_aggregates, must_change_password, values_freetext.)*
 - **Parent-run Spark child-quiz** — create-on-demand (content from the L6-reviewed
   kid-values draft).
 - **~10-day learner "share a goal update" nudge.**
+- **1-year-by-wheel-slice — LEARNER version (GATED, Decision 4).** The adult/guide
+  view ships now (see Done 2026-07-12). Before any *learner* sees a sliced year:
+  (a) the captain authors the curriculum core-task → life-area mapping **as data**
+  in `js/studios.js` `CATEGORY_LIFE_AREA` (learner keys deliberately empty today);
+  (b) Jake + Accord sign the **coverage frame** (empty slice = invitation, never a
+  count/fill-meter) and grow-with-child slicing (Discovery ≠ adult ring); (c) TCC
+  review if learner task rows get seeded with `life_area`. The `useSlices` branch
+  in `js/year-view.js` is gated to `studio === 'guide-summer'` and is the scope wall.
 - **Phase 2 auth** — forgot-password flow (Edge Functions + TOTP + CAPTCHA + audit).
 - **P&T cross-device persistence** — the parent-side P&T journey (`js/parent-badges.js`
   `isPtFamily` / `isHoldingBadge`) is currently **local-only** (`vl.pt.*` localStorage),
@@ -208,6 +219,8 @@ quote author/note, anchor_aggregates, must_change_password, values_freetext.)*
   before applying. The guide-view *reference* stays content-only and never touches this.
 
 *(Done 2026-07-08: Jenna + Wes wired as owner-guides on prod — the Jones login opens the owner home for both. Done 2026-07-10: both P&T surfaces live — guide-view reference + parent-side private journey, SW v99.)*
+
+*(Done 2026-07-12 — Compass fleet meeting, Decision 3: 1-year horizon **by wheel slice** for the guide-summer (adult) studio. v0.18 opens a nullable `life_area` on `goals`+`tasks`; `js/backend/supabase-adapter.js` carries `life_area`↔`lifeArea`; `js/studios.js` `CATEGORY_LIFE_AREA` maps the 12 guide life-area categories 1:1 onto the adult wheel (4 Acton categories are off-wheel "Guide Practice"); `js/year-view.js` groups the guide-summer year view by `getWheelAreas`, coverage-framed (quiet slice = "room to grow", never a count). Learner tiers untouched (gated). **Bump the SW cache version on deploy** — `js/year-view.js`, `js/studios.js`, `css/style.css`, `js/backend/supabase-adapter.js` changed. Apply v0.18 in the SQL editor before the sliced view will read `life_area`.)*
 
 ---
 
