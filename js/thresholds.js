@@ -6,7 +6,8 @@
 // Adventure -> Launch Pad is owed (a Launch Pad candidate need not have finished
 // high-school work - it continues into their first Launch Pad year).
 
-import { getStudioName } from './studios.js';
+import { getStudioName, sliceIdForLabel } from './studios.js';
+import { getWheelAreas } from './wheel.js';
 
 export const THRESHOLDS = {
   adventure: {
@@ -66,6 +67,110 @@ export const THRESHOLDS = {
 
 export function getThresholds(targetStudio) {
   return THRESHOLDS[targetStudio] || null;
+}
+
+// ── Threshold -> wheel slice (life area) map ─────────────────────────────────
+// The 1-year plan is organized by wheel slice. When a learner opts into a pitch,
+// their thresholds are PRE-INSERTED into the slice they belong to, so the year
+// reads as a life to grow, not a checklist to clear. Which slice each threshold
+// belongs to is a PEDAGOGY judgment - authored here as DATA, never inferred in
+// code, so the placement is visible and reviewable. (Captain 2026-07-14; sibling
+// to CATEGORY_LIFE_AREA's gated learner-tier block in studios.js.)
+//
+// Keyed by TARGET studio (the studio being pitched INTO) because a pitching
+// learner plans by the wheel of the studio they are growing into (captain call
+// 2026-07-14), and the slice labels below are that target wheel's labels
+// (getWheelAreas(targetStudio)). Adventure is the only threshold set that exists
+// today, so it is the only target mapped.
+//
+// COVERAGE FRAME, NOT COMPLETENESS: a slice with no threshold (Body, Family,
+// Home, Joy below) is an invitation the learner fills themselves, never a
+// deficit. Do not "balance" the map by inventing placements to fill every slice.
+//
+// *** DRAFT - NOT RATIFIED. *** This is a values judgment about where a child's
+// readiness work lives across their life. It must pass the same coverage-frame
+// review the v0.18 note references - captain sign-off, Jake + Accord on the
+// pedagogy, TCC review - before any learner sees a pre-filled sliced year. Until
+// MAPPING_RATIFIED flips true, the slice step renders BLANK boxes for everyone
+// (honest: no unratified placement reaches a learner). See
+// docs/design/2026-07-14-threshold-to-wheel-slice-mapping-v0.1.md.
+export const MAPPING_RATIFIED = false;
+
+export const THRESHOLD_LIFE_AREA = {
+  // Discovery -> Adventure. Target wheel: Body, Mind, Spirit, Emotions, Family,
+  // Friends, Home, Joy (getWheelAreas('adventure')).
+  adventure: {
+    // Skills - the academic + tool readiness work.
+    adv_khan: 'Mind',
+    adv_lexia: 'Mind',
+    adv_spelling: 'Mind',
+    adv_handwriting: 'Mind',
+    adv_jt: 'Mind',
+    adv_typing: 'Mind',
+    adv_lead_launches: 'Friends',   // leading morning Launches = studio culture / peers
+    // Character - the heroic-mindset + freedom readiness work.
+    adv_mindset: 'Emotions',        // growth mindset + Creator (not victim) = inner life
+    adv_effort: 'Emotions',         // effort, focus, intentionality = self-regulation
+    adv_soaring: 'Emotions',        // holding the contract + Core goals = self-governance
+    adv_leadership: 'Friends',      // leadership & culture building = community
+    adv_courage_book: 'Spirit',     // reading Courage to Grow = meaning / who I'm becoming
+  },
+};
+
+// The wheel slice a threshold belongs to for a given target studio, or null if
+// unplaced ("not placed yet" -> the render treats it as invitation, never
+// deficit). Returns null whenever the mapping is unratified, so nothing
+// unratified can steer a learner's year.
+export function thresholdLifeArea(targetStudio, thresholdId) {
+  if (!MAPPING_RATIFIED) return null;
+  return THRESHOLD_LIFE_AREA[targetStudio]?.[thresholdId] ?? null;
+}
+
+// Every threshold (skills + character) for a target studio as a flat list, in
+// display order, each tagged with its mapped slice (null until ratified).
+function thresholdsWithSlice(targetStudio) {
+  const t = getThresholds(targetStudio);
+  if (!t) return [];
+  return [...(t.skills || []), ...(t.character || [])].map((it) => ({
+    id: it.id,
+    name: it.name,
+    explain: it.explain,
+    struggling: it.struggling,
+    slice: thresholdLifeArea(targetStudio, it.id),
+  }));
+}
+
+// Build the model for the 1-year slice-plan surface. A pitching learner plans by
+// the wheel of the studio they are growing INTO; everyone else plans by their own
+// current wheel, blank. `prefill` maps a slice LABEL to the thresholds placed
+// there - empty (all boxes blank) unless the mapping is ratified AND the learner
+// opted into a pitch.
+//
+//   buildSlicePlan({ currentStudio: 'discovery', pitchTargetStudio: 'adventure' })
+//
+// pitchTargetStudio is the value stored on learner.pitchTargetStudio at opt-in;
+// pass null/undefined for a learner who is not pitching.
+export function buildSlicePlan({ currentStudio, pitchTargetStudio }) {
+  const pitching = Boolean(pitchTargetStudio);
+  const wheelStudio = pitching ? pitchTargetStudio : currentStudio;
+  const areas = getWheelAreas(wheelStudio);
+  const prefill = {};
+  if (pitching && MAPPING_RATIFIED) {
+    for (const item of thresholdsWithSlice(pitchTargetStudio)) {
+      if (!item.slice) continue;
+      (prefill[item.slice] ||= []).push(item);
+    }
+  }
+  return {
+    wheelStudio,
+    pitching,
+    ratified: MAPPING_RATIFIED,
+    areas: areas.map((label) => ({
+      label,
+      sliceId: sliceIdForLabel(label),
+      prefill: prefill[label] || [],
+    })),
+  };
 }
 
 // Build the thresholds page HTML for a target studio. status is a map of

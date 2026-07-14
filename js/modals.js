@@ -6,12 +6,12 @@ import {
   getProfileHorizons, setProfileHorizon,
   getOnboardingState, setOnboardingStep, markOnboardingStepSkipped, completeOnboarding,
   setQuoteAnchor, setStrengthRanking, setValuesFreetext, getValuesFreetext,
-  saveLearner,
+  saveLearner, saveGoal, getGoals,
 } from './store.js';
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName } from './studios.js';
 import { lifeWheelSvgFor } from './wheel.js';
-import { renderThresholdsHtml } from './thresholds.js';
+import { renderThresholdsHtml, buildSlicePlan } from './thresholds.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
@@ -956,6 +956,11 @@ const CASCADE_FULL = ['breath', 'strengths', 'values', 'beyond_5yr', 'within_5yr
 // Just the breath and a single near horizon.
 const CASCADE_SPARKS = ['breath', 'within_1yr'];
 
+// Steps whose progress is NOT tracked by the onboarding_step resume enum. Their
+// state lives elsewhere (pitch -> learner row; slice_plan -> year goals), so they
+// are safe to re-show on resume and must never be written as the resume pointer.
+const NON_RESUME_STEPS = new Set(['pitch', 'slice_plan']);
+
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
   beyond_5yr: {
@@ -1000,7 +1005,7 @@ const HORIZON_STACK_LABEL = {
   current_state: 'Right now',
 };
 
-export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, onComplete }) {
+export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, learnerId = null, onComplete }) {
   const steps = [...(studio === 'sparks' ? CASCADE_SPARKS : CASCADE_FULL)];
   // Pitch-readiness step (learners with a studio above them): a yes/no age
   // self-report + opt-in, inserted right before the 1-year horizon. It is NOT in
@@ -1012,6 +1017,15 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const at = steps.indexOf('within_1yr');
     if (at >= 0) steps.splice(at, 0, 'pitch');
   }
+  // 1-year plan, organized by wheel slice (captain 2026-07-14): the last step of
+  // the cascade for learners, after the telescope narrows to now. A learner who
+  // opted into the pitch plans by the wheel of the studio they're growing INTO,
+  // with their thresholds pre-inserted into the slice they belong to (gated on
+  // MAPPING_RATIFIED); everyone else plans by their own current wheel, blank.
+  // Sparks stays screen-free (no slice step). Not in the resume enum - its data
+  // lives as year goals, so re-showing on resume is idempotent.
+  const hasSlicePlan = role === 'learner' && studio && studio !== 'sparks';
+  if (hasSlicePlan) steps.push('slice_plan');
   // Values (captain 2026-07-13): Launch Pad learners + all adults (guides,
   // parents, owners) TYPE their values via the quiz (free text + archetype);
   // Discovery + Adventure learners PICK from the curated list. (Sparks does no
@@ -1033,6 +1047,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     viaStrengths: [],
     horizons: { beyond_5yr: '', within_5yr: '', within_1yr: '', current_state: '', halfway: '' },
     pitchStage: 'ask-age', // ask-age -> ask-optin | age-no -> confirmed
+    pitchOptedIn: false, // set when the learner opts into the pitch; drives the slice wheel
+    sliceText: {},   // sliceId -> the learner's 1-year goal text for that wheel slice
+    sliceLabels: {}, // sliceId -> slice display label (for the goal's lifeArea tag)
   };
 
   setModalTitle(role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass');
@@ -1063,6 +1080,21 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     state.idx = resumeIdx >= 0 ? resumeIdx : 0;
   }
 
+  // Preload any year goals already set against wheel slices, so the slice-plan
+  // step shows prior input on resume (and Continue upserts rather than duplicates).
+  if (hasSlicePlan && learnerId) {
+    try {
+      const existingGoals = await getGoals(learnerId);
+      for (const g of existingGoals) {
+        if (g.scope === 'year' && typeof g.categoryId === 'string'
+            && g.categoryId.startsWith('slice_') && g.text) {
+          state.sliceText[g.categoryId] = g.text;
+          if (g.lifeArea) state.sliceLabels[g.categoryId] = g.lifeArea;
+        }
+      }
+    } catch (e) { /* non-fatal: the slice boxes just start blank */ }
+  }
+
   function curStep() { return steps[state.idx]; }
   function isLast() { return state.idx === steps.length - 1; }
 
@@ -1091,9 +1123,11 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       finish();
       return;
     }
-    // 'pitch' is not in the resume enum - don't persist it as the pointer.
+    // 'pitch' and 'slice_plan' are not in the onboarding_step resume enum - don't
+    // persist them as the pointer (their data lives on the learner row / as year
+    // goals, so re-showing on resume is idempotent).
     if (steps[state.idx] === 'pitch') state.pitchStage = 'ask-age';
-    if (profileId && steps[state.idx] !== 'pitch') await setOnboardingStep(profileId, steps[state.idx]);
+    if (profileId && !NON_RESUME_STEPS.has(steps[state.idx])) await setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
 
@@ -1102,7 +1136,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const step = curStep();
     captureHorizon();
     captureValuesTyped();
-    if (profileId && step !== 'breath') await markOnboardingStepSkipped(profileId, step);
+    captureSlice();
+    // Non-resume steps (pitch, slice_plan) aren't in the onboarding_step enum, so
+    // never record a skip against them.
+    if (profileId && step !== 'breath' && !NON_RESUME_STEPS.has(step)) await markOnboardingStepSkipped(profileId, step);
     await advance(null);
   }
 
@@ -1110,9 +1147,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     if (state.idx === 0) return;
     captureHorizon();
     captureValuesTyped();
+    captureSlice();
     state.idx -= 1;
     if (steps[state.idx] === 'pitch') state.pitchStage = 'ask-age';
-    if (profileId && steps[state.idx] !== 'pitch') setOnboardingStep(profileId, steps[state.idx]);
+    if (profileId && !NON_RESUME_STEPS.has(steps[state.idx])) setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
 
@@ -1329,6 +1367,84 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     `;
   }
 
+  // Capture the slice-plan textareas into state, so Back / Not now / re-render
+  // never lose typing.
+  function captureSlice() {
+    document.querySelectorAll('.slice-box').forEach((ta) => {
+      const id = ta.dataset.sliceId;
+      if (!id) return;
+      state.sliceText[id] = ta.value;
+      state.sliceLabels[id] = ta.dataset.sliceLabel || null;
+    });
+  }
+
+  // A threshold "carried from the pitch" into its slice: the name plus the same
+  // break-into-weekly-steps -> North decompose the thresholds page offers, so the
+  // pitch pipeline (pitch -> thresholds -> weekly tasks in North) is reachable
+  // right here in the year plan. (Only rendered when the mapping is ratified.)
+  function sliceCarriedItem(t) {
+    return `
+      <li class="threshold-item slice-carried-item">
+        <div class="threshold-head"><span class="threshold-name">${escapeHtml(t.name)}</span></div>
+        <details class="threshold-plan">
+          <summary>Break into weekly steps</summary>
+          <div class="threshold-steps">
+            <input type="text" class="threshold-step-input" placeholder="On [when], I'll [what]">
+            <input type="text" class="threshold-step-input" placeholder="On [when], I'll [what]">
+            <input type="text" class="threshold-step-input" placeholder="On [when], I'll [what]">
+          </div>
+          <div class="threshold-when">
+            <label><input type="radio" name="sstep-when-${escapeAttr(t.id)}" value="now" checked> Start now</label>
+            <label><input type="radio" name="sstep-when-${escapeAttr(t.id)}" value="session1"> Prep for Session 1</label>
+          </div>
+          <button type="button" class="btn btn-primary threshold-plan-add" data-slice-threshold-plan="${escapeAttr(t.id)}">Add to my North</button>
+        </details>
+      </li>`;
+  }
+
+  // The 1-year plan, organized by wheel slice. A pitching learner plans by the
+  // wheel of the studio they're growing INTO, thresholds pre-placed (when the
+  // mapping is ratified); everyone else plans by their own current wheel, blank.
+  function renderSlicePlan() {
+    const plan = buildSlicePlan({
+      currentStudio: studio,
+      pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
+    });
+    const wheel = `<div class="onb-wheel-pin">${lifeWheelSvgFor(plan.wheelStudio)}</div>`;
+    const placedLine = plan.pitching && plan.ratified
+      ? ' Some of your thresholds are already placed where they belong - refine them, or leave them as they are.'
+      : '';
+    const lead = plan.pitching
+      ? `You said yes to your pitch to <strong>${escapeHtml(getStudioName(plan.wheelStudio))}</strong>. Here is your year, held across the parts of your life.${placedLine}`
+      : `Here is your year, held across the parts of your life.`;
+    const intro = `
+      <div class="onb-horizon-prompt">
+        <h3 class="onb-horizon-heading">Your year, slice by slice.</h3>
+        <p class="onb-horizon-body">${lead} Fill the ones that are calling you. An empty slice is fine - it is an invitation, not a gap.</p>
+      </div>`;
+    const cards = plan.areas.map((slice) => {
+      const val = state.sliceText[slice.sliceId] || '';
+      const carried = slice.prefill.length
+        ? `<div class="slice-carried">
+             <span class="slice-carried-label">Carried from your pitch</span>
+             <ul class="slice-carried-list">${slice.prefill.map(sliceCarriedItem).join('')}</ul>
+           </div>`
+        : '';
+      return `
+        <div class="slice-card" data-slice="${escapeAttr(slice.sliceId)}">
+          <div class="slice-card-head"><span class="slice-card-name">${escapeHtml(slice.label)}</span></div>
+          <textarea class="slice-box" data-slice-id="${escapeAttr(slice.sliceId)}" data-slice-label="${escapeAttr(slice.label)}" rows="2" placeholder="By next year, in ${escapeAttr(slice.label)}, I want to…">${escapeHtml(val)}</textarea>
+          ${carried}
+        </div>`;
+    }).join('');
+    return `
+      ${wheel}
+      ${intro}
+      <div class="slice-grid">${cards}</div>
+      ${navButtons({ skippable: true, continueLabel: 'Enter your Compass' })}
+    `;
+  }
+
   function render() {
     const formFields = document.getElementById('form-fields');
     const step = curStep();
@@ -1336,6 +1452,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     else if (step === 'strengths') formFields.innerHTML = renderStrengthsUpload();
     else if (step === 'values') formFields.innerHTML = typeValues ? renderValuesType() : renderSelectStep({ kind: 'value', label: 'values' });
     else if (step === 'pitch') formFields.innerHTML = renderPitch();
+    else if (step === 'slice_plan') formFields.innerHTML = renderSlicePlan();
     else formFields.innerHTML = renderHorizon(step);
     wireStep();
     if (HORIZON_PROMPTS[step]) setTimeout(() => document.getElementById('onb-horizon')?.focus(), 50);
@@ -1389,9 +1506,31 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
                 });
               } catch (e) { /* non-blocking: the confirmation still shows */ }
             }
+            state.pitchOptedIn = true; // the slice-plan step plans by the target wheel
             state.pitchStage = 'confirmed';
             render();
           }
+        });
+      });
+    }
+
+    // Slice-plan step: a carried threshold's "Add to my North" decomposes its
+    // weekly steps into dated North tasks - the same start-now / prep-Session-1
+    // path the thresholds page uses.
+    if (step === 'slice_plan') {
+      document.querySelectorAll('[data-slice-threshold-plan]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          if (!learnerId || !pitchTarget) return;
+          const item = btn.closest('.threshold-item');
+          const stepsToAdd = [...item.querySelectorAll('.threshold-step-input')]
+            .map((i) => i.value.trim()).filter(Boolean);
+          if (!stepsToAdd.length) return;
+          const mode = item.querySelector('input[type="radio"]:checked')?.value || 'now';
+          btn.disabled = true;
+          try {
+            await addThresholdStepsToNorth({ id: learnerId, studio }, pitchTarget, stepsToAdd, mode);
+            btn.textContent = 'Added to your North ✓';
+          } catch (e) { btn.disabled = false; }
         });
       });
     }
@@ -1413,6 +1552,34 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         }
       } else if (step === 'pitch') {
         await advance(null);
+      } else if (step === 'slice_plan') {
+        captureSlice();
+        // Upsert each non-empty slice box as a year goal tagged with its wheel
+        // slice. Empty boxes are left untouched - never wipe a goal the learner
+        // may have set on a prior pass (coverage frame: an empty slice is fine).
+        await advance(async () => {
+          if (!learnerId) return;
+          let existing = [];
+          try { existing = await getGoals(learnerId); } catch (e) { existing = []; }
+          const byCat = new Map(
+            existing.filter((g) => g.scope === 'year').map((g) => [g.categoryId, g])
+          );
+          for (const [sliceId, raw] of Object.entries(state.sliceText)) {
+            const text = (raw || '').trim();
+            if (!text) continue;
+            const prior = byCat.get(sliceId);
+            await saveGoal({
+              id: prior?.id,
+              learnerId,
+              categoryId: sliceId,
+              scope: 'year',
+              text,
+              lifeArea: state.sliceLabels[sliceId] || null,
+              targetSession: 6,
+              status: prior?.status || 'active',
+            });
+          }
+        });
       } else {
         captureHorizon();
         const text = state.horizons[step] || '';

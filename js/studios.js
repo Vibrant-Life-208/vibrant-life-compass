@@ -375,9 +375,16 @@ export function getStudio(studioId) {
 // so the goal areas match the wheel exactly (Discovery 6, Adventure 8, Launch Pad
 // 11). kind 'personal' groups them under "Slices of Life". Guide-summer keeps its
 // own GUIDE_CATEGORIES. (Captain 2026-07-10.)
+// The stable category id for a wheel-slice label. Shared so a goal saved against
+// a slice from the 1-year slice-plan step uses the SAME categoryId the setup goal
+// grid + year view expect (e.g. 'Spirit / Meaning' -> 'slice_spirit_meaning').
+export function sliceIdForLabel(label) {
+  return 'slice_' + String(label).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, '');
+}
+
 function sliceCategoriesForStudio(studioId) {
   return getWheelAreas(studioId).map((label) => ({
-    id: 'slice_' + label.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, ''),
+    id: sliceIdForLabel(label),
     name: label,
     kind: 'personal',
     example: '',

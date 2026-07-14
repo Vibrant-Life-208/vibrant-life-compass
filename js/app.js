@@ -324,6 +324,7 @@ async function onSignedIn() {
         profileId: ownIdentity,
         role: session.role,
         studio: onbStudio,
+        learnerId, // the slice-plan step saves year goals against this learner
         onComplete: async () => {
           await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
         },
