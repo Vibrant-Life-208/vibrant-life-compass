@@ -3176,6 +3176,22 @@ body.landscape-mountain {
   font-style: italic;
 }
 
+/* A category's goal tasks - the weekly steps, listed inside its card.
+   (Captain 2026-07-13: cards lead with the concrete plan, not just milestones.) */
+.category-tasks {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.category-tasks li {
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
 /* Wheel-slice grouping (1-year horizon by life area, guide-summer).
    Coverage frame, not completeness frame - a quiet slice reads as room to grow,
    never a deficit. No counts, no fill-meters, no alarm colors, ever.
