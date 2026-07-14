@@ -251,12 +251,17 @@ async function onSignedIn() {
     }
   }
 
-  // First-run gate: learner role without setupCompletedAt sees ONLY the
-  // setup view until they finish (age + studio + 5 goals + top 3).
+  // First-run gate: learner role without setupCompletedAt sees ONLY the setup
+  // view until they finish (studio + 5 goals + top 3). BUT only once the
+  // onboarding cascade is done - otherwise this early return skips the cascade
+  // (strengths -> values -> wheel -> 10yr -> 5yr -> pitch -> slice-plan) entirely
+  // for every fresh learner. Onboarding runs first, then Setup. (Bug fix
+  // 2026-07-14: the two first-run gates were racing and Setup won.)
   if (session.role === 'learner' && session.learnerId) {
     const { getLearner } = await import('./store.js');
     const learner = await getLearner(session.learnerId);
-    if (learner && !learner.setupCompletedAt) {
+    const onboardingDone = await hasCompletedOnboarding(ownIdentity);
+    if (onboardingDone && learner && !learner.setupCompletedAt) {
       await showSetupView(session.learnerId);
       return;
     }
