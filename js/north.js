@@ -125,21 +125,61 @@ async function renderVision(learnerId, learner) {
   const yearGoals = allGoals.filter((g) => g.scope === 'year');
   const priorityIds = Array.isArray(learner.priorityGoalIds) ? learner.priorityGoalIds : [];
 
+  // Tasks-grouped-by-category, not a wall of blank category shells.
+  // (Captain 2026-07-13.) The old grid listed every category with "Not yet set,"
+  // which felt overwhelming during setup and offered no path to plan. Now only
+  // categories that HAVE a goal show, each surfaced through its concrete steps -
+  // the plan itself. Planning still happens in Setup's guided 9-stage walkthrough
+  // (js/setup.js); this view shows its output. Nothing is set from here.
+  const planned = categories
+    .map((cat) => ({ cat, goal: yearGoals.find((g) => g.categoryId === cat.id) }))
+    .filter((x) => x.goal);
+
   el.innerHTML = '';
-  categories.forEach((cat) => {
-    const goal = yearGoals.find((g) => g.categoryId === cat.id);
-    const isPriority = goal && priorityIds.includes(goal.id);
-    const tile = document.createElement('div');
-    tile.className = 'vision-tile' + (goal ? ' has-goal' : '') + (isPriority ? ' is-priority' : '');
-    tile.innerHTML = `
-      <div class="vision-tile-header">
-        <span class="vision-tile-name">${isPriority ? '★ ' : ''}${escapeHtml(cat.name)}</span>
-        <span class="vision-tile-kind">${cat.kind}</span>
+
+  // Empty state points at the walkthrough, not a blank grid. (Fixes "no walk
+  // through on how to plan" - the guidance is in Setup, so send them there.)
+  if (planned.length === 0) {
+    el.innerHTML = '<p class="north-vision-empty">Your map is empty for now. Head to <strong>Setup</strong> to walk through your goals one at a time - it builds this map for you, one area at a time.</p>';
+    return;
+  }
+
+  planned.forEach(({ cat, goal }) => {
+    const isPriority = priorityIds.includes(goal.id);
+    const steps = stepsForGoal(goal);
+    const group = document.createElement('div');
+    group.className = 'vision-cat' + (isPriority ? ' is-priority' : '');
+    const body = steps.length
+      ? `<ul class="vision-cat-tasks">${steps.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`
+      : `<p class="vision-cat-aim">${escapeHtml(goal.text || 'Goal set - add weekly steps in Setup.')}</p>`;
+    group.innerHTML = `
+      <div class="vision-cat-header">
+        <span class="vision-cat-name">${isPriority ? '★ ' : ''}${escapeHtml(cat.name)}</span>
+        <span class="vision-cat-kind">${escapeHtml(cat.kind)}</span>
       </div>
-      <p class="vision-tile-goal">${goal ? escapeHtml(goal.text) : 'Not yet set'}</p>
+      ${body}
     `;
-    el.appendChild(tile);
+    el.appendChild(group);
   });
+}
+
+// Flatten a year goal's weeklySteps { 1:[w1..], 2:[..], 3:[..] } into ordered
+// step texts (session then week). These are the "goal tasks" of the category -
+// the concrete plan the learner walked through in Setup.
+function stepsForGoal(goal) {
+  const out = [];
+  const ws = goal?.weeklySteps || {};
+  Object.keys(ws)
+    .map(Number)
+    .filter((n) => !Number.isNaN(n))
+    .sort((a, b) => a - b)
+    .forEach((s) => {
+      (Array.isArray(ws[s]) ? ws[s] : []).forEach((t) => {
+        const text = (t || '').trim();
+        if (text) out.push(text);
+      });
+    });
+  return out;
 }
 
 function escapeHtml(s) {

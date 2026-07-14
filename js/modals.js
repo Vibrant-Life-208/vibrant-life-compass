@@ -919,11 +919,11 @@ export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabe
 // completeOnboarding so the gate recedes. No "Step X of N" counter - the room
 // (Fabula) flagged form-feel as a ship failure; the resume must never shame.
 //
-// Developmental gating (Decision 5): the long-horizon steps are dropped for the
-// youngest studios. NOTE: the young-tier copy + age-tier VIA/Values labels are
-// NOT yet built (reference tables hold display_label_adult only). The
-// near-horizon set is the mechanism; Sparks/Discovery learners must not be
-// onboarded until the age-tier register lands.
+// Developmental gating (captain 2026-07-14, superseding Decision 5): the long-
+// horizon steps are dropped ONLY for Sparks (screen-free). Discovery and up walk
+// the full telescope. NOTE: age-tier VIA/Values labels for the youth register are
+// still landing (reference tables hold display_label_adult, with youth labels
+// preferred when present - see renderStrengthsUpload).
 //
 // onComplete is called once the cascade is walked; per-step saving already
 // happened, so it only routes the user into the app.
@@ -934,6 +934,11 @@ export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabe
 // all tiers. An empty URL would render the entry grid without a link-out (graceful
 // fallback), but both are populated.
 const VIA_SURVEY_URL = 'https://www.viacharacter.org/survey/account/register';
+// Child tier (Discovery + Adventure): VIA Youth Survey, ages 8-17 (captain
+// 2026-07-13). VIA routes to the youth survey by the age given at registration,
+// so this shares the registration entry today; swap to a youth deep-link here if
+// one becomes available. Copy is youth-labeled so families pick the right one.
+const VIA_YOUTH_SURVEY_URL = 'https://www.viacharacter.org/survey/account/register';
 // values.institute - Brad Hook's "Start With Values": ~15 min, returns top-3
 // values + a personalized action plan. Matches the captain's 6-15 spec.
 const VALUES_ASSESSMENT_URL = 'https://values.institute/values-app/';
@@ -942,8 +947,14 @@ const VALUES_ASSESSMENT_URL = 'https://values.institute/values-app/';
 // The quote is handled separately by openQuoteFlow (its own front-of-line flow),
 // not as a cascade step - so it can never be resumed-past.
 const CASCADE_FULL = ['breath', 'strengths', 'values', 'beyond_5yr', 'within_5yr', 'within_1yr', 'current_state', 'halfway'];
-// Youngest tiers (Decision 5): one near horizon only, no five-year telescope.
-const CASCADE_NEAR = ['breath', 'strengths', 'values', 'within_1yr'];
+// Full telescope for ALL learners including Discovery (captain 2026-07-14):
+// this overrides the earlier Decision 5 "no five-year telescope for young
+// learners." Discovery now walks the full 10yr -> 5yr -> 1yr horizon like the
+// older tiers; only Sparks stays screen-free. (The old CASCADE_NEAR near-horizon
+// set was retired here.)
+// Sparks (tots) are screen-free (captain 2026-07-13): NO strengths, NO values.
+// Just the breath and a single near horizon.
+const CASCADE_SPARKS = ['breath', 'within_1yr'];
 
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
@@ -990,7 +1001,7 @@ const HORIZON_STACK_LABEL = {
 };
 
 export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, onComplete }) {
-  const steps = [...((studio === 'sparks' || studio === 'discovery') ? CASCADE_NEAR : CASCADE_FULL)];
+  const steps = [...(studio === 'sparks' ? CASCADE_SPARKS : CASCADE_FULL)];
   // Pitch-readiness step (learners with a studio above them): a yes/no age
   // self-report + opt-in, inserted right before the 1-year horizon. It is NOT in
   // the onboarding_step resume enum, so advance()/back() never persist it as the
@@ -1001,9 +1012,15 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const at = steps.indexOf('within_1yr');
     if (at >= 0) steps.splice(at, 0, 'pitch');
   }
-  // Adventure + Launch Pad learners, guides, and parents TYPE their values (free
-  // text + archetype); Sparks + Discovery pick from the curated list.
-  const typeValues = role !== 'learner' || studio === 'adventure' || studio === 'launchpad';
+  // Values (captain 2026-07-13): Launch Pad learners + all adults (guides,
+  // parents, owners) TYPE their values via the quiz (free text + archetype);
+  // Discovery + Adventure learners PICK from the curated list. (Sparks does no
+  // values step at all - see CASCADE_SPARKS.)
+  const typeValues = role !== 'learner' || studio === 'launchpad';
+  // Character strengths (captain 2026-07-13): Discovery + Adventure learners take
+  // the VIA YOUTH survey; Launch Pad learners and all adults take the adult VIA
+  // survey. Same on-device PDF upload for both.
+  const childStrengths = role === 'learner' && (studio === 'discovery' || studio === 'adventure');
 
   const state = {
     idx: 0,
@@ -1131,15 +1148,21 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // Strengths step: VIA survey link-out + on-device PDF upload (no hand-picking).
   function renderStrengthsUpload() {
     const labels = {};
-    state.viaStrengths.forEach((s) => { labels[s.id] = s.display_label_adult; });
+    // Prefer child-friendly labels for the youth tier when the reference table
+    // carries them; fall back to the adult label until display_label_child lands.
+    state.viaStrengths.forEach((s) => {
+      labels[s.id] = (childStrengths && s.display_label_child) ? s.display_label_child : s.display_label_adult;
+    });
+    const surveyUrl = childStrengths ? VIA_YOUTH_SURVEY_URL : VIA_SURVEY_URL;
+    const surveyName = childStrengths ? 'VIA Youth Survey (ages 8-17)' : 'VIA Survey';
     const r = state.strengthResult;
     const preview = r
       ? `<div class="onb-via-found"><p class="onb-step-instruction">Got it - your top strengths:</p><ol class="via-preview-list">${r.top8.slice(0, 5).map((id) => `<li>${escapeHtml(labels[id] || id)}</li>`).join('')}</ol></div>`
       : '';
     const errored = state.strengthError ? `<p class="via-import-error">${escapeHtml(state.strengthError)}</p>` : '';
     return `
-      <p class="onb-step-instruction">Your character strengths come from the free VIA Survey. Take it, download your results PDF, and drop it below - it's read on your device and never uploaded.</p>
-      <p class="onb-linkout"><a href="${escapeAttr(VIA_SURVEY_URL)}" target="_blank" rel="noopener noreferrer">Take the free VIA Survey ↗</a><span class="onb-linkout-note">Opens in a new tab. Come back with your PDF.</span></p>
+      <p class="onb-step-instruction">Your character strengths come from the free ${surveyName}. Take it, download your results PDF, and drop it below - it's read on your device and never uploaded.</p>
+      <p class="onb-linkout"><a href="${escapeAttr(surveyUrl)}" target="_blank" rel="noopener noreferrer">Take the free ${surveyName} ↗</a><span class="onb-linkout-note">Opens in a new tab. Come back with your PDF.</span></p>
       <label class="via-drop" id="onb-via-drop">
         <input type="file" id="onb-via-file" accept="application/pdf" hidden>
         <span>Drop your VIA PDF here, or <strong>choose a file</strong></span>

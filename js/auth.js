@@ -40,7 +40,7 @@ export function initAuth(onSignedIn) {
       // on success or null on failure.
       const account = await signInWithHeroName(heroName, password);
       if (!account) {
-        showSigninError('Hero name and password don\'t match. Ask a guide to reset if you forgot.');
+        showSigninError('That hero name and password don’t match. Let your guide know — they can reset it for you.');
         return;
       }
       const errorEl = document.getElementById('signin-error');

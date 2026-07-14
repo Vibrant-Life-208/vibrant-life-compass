@@ -2886,6 +2886,77 @@ body.landscape-mountain {
   color: var(--text);
 }
 
+/* Year vision as tasks-grouped-by-category (Captain 2026-07-13).
+   Only planned categories show; each is surfaced through its concrete steps -
+   the plan, not a blank shell. */
+.vision-cat {
+  background: var(--warm-white);
+  border: 1px solid var(--earth-pale);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.vision-cat.is-priority {
+  border-color: var(--sage-light);
+  background: var(--sage-pale);
+}
+
+.vision-cat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vision-cat-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--sage);
+}
+
+.vision-cat.is-priority .vision-cat-name { font-weight: 600; }
+
+.vision-cat-kind {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vision-cat-tasks {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.vision-cat-tasks li {
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.vision-cat-aim {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  font-style: italic;
+}
+
+.north-vision-empty {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border: 1px dashed var(--earth-pale);
+  border-radius: var(--radius);
+}
+
 /* Passwords View */
 .passwords-filter {
   display: flex;

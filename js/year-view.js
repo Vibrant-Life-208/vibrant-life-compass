@@ -147,6 +147,14 @@ export async function renderYearView(learnerId) {
       ? `<button type="button" class="btn btn-text goal-share-win" data-id="${goal.id}">Share this win with my parents</button>`
       : '';
 
+    // The category's goal tasks - the weekly steps the learner planned in Setup.
+    // Shown beneath the goal so the card leads with the concrete plan, not just
+    // milestones. (Captain 2026-07-13.)
+    const steps = flattenSteps(goal);
+    const stepsHtml = steps.length
+      ? `<ul class="category-tasks">${steps.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`
+      : '';
+
     const placeholder = `Example: ${cat.example}`;
     card.innerHTML = `
       <div class="category-header">
@@ -158,6 +166,7 @@ export async function renderYearView(learnerId) {
       ${goal?.eos1Point ? `<p class="goal-meta"><span class="goal-meta-label">End of Session 1:</span> ${escapeHtml(goal.eos1Point)}</p>` : ''}
       ${goal?.quarterPoint ? `<p class="goal-meta"><span class="goal-meta-label">End of Session 2:</span> ${escapeHtml(goal.quarterPoint)}</p>` : ''}
       ${goal?.halfwayPoint ? `<p class="goal-meta" title="This one stays. It is your commitment anchor."><span class="goal-meta-label">End of Session 3 · locked:</span> ${escapeHtml(goal.halfwayPoint)}</p>` : ''}
+      ${stepsHtml}
       ${checkOffButton}
       ${shareWinButton}
     `;
@@ -280,6 +289,22 @@ export async function renderYearView(learnerId) {
     return card;
   }
 
+  // Hide blanks (Captain 2026-07-13): a category shows only if it has a goal with
+  // real text. No more wall of empty category shells - planning happens in Setup's
+  // guided walkthrough (js/setup.js); this page shows what's been planned. A goal
+  // for a not-yet-started area is added in Setup, not here.
+  const goalFor = (cat) => goals.find((g) => g.categoryId === cat.id && g.text && g.text.trim().length > 0);
+  const plannedCategories = categories.filter((cat) => goalFor(cat));
+
+  // Nothing planned yet -> point at the walkthrough, not a blank grid.
+  if (plannedCategories.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'north-vision-empty';
+    empty.innerHTML = 'No goals set yet. Head to <strong>Setup</strong> to walk through your goals one area at a time - it builds this page for you.';
+    list.appendChild(empty);
+    return;
+  }
+
   // Which wheel slice does this category live in? A goal's own lifeArea wins
   // over the category's declared home, so a placement can be overridden per goal.
   const sliceForCategory = (cat, goal) => (goal?.lifeArea || lifeAreaForCategory(cat.id)) || null;
@@ -290,9 +315,8 @@ export async function renderYearView(learnerId) {
   const useSlices = learner.studio === 'guide-summer';
 
   if (!useSlices) {
-    categories.forEach((cat) => {
-      const goal = goals.find((g) => g.categoryId === cat.id);
-      list.appendChild(buildCategoryCard(cat, goal));
+    plannedCategories.forEach((cat) => {
+      list.appendChild(buildCategoryCard(cat, goalFor(cat)));
     });
     return;
   }
@@ -306,8 +330,8 @@ export async function renderYearView(learnerId) {
   const bySlice = new Map(wheelAreas.map((area) => [area, []]));
   const offWheel = []; // categories with no life-area (e.g. Acton practice)
 
-  categories.forEach((cat) => {
-    const goal = goals.find((g) => g.categoryId === cat.id);
+  plannedCategories.forEach((cat) => {
+    const goal = goalFor(cat);
     const slice = sliceForCategory(cat, goal);
     const entry = { cat, card: buildCategoryCard(cat, goal) };
     if (slice && bySlice.has(slice)) bySlice.get(slice).push(entry);
@@ -353,6 +377,24 @@ export async function renderYearView(learnerId) {
     offWheel.forEach(({ card }) => section.appendChild(card));
     list.appendChild(section);
   }
+}
+
+// Flatten a year goal's weeklySteps { 1:[w1..], 2:[..], 3:[..] } into ordered
+// step texts (session then week) - the category's concrete "goal tasks."
+function flattenSteps(goal) {
+  const out = [];
+  const ws = goal?.weeklySteps || {};
+  Object.keys(ws)
+    .map(Number)
+    .filter((n) => !Number.isNaN(n))
+    .sort((a, b) => a - b)
+    .forEach((s) => {
+      (Array.isArray(ws[s]) ? ws[s] : []).forEach((t) => {
+        const text = (t || '').trim();
+        if (text) out.push(text);
+      });
+    });
+  return out;
 }
 
 function escapeHtml(s) {

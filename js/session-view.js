@@ -33,6 +33,7 @@ export async function renderSessionView(learnerId) {
 
   const categories = getCategoriesForStudio(learner.studio);
   const allGoals = await getGoals(learnerId);
+  const yearGoals = allGoals.filter((g) => g.scope === 'year');
   const sessionGoals = allGoals.filter(
     (g) => g.scope === 'session' && g.sessionIndex === currentSession
   );
@@ -43,7 +44,6 @@ export async function renderSessionView(learnerId) {
   const existingBanner = document.getElementById('session-continuity-banner');
   if (existingBanner) existingBanner.remove();
   if (currentSession > 1) {
-    const yearGoals = allGoals.filter((g) => g.scope === 'year');
     const priorSession = currentSession - 1;
     // weeklySteps shape: { 1: [w1,w2,w3,w4], 2: [..5..], 3: [..3..] }
     const priorLastWeekTexts = yearGoals
@@ -74,8 +74,27 @@ export async function renderSessionView(learnerId) {
   }
 
   list.innerHTML = '';
-  categories.forEach((cat) => {
+
+  // Hide blanks (Captain 2026-07-13): only categories with a session goal show,
+  // each surfaced through its weekly steps for this session. Planning happens in
+  // Setup's guided walkthrough (year goals auto-seed Sessions 1-3); this page
+  // shows and completes what's planned, not a wall of empty category shells.
+  const planned = categories.filter((cat) => sessionGoals.some((g) => g.categoryId === cat.id));
+
+  if (planned.length === 0) {
+    list.innerHTML = '<p class="north-vision-empty">No goals for this session yet. Set your year goals in <strong>Setup</strong> - Sessions 1-3 fill in from there automatically.</p>';
+    return;
+  }
+
+  planned.forEach((cat) => {
     const goal = sessionGoals.find((g) => g.categoryId === cat.id);
+    // This category's weekly steps for the current session, from the year goal.
+    const yearGoal = yearGoals.find((g) => g.categoryId === cat.id);
+    const weeks = yearGoal?.weeklySteps?.[currentSession];
+    const steps = (Array.isArray(weeks) ? weeks : []).map((s) => (s || '').trim()).filter(Boolean);
+    const stepsHtml = steps.length
+      ? `<ul class="category-tasks">${steps.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`
+      : '';
     const card = document.createElement('div');
     card.className = 'category-card';
     const placeholder = `Example: ${cat.example}`;
@@ -95,6 +114,7 @@ export async function renderSessionView(learnerId) {
         <span class="category-kind">${cat.kind}</span>
       </div>
       <p class="category-goal ${goal ? '' : 'empty'} ${isDone ? 'goal-done' : ''}">${goal ? escapeHtml(goal.text) : escapeHtml(placeholder)}</p>
+      ${stepsHtml}
       ${markCompleteButton}
       ${shareButton}
     `;

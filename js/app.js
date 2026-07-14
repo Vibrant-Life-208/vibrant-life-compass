@@ -308,8 +308,9 @@ async function onSignedIn() {
     // The cascade (strengths/values/horizons) is gated separately.
     const needsCascade = !(await hasCompletedOnboarding(ownIdentity));
 
-    // Studio drives developmental gating of the long-horizon steps (Decision 5).
-    // Guides/parents have no studio and get the full telescope.
+    // Studio drives developmental gating of the long-horizon steps (captain
+    // 2026-07-14, superseding Decision 5): only Sparks is screen-free; Discovery
+    // and up get the full telescope. Guides/parents have no studio -> full.
     let onbStudio = null;
     if (needsCascade && session.role === 'learner' && session.learnerId) {
       const { getLearner } = await import('./store.js');
