@@ -962,22 +962,6 @@ export async function resetPassword(role, accountId) {
   return { tempPassword };
 }
 
-// Create or update a family (one shared login + member profiles). Used by the
-// admin/seed paths; families are otherwise read-only in the app.
-export async function saveFamily(data) {
-  const { id, ...rest } = data;
-  const families = read(KEYS.families) || [];
-  if (id) {
-    const idx = families.findIndex((f) => f.id === id);
-    if (idx >= 0) families[idx] = { ...families[idx], ...rest, id, updatedAt: new Date().toISOString() };
-    else families.push({ id, createdAt: new Date().toISOString(), ...rest });
-  } else {
-    families.push({ id: generateId(), createdAt: new Date().toISOString(), ...rest });
-  }
-  write(KEYS.families, families);
-  return families[families.length - 1];
-}
-
 // Typed values + archetype (older learners + adults) - local mirror.
 export async function setValuesFreetext(identityId, { values = [], archetype = '' } = {}) {
   const all = read(KEYS.profileAnchor) || {};

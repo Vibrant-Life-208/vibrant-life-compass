@@ -7,10 +7,12 @@ import {
   getParents, saveParent,
   getGuides, saveGuide,
   linkParentToLearner, getParentLearnerLinks,
+  resetPassword,
 } from './store.js';
 import { STUDIOS } from './studios.js';
 import { openCreateAccountModal, openBulkImportModal, openTempPasswordModal } from './modals.js';
 import { hashPassword, generateTempPassword } from './crypto.js';
+import { BACKEND_TYPE } from './backend/config.js';
 
 export async function renderAdminAccounts() {
   const container = document.getElementById('admin-accounts');
@@ -20,18 +22,21 @@ export async function renderAdminAccounts() {
     getLearners(), getParents(), getGuides(), getParentLearnerLinks(),
   ]);
 
-  // Ring 2 decision 2026-06-30: the old in-app reset wrote PBKDF2 fields the
-  // Supabase adapter ignores, so it never changed the real password - it handed
-  // out dead temp passwords. Removed until the secure 2FA-gated reset flow ships
-  // (Phase 2). For now, resets are owner-run via the admin reset tool.
-  let html = '<p class="admin-note">Password resets are run from the admin reset tool for now - the secure in-app reset (with two-factor) is on the way. Any staff member can help.</p>';
+  // In-app reset works on LOCAL (the PBKDF2 hash IS the credential store here).
+  // On Supabase the password lives in Auth, so a real reset needs the server-side
+  // 2FA-gated flow (Phase 2); there we keep the "use the admin reset tool" note
+  // instead of handing out a dead temp password.
+  const canReset = BACKEND_TYPE === 'local';
+  let html = canReset
+    ? '<p class="admin-note">Forgot a password? Tap <strong>Reset password</strong> on anyone below to generate a one-time temp password. They set their own the next time they sign in.</p>'
+    : '<p class="admin-note">Password resets are run from the admin reset tool for now - the secure in-app reset (with two-factor) is on the way. Any staff member can help.</p>';
 
   html += renderGroup('Hero geniuses (learners)', learners.map(l => ({
     id: l.id,
     name: l.heroName || l.name,
     sub: studioLabel(l.studio),
     role: 'learner',
-  })));
+  })), canReset);
 
   html += renderGroup('Parents', parents.map(p => {
     const link = links.find(x => x.parentId === p.id);
@@ -42,19 +47,50 @@ export async function renderAdminAccounts() {
       sub: linkedLearner ? `linked to ${linkedLearner.heroName || linkedLearner.name}` : 'no learner linked',
       role: 'parent',
     };
-  }));
+  }), canReset);
 
   html += renderGroup('Guides', guides.map(g => ({
     id: g.id,
     name: g.heroName || g.name,
     sub: 'guide',
     role: 'guide',
-  })));
+  })), canReset);
 
   container.innerHTML = html;
+
+  if (canReset) wireResetButtons(container);
 }
 
-function renderGroup(title, items) {
+// Wire the per-account "Reset password" buttons (local backend only). Generates
+// a fresh temp password, flags must_change_password, and shows the temp once for
+// the guide to hand over. Re-renders after close so the list stays live.
+function wireResetButtons(container) {
+  container.querySelectorAll('[data-reset-id]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      const role = btn.dataset.resetRole;
+      const id = btn.dataset.resetId;
+      const heroName = btn.closest('.admin-account-row')?.querySelector('.admin-account-name')?.textContent || '';
+      try {
+        const res = await resetPassword(role, id);
+        if (res?.tempPassword) {
+          openTempPasswordModal({
+            heroName,
+            tempPassword: res.tempPassword,
+            onClose: async () => { await renderAdminAccounts(); },
+          });
+        } else {
+          btn.disabled = false;
+        }
+      } catch (e) {
+        console.error('[admin] reset failed:', e);
+        btn.disabled = false;
+      }
+    });
+  });
+}
+
+function renderGroup(title, items, canReset = false) {
   return `
     <div class="admin-group">
       <h4 class="admin-group-title">${escapeHtml(title)}</h4>
@@ -64,6 +100,7 @@ function renderGroup(title, items) {
             <li class="admin-account-row">
               <span class="admin-account-name">${escapeHtml(a.name)}</span>
               <span class="admin-account-sub">${escapeHtml(a.sub)}</span>
+              ${canReset ? `<button type="button" class="btn btn-small btn-text admin-reset-btn" data-reset-role="${escapeHtml(a.role)}" data-reset-id="${escapeHtml(a.id)}">Reset password</button>` : ''}
             </li>
           `).join('') + '</ul>'
       }

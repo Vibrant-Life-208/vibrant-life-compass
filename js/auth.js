@@ -181,6 +181,9 @@ async function signInWithAccount(account) {
     email: account.email || `${account.heroName}@vibrantlife.local`,
     signedInAt: new Date().toISOString(),
   };
+  // Carry a reset flag through so onSignedIn forces the change-password screen.
+  // (Supabase surfaces this via getSession/profile; the local path needs it copied.)
+  if (account.must_change_password) session.must_change_password = true;
   if (account.role === 'learner') session.learnerId = account.id;
   if (account.role === 'guide') session.guideId = account.id;
   if (account.role === 'parent') {

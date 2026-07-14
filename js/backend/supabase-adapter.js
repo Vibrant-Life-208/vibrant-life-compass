@@ -643,6 +643,14 @@ export async function updatePassword(newPassword) {
   if (id) await getClient().from('profiles').update({ must_change_password: false }).eq('id', id);
 }
 
+// Guide/owner-run reset. NOT available on Supabase yet: the password lives in
+// Supabase Auth (not a PBKDF2 field this adapter can write), so a real reset
+// needs the server-side, 2FA-gated flow (Phase 2). Fail loudly rather than hand
+// out a dead temp password like the removed in-app reset once did.
+export async function resetPassword(_role, _accountId) {
+  throw new Error('In-app password reset is not available on Supabase yet (Phase 2, 2FA-gated). Use the admin reset tool.');
+}
+
 // ============================================================================
 // Authentication: hero-name + temp password -> Supabase Auth signIn.
 // Synthetic email pattern: `${heroName}@vibrantlife.local` (never sent,
