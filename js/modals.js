@@ -1239,13 +1239,18 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   function renderSelectStep({ kind, label }) {
     const list = kind === 'value' ? state.values : state.strengths;
+    // Discovery learners skip the external Values assessment link (values.institute
+    // is adult-oriented) - they pick from the curated list. (Captain 2026-07-14.)
+    const suppressValuesLink = kind === 'value' && studio === 'discovery';
     const linkUrl = kind === 'value' ? VALUES_ASSESSMENT_URL : VIA_SURVEY_URL;
     const linkText = kind === 'value'
       ? 'Take the Values assessment'
       : 'Take the free VIA Survey';
-    const linkBlock = linkUrl
-      ? `<p class="onb-linkout"><a href="${escapeAttr(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(linkText)} ↗</a><span class="onb-linkout-note">Opens in a new tab. We’ll keep your place here - come back when you have your results.</span></p>`
-      : `<p class="onb-linkout-note">Assessment link coming soon - for now, choose what fits you best below.</p>`;
+    const linkBlock = suppressValuesLink
+      ? ''
+      : linkUrl
+        ? `<p class="onb-linkout"><a href="${escapeAttr(linkUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(linkText)} ↗</a><span class="onb-linkout-note">Opens in a new tab. We’ll keep your place here - come back when you have your results.</span></p>`
+        : `<p class="onb-linkout-note">Assessment link coming soon - for now, choose what fits you best below.</p>`;
     let grid;
     if (kind === 'value') {
       grid = `<div class="onb-select-grid">${state.valuesLexicon.map((v) => {
