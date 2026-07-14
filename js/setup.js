@@ -109,7 +109,9 @@ export async function renderSetupView(learnerId) {
   // categories and accountability-partner candidates are studio-specific;
   // showing them before studio is committed leads to stale lists when the
   // dropdown changes without a save.
-  const aboutComplete = Boolean(learner.age) && Boolean(learner.studio);
+  // Age is no longer asked here (captain 2026-07-14): studio is roster-known, and
+  // the only age moment is the pitch gate. About You is complete once studio is set.
+  const aboutComplete = Boolean(learner.studio);
 
   container.innerHTML = `
     ${inboundProposerName ? `
@@ -134,10 +136,6 @@ export async function renderSetupView(learnerId) {
     <section class="setup-section">
       <h3 class="setup-section-title">1. About you</h3>
       <div class="setup-form">
-        <div class="form-field">
-          <label for="setup-age">How old are you?</label>
-          <input type="number" id="setup-age" min="4" max="19" placeholder="Age in years" value="${learner.age ? Number(learner.age) : ''}">
-        </div>
         <div class="form-field">
           <label for="setup-studio">Your studio</label>
           <select id="setup-studio">
@@ -223,12 +221,10 @@ export async function renderSetupView(learnerId) {
   // save, hide sections 2-4 with a "Save your changes" cue. Prevents the
   // stale-list bug where the partner list shows the old studio's candidates.
   if (aboutComplete) {
-    const ageInput = document.getElementById('setup-age');
     const studioSelect = document.getElementById('setup-studio');
     const restOfSetup = container.querySelectorAll('.setup-section:not(:first-of-type), .setup-footer');
     const checkDirty = () => {
-      const dirty = studioSelect.value !== learner.studio
-        || Number(ageInput.value || 0) !== Number(learner.age);
+      const dirty = studioSelect.value !== learner.studio;
       restOfSetup.forEach((el) => el.style.display = dirty ? 'none' : '');
       let cue = document.getElementById('setup-dirty-cue');
       if (dirty && !cue) {
@@ -242,38 +238,13 @@ export async function renderSetupView(learnerId) {
         cue.remove();
       }
     };
-    ageInput.addEventListener('input', checkDirty);
     studioSelect.addEventListener('change', checkDirty);
   }
 
   // Wire the about-you save
   document.getElementById('setup-save-about')?.addEventListener('click', async () => {
-    const ageVal = document.getElementById('setup-age').value;
     const studio = document.getElementById('setup-studio').value;
-    const ageNum = ageVal ? Number(ageVal) : 0;
-    if (!ageNum || ageNum < 4 || ageNum > 19) {
-      // Inline error without alert()
-      const ageInput = document.getElementById('setup-age');
-      ageInput.focus();
-      ageInput.style.outline = '2px solid #b94a4a';
-      let err = document.getElementById('setup-age-error');
-      if (!err) {
-        err = document.createElement('p');
-        err.id = 'setup-age-error';
-        err.style.color = '#b94a4a';
-        err.style.fontSize = '0.85rem';
-        err.style.marginTop = '0.4rem';
-        ageInput.parentElement.appendChild(err);
-      }
-      err.textContent = 'Please enter your age (4-19) to continue.';
-      return;
-    }
-    const updated = {
-      id: learner.id,
-      age: ageNum,
-      studio,
-    };
-    await saveLearner(updated);
+    await saveLearner({ id: learner.id, studio });
     await renderSetupView(learnerId);
   });
 
