@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Launch Pad - The Three-Year Story Cycle</title>
+<style>
+  :root {
+    --setup: #D98A2B;
+    --setup-soft: #FBEFDD;
+    --problem: #2A9D8F;
+    --problem-soft: #DFF1EE;
+    --resolution: #5B5B8A;
+    --resolution-soft: #E6E6F0;
+    --gold: #E2B23A;
+    --ink: #2B2B2B;
+    --muted: #6B6B6B;
+    --cream: #FAF7F2;
+    --line: #E7E1D8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 40px 44px 56px;
+  }
+
+  /* Hero */
+  .hero { text-align: center; margin-bottom: 30px; }
+  .eyebrow {
+    letter-spacing: 0.22em; text-transform: uppercase;
+    font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 10px;
+  }
+  .hero h1 {
+    font-size: 42px; line-height: 1.05; margin: 0 0 6px; font-weight: 800;
+  }
+  .hero .sub { font-size: 16px; color: var(--muted); margin: 0 0 18px; }
+  .thesis {
+    max-width: 760px; margin: 0 auto; font-size: 18px; font-weight: 500;
+    border-left: 4px solid var(--gold); padding: 6px 0 6px 18px; text-align: left;
+    background: #fff; border-radius: 0 8px 8px 0; padding: 14px 18px;
+    box-shadow: 0 1px 0 var(--line);
+  }
+
+  /* Wheel section */
+  .wheel-wrap {
+    display: grid; grid-template-columns: 360px 1fr; gap: 28px; align-items: center;
+    background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    padding: 26px 30px; margin: 26px 0 30px;
+  }
+  .wheel svg { width: 100%; height: auto; display: block; }
+  .read h3 { margin: 0 0 8px; font-size: 18px; }
+  .read p { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+  .grad {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: #FFF8E8; border: 1px solid #F0DFAE; border-radius: 12px; padding: 13px 15px;
+  }
+  .grad .star { flex: 0 0 auto; margin-top: 2px; }
+  .grad b { display: block; font-size: 15px; }
+  .grad span { font-size: 14px; color: var(--muted); }
+
+  /* Seasons */
+  .seasons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 30px; }
+  .season { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #fff; display: flex; flex-direction: column; }
+  .season .cap { color: #fff; padding: 16px 18px 14px; }
+  .season .cap .tag { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.9; }
+  .season .cap h2 { margin: 2px 0 6px; font-size: 24px; }
+  .season .cap .lens { font-size: 14px; font-weight: 600; }
+  .season .body { padding: 14px 18px 18px; }
+  .joy { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 10px; }
+  .quests { list-style: none; margin: 0 0 14px; padding: 0; }
+  .quests li { font-size: 14px; padding: 5px 0 5px 20px; position: relative; border-bottom: 1px dashed var(--line); }
+  .quests li:last-child { border-bottom: 0; font-weight: 700; }
+  .quests li::before { content: ""; position: absolute; left: 4px; top: 12px; width: 7px; height: 7px; border-radius: 50%; }
+  .ends { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+  .ends b { color: var(--ink); }
+
+  .setup .cap { background: var(--setup); }
+  .setup .joy { color: var(--setup); }
+  .setup .quests li::before { background: var(--setup); }
+  .problem .cap { background: var(--problem); }
+  .problem .joy { color: var(--problem); }
+  .problem .quests li::before { background: var(--problem); }
+  .resolution .cap { background: var(--resolution); }
+  .resolution .joy { color: var(--resolution); }
+  .resolution .quests li::before { background: var(--resolution); }
+
+  /* How it works */
+  .how { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px 26px; }
+  .how h3 { margin: 0 0 16px; font-size: 18px; text-align: center; letter-spacing: 0.02em; }
+  .how-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .how-item .k { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .how-item p { margin: 0; font-size: 13.5px; color: var(--ink); }
+
+  .footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 26px; }
+
+  /* Extended detail sections */
+  .divider { text-align: center; margin: 48px 0 18px; }
+  .divider h2 { display: inline-block; font-size: 27px; margin: 0; }
+  .lead { max-width: 780px; margin: 0 auto 26px; text-align: center; color: var(--muted); font-size: 16px; }
+
+  .howx { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 18px; }
+  .howx-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; border-top: 4px solid var(--gold); }
+  .howx-card h4 { margin: 0 0 6px; font-size: 16px; }
+  .howx-card p { margin: 0; font-size: 14px; }
+
+  .daygrid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 18px; margin-bottom: 14px; }
+  .daycol { background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .daycol .dh { padding: 12px 18px; color: #fff; font-weight: 700; font-size: 15px; }
+  .daycol.launch .dh { background: var(--setup); }
+  .daycol.project .dh { background: var(--problem); }
+  .daytable { width: 100%; border-collapse: collapse; }
+  .daytable td { padding: 9px 16px; font-size: 13.5px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .daytable tr:last-child td { border-bottom: 0; }
+  .daytable .t { white-space: nowrap; font-weight: 700; color: var(--setup); width: 92px; }
+
+  .sess { background: #fff; border: 1px solid var(--line); border-left: 6px solid var(--setup); border-radius: 12px; padding: 18px 22px; margin-bottom: 16px; }
+  .sess .top { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  .sess .snum { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--setup); }
+  .sess h3 { margin: 0; font-size: 21px; }
+  .sess .len { font-size: 12px; color: var(--muted); }
+  .sess .field { display: grid; grid-template-columns: 132px 1fr; gap: 10px; padding: 8px 0; border-top: 1px dashed var(--line); font-size: 14px; }
+  .sess .field .lab { font-weight: 700; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; padding-top: 1px; }
+  .sess .safety, .sess .lab.safety { color: #9a6a1a; }
+  .sess.forge { border-left-color: var(--problem); }
+  .sess.forge .snum { color: var(--problem); }
+  .sess.helm { border-left-color: var(--resolution); }
+  .sess.helm .snum { color: var(--resolution); }
+  .walkaway { max-width: 820px; margin: 0 auto 24px; background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--setup); border-radius: 12px; padding: 14px 22px; }
+  .walkaway.forge { border-top-color: var(--problem); }
+  .walkaway.helm { border-top-color: var(--resolution); }
+  .walkaway h4 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .walkaway ul { margin: 0; padding-left: 20px; }
+  .walkaway li { font-size: 14px; margin: 3px 0; }
+  .prose { max-width: 780px; margin: 0 auto; }
+  .prose p { font-size: 15.5px; line-height: 1.7; margin: 0 0 14px; }
+  .prose p:last-child { margin-bottom: 0; }
+  .letter { background: #fff; border: 1px solid var(--line); border-left: 5px solid var(--gold); border-radius: 12px; padding: 26px 32px; max-width: 820px; margin: 0 auto; }
+  .letter p { font-size: 15.5px; line-height: 1.7; margin: 0 0 14px; }
+  .letter .sig { margin: 16px 0 0; font-weight: 700; }
+  .letter .sig span { display: block; color: var(--muted); font-weight: 400; font-size: 14px; }
+  .pedagogy { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 900px; margin: 0 auto; }
+  .pc { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .pc h4 { margin: 0 0 6px; font-size: 15px; }
+  .pc p { margin: 0; font-size: 13.5px; line-height: 1.55; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 880px; margin: 18px auto 0; }
+  .twocol .col { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; }
+  .twocol .col h4 { margin: 0 0 8px; font-size: 15px; }
+  .twocol .col ul { margin: 0; padding-left: 18px; }
+  .twocol .col li { font-size: 14px; margin: 4px 0; }
+  .twocol .yes { border-top: 4px solid var(--problem); }
+  .twocol .no { border-top: 4px solid #C75D5D; }
+  .faq { max-width: 820px; margin: 0 auto; }
+  .qa { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; }
+  .qa h4 { margin: 0 0 6px; font-size: 16px; }
+  .qa p { margin: 0; font-size: 14px; line-height: 1.6; }
+  .tbd { color: #9a6a1a; font-style: italic; }
+  .about { background: #FFF8E8; border: 1px solid #F0DFAE; border-radius: 12px; padding: 18px 22px; max-width: 820px; margin: 0 auto; }
+  .about h4 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .about p { margin: 0; font-size: 14px; line-height: 1.65; }
+  @media (max-width: 860px) { .pedagogy, .twocol { grid-template-columns: 1fr; } }
+
+  @media (max-width: 860px) {
+    .howx, .daygrid { grid-template-columns: 1fr; }
+    .sess .field { grid-template-columns: 1fr; gap: 2px; }
+  }
+  @media print {
+    .sess, .daycol, .howx-card, .qa, .pc, .letter, .about, .walkaway, .twocol .col { break-inside: avoid; }
+    .divider, .lead { break-after: avoid; }
+  }
+  @media (max-width: 860px) {
+    .wheel-wrap { grid-template-columns: 1fr; }
+    .seasons { grid-template-columns: 1fr; }
+    .how-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { padding: 0; max-width: none; }
+    .wheel-wrap, .season, .how { break-inside: avoid; }
+    @page { margin: 12mm; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <div class="eyebrow">Vibrant Life &middot; A formation for ages 15 to 18</div>
+    <h1>The Launch Pad Story</h1>
+    <p class="sub">Origin &middot; The Forge &middot; The Helm - a formation, not a high school</p>
+    <p class="thesis">We help young people become who they are meant to be - to know themselves, do work that matters, make the hard calls, and love the life they are living.</p>
+  </div>
+
+  <div class="wheel-wrap">
+    <div class="wheel">
+      <svg viewBox="0 0 400 400" role="img" aria-label="The cycle wheel of three seasons">
+        <!-- Set-Up segment (top, theta 0-120) -->
+        <path d="M 200,60 A 140 140 0 0 1 321.24,270 L 271.01,241 A 82 82 0 0 0 200,118 Z" fill="#D98A2B"/>
+        <!-- Problem segment (bottom, theta 120-240) -->
+        <path d="M 321.24,270 A 140 140 0 0 1 78.76,270 L 128.99,241 A 82 82 0 0 0 271.01,241 Z" fill="#2A9D8F"/>
+        <!-- Resolution segment (left, theta 240-360) -->
+        <path d="M 78.76,270 A 140 140 0 0 1 200,60 L 200,118 A 82 82 0 0 0 128.99,241 Z" fill="#5B5B8A"/>
+
+        <!-- curved segment labels (hug the ring) -->
+        <defs>
+          <path id="arcOrigin" d="M 228.7,92.8 A 111 111 0 0 1 307.2,228.7"/>
+          <path id="arcForge" d="M 121.5,278.5 A 111 111 0 0 0 278.5,278.5"/>
+          <path id="arcHelm" d="M 92.8,228.7 A 111 111 0 0 1 171.3,92.8"/>
+        </defs>
+        <text fill="#fff" font-size="15" font-weight="700" letter-spacing="1.5"><textPath href="#arcOrigin" startOffset="50%" text-anchor="middle">ORIGIN</textPath></text>
+        <text fill="#fff" font-size="15" font-weight="700" letter-spacing="1.5"><textPath href="#arcForge" startOffset="50%" text-anchor="middle">THE FORGE</textPath></text>
+        <text fill="#fff" font-size="15" font-weight="700" letter-spacing="1.5"><textPath href="#arcHelm" startOffset="50%" text-anchor="middle">THE HELM</textPath></text>
+
+        <!-- center -->
+        <circle cx="200" cy="200" r="70" fill="#FAF7F2" stroke="#E7E1D8" stroke-width="1.5"/>
+        <text x="200" y="190" text-anchor="middle" fill="#6B6B6B" font-size="11" letter-spacing="1">YOUR</text>
+        <text x="200" y="206" text-anchor="middle" fill="#2B2B2B" font-size="16" font-weight="800">Captain's</text>
+        <text x="200" y="222" text-anchor="middle" fill="#2B2B2B" font-size="16" font-weight="800">Log</text>
+
+        <!-- rotation hint arrows -->
+        <path d="M 348,196 a 8 8 0 0 1 -2,9" fill="none" stroke="#B7B2A8" stroke-width="2"/>
+        <polygon points="343,206 351,206 347,213" fill="#B7B2A8"/>
+      </svg>
+    </div>
+    <div class="read">
+      <h3>How to read the wheel</h3>
+      <p>The program turns like seasons. Every learner walks all three seasons before they launch, and may join at any season - a learner who starts mid-cycle is joining the story in progress, never behind. Each learner carries one <b>Captain's Log</b> the whole way; it is the line they walk through the turning circle.</p>
+      <div class="grad">
+        <svg class="star" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.7l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.9 5 20.9l1.4-6.8L1.3 8.7l6.9-.7z" fill="#E2B23A"/></svg>
+        <div>
+          <b>Your Next Great Adventure</b>
+          <span>A personal graduation send-off in each learner's final year, whatever season that is. The send-off belongs to the learner, not to the calendar.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="seasons">
+
+    <div class="season setup">
+      <div class="cap">
+        <div class="tag">The Set-Up</div>
+        <h2>Origin</h2>
+        <div class="lens">Who am I?</div>
+      </div>
+      <div class="body">
+        <p class="joy">Joy: roots &amp; belonging</p>
+        <ul class="quests">
+          <li>The Map of Me - 100 dreams</li>
+          <li>The Lineage - family stories</li>
+          <li>The Power of Choice</li>
+          <li>Running My Own Ship</li>
+          <li>The Full Draft - write it all</li>
+          <li>Chapter One - shape it</li>
+          <li>This Is Me - the unveiling</li>
+        </ul>
+        <p class="ends"><b>Ends with</b> a story-of-self portfolio and the confidence of knowing where you came from and who you are now.</p>
+      </div>
+    </div>
+
+    <div class="season problem">
+      <div class="cap">
+        <div class="tag">The Problem</div>
+        <h2>The Forge</h2>
+        <div class="lens">What is worth solving?</div>
+      </div>
+      <div class="body">
+        <p class="joy">Joy: curiosity &amp; company</p>
+        <ul class="quests">
+          <li>Naming the Dragon</li>
+          <li>The Detective - find the root</li>
+          <li>My Arena - what you can move</li>
+          <li>The Wider Field</li>
+          <li>The Long Game</li>
+          <li>Hands to Work - service</li>
+          <li>The Call to Action - the talk</li>
+        </ul>
+        <p class="ends"><b>Ends with</b> a problem they chose, real service given, and a public talk that makes a room care.</p>
+      </div>
+    </div>
+
+    <div class="season resolution">
+      <div class="cap">
+        <div class="tag">The Resolution</div>
+        <h2>The Helm</h2>
+        <div class="lens">What do I do when there is no easy answer?</div>
+      </div>
+      <div class="body">
+        <p class="joy">Joy: expression &amp; camaraderie</p>
+        <ul class="quests">
+          <li>The Mantle - why you?</li>
+          <li>No Easy Answers - dilemmas</li>
+          <li>The Ripple - what if?</li>
+          <li>The Stage - theatre</li>
+          <li>The Arena of Voices - mentors</li>
+          <li>The Bridge - leading together</li>
+          <li>The Council - the hard call</li>
+        </ul>
+        <p class="ends"><b>Ends with</b> the capacity to make a hard call from principle, and a real mentor in their corner.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="how">
+    <h3>How it works</h3>
+    <div class="how-grid">
+      <div class="how-item">
+        <div class="k">The shape</div>
+        <p>A turning cycle, not a ladder. Three seasons; walk all three before you launch. Join at any season, never behind.</p>
+      </div>
+      <div class="how-item">
+        <div class="k">The week</div>
+        <p>Two days with a Launch Pad Guide - a life-coach, not a teacher - plus two days of self-directed project work and a protected day for rest, play, and friendship.</p>
+      </div>
+      <div class="how-item">
+        <div class="k">The thread</div>
+        <p>One learner-owned Captain's Log, carried and deepened across all three seasons. It belongs to the learner.</p>
+      </div>
+      <div class="how-item">
+        <div class="k">The send-off</div>
+        <p>Your Next Great Adventure - a personal graduation rite in each learner's final year.</p>
+      </div>
+      <div class="how-item">
+        <div class="k">The floor</div>
+        <p>Learner-led. No grades, no ranking. Joy is woven into the work, never assigned.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><h2>What your learner graduates with</h2></div>
+  <p class="lead">Everything a career-prep program promises - and the part those programs leave out.</p>
+  <div class="twocol">
+    <div class="col" style="border-top:4px solid var(--gold)"><h4>Ready for the world</h4><ul>
+      <li>A professional portfolio and resume, with real referrals</li>
+      <li>Real professional mentors in a field they care about</li>
+      <li>Hundreds of hours of real project, mentorship, and service work</li>
+      <li>A signature strength, developed to a level they can show</li>
+      <li>Public speaking: a delivered talk and a public council</li>
+      <li>Leadership experience - leading peers, not just joining</li>
+      <li>Time management, goal-setting, planning, communication</li>
+      <li>High-school requirements met along the way</li>
+    </ul></div>
+    <div class="col" style="border-top:4px solid var(--resolution)"><h4>Sure of who they are</h4><ul>
+      <li>They know who they are and where they came from</li>
+      <li>They can make a hard call from principle, not on instruction</li>
+      <li>They have faced real moral complexity and can reason through it</li>
+      <li>They have friends, a community, and a life they love</li>
+      <li>They can take on anything - and they want to</li>
+    </ul></div>
+  </div>
+
+  <div class="divider"><h2>A letter to a builder</h2></div>
+  <div class="letter">
+    <p>Dear builder,</p>
+    <p>Most of high school asks a teenager to memorize answers to questions they never asked, on a schedule that belongs to the institution and not to them. They graduate able to pass a test and unsure who they are.</p>
+    <p>I wanted to build the opposite. The Launch Pad Story is three years shaped like a story - the set-up, the problem, the resolution - because a life is a story, and a young person who can author their own can take on anything. In the first year they learn who they are and where they came from. In the second they find a problem worth their effort and do something real about it. In the third they meet the hard calls, the ones with no clean answer, and learn to make them from principle - then step into whatever comes next.</p>
+    <p>It runs as a cycle, not a ladder. The three years turn like seasons, and a learner walks all of them before they launch, in whatever order their cohort is on. No one is ahead or behind. Two days a week they meet with a guide who is a coach, not a lecturer; two days they captain their own projects. There are no grades and no ranking. There is a great deal of dreaming, real work, hard questions, shared meals, and room to love the life they are living while they build it.</p>
+    <p>This is the draft of that program. I would be glad to build it with you.</p>
+    <p class="sig">Erin Stanley<span>Guide, Vibrant Life</span></p>
+  </div>
+
+  <div class="divider"><h2>Why this works</h2></div>
+  <p class="lead">The shape is warm, and it is also grounded. A few of the findings underneath it.</p>
+  <div class="pedagogy">
+    <div class="pc"><h4>Near goals build real confidence</h4><p>Young people grow most when they set near-term goals they choose and reach, each win fueling the courage for the next. That is exactly why the 100 Dreams sort into horizons, and the within-a-year goals lead the season. (Bandura &amp; Schunk)</p></div>
+    <div class="pc"><h4>Mastery beats performance</h4><p>Learners aimed at mastering something face challenge and recover from setbacks; learners aimed at looking good fall apart under it. We frame everything as mastery, never as ranking. (Dweck)</p></div>
+    <div class="pc"><h4>Projects hold the attention lectures fight</h4><p>Self-directed, project-based learning is the strongest evidence-based shape for how teenagers actually learn - including the ones who struggle to sit still in a conventional classroom.</p></div>
+    <div class="pc"><h4>Agency is the active ingredient</h4><p>Across developmental psychology, motivation research, and trauma-informed care, the same finding recurs: remove a learner's agency and any structure turns harmful; protect it and the structure becomes where growth happens. So: learner-led, no grades, no surveillance, and the right to decline.</p></div>
+    <div class="pc"><h4>Learner-led, in good company</h4><p>The cycle is aligned with the Acton and Hero's Journey model of self-directed, exhibition-based learning - with a story spine and a life-coach guide of its own.</p></div>
+    <div class="pc"><h4>Safety is designed, not assumed</h4><p>Heavy material is held with previews, opt-outs, and body-first regulation, because pressure and anxiety degrade learning. Care is what lets a young person reach.</p></div>
+  </div>
+
+  <div class="divider"><h2>How it works, in full</h2></div>
+  <p class="lead">A turning cycle of three seasons, learner-led, with two guided days a week.</p>
+  <div class="howx">
+    <div class="howx-card"><h4>A cycle, not a ladder</h4><p>Origin, The Forge, and The Helm turn like the seasons of a year. Every learner walks all three before they launch, and may join at any point. A learner who starts mid-cycle is joining the story in progress, never behind.</p></div>
+    <div class="howx-card"><h4>The Guide is a life-coach</h4><p>Not a teacher who delivers answers. A guide who holds questions, walks alongside, and has permission to say "I don't know - let's find out together." The learner leads.</p></div>
+    <div class="howx-card"><h4>One Captain's Log</h4><p>Each learner keeps a single journal, carried and deepened across all three seasons. It belongs to the learner alone, never read for grading - the line they walk through the turning cycle.</p></div>
+    <div class="howx-card"><h4>Joy is woven in</h4><p>Roots and belonging, curiosity and company, expression and camaraderie - plus shared meals, expeditions, the arts, and a protected day for rest and play. Joy is invited, never assigned.</p></div>
+    <div class="howx-card"><h4>The floor</h4><p>Learner-led and sovereignty-honoring. No grades, no ranking, no busywork. A learner may decline a quest and still be fully honored. Progress belongs to them, not to a scoreboard.</p></div>
+    <div class="howx-card"><h4>The send-off</h4><p>Your Next Great Adventure - a personal graduation rite in each learner's final year, whatever season that is. The send-off belongs to the learner, not the calendar.</p></div>
+  </div>
+
+  <div class="divider"><h2>A day with the Guide, a day on your own</h2></div>
+  <p class="lead">The learner's day runs 9:00 am to 1:30 pm. Two days a week are Launch days with the Guide; two are self-directed project days. Both begin with the learner's own hands.</p>
+  <div class="daygrid">
+    <div class="daycol launch">
+      <div class="dh">A Launch day (with the Guide)</div>
+      <table class="daytable">
+        <tr><td class="t">9:00-10:00</td><td><b>Walk-in &amp; Project Hour</b> - arrive at your pace; reading, core academics, goal-setting. A soft, working start.</td></tr>
+        <tr><td class="t">10:00-10:25</td><td><b>Opening Circle</b> - settle, then "how are you, really?" Presence before content.</td></tr>
+        <tr><td class="t">10:25-10:40</td><td><b>The Quest Frame</b> - the Guide opens the session's question.</td></tr>
+        <tr><td class="t">10:40-11:45</td><td><b>The Work of the Day</b> - the core activity, which changes each session. Learner-led.</td></tr>
+        <tr><td class="t">11:45-12:15</td><td><b>The Table</b> - a shared meal.</td></tr>
+        <tr><td class="t">12:15-1:10</td><td><b>Apply &amp; Collaborate</b> - carry the quest into hands-on work.</td></tr>
+        <tr><td class="t">1:10-1:30</td><td><b>Bridge &amp; Glad Close</b> - name the next step; close with something light.</td></tr>
+      </table>
+    </div>
+    <div class="daycol project">
+      <div class="dh">A project day (on your own)</div>
+      <table class="daytable">
+        <tr><td><b>Self-set intention</b> - name today's focus.</td></tr>
+        <tr><td><b>Deep-work blocks</b> - reading, core / HS requirements, the personal project, the season's writing.</td></tr>
+        <tr><td><b>Collaboration</b> - optional; problems are often solved with others.</td></tr>
+        <tr><td><b>The Log</b> - capture the day.</td></tr>
+        <tr><td><b>On cadence, a fallow day</b> - rest, play, friendship. Protected, never filled.</td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="lead" style="font-size:14px;margin-bottom:8px;">Opening with a working hour eases learners in through self-direction before the social circle - a gift for the anxious or introverted - and signals that even a guided day is the learner's own.</p>
+
+  <div class="divider"><h2>The Guide</h2></div>
+  <div class="prose">
+    <p>The Launch Pad Guide is a life-coach, not a teacher. The job is not to deliver answers; it is to ask the question under the question, hold the room, and walk alongside a young person while they do their own becoming. A good guide is comfortable saying "I don't know - let's find out together," because that models exactly what we are trying to grow.</p>
+  </div>
+  <div class="twocol">
+    <div class="col yes"><h4>What the Guide does</h4><ul>
+      <li>Opens with presence before content</li>
+      <li>Runs the games and the Socratic frames</li>
+      <li>Notices a struggling learner and stays with them</li>
+      <li>Protects the floor: no grades, no ranking, no forcing</li>
+    </ul></div>
+    <div class="col no"><h4>What the Guide never does</h4><ul>
+      <li>Lecture, or deliver the meaning ready-made</li>
+      <li>Assign and rank</li>
+      <li>Push a learner past their own pace</li>
+      <li>Read the Captain's Log for assessment</li>
+    </ul></div>
+  </div>
+  <div class="prose" style="margin-top:18px;">
+    <p>This is real emotional labor, two days a week, across identity, real-world problems, and moral weight. So the plan builds in support for the Guide too: training in coaching and trauma-informed facilitation, peer support, and protected rest. A guide who is depleted cannot hold a room. The one who keeps the door must also be kept.</p>
+  </div>
+
+  <div class="divider"><h2>How we show growth without grades</h2></div>
+  <div class="prose">
+    <p>The most common question: without grades, how do you know a learner is growing - and how do you show a parent?</p>
+    <p>We make growth visible, just not with a number. Every learner builds a story-of-self portfolio and a one-page resume in the first season, and a body of real work after that - a service project, a public talk, a council. Each season ends in a public exhibition with a real audience: the Unveiling, the Call to Action, the Council. A parent does not get a report card; they get to watch their child stand up and show who they are becoming. The Captain's Log holds the private record of the journey, and it belongs to the learner alone.</p>
+    <p>High-school requirements are not set aside. Core academics and the credits a learner needs live in the self-directed project days, tracked and met. <span class="tbd">[Jenna to confirm: how Vibrant Life issues credit, and the diploma or transcript path.]</span> The difference is that the requirements serve the learner's path, instead of the path serving the requirements.</p>
+  </div>
+
+  <div class="divider"><h2>The mixed-age cycle</h2></div>
+  <div class="prose">
+    <p>Because the program is a cycle, learners of different ages share the room, each on a different season. A fifteen-year-old might begin in The Helm while an older learner is in Origin. This is a feature, not a problem: older learners model for younger ones, and younger learners ask the questions older ones have stopped asking.</p>
+    <p>A learner who joins mid-cycle is joining a story already in progress - welcomed where they are, never treated as behind. Every learner walks all three seasons before they graduate, and the order does not matter, because each season is complete in itself. The one thing they carry the whole way, whatever their entry point, is their own Captain's Log. The seasons turn like a wheel; the learner walks a straight line through it, from the day they arrive to the day they launch.</p>
+  </div>
+
+  <div class="divider"><h2>Inside Origin - the first sessions</h2></div>
+  <p class="lead">Origin asks: <b>Who am I?</b> Its joy is roots and belonging. Here are all seven sessions, each on the same two-day shape.</p>
+  <div class="walkaway"><h4>What your learner walks away with</h4><ul>
+    <li>A story-of-self portfolio, with a one-page resume inside it</li>
+    <li>Real confidence in where they came from and who they are now</li>
+    <li>100 dreams named, and the courage to dream bigger</li>
+    <li>Time management, communication, routine, and progress on HS requirements</li>
+    <li>The first chapters of their Captain's Log, carried through all three years</li>
+  </ul></div>
+
+  <div class="sess">
+    <div class="top"><span class="snum">Session 1</span><h3>The Map of Me</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>The 100 Dreams - dream big, with courage. First sort them by time horizon - more than 5 years out, within 5 years, within 1 year - then map them across all 12 life categories. "The soul never thinks without a picture." All things are created twice, first in the mind; the far dreams are the end to begin with, the near ones become this season's first goals.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Write 100 dreams unfiltered; sort by horizon (5+ years / within 5 years / within 1 year); then map across the 12 life categories; a "which dreams scare you?" courage pass.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Draft the 100 dreams; open the Captain's Log; pick three dreams to orient the season.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The thrill of permission to dream without a ceiling.</span></div>
+  </div>
+
+  <div class="sess">
+    <div class="top"><span class="snum">Session 2</span><h3>The Lineage</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>The family tree as mythos - the stories of your lineage, gathered the way deep culture is gathered, with the recipes and foods of where you come from.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>How to gather a story and interview someone you love; a listening model on love and mortality; mapping the family mythos; the family-story potluck.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Conduct family interviews; gather recipes; write the stories into the Log.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The potluck feast; the foods and music of lineage; belonging.</span></div>
+    <div class="field"><span class="lab safety">Care</span><span class="safety">Family means whoever made you - chosen and found family included. Any interview is opt-out, no reason owed. Heavy material is previewed, with a real way to step out.</span></div>
+  </div>
+
+  <div class="sess">
+    <div class="top"><span class="snum">Session 3</span><h3>The Power of Choice</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Choice as the engine of a life - and the way responsibility, freedom, and choice are one knot, not three topics.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Start each day with a choice game; "where did a choice change everything?"</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Choice journaling in the Log; the personal project; goal-setting practice.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>Play - the games are genuinely fun, and agency feels good.</span></div>
+  </div>
+
+  <div class="sess">
+    <div class="top"><span class="snum">Session 4</span><h3>Running My Own Ship</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Time management, communication, and finishing HS requirements - with a midpoint look back at the season. The frame: routine is not the opposite of freedom; it is what makes freedom possible.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Build a routine that fits you; communication practice; "what have these first weeks shown you about yourself?"</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Catch up or get ahead on HS requirements; design your own routine; refine the personal-project plan.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The quiet satisfaction of a rhythm that fits, and momentum.</span></div>
+  </div>
+
+  <div class="sess">
+    <div class="top"><span class="snum">Session 5</span><h3>The Full Draft</h3><span class="len">long, about 6 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Claim your whole life. Write all of it - the autobiography in full, unedited. Nothing is too small. This is the expansion; Session 6 will shape it.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Memory prompts (turning points, sensory doorways, the people who made you, your hardest and best days, one ordinary day); listening models of how an ordinary life becomes a story; write it all.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Write the full draft; read the models; lots of writing time.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The relief of claiming a whole life, and being witnessed.</span></div>
+    <div class="field"><span class="lab safety">Care</span><span class="safety">Some lives carry loss; any memory is opt-out.</span></div>
+  </div>
+
+  <div class="sess">
+    <div class="top"><span class="snum">Session 6</span><h3>Chapter One</h3><span class="len">long, about 6 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Become the author. A chapter is not a smaller version of your life - it is a shaped thing with a throughline. Shrinking your story to "chapter one" is an act of hope: it says there are chapters still to come.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Find the throughline; keep the few load-bearing moments; write Chapter One. The truth-discipline: cut to focus, never to hide - what is left out is kept, not erased.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Write Chapter One; build the story-of-self portfolio and the one-page resume inside it.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The craft of shaping, and the hope of chapters to come.</span></div>
+  </div>
+
+  <div class="sess">
+    <div class="top"><span class="snum">Session 7</span><h3>This Is Me - The Unveiling</h3><span class="len">long, harvest</span></div>
+    <div class="field"><span class="lab">Focus</span><span>A self-portrait, a "This Is Me" piece. Present who you are - the portfolio, the resume, Chapter One - to a real audience.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Make the art piece; prepare the exhibition; the closing "This Is Me" that rhymes with the dreams of Session 1.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Build the art piece; finalize the portfolio; rehearse the unveiling.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>Being seen by your people; the unveiling feast.</span></div>
+  </div>
+
+  <div class="divider"><h2>Inside The Forge</h2></div>
+  <p class="lead">The Forge asks: <b>What is worth solving?</b> Its joy is curiosity and company - this is where Origin's dreaming becomes building.</p>
+  <div class="walkaway forge"><h4>What your learner walks away with</h4><ul>
+    <li>A real problem they chose because it matters to them</li>
+    <li>The skill to name a problem precisely and trace it to its root</li>
+    <li>A service or philanthropy project they acted on, with real people</li>
+    <li>Experience collaborating and failing forward</li>
+    <li>A public Call to Action talk that can move a room</li>
+  </ul></div>
+
+  <div class="sess forge">
+    <div class="top"><span class="snum">Session 1</span><h3>Naming the Dragon</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>The difference nobody hands teenagers - a problem you can act on, a fact of life to accept, a preference you just want, a mystery to sit with. You fight a dragon differently depending which it is.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>A "problem or not?" sorting game; turning complaints into "how might we" questions; the iceberg of surface problem vs. root.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Reframe your own complaints into how-might-we questions; Log; reading, core / HS.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The relief of turning a fog of dread into a thing with a name.</span></div>
+  </div>
+
+  <div class="sess forge">
+    <div class="top"><span class="snum">Session 2</span><h3>The Detective</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Investigation as root-cause work - observe, gather evidence, separate symptom from cause, and keep asking why. The obvious culprit is almost never the root.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>The cohort picks the format - a ready murder mystery, one they build themselves, or an immersive walk-through; solve it; then run the "five whys" on a real problem.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Run the five whys on a real problem of your own; investigate; Log.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>Company and play; teens love this one.</span></div>
+    <div class="field"><span class="lab safety">Care</span><span class="safety">Kept light and bloodless, with a gentler "who sabotaged the festival" version on offer.</span></div>
+  </div>
+
+  <div class="sess forge">
+    <div class="top"><span class="snum">Session 3</span><h3>My Arena</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Right-sizing. The circles of concern, influence, and control. Energy spent only on worry burns out; the shift is to the arena where your action actually moves something.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Map your three circles; take an honest inventory of what you have - skills, time, relationships; choose a small starter quest.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Act on a small real problem in your arena; Log; core / HS.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The quiet power of "this one is mine, and I can move it."</span></div>
+  </div>
+
+  <div class="sess forge">
+    <div class="top"><span class="snum">Session 4</span><h3>The Wider Field</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Lift your eyes to the world's problems, and choose the one that matters to you - never assigned. The finding question is not "what is important?" but "what breaks your heart?"</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>An expedition to where a real problem lives; a gallery of the world's problems; a first look at who actually has the problem.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Research your chosen problem; map its stakeholders; commit to the one you carry.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>Curiosity, the wider field, the thing that lights you up.</span></div>
+    <div class="field"><span class="lab safety">Care</span><span class="safety">Paired with agency so big problems inspire rather than crush - you pick your slice.</span></div>
+  </div>
+
+  <div class="sess forge">
+    <div class="top"><span class="snum">Session 5</span><h3>The Long Game</h3><span class="len">long, about 6 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Can big problems be solved? Things are only impossible until they're not. Big problems are systems, not single acts; you break the impossible into the next doable step, and no one solves them alone.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>A daily "impossible question"; approaching the too-big through play, curiosity, and facing what's avoided; systems thinking, collaboration, and failing forward.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Break your big problem into doable steps; prototype; collaborate; Log.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>Play, the company of collaborators, the awe of big questions.</span></div>
+  </div>
+
+  <div class="sess forge">
+    <div class="top"><span class="snum">Session 6</span><h3>Hands to Work</h3><span class="len">long, finish line</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Real action on the problem you chose. You choose how you serve - direct service, advocacy, philanthropy, building, or teaching. Chosen service teaches contribution; assigned service only teaches compliance.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Pick your mode of service; learn to design with the people who have the problem, not for them; plan and begin.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Carry out the service or philanthropy project, with real people; Log.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The warmth of service done together.</span></div>
+    <div class="field"><span class="lab safety">Care</span><span class="safety">Stretched, not overwhelmed - support around any hard human situations.</span></div>
+  </div>
+
+  <div class="sess forge">
+    <div class="top"><span class="snum">Session 7</span><h3>The Call to Action</h3><span class="len">long, harvest</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Stand and make the case - here is a problem worth solving, here is why it broke my heart, here is what I did, and here is what I ask of you. Advocacy that makes a room care.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>The talk's shape - problem, stakes, story, the ask; rehearse; the public talk and feast.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Build and rehearse the talk; finalize the project.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>Being heard; the cohort that has your back.</span></div>
+  </div>
+
+  <div class="divider"><h2>Inside The Helm</h2></div>
+  <p class="lead">The Helm asks: <b>What do I do when there is no easy answer?</b> Its joy is expression and camaraderie. The heaviest season, held with care.</p>
+  <div class="walkaway helm"><h4>What your learner walks away with</h4><ul>
+    <li>The capacity to make a hard call from principle, and live with it</li>
+    <li>Practice reasoning through real moral dilemmas, not memorizing answers</li>
+    <li>A professional mentor in their field of interest</li>
+    <li>Leadership experience: leading peers, and being led well</li>
+    <li>A public Council: deliberating a real dilemma before an audience</li>
+  </ul></div>
+
+  <div class="sess helm">
+    <div class="top"><span class="snum">Session 1</span><h3>The Mantle</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Who are you to solve problems? Why you? Imposter feelings spike now for a reason - they arrive when identity forms and stakes rise. Not a flaw; the feeling of reaching past your current self.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Share a time you felt like a fraud (the Guide first); flip "who am I?" into "why not you?"; build a file of real evidence of your competence; step into a role before you feel ready.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Build your evidence file from the portfolio; Log; reading, core / HS.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The play of stepping into a role bigger than you feel.</span></div>
+  </div>
+
+  <div class="sess helm">
+    <div class="top"><span class="snum">Session 2</span><h3>No Easy Answers</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Moral dilemmas met through story, each tied to a real moment in history. The win is reasoning, not the answer - holding the tension and reasoning from principle.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>A dilemma story paired with its real historical case; the major ethical frameworks; a discussion that resolves into reasoning, never a tidy verdict.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Research a paired real case; write your reasoning in the Log; core / HS.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The thrill of a real argument among friends who stay friends.</span></div>
+    <div class="field"><span class="lab safety">Care</span><span class="safety">The heaviest themes are previewed, with alternates and opt-out; the story keeps a safe distance from anyone's own life.</span></div>
+  </div>
+
+  <div class="sess helm">
+    <div class="top"><span class="snum">Session 3</span><h3>The Ripple</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Consequence-thinking - second and third effects, several moves ahead. Good captains think in ripples, not points; every solution creates new conditions.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Map a "what if" outward in waves; the wish that backfires; "what if this had never happened?"; a pre-mortem on the solution you built in The Forge.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Ripple-map or pre-mortem your own project; Log; core / HS.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>Chasing a cascade to surprising places.</span></div>
+  </div>
+
+  <div class="sess helm">
+    <div class="top"><span class="snum">Session 4</span><h3>The Stage</h3><span class="len">short, 3 to 4 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Theatre as stepping into another life, especially a hard one. The stage's distance is a safety feature - you can be the person who makes the other choice.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Our Town and its question of whether we ever realize life while we live it; a monologue from someone facing a hard call; archetypes as doorways; acting out a dilemma and trying a different choice.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Find or write a monologue; rehearse; reading, core / HS.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>Expression; the play of becoming someone else for an hour.</span></div>
+    <div class="field"><span class="lab safety">Care</span><span class="safety">Roles are chosen, opt-out always, and a ritual to step cleanly out of a heavy character.</span></div>
+  </div>
+
+  <div class="sess helm">
+    <div class="top"><span class="snum">Session 5</span><h3>The Arena of Voices</h3><span class="len">long, about 6 weeks</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Finding and working with a real professional mentor in the field you've been circling. Being mentored is a threshold - being seen by someone you admire.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Mentor matching; the real skill of being mentored - how to reach out, ask a question worth a busy person's time, follow up; the informational interview; the pitch.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Reach out to a mentor; conduct informational interviews; prepare the pitch.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>The company of someone further down a road you want to walk.</span></div>
+  </div>
+
+  <div class="sess helm">
+    <div class="top"><span class="snum">Session 6</span><h3>The Bridge</h3><span class="len">long, finish line</span></div>
+    <div class="field"><span class="lab">Focus</span><span>Leading peers. Leadership is stewardship, not command - the measure of a leader is what continues when they step back. Lead toward your own unnecessity.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Everyone takes a turn leading; find your own style; the hard parts - feedback, the unpopular call, holding a group through conflict; expedition leadership.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Lead a real group task; reflect on leading and following; Log.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>Camaraderie; the fellowship of leading together.</span></div>
+  </div>
+
+  <div class="sess helm">
+    <div class="top"><span class="snum">Session 7</span><h3>The Council</h3><span class="len">long, harvest</span></div>
+    <div class="field"><span class="lab">Focus</span><span>A council is not a debate - it has discernment. Reason out loud around a real dilemma, in front of your people: not performing certainty, but holding tension without collapsing it.</span></div>
+    <div class="field"><span class="lab">Work of the day</span><span>Deliberate a real dilemma in public; act it out, then council it; a leader holds the room; the feast.</span></div>
+    <div class="field"><span class="lab">On your own</span><span>Prepare the council case; rehearse leadership; finalize.</span></div>
+    <div class="field"><span class="lab">Joy</span><span>Being witnessed reasoning honestly about something that matters.</span></div>
+  </div>
+
+  <div class="divider"><h2>Questions you might have</h2></div>
+  <div class="faq">
+    <div class="qa"><h4>What about college?</h4><p>A portfolio, a body of real work, three years of public exhibitions, and a young person who can speak clearly about who they are and what they have done is a strong college story. <span class="tbd">[Jenna to confirm: any college-counseling or transcript specifics.]</span></p></div>
+    <div class="qa"><h4>What about a diploma and credits?</h4><p>Core academics and required credits are met during the project days, tracked alongside the learner's own work. <span class="tbd">[Jenna to confirm: diploma and transcript path.]</span> The requirements serve the learner, not the reverse.</p></div>
+    <div class="qa"><h4>What if a learner refuses a quest?</h4><p>The right to decline is built in and honored, never coded as failure. A learner who steps back is met, not pushed. Refusal is information, and often the start of the real conversation.</p></div>
+    <div class="qa"><h4>The third year sounds heavy. Is it safe?</h4><p>Yes, by design. Moral dilemmas are met through story and history, never personal confession; the hardest themes are previewed with alternates and opt-outs; every session opens with regulation. The distance is the safety feature.</p></div>
+    <div class="qa"><h4>How big is a cohort, and how many guides?</h4><p>The model assumes a small cohort and a guide who can hold a real relationship with every learner. <span class="tbd">[Jenna to confirm: cohort size and guide-to-learner ratio.]</span></p></div>
+    <div class="qa"><h4>What does a parent actually see?</h4><p>The outcomes promised at the start of each season, three public exhibitions a year, and a young person who comes home more themselves. Not a report card - a person.</p></div>
+  </div>
+
+  <div class="divider"><h2>What this draws on</h2></div>
+  <div class="about">
+    <h4>The background behind this draft</h4>
+    <p>This program draws on a Professional Life Coach certification and guide training, fifteen years of improv coaching (presence, group dynamics, structured spontaneity), a B.A. in Psychology and a Marriage and Family Therapy degree in progress, and twelve years building training systems and leading teams through change - alongside a year of guiding at Vibrant Life, watching closely what these learners actually need.</p>
+  </div>
+
+  <div class="divider"><h2>A closing invitation</h2></div>
+  <div class="prose">
+    <p>This is a draft, and a living one. The shape is here - three seasons, a turning cycle, a guide who coaches, work that is real, and joy woven through. What is not here yet is everything we would decide together: the calendar, the cohort, the credits, the thousand small choices that make a program into a place. I would be glad to build those with you.</p>
+    <p>Let's set the next great adventure in motion.</p>
+  </div>
+
+  <p class="footer">Vibrant Life Launch Pad &middot; A three-year formation for learners 15 to 18 &middot; Draft for discussion, June 2026</p>
+
+</div>
+</body>
+</html>

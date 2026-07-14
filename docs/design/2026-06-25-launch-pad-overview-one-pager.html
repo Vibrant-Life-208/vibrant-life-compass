@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Launch Pad - The Three-Year Story Cycle (one page)</title>
+<style>
+  :root {
+    --setup: #D98A2B;
+    --setup-soft: #FBEFDD;
+    --problem: #2A9D8F;
+    --problem-soft: #DFF1EE;
+    --resolution: #5B5B8A;
+    --resolution-soft: #E6E6F0;
+    --gold: #E2B23A;
+    --ink: #2B2B2B;
+    --muted: #6B6B6B;
+    --cream: #FAF7F2;
+    --line: #E7E1D8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 34px 40px 30px;
+  }
+
+  /* Hero */
+  .hero { text-align: center; margin-bottom: 22px; }
+  .eyebrow {
+    letter-spacing: 0.22em; text-transform: uppercase;
+    font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 8px;
+  }
+  .hero h1 {
+    font-size: 40px; line-height: 1.05; margin: 0 0 6px; font-weight: 800;
+  }
+  .hero .sub { font-size: 16px; color: var(--muted); margin: 0 0 14px; }
+  .thesis {
+    max-width: 760px; margin: 0 auto; font-size: 17px; font-weight: 500;
+    border-left: 4px solid var(--gold); text-align: left;
+    background: #fff; border-radius: 0 8px 8px 0; padding: 12px 18px;
+    box-shadow: 0 1px 0 var(--line);
+  }
+
+  /* Wheel section */
+  .wheel-wrap {
+    display: grid; grid-template-columns: 320px 1fr; gap: 26px; align-items: center;
+    background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    padding: 22px 28px; margin: 22px 0 24px;
+  }
+  .wheel svg { width: 100%; height: auto; display: block; }
+  .read h3 { margin: 0 0 8px; font-size: 18px; }
+  .read p { margin: 0 0 12px; color: var(--muted); font-size: 14.5px; }
+  .grad {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: #FFF8E8; border: 1px solid #F0DFAE; border-radius: 12px; padding: 12px 14px;
+  }
+  .grad .star { flex: 0 0 auto; margin-top: 2px; }
+  .grad b { display: block; font-size: 15px; }
+  .grad span { font-size: 14px; color: var(--muted); }
+
+  /* Seasons */
+  .seasons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .season { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #fff; display: flex; flex-direction: column; }
+  .season .cap { color: #fff; padding: 14px 16px 12px; }
+  .season .cap .tag { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.9; }
+  .season .cap h2 { margin: 2px 0 6px; font-size: 23px; }
+  .season .cap .lens { font-size: 13.5px; font-weight: 600; }
+  .season .body { padding: 13px 16px 16px; }
+  .joy { font-size: 12.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 8px; }
+  .quests { list-style: none; margin: 0 0 12px; padding: 0; }
+  .quests li { font-size: 13.5px; padding: 4px 0 4px 20px; position: relative; border-bottom: 1px dashed var(--line); }
+  .quests li:last-child { border-bottom: 0; font-weight: 700; }
+  .quests li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 7px; height: 7px; border-radius: 50%; }
+  .ends { font-size: 13.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 11px; }
+  .ends b { color: var(--ink); }
+
+  .setup .cap { background: var(--setup); }
+  .setup .joy { color: var(--setup); }
+  .setup .quests li::before { background: var(--setup); }
+  .problem .cap { background: var(--problem); }
+  .problem .joy { color: var(--problem); }
+  .problem .quests li::before { background: var(--problem); }
+  .resolution .cap { background: var(--resolution); }
+  .resolution .joy { color: var(--resolution); }
+  .resolution .quests li::before { background: var(--resolution); }
+
+  /* How it works */
+  .how { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px 24px; }
+  .how h3 { margin: 0 0 14px; font-size: 18px; text-align: center; letter-spacing: 0.02em; }
+  .how-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+  .how-item .k { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .how-item p { margin: 0; font-size: 13px; color: var(--ink); }
+
+  .footer { text-align: center; color: var(--muted); font-size: 12.5px; margin-top: 20px; }
+
+  @media print {
+    body { background: #fff; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    /* Render at native ~1040px width, then scale the whole sheet to fit one
+       letter-portrait page. zoom rescales the layout box (unlike transform),
+       so pagination sees the reduced height and keeps it to a single page. */
+    .page { zoom: 0.64; padding: 0 8px; }
+    .wheel-wrap, .season, .how, .hero { break-inside: avoid; }
+    @page { size: letter portrait; margin: 12mm; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <div class="eyebrow">Vibrant Life &middot; A formation for ages 15 to 18</div>
+    <h1>The Launch Pad Story</h1>
+    <p class="sub">Origin &middot; The Forge &middot; The Helm - a formation, not a high school</p>
+    <p class="thesis">We help young people become who they are meant to be - to know themselves, do work that matters, make the hard calls, and love the life they are living.</p>
+  </div>
+
+  <div class="wheel-wrap">
+    <div class="wheel">
+      <svg viewBox="0 0 400 400" role="img" aria-label="The cycle wheel of three seasons">
+        <!-- Set-Up segment (top, theta 0-120) -->
+        <path d="M 200,60 A 140 140 0 0 1 321.24,270 L 271.01,241 A 82 82 0 0 0 200,118 Z" fill="#D98A2B"/>
+        <!-- Problem segment (bottom, theta 120-240) -->
+        <path d="M 321.24,270 A 140 140 0 0 1 78.76,270 L 128.99,241 A 82 82 0 0 0 271.01,241 Z" fill="#2A9D8F"/>
+        <!-- Resolution segment (left, theta 240-360) -->
+        <path d="M 78.76,270 A 140 140 0 0 1 200,60 L 200,118 A 82 82 0 0 0 128.99,241 Z" fill="#5B5B8A"/>
+
+        <!-- curved segment labels (hug the ring) -->
+        <defs>
+          <path id="arcOrigin" d="M 228.7,92.8 A 111 111 0 0 1 307.2,228.7"/>
+          <path id="arcForge" d="M 121.5,278.5 A 111 111 0 0 0 278.5,278.5"/>
+          <path id="arcHelm" d="M 92.8,228.7 A 111 111 0 0 1 171.3,92.8"/>
+        </defs>
+        <text fill="#fff" font-size="15" font-weight="700" letter-spacing="1.5"><textPath href="#arcOrigin" startOffset="50%" text-anchor="middle">ORIGIN</textPath></text>
+        <text fill="#fff" font-size="15" font-weight="700" letter-spacing="1.5"><textPath href="#arcForge" startOffset="50%" text-anchor="middle">THE FORGE</textPath></text>
+        <text fill="#fff" font-size="15" font-weight="700" letter-spacing="1.5"><textPath href="#arcHelm" startOffset="50%" text-anchor="middle">THE HELM</textPath></text>
+
+        <!-- center -->
+        <circle cx="200" cy="200" r="70" fill="#FAF7F2" stroke="#E7E1D8" stroke-width="1.5"/>
+        <text x="200" y="190" text-anchor="middle" fill="#6B6B6B" font-size="11" letter-spacing="1">YOUR</text>
+        <text x="200" y="206" text-anchor="middle" fill="#2B2B2B" font-size="16" font-weight="800">Captain's</text>
+        <text x="200" y="222" text-anchor="middle" fill="#2B2B2B" font-size="16" font-weight="800">Log</text>
+
+        <!-- rotation hint arrows -->
+        <path d="M 348,196 a 8 8 0 0 1 -2,9" fill="none" stroke="#B7B2A8" stroke-width="2"/>
+        <polygon points="343,206 351,206 347,213" fill="#B7B2A8"/>
+      </svg>
+    </div>
+    <div class="read">
+      <h3>How to read the wheel</h3>
+      <p>The program turns like seasons. Every learner walks all three seasons before they launch, and may join at any season - a learner who starts mid-cycle is joining the story in progress, never behind. Each learner carries one <b>Captain's Log</b> the whole way; it is the line they walk through the turning circle.</p>
+      <div class="grad">
+        <svg class="star" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.7l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.9 5 20.9l1.4-6.8L1.3 8.7l6.9-.7z" fill="#E2B23A"/></svg>
+        <div>
+          <b>Your Next Great Adventure</b>
+          <span>A personal graduation send-off in each learner's final year, whatever season that is. The send-off belongs to the learner, not to the calendar.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="seasons">
+
+    <div class="season setup">
+      <div class="cap">
+        <div class="tag">The Set-Up</div>
+        <h2>Origin</h2>
+        <div class="lens">Who am I?</div>
+      </div>
+      <div class="body">
+        <p class="joy">Joy: roots &amp; belonging</p>
+        <ul class="quests">
+          <li>The Map of Me - 100 dreams</li>
+          <li>The Lineage - family stories</li>
+          <li>The Power of Choice</li>
+          <li>Running My Own Ship</li>
+          <li>The Full Draft - write it all</li>
+          <li>Chapter One - shape it</li>
+          <li>This Is Me - the unveiling</li>
+        </ul>
+        <p class="ends"><b>Ends with</b> a story-of-self portfolio and the confidence of knowing where you came from and who you are now.</p>
+      </div>
+    </div>
+
+    <div class="season problem">
+      <div class="cap">
+        <div class="tag">The Problem</div>
+        <h2>The Forge</h2>
+        <div class="lens">What is worth solving?</div>
+      </div>
+      <div class="body">
+        <p class="joy">Joy: curiosity &amp; company</p>
+        <ul class="quests">
+          <li>Naming the Dragon</li>
+          <li>The Detective - find the root</li>
+          <li>My Arena - what you can move</li>
+          <li>The Wider Field</li>
+          <li>The Long Game</li>
+          <li>Hands to Work - service</li>
+          <li>The Call to Action - the talk</li>
+        </ul>
+        <p class="ends"><b>Ends with</b> a problem they chose, real service given, and a public talk that makes a room care.</p>
+      </div>
+    </div>
+
+    <div class="season resolution">
+      <div class="cap">
+        <div class="tag">The Resolution</div>
+        <h2>The Helm</h2>
+        <div class="lens">What do I do when there is no easy answer?</div>
+      </div>
+      <div class="body">
+        <p class="joy">Joy: expression &amp; camaraderie</p>
+        <ul class="quests">
+          <li>The Mantle - why you?</li>
+          <li>No Easy Answers - dilemmas</li>
+          <li>The Ripple - what if?</li>
+          <li>The Stage - theatre</li>
+          <li>The Arena of Voices - mentors</li>
+          <li>The Bridge - leading together</li>
+          <li>The Council - the hard call</li>
+        </ul>
+        <p class="ends"><b>Ends with</b> the capacity to make a hard call from principle, and a real mentor in their corner.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="how">
+    <h3>How it works</h3>
+    <div class="how-grid">
+      <div class="how-item">
+        <div class="k">The shape</div>
+        <p>A turning cycle, not a ladder. Three seasons; walk all three before you launch. Join at any season, never behind.</p>
+      </div>
+      <div class="how-item">
+        <div class="k">The week</div>
+        <p>Two days with a Launch Pad Guide - a life-coach, not a teacher - plus two days of self-directed project work and a protected day for rest, play, and friendship.</p>
+      </div>
+      <div class="how-item">
+        <div class="k">The thread</div>
+        <p>One learner-owned Captain's Log, carried and deepened across all three seasons. It belongs to the learner.</p>
+      </div>
+      <div class="how-item">
+        <div class="k">The send-off</div>
+        <p>Your Next Great Adventure - a personal graduation rite in each learner's final year.</p>
+      </div>
+      <div class="how-item">
+        <div class="k">The floor</div>
+        <p>Learner-led. No grades, no ranking. Joy is woven into the work, never assigned.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer">Vibrant Life Launch Pad &middot; A three-year formation for learners 15 to 18 &middot; Draft for discussion, June 2026</p>
+
+</div>
+</body>
+</html>
