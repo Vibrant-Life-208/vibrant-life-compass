@@ -201,7 +201,7 @@ export async function findAccountByHeroName(heroName) {
 // Hero-name + password sign-in. Returns the verified account (with role)
 // on success, null on failure. Backend-aware so auth.js can call one
 // function regardless of localStorage vs Supabase Auth.
-import { verifyPassword as _verifyPasswordLocal } from '../crypto.js';
+import { verifyPassword as _verifyPasswordLocal, hashPassword as _hashPasswordLocal, generateTempPassword as _genTempLocal } from '../crypto.js';
 export async function signInWithHeroName(heroName, password) {
   // Family logins first: a family username returns a family account whose
   // role drives auth.js into the member picker instead of a person session.
@@ -928,11 +928,54 @@ export async function getStrengthRanking(identityId) {
   return { top8: a.top8 || [], bottom8: a.bottom8 || [], top3: a.strengths || [] };
 }
 
-// Skeleton: "set password" just clears the must_change_password flag on the
-// current session (no real auth in local mode).
-export async function updatePassword(_newPassword) {
+// Set a new password for the signed-in person. In local mode the PBKDF2
+// hash IS the credential store (unlike Supabase, where Auth owns it), so this
+// writes a real hash to the account record, clears must_change_password there,
+// and clears it on the session. Resolves the account BY ROLE - never off
+// session.learnerId for a parent, since a parent session also carries the
+// linked child's learnerId (that would reset the child's password by mistake).
+export async function updatePassword(newPassword) {
   const session = read(KEYS.session);
-  if (session) { session.must_change_password = false; write(KEYS.session, session); }
+  if (!session) return;
+  const hashed = await _hashPasswordLocal(newPassword);
+  const patch = (id) => ({ id, passwordHash: hashed.hash, passwordSalt: hashed.salt, must_change_password: false });
+  if (session.role === 'learner' && session.learnerId) await saveLearner(patch(session.learnerId));
+  else if (session.role === 'parent' && session.parentId) await saveParent(patch(session.parentId));
+  else if (session.role === 'guide' && session.guideId) await saveGuide(patch(session.guideId));
+  session.must_change_password = false;
+  write(KEYS.session, session);
+}
+
+// Guide/owner-run password reset (local mode). Generates a fresh temp password,
+// writes its hash to the account, and flags must_change_password so the person
+// is forced to set their own on next sign-in. Returns the plaintext temp once,
+// for the guide to hand over. Resolves the collection by role.
+export async function resetPassword(role, accountId) {
+  if (!accountId) return null;
+  const tempPassword = _genTempLocal();
+  const hashed = await _hashPasswordLocal(tempPassword);
+  const patch = { id: accountId, passwordHash: hashed.hash, passwordSalt: hashed.salt, must_change_password: true };
+  if (role === 'learner') await saveLearner(patch);
+  else if (role === 'parent') await saveParent(patch);
+  else if (role === 'guide') await saveGuide(patch);
+  else return null;
+  return { tempPassword };
+}
+
+// Create or update a family (one shared login + member profiles). Used by the
+// admin/seed paths; families are otherwise read-only in the app.
+export async function saveFamily(data) {
+  const { id, ...rest } = data;
+  const families = read(KEYS.families) || [];
+  if (id) {
+    const idx = families.findIndex((f) => f.id === id);
+    if (idx >= 0) families[idx] = { ...families[idx], ...rest, id, updatedAt: new Date().toISOString() };
+    else families.push({ id, createdAt: new Date().toISOString(), ...rest });
+  } else {
+    families.push({ id: generateId(), createdAt: new Date().toISOString(), ...rest });
+  }
+  write(KEYS.families, families);
+  return families[families.length - 1];
 }
 
 // Typed values + archetype (older learners + adults) - local mirror.
