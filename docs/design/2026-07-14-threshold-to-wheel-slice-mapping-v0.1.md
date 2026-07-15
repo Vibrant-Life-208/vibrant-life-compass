@@ -55,18 +55,19 @@ The only threshold set that exists today is the Adventure pitch (see
 
 Slices with no threshold (invitations): **Body, Family, Home, Joy.**
 
-### Open placement questions for the reviewers
+### Open placement questions for the reviewers - RESOLVED (captain, 2026-07-15)
 
-1. **`adv_handwriting`**: Mind (skill) or Body (fine motor)? Drafted Mind.
-2. **Mind carries six thresholds.** See the structural note below - under the
-   current one-goal-per-slice model, all six surface as "carried" decompose-to-North
-   items under a single Mind slice goal, not as six separate goal boxes. Confirm this
-   reads well, or decide Mind should split.
-3. **`adv_courage_book` -> Spirit vs Mind.** Captain's example named "Spirit/Mind";
-   drafted Spirit (meaning) as primary. Confirm.
-4. **`adv_lead_launches` / `adv_leadership` -> Friends.** The Adventure wheel has no
-   Character/Leadership slice; Friends (community/culture) is the closest home.
-   Confirm, or decide these belong in Emotions.
+1. **`adv_handwriting`**: Mind (skill) or Body (fine motor)? -> **Mind.** (Captain.)
+2. **Mind carries six thresholds.** -> **Accepted; lopsided by design, not a defect.**
+   Captain: "this is the mind at work - it is education; the learner adds tasks to the
+   other slices." Pitch readiness is mostly academic, so Mind legitimately carries the
+   load. Do NOT split Mind or rebalance to fill other slices - the empty slices are the
+   learner's to fill (this IS the coverage frame). Structural adaptation confirmed:
+   the six surface as "carried" decompose-to-North items under one Mind slice goal.
+3. **`adv_courage_book` -> Spirit vs Mind.** -> **Spirit.** (Captain.)
+4. **`adv_lead_launches` / `adv_leadership` -> Friends.** -> **Friends.** (Captain.)
+   The Adventure wheel has no Character/Leadership slice; Friends (community/culture)
+   is the home. Noted for a future wheel revision, not a blocker here.
 
 ## Structural adaptation (needs a look)
 
@@ -101,13 +102,15 @@ change (year-view grouping, setup grid, priorities) and should be its own decisi
 
 ## Sign-off checklist (before flipping `MAPPING_RATIFIED = true`)
 
-- [ ] Captain: the placements above, and the which-wheel decision, are right.
+- [x] Captain: the placements above, and the which-wheel decision, are right. (2026-07-15)
+- [x] Resolve the four open placement questions. (Captain, 2026-07-15 - see above.)
+- [x] Confirm the one-goal-per-slice structural adaptation, or scope the
+      goal-box-per-threshold alternative. (Captain accepted one-goal-per-slice with
+      carried threshold items, 2026-07-15 - "this is the mind at work.")
 - [ ] Jake + Accord: coverage-frame review - empty slices read as invitation, no
-      slice is a fill-meter, no placement pathologizes.
+      slice is a fill-meter, no placement pathologizes. (Captain has stated the
+      coverage-frame position; this is the pedagogy/trauma-informed second read.)
 - [ ] TCC review (per the v0.18 gated-mapping convention in `studios.js`).
-- [ ] Resolve the four open placement questions.
-- [ ] Confirm the one-goal-per-slice structural adaptation, or scope the
-      goal-box-per-threshold alternative.
 
 ## Remaining coordination (NOT in this commit)
 
