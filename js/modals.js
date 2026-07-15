@@ -1011,7 +1011,7 @@ const HORIZON_PROMPTS = {
   },
   current_state: {
     heading: 'Where are you now?',
-    body: 'Honestly - where are you today? This is the mirror, not the dream. You can stop here anytime; this step is yours to take at your pace.',
+    body: 'Honestly - where are you today? This is the mirror, not the dream. Take your time; there are no wrong answers here.',
     placeholder: 'Where I am right now...',
   },
   halfway: {
@@ -1389,6 +1389,12 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // "hold your whole life in view" as you narrow from 10 years to now. It drops
     // away at the halfway step, with the far horizons.
     const wheel = step !== 'halfway' ? `<div class="onb-wheel-pin">${lifeWheelSvgFor(studio)}</div>` : '';
+    // Mandatory vision flow for learners (captain 2026-07-15): the telescope steps
+    // (10yr/5yr/1yr/mirror/halfway) must be answered - no "Not now," Continue is
+    // disabled until the box has text. Narrows the 2026-06-22 walk-once decision
+    // for learners on the vision steps only; the slice-plan step stays invitational
+    // (Accord + TCC coverage-frame sign-off, 2026-07-15). Guides/parents keep skip.
+    const required = role === 'learner';
     return `
       ${wheel}
       ${stack}
@@ -1399,7 +1405,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="form-field">
         <textarea id="onb-horizon" rows="4" placeholder="${escapeAttr(p.placeholder)}">${escapeHtml(state.horizons[step] || '')}</textarea>
       </div>
-      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
+      ${navButtons({ skippable: !required, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: required && !(state.horizons[step] || '').trim() })}
     `;
   }
 
@@ -1499,6 +1505,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
     document.getElementById('onb-back')?.addEventListener('click', back);
     document.getElementById('onb-skip')?.addEventListener('click', skipStep);
+
+    // Mandatory vision steps for learners (captain 2026-07-15): enable Continue
+    // live as they type, since there is no "Not now" to fall back on.
+    if (HORIZON_PROMPTS[step] && role === 'learner') {
+      const ta = document.getElementById('onb-horizon');
+      const cont = document.getElementById('onb-continue');
+      ta?.addEventListener('input', () => { if (cont) cont.disabled = !ta.value.trim(); });
+    }
 
     // Strengths step: VIA PDF upload (on-device parse, then advance).
     if (step === 'strengths') {
@@ -1619,6 +1633,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       } else {
         captureHorizon();
         const text = state.horizons[step] || '';
+        if (role === 'learner' && !text.trim()) return; // mandatory vision step
         await advance(() => profileId ? setProfileHorizon(profileId, step, text) : Promise.resolve());
       }
     });
