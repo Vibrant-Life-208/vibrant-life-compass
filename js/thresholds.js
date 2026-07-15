@@ -5,6 +5,14 @@
 // Discovery -> Adventure content from the captain's threshold doc (2026-07-11).
 // Adventure -> Launch Pad is owed (a Launch Pad candidate need not have finished
 // high-school work - it continues into their first Launch Pad year).
+//
+// NAMED TOOLS ARE INTENTIONAL HERE (captain 2026-07-15). Unlike the subject
+// categories in studios.js - which are program-agnostic (Math, Reading, Writing)
+// because a learner works the subject through whatever tool they use - a
+// threshold is a concrete test-out: the specific assessment that PROVES
+// readiness (Khan Course Challenges, Lexia Core5, TypingClub placement, etc.).
+// Do NOT genericize these tool names to match the subject rename; the specificity
+// is the point of a proof-of-mastery gate.
 
 import { getStudioName, sliceIdForLabel } from './studios.js';
 import { getWheelAreas } from './wheel.js';
