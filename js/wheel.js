@@ -47,7 +47,7 @@ function lifeWheelSvg(areas) {
     // slice - moves the side labels toward center and the top/bottom ones up.
     // Bold (700). (Captain 2026-07-14.)
     const [lx, ly] = polar(cx, cy, R * 0.63, a0 + step / 2);
-    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="16" font-weight="700" fill="#2f3a24">${label}</text>`;
+    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="18" font-weight="700" fill="#2f3a24">${label}</text>`;
   });
   return `<svg viewBox="0 0 340 340" class="life-wheel-svg" role="img" aria-label="Wheel of your life areas">
     ${segs}
