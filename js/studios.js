@@ -23,16 +23,19 @@ import { getWheelAreas } from './wheel.js';
 
 export const CATEGORIES = {
   khan: {
-    name: 'Khan Academy',
+    name: 'Math',
     kind: 'core',
     examples: {
       discovery: 'Finish the 3rd-grade addition unit by Session 4. One skill a day, ask my guide when I get stuck three in a row.',
       adventure: 'Finish the 5th-grade fractions unit by Session 4. Three skills per week, mastery quiz passed before moving on.',
-      launchpad: 'Complete the Pre-Algebra Mission by Session 6. Set my own weekly pace; move on when I can teach it back.',
+      launchpad: 'Complete the Pre-Algebra unit by Session 6. Set my own weekly pace; move on when I can teach it back.',
     },
   },
+  // Consolidated into `reading` (captain 2026-07-15): program-agnostic subject
+  // names. Kept as definitions so any legacy goal filed under these ids still
+  // resolves a label ("Reading"); no studio offers them anymore.
   lexia: {
-    name: 'Lexia PowerUp',
+    name: 'Reading',
     kind: 'core',
     examples: {
       discovery: 'Move up one Lexia level by the end of Session 3. Fifteen minutes, four mornings a week.',
@@ -41,7 +44,7 @@ export const CATEGORIES = {
     },
   },
   deepBook: {
-    name: 'Deep Book',
+    name: 'Reading',
     kind: 'core',
     examples: {
       discovery: 'Read one Deep Book per session with a partner. Share one favorite line each week with the Socratic group.',
@@ -59,7 +62,7 @@ export const CATEGORIES = {
     },
   },
   characterTrait: {
-    name: 'Character Trait',
+    name: 'Character',
     kind: 'core',
     examples: {
       discovery: 'Practice kindness by giving one specific compliment a day to a different learner. Notice when it changes the room.',
@@ -104,12 +107,12 @@ export const CATEGORIES = {
     },
   },
   noRedInk: {
-    name: 'No Red Ink',
-    kind: 'conditional',
+    name: 'Writing',
+    kind: 'core',
     examples: {
-      discovery: 'Pass two No Red Ink units this year. Ten minutes, three days a week.',
-      adventure: 'Pass the Comma Rules unit by Session 3. Practice ten minutes three days a week.',
-      launchpad: 'Finish all assigned No Red Ink units by Session 4 so writing-focused work can move to longer-form pieces.',
+      discovery: 'Practice writing three days a week, ten minutes each. Finish two grammar units this year.',
+      adventure: 'Master comma rules and sentence structure by Session 3. Ten minutes of writing practice, three days a week.',
+      launchpad: 'Finish my grammar and mechanics work by Session 4, then move into longer-form essays and a portfolio piece.',
     },
   },
   thresholds: {
@@ -163,24 +166,24 @@ export const STUDIOS = {
   discovery: {
     name: 'Discovery',
     ageRange: '8-11',
-    visible: ['khan', 'reading', 'civ', 'characterTrait', 'quest', 'pathway'],
-    conditional: ['noRedInk'],
+    visible: ['khan', 'reading', 'noRedInk', 'civ', 'characterTrait', 'quest', 'pathway'],
+    conditional: [],
     yearMapDensity: 'expanded',
     dailyTaskThreshold: 3,
   },
   adventure: {
     name: 'Adventure',
     ageRange: '11-14',
-    visible: ['khan', 'lexia', 'deepBook', 'civ', 'characterTrait', 'pathway', 'quest'],
-    conditional: ['noRedInk', 'apprenticeship'],
+    visible: ['khan', 'reading', 'noRedInk', 'civ', 'characterTrait', 'pathway', 'quest'],
+    conditional: ['apprenticeship'],
     yearMapDensity: 'standard',
     dailyTaskThreshold: 5,
   },
   launchpad: {
     name: 'Launchpad',
     ageRange: '15-17, apprenticeship track 17-18',
-    visible: ['khan', 'lexia', 'deepBook', 'civ', 'characterTrait', 'pathway', 'quest'],
-    conditional: ['apprenticeship', 'thresholds', 'noRedInk'],
+    visible: ['khan', 'reading', 'noRedInk', 'civ', 'characterTrait', 'pathway', 'quest'],
+    conditional: ['apprenticeship', 'thresholds'],
     yearMapDensity: 'compressed',
     dailyTaskThreshold: 7,
   },
