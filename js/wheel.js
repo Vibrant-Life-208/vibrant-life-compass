@@ -35,6 +35,9 @@ function lifeWheelSvg(areas) {
   // Brighter, more saturated tints so the wheel reads clearly (captain 2026-07-14
   // - the near-white pastels were hard to see).
   const tints = ['#bcd49a', '#a2c5d6', '#e6c986', '#c6a8db', '#9fd4ba', '#dcabb0'];
+  // Per-label horizontal nudge (px in the 340 viewBox) for labels that read
+  // better shifted off dead-center. (Captain 2026-07-14.)
+  const LABEL_NUDGE_X = { Feelings: 8 };
   let segs = '', labels = '';
   areas.forEach((label, i) => {
     const a0 = i * step, a1 = (i + 1) * step;
@@ -47,7 +50,8 @@ function lifeWheelSvg(areas) {
     // slice - moves the side labels toward center and the top/bottom ones up.
     // Bold (700). (Captain 2026-07-14.)
     const [lx, ly] = polar(cx, cy, R * 0.63, a0 + step / 2);
-    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="18" font-weight="700" fill="#2f3a24">${label}</text>`;
+    const nx = lx + (LABEL_NUDGE_X[label] || 0);
+    labels += `<text x="${nx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="18" font-weight="700" fill="#2f3a24">${label}</text>`;
   });
   return `<svg viewBox="0 0 340 340" class="life-wheel-svg" role="img" aria-label="Wheel of your life areas">
     ${segs}
