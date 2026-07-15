@@ -15,11 +15,21 @@ import { renderThresholdsHtml, buildSlicePlan } from './thresholds.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
+// First-run gate (captain 2026-07-15): while true, the modal ignores the X button
+// and backdrop click, so the onboarding cascade + quote anchor must be walked, not
+// escaped to a blank main face. Programmatic closeModal() on real completion still
+// closes. setModalGated() also hides/restores the X so there is no dead control.
+let modalGated = false;
+function setModalGated(on) {
+  modalGated = on;
+  const x = document.getElementById('modal-close');
+  if (x) x.style.display = on ? 'none' : '';
+}
 
 export function initModal() {
-  document.getElementById('modal-close')?.addEventListener('click', closeModal);
+  document.getElementById('modal-close')?.addEventListener('click', () => { if (!modalGated) closeModal(); });
   document.getElementById('modal')?.addEventListener('click', (e) => {
-    if (e.target.id === 'modal') closeModal();
+    if (e.target.id === 'modal' && !modalGated) closeModal();
   });
   document.getElementById('goal-form')?.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -1637,6 +1647,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   render();
   openModal();
+  setModalGated(true); // first-run gate: no X / backdrop escape to the main face
 }
 
 // Quote flow (2026-06-24): the quote anchors the top of the page for the cycle.
@@ -1766,6 +1777,7 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
 
   render();
   openModal();
+  setModalGated(true); // first-run gate: the quote anchor must be set, not escaped
 }
 
 // Standalone pitch opt-in: the same age self-report + opt-in as the onboarding
@@ -1907,6 +1919,7 @@ function openModal() {
 }
 
 function closeModal() {
+  setModalGated(false);
   document.getElementById('modal')?.classList.remove('active');
   activeSubmit = null;
   // Fire onClose hook (e.g. admin re-render after temp-pwd modal) regardless of

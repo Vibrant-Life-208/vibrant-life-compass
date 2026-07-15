@@ -305,6 +305,11 @@ async function onSignedIn() {
   // The modal saves every step atomically and resumes on the saved step, so a
   // pause - including the external VIA/Values round-trip - loses nothing.
   // session.id is the profile id, always set on persisted sessions.
+  // First-run gate (captain 2026-07-15): the quote anchor + onboarding cascade are
+  // walked BEFORE a learner can reach the main face. The modals are non-dismissable
+  // (js/modals.js setModalGated), and while a gate is pending we do NOT render a tab
+  // behind it - the gate's onComplete renders the right surface once it is walked.
+  let gatingPending = false;
   if (ownIdentity) {
     const currentCycle = getYearCalendar().yearStartISO;
     const quote = await getQuoteState(ownIdentity);
@@ -312,6 +317,7 @@ async function onSignedIn() {
     const needsQuote = !quote.text || quote.cycle !== currentCycle;
     // The cascade (strengths/values/horizons) is gated separately.
     const needsCascade = !(await hasCompletedOnboarding(ownIdentity));
+    gatingPending = needsQuote || needsCascade;
 
     // Studio drives developmental gating of the long-horizon steps (captain
     // 2026-07-14, superseding Decision 5): only Sparks is screen-free; Discovery
@@ -323,16 +329,32 @@ async function onSignedIn() {
       onbStudio = l?.studio || null;
     }
 
+    // After the gate: a learner who still owes Setup (studio + 5 year goals) lands
+    // on the Setup grid - the goal-setting surface - never straight on a tab. This
+    // makes "no main face until goals are set" airtight in the first session too,
+    // not just on the next login. Everyone else lands on their default tab.
+    const finishGate = async () => {
+      if (session.role === 'learner' && session.learnerId) {
+        const { getLearner } = await import('./store.js');
+        const l = await getLearner(session.learnerId);
+        if (l && !l.setupCompletedAt) { await showSetupView(session.learnerId); return; }
+      }
+      await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
+    };
+
     const runCascade = () => {
-      if (!needsCascade) return; // dashboard already rendered below
+      if (!needsCascade) {
+        // No cascade owed. If the quote was the only gate, render now; otherwise
+        // the bottom-of-function showTab handles the no-gate case.
+        if (needsQuote) finishGate();
+        return;
+      }
       openOnboardingModal({
         profileId: ownIdentity,
         role: session.role,
         studio: onbStudio,
         learnerId, // the slice-plan step saves year goals against this learner
-        onComplete: async () => {
-          await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
-        },
+        onComplete: finishGate,
       });
     };
 
@@ -350,8 +372,12 @@ async function onSignedIn() {
     }
   }
 
-  const defaultTab = TABS_BY_ROLE[session.role][0].id;
-  await showTab(defaultTab, learnerId);
+  // Render the main face here only when no first-run gate is pending; otherwise the
+  // gate's onComplete (finishGate) renders Setup or the default tab once walked.
+  if (!gatingPending) {
+    const defaultTab = TABS_BY_ROLE[session.role][0].id;
+    await showTab(defaultTab, learnerId);
+  }
 }
 
 async function needsOnboarding(identityId) {
