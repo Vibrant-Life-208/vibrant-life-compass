@@ -37,7 +37,7 @@ function lifeWheelSvg(areas) {
   const tints = ['#bcd49a', '#a2c5d6', '#e6c986', '#c6a8db', '#9fd4ba', '#dcabb0'];
   // Per-label horizontal nudge (px in the 340 viewBox) for labels that read
   // better shifted off dead-center. (Captain 2026-07-14.)
-  const LABEL_NUDGE_X = { Feelings: 8 };
+  const LABEL_NUDGE_X = { Feelings: 8, Family: -8, Joy: -8 };
   let segs = '', labels = '';
   areas.forEach((label, i) => {
     const a0 = i * step, a1 = (i + 1) * step;
