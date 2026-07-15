@@ -43,8 +43,11 @@ function lifeWheelSvg(areas) {
     const [hx0, hy0] = polar(cx, cy, hub, a0);
     const [hx1, hy1] = polar(cx, cy, hub, a1);
     segs += `<path d="M ${hx0.toFixed(1)} ${hy0.toFixed(1)} L ${x0.toFixed(1)} ${y0.toFixed(1)} A ${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)} L ${hx1.toFixed(1)} ${hy1.toFixed(1)} A ${hub} ${hub} 0 0 0 ${hx0.toFixed(1)} ${hy0.toFixed(1)} Z" fill="${tints[i % tints.length]}" stroke="#fff" stroke-width="1.5"/>`;
-    const [lx, ly] = polar(cx, cy, R * 0.7, a0 + step / 2);
-    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="16" font-weight="600" fill="#2f3a24">${label}</text>`;
+    // Labels pulled inward (0.63 of R, was 0.7) so they sit better within each
+    // slice - moves the side labels toward center and the top/bottom ones up.
+    // Bold (700). (Captain 2026-07-14.)
+    const [lx, ly] = polar(cx, cy, R * 0.63, a0 + step / 2);
+    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="16" font-weight="700" fill="#2f3a24">${label}</text>`;
   });
   return `<svg viewBox="0 0 340 340" class="life-wheel-svg" role="img" aria-label="Wheel of your life areas">
     ${segs}
