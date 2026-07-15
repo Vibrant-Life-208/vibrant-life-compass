@@ -5,12 +5,12 @@
 // (Captain design 2026-07-09; evolved from the guide-only 12-area wheel.)
 
 // Per-studio area sets. Each developmental stage adds areas and matures wording
-// (Play->Joy, Feelings->Emotions, Learning->Mind, Calling->Career). Abstract
+// (Play->Joy, Heart->Emotions, Learning->Mind, Calling->Career). Abstract
 // areas appear only when a person can hold them (Spirit/Mind mid-childhood;
 // Time/Money/Calling adolescence; Partner/Finances/Career adulthood).
 const WHEEL_TIERS = {
-  sparks:         ['Body', 'Feelings', 'Family', 'Play'],
-  discovery:      ['Body', 'Learning', 'Feelings', 'Family', 'Friends', 'Joy'],
+  sparks:         ['Body', 'Heart', 'Family', 'Play'],
+  discovery:      ['Body', 'Learning', 'Heart', 'Family', 'Friends', 'Joy'],
   adventure:      ['Body', 'Mind', 'Spirit', 'Emotions', 'Family', 'Friends', 'Home', 'Joy'],
   launchpad:      ['Body', 'Mind', 'Spirit', 'Time', 'Emotions', 'Joy', 'Family', 'Friends', 'Home', 'Money', 'Calling'],
   'guide-summer': ['Body', 'Mind', 'Spirit', 'Time', 'Joy', 'Emotions', 'Family', 'Friends', 'Partner', 'Home', 'Finances', 'Career'],
@@ -37,7 +37,7 @@ function lifeWheelSvg(areas) {
   const tints = ['#bcd49a', '#a2c5d6', '#e6c986', '#c6a8db', '#9fd4ba', '#dcabb0'];
   // Per-label horizontal nudge (px in the 340 viewBox) for labels that read
   // better shifted off dead-center. (Captain 2026-07-14.)
-  const LABEL_NUDGE_X = { Feelings: 8, Family: -8, Joy: -8 };
+  const LABEL_NUDGE_X = { Heart: 8, Family: -8, Joy: -8 };
   let segs = '', labels = '';
   areas.forEach((label, i) => {
     const a0 = i * step, a1 = (i + 1) * step;
