@@ -32,7 +32,9 @@ function polar(cx, cy, r, angleDeg) {
 function lifeWheelSvg(areas) {
   const cx = 170, cy = 170, R = 132, hub = 30;
   const n = areas.length, step = 360 / n;
-  const tints = ['#e7ece0', '#dfe7ea', '#efe7dd', '#e7e0ea', '#dfeae2', '#ece0e1'];
+  // Brighter, more saturated tints so the wheel reads clearly (captain 2026-07-14
+  // - the near-white pastels were hard to see).
+  const tints = ['#bcd49a', '#a2c5d6', '#e6c986', '#c6a8db', '#9fd4ba', '#dcabb0'];
   let segs = '', labels = '';
   areas.forEach((label, i) => {
     const a0 = i * step, a1 = (i + 1) * step;
@@ -42,7 +44,7 @@ function lifeWheelSvg(areas) {
     const [hx1, hy1] = polar(cx, cy, hub, a1);
     segs += `<path d="M ${hx0.toFixed(1)} ${hy0.toFixed(1)} L ${x0.toFixed(1)} ${y0.toFixed(1)} A ${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)} L ${hx1.toFixed(1)} ${hy1.toFixed(1)} A ${hub} ${hub} 0 0 0 ${hx0.toFixed(1)} ${hy0.toFixed(1)} Z" fill="${tints[i % tints.length]}" stroke="#fff" stroke-width="1.5"/>`;
     const [lx, ly] = polar(cx, cy, R * 0.7, a0 + step / 2);
-    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#5a5a52">${label}</text>`;
+    labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="600" fill="#2f3a24">${label}</text>`;
   });
   return `<svg viewBox="0 0 340 340" class="life-wheel-svg" role="img" aria-label="Wheel of your life areas">
     ${segs}

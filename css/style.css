@@ -3762,7 +3762,7 @@ body.landscape-mountain {
 
 /* Wheel pinned atop the onboarding telescope - small, centered; drops at halfway. */
 .onb-wheel-pin { display: flex; justify-content: center; margin: 0 0 0.85rem; }
-.onb-wheel-pin svg { width: 150px; height: 150px; }
+.onb-wheel-pin svg { width: 240px; height: 240px; } /* bigger so it reads clearly (captain 2026-07-14) */
 
 /* ── Pitch readiness: North card + thresholds page ──────────────────────── */
 .north-pitch { margin: 0.5rem 0 1rem; }
