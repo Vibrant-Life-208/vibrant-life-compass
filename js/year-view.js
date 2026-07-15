@@ -1,13 +1,51 @@
 // Compass (year view).
 
-import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getYearVision, setYearVision, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval, addNotification, getParentLearnerLinks } from './store.js';
+import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getProfileHorizons, setProfileHorizon, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval, addNotification, getParentLearnerLinks } from './store.js';
 import { getCategoriesForStudio, getStudioName, lifeAreaForCategory } from './studios.js';
-import { openGoalModal, openQuoteModal, openVisionModal, openTraitsModal, openConfirmModal, openYearGoalModal } from './modals.js';
+import { openGoalModal, openQuoteModal, openHorizonModal, openTraitsModal, openConfirmModal, openYearGoalModal } from './modals.js';
 import { renderYearMap } from './year-map.js';
 import { getYearMapClickHandler } from './north.js';
 import { renderLifeWheel, getWheelAreas } from './wheel.js';
 
 let wired = false;
+
+// The telescope, made revisitable. The onboarding cascade walks 10yr -> 5yr ->
+// 1yr once; this surfaces the same three horizons on the Compass so the vision
+// stays a living thing the learner returns to. Same profileHorizons store the
+// cascade writes (js/backend supabase columns vision_beyond_5yr / _within_5yr /
+// _within_1yr), so it shows exactly what they wrote. (Captain 2026-07-15.)
+const HORIZON_VIEW = [
+  { key: 'beyond_5yr', label: '10 years from now', prompt: 'Ten years from now - who have you become? What does your life look like? Let yourself imagine. There is no wrong answer.' },
+  { key: 'within_5yr', label: '5 years from now', prompt: 'Now bring it closer. Five years from now - what do you want to be true?' },
+  { key: 'within_1yr', label: '1 year from now', prompt: 'Twelve months from now - what do you want to have grown into?' },
+];
+
+function renderHorizons(learnerId, horizons) {
+  const el = document.getElementById('year-horizons');
+  if (!el) return;
+  el.innerHTML = '';
+  HORIZON_VIEW.forEach((h) => {
+    const val = (horizons[h.key] || '').trim();
+    const row = document.createElement('div');
+    row.className = 'horizon-row';
+    row.innerHTML = `
+      <p class="horizon-label">${h.label}</p>
+      <p class="horizon-text ${val ? '' : 'empty'}">${val ? escapeHtml(val) : 'Tap to write'}</p>
+    `;
+    row.addEventListener('click', () => {
+      openHorizonModal({
+        label: h.label,
+        prompt: h.prompt,
+        existing: horizons[h.key] || '',
+        onSave: async (next) => {
+          await setProfileHorizon(learnerId, h.key, next);
+          await renderYearView(learnerId);
+        },
+      });
+    });
+    el.appendChild(row);
+  });
+}
 
 export async function renderYearView(learnerId) {
   const learner = await getLearner(learnerId);
@@ -33,21 +71,17 @@ export async function renderYearView(learnerId) {
   }
 
   const categories = getCategoriesForStudio(learner.studio);
-  const [allGoals, quoteText, visionText, traits, partner] = await Promise.all([
+  const [allGoals, quoteText, horizons, traits, partner] = await Promise.all([
     getGoals(learnerId),
     getYearQuote(learnerId),
-    getYearVision(learnerId),
+    getProfileHorizons(learnerId),
     getYearTraits(learnerId),
     getActivePartnerOf(learnerId),
   ]);
   const goals = allGoals.filter((g) => g.scope === 'year');
 
-  // Vision (pedagogy addition 2026-05-13)
-  const visionEl = document.getElementById('year-vision-text');
-  if (visionEl) {
-    visionEl.textContent = visionText || 'Tap to write where you see yourself a year from now';
-    visionEl.classList.toggle('empty', !visionText);
-  }
+  // My Horizons: the telescope (10yr / 5yr / 1yr), revisitable after onboarding.
+  renderHorizons(learnerId, horizons);
 
   // Quote
   const quoteEl = document.getElementById('year-quote-text');
@@ -83,17 +117,6 @@ export async function renderYearView(learnerId) {
       openTraitsModal(existing, async (next) => {
         await setYearTraits(learnerId, next);
         await renderYearView(learnerId);
-      });
-    });
-    document.querySelector('.year-vision')?.addEventListener('click', async () => {
-      const existing = await getYearVision(learnerId);
-      openVisionModal({
-        existing,
-        currentStudio: learner.studio,
-        onSave: async (next) => {
-          await setYearVision(learnerId, next);
-          await renderYearView(learnerId);
-        },
       });
     });
     wired = true;

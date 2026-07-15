@@ -713,22 +713,41 @@ header h1 {
 /* Year vision — protagonist statement, sibling to quote + traits.
    Pedagogy addition 2026-05-13. Visually distinct: deeper border,
    the most-important-thing-on-the-page emphasis. */
-.year-vision {
+/* My Horizons - the revisitable telescope (10yr / 5yr / 1yr) on the Compass. */
+.my-horizons {
+  margin-bottom: 1.5rem;
+}
+.horizon-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.horizon-row {
   background: var(--warm-white);
   border-left: 4px solid var(--sage);
-  padding: 1rem 1.25rem;
+  padding: 0.85rem 1.1rem;
   border-radius: var(--radius-sm);
-  margin-bottom: 1.5rem;
   cursor: pointer;
+  transition: background 0.15s ease;
 }
-.vision-text {
+.horizon-row:hover {
+  background: var(--sage-pale, #eef2e6);
+}
+.horizon-label {
+  margin: 0 0 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.horizon-text {
   margin: 0;
   color: var(--text);
-  font-size: 1.05rem;
-  line-height: 1.55;
+  font-size: 1.02rem;
+  line-height: 1.5;
   white-space: pre-wrap;
 }
-.vision-text.empty {
+.horizon-text.empty {
   color: var(--text-soft);
   font-style: italic;
 }

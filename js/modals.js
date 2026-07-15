@@ -500,6 +500,27 @@ export function openVisionModal({ existing, currentStudio, onSave }) {
   setTimeout(() => document.getElementById('vision-input')?.focus(), 50);
 }
 
+// Generic horizon editor - the telescoping life-vision steps (10yr / 5yr / 1yr).
+// Onboarding writes these once through the cascade; this is the door back in, so
+// the vision is a living thing revisitable from the Compass, never a one-shot
+// form the learner can never return to. (Captain 2026-07-15.)
+export function openHorizonModal({ label, prompt, existing, onSave }) {
+  setModalTitle(label);
+  document.getElementById('form-fields').innerHTML = `
+    <div class="form-field">
+      <p class="form-hint">${escapeHtml(prompt)}</p>
+      <label for="horizon-input">Your ${escapeHtml(label.toLowerCase())} vision</label>
+      <textarea id="horizon-input" rows="6" data-autogrow placeholder="${escapeAttr(prompt)}">${existing ? escapeAttr(existing) : ''}</textarea>
+    </div>
+  `;
+  activeSubmit = () => {
+    onSave(document.getElementById('horizon-input').value.trim());
+    closeModal();
+  };
+  openModal();
+  setTimeout(() => document.getElementById('horizon-input')?.focus(), 50);
+}
+
 export function openTraitsModal(existing, onSave) {
   setModalTitle('Character traits');
   document.getElementById('form-fields').innerHTML = `
