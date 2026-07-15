@@ -83,7 +83,7 @@ export function getThresholds(targetStudio) {
 // (getWheelAreas(targetStudio)). Adventure is the only threshold set that exists
 // today, so it is the only target mapped.
 //
-// COVERAGE FRAME, NOT COMPLETENESS: a slice with no threshold (Body, Family,
+// COVERAGE FRAME, NOT COMPLETENESS: a slice with no threshold (Movement, Family,
 // Home, Joy below) is an invitation the learner fills themselves, never a
 // deficit. Do not "balance" the map by inventing placements to fill every slice.
 //
@@ -97,7 +97,7 @@ export function getThresholds(targetStudio) {
 export const MAPPING_RATIFIED = false;
 
 export const THRESHOLD_LIFE_AREA = {
-  // Discovery -> Adventure. Target wheel: Body, Mind, Spirit, Emotions, Family,
+  // Discovery -> Adventure. Target wheel: Movement, Mind, Spirit, Emotions, Family,
   // Friends, Home, Joy (getWheelAreas('adventure')).
   adventure: {
     // Skills - the academic + tool readiness work.

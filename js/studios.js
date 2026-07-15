@@ -204,7 +204,7 @@ export const STUDIOS = {
 };
 
 // Guide-specific categories. The 12 life-area architecture (Career/Mission,
-// Spirit, Mind, Body, Time, Joy, Emotions, Family, Friendships, Intimate,
+// Spirit, Mind, Movement, Time, Joy, Emotions, Family, Friendships, Intimate,
 // Home, Finances) + 4 Acton-specific practice domains (Pedagogy, Studio
 // Leadership, Learner Relationships, Socratic Practice).
 //
@@ -212,7 +212,7 @@ export const STUDIOS = {
 // using so we can help from a knowing place."
 export const GUIDE_CATEGORIES = {
   guide_body: {
-    name: 'Body',
+    name: 'Movement',
     kind: 'personal',
     example: 'Daily yoga + 8 hours sleep, four days a week. By Aug 17, walking up the hill without getting winded.',
   },
@@ -315,7 +315,7 @@ export const GUIDE_CATEGORIES = {
 // deficit. Do NOT guess these.
 export const CATEGORY_LIFE_AREA = {
   // guide-summer -> adult 12-area wheel (labels match getWheelAreas('guide-summer'))
-  guide_body: 'Body',
+  guide_body: 'Movement',
   guide_mind: 'Mind',
   guide_spirit: 'Spirit',
   guide_time: 'Time',

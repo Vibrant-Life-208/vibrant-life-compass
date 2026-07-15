@@ -9,11 +9,11 @@
 // areas appear only when a person can hold them (Spirit/Mind mid-childhood;
 // Time/Money/Calling adolescence; Partner/Finances/Career adulthood).
 const WHEEL_TIERS = {
-  sparks:         ['Body', 'Heart', 'Family', 'Play'],
-  discovery:      ['Body', 'Learning', 'Heart', 'Family', 'Friends', 'Joy'],
-  adventure:      ['Body', 'Mind', 'Spirit', 'Emotions', 'Family', 'Friends', 'Home', 'Joy'],
-  launchpad:      ['Body', 'Mind', 'Spirit', 'Time', 'Emotions', 'Joy', 'Family', 'Friends', 'Home', 'Money', 'Calling'],
-  'guide-summer': ['Body', 'Mind', 'Spirit', 'Time', 'Joy', 'Emotions', 'Family', 'Friends', 'Partner', 'Home', 'Finances', 'Career'],
+  sparks:         ['Movement', 'Heart', 'Family', 'Play'],
+  discovery:      ['Movement', 'Learning', 'Heart', 'Family', 'Friends', 'Joy'],
+  adventure:      ['Movement', 'Mind', 'Spirit', 'Emotions', 'Family', 'Friends', 'Home', 'Joy'],
+  launchpad:      ['Movement', 'Mind', 'Spirit', 'Time', 'Emotions', 'Joy', 'Family', 'Friends', 'Home', 'Money', 'Calling'],
+  'guide-summer': ['Movement', 'Mind', 'Spirit', 'Time', 'Joy', 'Emotions', 'Family', 'Friends', 'Partner', 'Home', 'Finances', 'Career'],
 };
 // Adults/guides (and any non-learner-tier profile) hold the full 12.
 const ADULT_AREAS = WHEEL_TIERS['guide-summer'];
