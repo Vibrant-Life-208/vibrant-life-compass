@@ -1,9 +1,12 @@
 # Threshold -> wheel-slice mapping (v0.1, DRAFT - not ratified)
 
 Date: 2026-07-14
-Status: **DRAFT. Pending coverage-frame sign-off.** `MAPPING_RATIFIED = false` in
-`js/thresholds.js`. Until it flips true, the 1-year slice-plan step renders BLANK
-boxes for every learner - no unratified placement reaches a child.
+Status: **RATIFIED (Accord + TCC coverage-frame sign-off, 2026-07-15).**
+`MAPPING_RATIFIED = true` in `js/thresholds.js` as of the 2026-07-15 fleet review.
+Jake's separate pedagogy read stays open (captain gathers it herself); the
+watch-with-a-real-learner gate also remains before any child is exposed. The flag
+flip is a code-enable, not learner exposure. (Prior draft status: BLANK boxes for
+every learner until the flag flipped - no unratified placement reached a child.)
 
 This is the last piece of the onboarding redesign: the 1-year goal plan, organized
 by wheel slice instead of the academic-category grid. This doc holds the one part
@@ -12,7 +15,7 @@ belongs to - so it can be reviewed as data before any learner sees it.
 
 ## The decision it implements (captain, 2026-07-14)
 
-- The 1-year plan is organized by wheel slice (Body, Mind, Spirit, ...), each slice
+- The 1-year plan is organized by wheel slice (Movement, Mind, Spirit, ...), each slice
   a goal box the learner fills.
 - Two entry states out of onboarding:
   - **Pitched + accepted** (age-gate yes -> opted into the pitch): the slice boxes
@@ -21,7 +24,7 @@ belongs to - so it can be reviewed as data before any learner sees it.
   - **Not pitching** (age-gate no, or no pitch target): the same slice boxes, blank.
 - **Which wheel a pitcher plans by** (captain call, 2026-07-14): the studio they are
   growing INTO, not their current one. A Discovery learner pitching to Adventure
-  plans by the Adventure wheel (`Body, Mind, Spirit, Emotions, Family, Friends,
+  plans by the Adventure wheel (`Movement, Mind, Spirit, Emotions, Family, Friends,
   Home, Joy`). This is why the slice labels below are the target studio's labels.
 
 ## Coverage frame, not completeness
@@ -29,21 +32,21 @@ belongs to - so it can be reviewed as data before any learner sees it.
 Same guardrail as the v0.18 `life_area` migration: a slice with no threshold is an
 **invitation the learner fills**, never a deficit, never a fill-meter. Do not
 "balance" the table by inventing placements to cover every slice. In the draft
-below, `Body`, `Family`, `Home`, and `Joy` carry no threshold - that is correct and
+below, `Movement`, `Family`, `Home`, and `Joy` carry no threshold - that is correct and
 intended. Those are the child's to fill from their own life.
 
 ## Draft mapping - Discovery -> Adventure
 
 The only threshold set that exists today is the Adventure pitch (see
 `THRESHOLDS.adventure` in `js/thresholds.js`). Target wheel:
-`getWheelAreas('adventure')` = Body, Mind, Spirit, Emotions, Family, Friends, Home, Joy.
+`getWheelAreas('adventure')` = Movement, Mind, Spirit, Emotions, Family, Friends, Home, Joy.
 
 | Threshold (id) | Name | -> Slice | Rationale |
 |---|---|---|---|
 | `adv_khan` | Master Khan grade levels 2-5 | **Mind** | academic mastery |
 | `adv_lexia` | Finish Lexia Core5 | **Mind** | reading skill |
 | `adv_spelling` | Proficient spelling | **Mind** | literacy skill |
-| `adv_handwriting` | Proficient handwriting | **Mind** | (candidate: Body - fine motor) |
+| `adv_handwriting` | Proficient handwriting | **Mind** | (candidate: Movement - fine motor) |
 | `adv_jt` | Journey Tracker proficiency | **Mind** | tool / self-organization |
 | `adv_typing` | Typing skills | **Mind** | tool skill |
 | `adv_lead_launches` | Lead 2 morning Launches | **Friends** | leading peers / studio culture |
@@ -53,11 +56,11 @@ The only threshold set that exists today is the Adventure pitch (see
 | `adv_leadership` | Leadership & culture building | **Friends** | community |
 | `adv_courage_book` | Read "Courage to Grow" | **Spirit** | meaning / who I'm becoming |
 
-Slices with no threshold (invitations): **Body, Family, Home, Joy.**
+Slices with no threshold (invitations): **Movement, Family, Home, Joy.**
 
 ### Open placement questions for the reviewers - RESOLVED (captain, 2026-07-15)
 
-1. **`adv_handwriting`**: Mind (skill) or Body (fine motor)? -> **Mind.** (Captain.)
+1. **`adv_handwriting`**: Mind (skill) or Movement (fine motor)? -> **Mind.** (Captain.)
 2. **Mind carries six thresholds.** -> **Accepted; lopsided by design, not a defect.**
    Captain: "this is the mind at work - it is education; the learner adds tasks to the
    other slices." Pitch readiness is mostly academic, so Mind legitimately carries the
@@ -107,10 +110,23 @@ change (year-view grouping, setup grid, priorities) and should be its own decisi
 - [x] Confirm the one-goal-per-slice structural adaptation, or scope the
       goal-box-per-threshold alternative. (Captain accepted one-goal-per-slice with
       carried threshold items, 2026-07-15 - "this is the mind at work.")
-- [ ] Jake + Accord: coverage-frame review - empty slices read as invitation, no
-      slice is a fill-meter, no placement pathologizes. (Captain has stated the
-      coverage-frame position; this is the pedagogy/trauma-informed second read.)
-- [ ] TCC review (per the v0.18 gated-mapping convention in `studios.js`).
+- [x] Accord: coverage-frame review - empty slices read as invitation, no slice is
+      a fill-meter, no placement pathologizes. **Signed 2026-07-15**, verified against
+      the actual `renderSlicePlan` in `modals.js` (not just the model): empty slices
+      render an empty textarea under "an empty slice is fine - it is an invitation,
+      not a gap"; no counts/meters/progress bars; carried thresholds ride as
+      "Carried from your pitch" work, not labels on a child. Noted: the flag flip is
+      a code-enable; the real learner-exposure gates (watch-with-a-real-learner;
+      Jake's read) remain open.
+- [ ] Jake: separate pedagogy read - captain gathers it herself; checkbox stays
+      open until she confirms. (Not covered by the 2026-07-15 meeting.)
+- [x] TCC review (per the v0.18 gated-mapping convention in `studios.js`).
+      **Signed 2026-07-15** (voiced through Satis, Data Sovereignty). Gate verified:
+      `thresholdLifeArea` returns null until ratified; `buildSlicePlan` prefills only
+      when pitching AND ratified; empty boxes never wiped; saves only non-empty -
+      activation-gates-before-activation honored. Pre-fill is opening-not-closing
+      (refine/leave/skippable). Sign-off was conditional on correcting the "Body" ->
+      "Movement" record mismatch above; correction applied same session.
 
 ## Remaining coordination (NOT in this commit)
 

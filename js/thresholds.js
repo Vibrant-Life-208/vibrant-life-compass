@@ -95,14 +95,15 @@ export function getThresholds(targetStudio) {
 // Home, Joy below) is an invitation the learner fills themselves, never a
 // deficit. Do not "balance" the map by inventing placements to fill every slice.
 //
-// *** DRAFT - NOT RATIFIED. *** This is a values judgment about where a child's
-// readiness work lives across their life. It must pass the same coverage-frame
-// review the v0.18 note references - captain sign-off, Jake + Accord on the
-// pedagogy, TCC review - before any learner sees a pre-filled sliced year. Until
-// MAPPING_RATIFIED flips true, the slice step renders BLANK boxes for everyone
-// (honest: no unratified placement reaches a learner). See
-// docs/design/2026-07-14-threshold-to-wheel-slice-mapping-v0.1.md.
-export const MAPPING_RATIFIED = false;
+// *** RATIFIED 2026-07-15 (Accord + TCC coverage-frame sign-off). *** This is a
+// values judgment about where a child's readiness work lives across their life.
+// It passed the coverage-frame review the v0.18 note references - captain sign-off
+// on placements, Accord (trauma-informed) + TCC (data-sovereignty) on the frame.
+// Jake's separate pedagogy read and the watch-with-a-real-learner gate remain open;
+// this flag is a code-enable, not learner exposure. While it was false the slice
+// step rendered BLANK boxes for everyone (no unratified placement reached a
+// learner). See docs/design/2026-07-14-threshold-to-wheel-slice-mapping-v0.1.md.
+export const MAPPING_RATIFIED = true;
 
 export const THRESHOLD_LIFE_AREA = {
   // Discovery -> Adventure. Target wheel: Movement, Mind, Spirit, Emotions, Family,
