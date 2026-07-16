@@ -9,7 +9,7 @@ import {
   saveLearner, saveGoal, getGoals,
 } from './store.js';
 import { parseViaPdf } from './via-import.js';
-import { nextStudio, pitchCutoff, getStudioName } from './studios.js';
+import { nextStudio, pitchCutoff, getStudioName, getYearCalendar } from './studios.js';
 import { lifeWheelSvgFor } from './wheel.js';
 import { renderThresholdsHtml, buildSlicePlan } from './thresholds.js';
 
@@ -94,9 +94,17 @@ async function weekDateLabel(sessionIndex, weekIndex, studioId) {
 export async function openYearGoalModal({ category, existing, onSave, isFirstTime, studio }) {
   setModalTitle(`${category.name} - year goal`);
   // Pre-compute date labels for the weekly inputs (studio-aware calendar)
-  const s1Dates = await Promise.all([1,2,3,4].map(w => weekDateLabel(1, w, studio)));
-  const s2Dates = await Promise.all([1,2,3,4,5].map(w => weekDateLabel(2, w, studio)));
-  const s3Dates = await Promise.all([1,2,3].map(w => weekDateLabel(3, w, studio)));
+  // Weeks per session come from the calendar (js/studios.js sessionWeeks) so the
+  // setter follows the calendar rather than hardcoding 4/5/3. Setup plans the first
+  // three sessions (the recursive-halving phase); w1/w2/w3 drive the rows + labels.
+  const sw = getYearCalendar().sessionWeeks;
+  const [w1, w2, w3] = [sw[0], sw[1], sw[2]];
+  const mkDates = (session, count) => Promise.all(
+    Array.from({ length: count }, (_, i) => weekDateLabel(session, i + 1, studio))
+  );
+  const s1Dates = await mkDates(1, w1);
+  const s2Dates = await mkDates(2, w2);
+  const s3Dates = await mkDates(3, w3);
   const existingS1 = existing?.weeklySteps?.[1] || [];
   const existingS2 = existing?.weeklySteps?.[2] || [];
   const existingS3 = existing?.weeklySteps?.[3] || [];
@@ -223,13 +231,10 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         </div>
       </div>
       <div class="form-field">
-        <label>Stage 6 · Session 1 — 4 weeks, one small step per week</label>
-        <p class="form-hint">Session 1 has four weeks (Aug 17 - Sept 11). Break it into one <strong>small</strong> step per week toward End of Session 1 - start small in Week 1 and build from there. Phrase each as a when-then: <em>"On Tuesday after breakfast, I'll do 10 minutes."</em> Every week is optional; a missed one is information, not failure.</p>
+        <label>Stage 6 · Session 1 — ${w1} weeks, one small step per week</label>
+        <p class="form-hint">Session 1 has ${w1} weeks. Break it into one <strong>small</strong> step per week toward End of Session 1 - start small in Week 1 and build from there. Phrase each as a when-then: <em>"On Tuesday after breakfast, I'll do 10 minutes."</em> Every week is optional; a missed one is information, not failure.</p>
         <div class="week-rows">
-          ${weeklyRow(1, 1, s1Dates[0], existingS1[0])}
-          ${weeklyRow(1, 2, s1Dates[1], existingS1[1])}
-          ${weeklyRow(1, 3, s1Dates[2], existingS1[2])}
-          ${weeklyRow(1, 4, s1Dates[3], existingS1[3])}
+          ${s1Dates.map((d, i) => weeklyRow(1, i + 1, d, existingS1[i])).join('')}
         </div>
       </div>
       <div class="stage-actions">
@@ -250,14 +255,10 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         </div>
       </div>
       <div class="form-field">
-        <label>Stage 7 · Session 2 — 5 weeks</label>
-        <p class="form-hint">Picking up from end of Session 1, how do you get to End of Session 2 in 5 weekly steps?</p>
+        <label>Stage 7 · Session 2 — ${w2} weeks</label>
+        <p class="form-hint">Picking up from end of Session 1, how do you get to End of Session 2 in ${w2} weekly steps?</p>
         <div class="week-rows">
-          ${weeklyRow(2, 1, s2Dates[0], existingS2[0])}
-          ${weeklyRow(2, 2, s2Dates[1], existingS2[1])}
-          ${weeklyRow(2, 3, s2Dates[2], existingS2[2])}
-          ${weeklyRow(2, 4, s2Dates[3], existingS2[3])}
-          ${weeklyRow(2, 5, s2Dates[4], existingS2[4])}
+          ${s2Dates.map((d, i) => weeklyRow(2, i + 1, d, existingS2[i])).join('')}
         </div>
       </div>
       <div class="stage-actions">
@@ -278,12 +279,10 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         </div>
       </div>
       <div class="form-field">
-        <label>Stage 8 · Session 3 — only 3 weeks</label>
-        <p class="form-hint">The final stretch to your locked End of Session 3. Only 3 weeks. If this feels tight, the next screen lets you rebalance back into Sessions 1 or 2.</p>
+        <label>Stage 8 · Session 3 — only ${w3} weeks</label>
+        <p class="form-hint">The final stretch to your locked End of Session 3. Only ${w3} weeks. If this feels tight, the next screen lets you rebalance back into Sessions 1 or 2.</p>
         <div class="week-rows">
-          ${weeklyRow(3, 1, s3Dates[0], existingS3[0])}
-          ${weeklyRow(3, 2, s3Dates[1], existingS3[1])}
-          ${weeklyRow(3, 3, s3Dates[2], existingS3[2])}
+          ${s3Dates.map((d, i) => weeklyRow(3, i + 1, d, existingS3[i])).join('')}
         </div>
       </div>
       <div class="stage-actions">
@@ -312,9 +311,9 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
   `;
 
   const collectWeeklySteps = () => ({
-    1: [1,2,3,4].map(w => fields.querySelector(`input[data-session="1"][data-week="${w}"]`)?.value.trim() || ''),
-    2: [1,2,3,4,5].map(w => fields.querySelector(`input[data-session="2"][data-week="${w}"]`)?.value.trim() || ''),
-    3: [1,2,3].map(w => fields.querySelector(`input[data-session="3"][data-week="${w}"]`)?.value.trim() || ''),
+    1: Array.from({ length: w1 }, (_, i) => fields.querySelector(`input[data-session="1"][data-week="${i + 1}"]`)?.value.trim() || ''),
+    2: Array.from({ length: w2 }, (_, i) => fields.querySelector(`input[data-session="2"][data-week="${i + 1}"]`)?.value.trim() || ''),
+    3: Array.from({ length: w3 }, (_, i) => fields.querySelector(`input[data-session="3"][data-week="${i + 1}"]`)?.value.trim() || ''),
   });
 
   const currentValues = () => ({
@@ -348,8 +347,8 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
     // D3 — coming-from anchors on stages 6/7/8.
     // Stage 6 starts from the baseline (year-level starting line).
     // Stages 7 and 8 start from the prior session's last weekly task.
-    const s1LastWeek = v.weeklySteps?.[1]?.[3] || '';
-    const s2LastWeek = v.weeklySteps?.[2]?.[4] || '';
+    const s1LastWeek = v.weeklySteps?.[1]?.[w1 - 1] || '';
+    const s2LastWeek = v.weeklySteps?.[2]?.[w2 - 1] || '';
     setText('starting-from-s1', baseline, '(set your baseline in Stage 2)');
     setText('starting-from-s2', s1LastWeek, "(fill Session 1's last week first)");
     setText('starting-from-s3', s2LastWeek, "(fill Session 2's last week first)");
@@ -387,15 +386,15 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         <input type="text" id="review-eos1" class="review-milestone-input" value="${escapeAttr(v.eos1Point)}">
       </div>
       <div class="review-section">
-        <span class="review-section-label">Session 1 — 4 weeks</span>
+        <span class="review-section-label">Session 1 — ${w1} weeks</span>
         ${s1Dates.map((d, i) => rowHtml(1, i + 1, d, v.weeklySteps[1][i])).join('')}
       </div>
       <div class="review-section">
-        <span class="review-section-label">Session 2 — 5 weeks</span>
+        <span class="review-section-label">Session 2 — ${w2} weeks</span>
         ${s2Dates.map((d, i) => rowHtml(2, i + 1, d, v.weeklySteps[2][i])).join('')}
       </div>
       <div class="review-section review-section-tight">
-        <span class="review-section-label">Session 3 — 3 weeks (tight)</span>
+        <span class="review-section-label">Session 3 — ${w3} weeks (tight)</span>
         ${s3Dates.map((d, i) => rowHtml(3, i + 1, d, v.weeklySteps[3][i])).join('')}
       </div>
     `;

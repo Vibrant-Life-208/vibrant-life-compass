@@ -1,7 +1,7 @@
 // Session view. 1 of 7 sessions, navigable.
 
 import { getLearner, getGoals, saveGoal, getParentLearnerLinks, addNotification } from './store.js';
-import { getCategoriesForStudio, getStudioName, SESSIONS_PER_YEAR, WEEKS_PER_SESSION_DEFAULT } from './studios.js';
+import { getCategoriesForStudio, getStudioName, SESSIONS_PER_YEAR, WEEKS_PER_SESSION_DEFAULT, getYearCalendar } from './studios.js';
 import { openGoalModal, openConfirmModal } from './modals.js';
 
 let currentSession = 1;
@@ -26,7 +26,10 @@ export async function renderSessionView(learnerId) {
   }
 
   title.textContent = `Session ${currentSession} of ${SESSIONS_PER_YEAR}`;
-  meta.textContent = `${getStudioName(learner.studio)} studio · ~${WEEKS_PER_SESSION_DEFAULT} weeks · ${learner.name}`;
+  // Actual weeks for THIS session from the calendar, not a generic default -
+  // the old "~5 weeks" was wrong for most sessions (S1=4, S3/S4=3, S5/S6=6, S7=7).
+  const sessionWeeks = getYearCalendar().sessionWeeks[currentSession - 1] || WEEKS_PER_SESSION_DEFAULT;
+  meta.textContent = `${getStudioName(learner.studio)} studio · ${sessionWeeks} weeks · ${learner.name}`;
 
   document.getElementById('session-prev').disabled = currentSession <= 1;
   document.getElementById('session-next').disabled = currentSession >= SESSIONS_PER_YEAR;
