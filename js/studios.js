@@ -80,12 +80,12 @@ export const CATEGORIES = {
     },
   },
   pathway: {
-    name: 'Pathway Badges',
+    name: 'Badges',
     kind: 'pathway',
     examples: {
-      discovery: 'Try three different Pathway Badges this year. Pick the one that feels most alive and earn it by Session 7.',
-      adventure: 'Earn the Photography Pathway Badge by Session 6. Take 100 photos and pick my top 10 with a guide.',
-      launchpad: 'Earn an advanced Pathway Badge with portfolio-quality output. Choose work I would show a future employer or program.',
+      discovery: 'Try three different badges this year. Pick the one that feels most alive and earn it by Session 7.',
+      adventure: 'Earn the Photography badge by Session 6. Take 100 photos and pick my top 10 with a guide.',
+      launchpad: 'Earn an advanced badge with portfolio-quality output. Choose work I would show a future employer or program.',
     },
   },
   quest: {
@@ -363,7 +363,7 @@ export const PARENT_SUPPORT_HINTS = {
   civ: 'Watch a documentary or read a short article together on the civilization they\'re studying.',
   characterTrait: 'Notice once a week when you see them practicing it. Tell them you noticed.',
   reading: 'Visit the library together. Let them pick. Read your own book at the same time.',
-  pathway: 'Ask what\'s hard right now in their Pathway. Then just listen.',
+  pathway: 'Ask what\'s hard right now in their badge work. Then just listen.',
   quest: 'Offer to be in the audience at the exhibition. That\'s the support.',
   apprenticeship: 'Ask about the person they\'re apprenticing with, not just the work. Mentorship is the gift.',
   noRedInk: 'No support needed here. They\'ve got this one.',
