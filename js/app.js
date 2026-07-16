@@ -257,12 +257,20 @@ async function onSignedIn() {
   // (strengths -> values -> wheel -> 10yr -> 5yr -> pitch -> slice-plan) entirely
   // for every fresh learner. Onboarding runs first, then Setup. (Bug fix
   // 2026-07-14: the two first-run gates were racing and Setup won.)
-  if (session.role === 'learner' && session.learnerId) {
+  // Full learner-style goal-setting path (captain 2026-07-16): learners route to Setup
+  // by learnerId; guides + owners route by their OWN profile id (their guide-summer
+  // learner row), so they set year goals the same way learners do. Parents stay light
+  // (no Setup). If a guide/owner has no learner row / studio yet, getLearner is null
+  // and we simply don't route - no breakage.
+  const goalSettingProfileId = session.role === 'learner' ? session.learnerId
+    : (session.role === 'guide' || session.is_owner) ? ownIdentity
+    : null;
+  if (goalSettingProfileId) {
     const { getLearner } = await import('./store.js');
-    const learner = await getLearner(session.learnerId);
+    const learner = await getLearner(goalSettingProfileId);
     const onboardingDone = await hasCompletedOnboarding(ownIdentity);
-    if (onboardingDone && learner && !learner.setupCompletedAt) {
-      await showSetupView(session.learnerId);
+    if (onboardingDone && learner && learner.studio && !learner.setupCompletedAt) {
+      await showSetupView(goalSettingProfileId);
       return;
     }
   }
@@ -323,9 +331,9 @@ async function onSignedIn() {
     // 2026-07-14, superseding Decision 5): only Sparks is screen-free; Discovery
     // and up get the full telescope. Guides/parents have no studio -> full.
     let onbStudio = null;
-    if (needsCascade && session.role === 'learner' && session.learnerId) {
+    if (needsCascade && goalSettingProfileId) {
       const { getLearner } = await import('./store.js');
-      const l = await getLearner(session.learnerId);
+      const l = await getLearner(goalSettingProfileId);
       onbStudio = l?.studio || null;
     }
 
@@ -334,10 +342,10 @@ async function onSignedIn() {
     // makes "no main face until goals are set" airtight in the first session too,
     // not just on the next login. Everyone else lands on their default tab.
     const finishGate = async () => {
-      if (session.role === 'learner' && session.learnerId) {
+      if (goalSettingProfileId) {
         const { getLearner } = await import('./store.js');
-        const l = await getLearner(session.learnerId);
-        if (l && !l.setupCompletedAt) { await showSetupView(session.learnerId); return; }
+        const l = await getLearner(goalSettingProfileId);
+        if (l && l.studio && !l.setupCompletedAt) { await showSetupView(goalSettingProfileId); return; }
       }
       await showTab(TABS_BY_ROLE[session.role][0].id, learnerId);
     };

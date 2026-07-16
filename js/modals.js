@@ -1393,7 +1393,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // disabled until the box has text. Narrows the 2026-06-22 walk-once decision
     // for learners on the vision steps only; the slice-plan step stays invitational
     // (Accord + TCC coverage-frame sign-off, 2026-07-15). Guides/parents keep skip.
-    const required = role === 'learner';
+    const required = role === 'learner' || role === 'guide'; // guides + owners get the full learner path (captain 2026-07-16); parents stay light
     return `
       ${wheel}
       ${stack}
@@ -1507,7 +1507,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
     // Mandatory vision steps for learners (captain 2026-07-15): enable Continue
     // live as they type, since there is no "Not now" to fall back on.
-    if (HORIZON_PROMPTS[step] && role === 'learner') {
+    if (HORIZON_PROMPTS[step] && (role === 'learner' || role === 'guide')) {
       const ta = document.getElementById('onb-horizon');
       const cont = document.getElementById('onb-continue');
       ta?.addEventListener('input', () => { if (cont) cont.disabled = !ta.value.trim(); });
@@ -1632,7 +1632,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       } else {
         captureHorizon();
         const text = state.horizons[step] || '';
-        if (role === 'learner' && !text.trim()) return; // mandatory vision step
+        if ((role === 'learner' || role === 'guide') && !text.trim()) return; // mandatory vision step
         await advance(() => profileId ? setProfileHorizon(profileId, step, text) : Promise.resolve());
       }
     });
