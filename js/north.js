@@ -29,12 +29,24 @@ export async function renderNorth(learnerId) {
     const { getStudioName, nextStudio } = await import('./studios.js');
     const up = nextStudio(learner.studio);
     if (learner.pitchTargetStudio) {
-      pitchBtn.textContent = `Your pitch to ${getStudioName(learner.pitchTargetStudio)} - see your thresholds`;
+      const targetName = getStudioName(learner.pitchTargetStudio);
+      const status = learner.pitchAgeStatus;
       pitchSection.hidden = false;
-      pitchBtn.onclick = async () => {
-        const { openThresholdsModal } = await import('./modals.js');
-        openThresholdsModal(learner.pitchTargetStudio, learner);
-      };
+      if (status === 'denied') {
+        // The guide felt this isn't the year to pitch. Gently point the learner back
+        // at this year's goals rather than the thresholds.
+        pitchBtn.textContent = `Not this year - and that's okay. Let's make this year count where you are.`;
+        pitchBtn.onclick = () => document.querySelector('[data-tab="year-view"]')?.click();
+      } else {
+        // Pending (guide not yet confirmed) still works the thresholds; approved is the
+        // confirmed state. Only the label changes.
+        const suffix = status === 'pending' ? ' - waiting for your guide to confirm' : ' - see your thresholds';
+        pitchBtn.textContent = `Your pitch to ${targetName}${suffix}`;
+        pitchBtn.onclick = async () => {
+          const { openThresholdsModal } = await import('./modals.js');
+          openThresholdsModal(learner.pitchTargetStudio, learner);
+        };
+      }
     } else if (up) {
       pitchBtn.textContent = `Thinking about ${getStudioName(up)}? Explore pitching up`;
       pitchSection.hidden = false;

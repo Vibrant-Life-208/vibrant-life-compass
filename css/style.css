@@ -1393,6 +1393,57 @@ header h1 {
 .vision-tile.is-priority .vision-tile-name { color: var(--sage); font-weight: 600; }
 
 /* Admin section - guide-only account creation tool */
+/* Guide pitch-approval surface (age-gate confirmation loop). */
+.guide-pitch-approvals {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--earth-pale);
+}
+.guide-section-title {
+  margin: 0 0 0.25rem;
+  color: var(--sage-deep, #4f6f3f);
+}
+.guide-section-sub {
+  margin: 0 0 1rem;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+.pitch-approval-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.pitch-approval-card {
+  background: var(--warm-white);
+  border: 1px solid var(--sage);
+  border-left-width: 4px;
+  border-radius: var(--radius-sm);
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+.pitch-approval-who {
+  margin: 0 0 0.3rem;
+  color: var(--text);
+}
+.pitch-approval-gate {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+.pitch-approval-body {
+  flex: 1 1 260px;
+}
+.pitch-approval-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .admin-section {
   margin-top: 2rem;
   padding-top: 1.5rem;

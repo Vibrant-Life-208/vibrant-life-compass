@@ -8,7 +8,7 @@ import { renderYearView } from './year-view.js';
 import { renderSessionView, initSessionNav, setCurrentSession } from './session-view.js';
 import { breadcrumbLabel, computeYearPosition } from './year-map.js';
 import { initStillness } from './stillness.js';
-import { getLandscapeForSession, getYearCalendar } from './studios.js';
+import { getLandscapeForSession, getYearCalendar, getStudioName, pitchCutoff } from './studios.js';
 import { renderPatterns } from './patterns.js';
 import { renderPartnerPage } from './partner.js';
 import { renderAdminAccounts, initAdmin } from './admin.js';
@@ -17,7 +17,7 @@ import { renderSetupView } from './setup.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
-import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding } from './store.js';
+import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, saveLearner, addNotification } from './store.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -550,10 +550,83 @@ async function renderRoleView(role, learnerId) {
       `;
       list.appendChild(card);
     });
+
+    // Pending pitch approvals: learners who opted into a pitch and need the guide
+    // to confirm the age gate (captain 2026-07-10 - a "yes, they'll be old enough,"
+    // not a birthday check). Approve/deny writes the status + notifies the learner.
+    await renderPitchApprovals(learners, session, () => renderRoleView('guide', learnerId));
   }
   if (role === 'parent') {
     import('./parent-view.js').then(m => m.renderParentView());
   }
+}
+
+// Pending pitch approvals surface for the guide (captain 2026-07-10 age-gate loop).
+// A learner opts into a pitch (pitchAgeStatus='pending'); the guide confirms the age
+// gate here. Approve/deny writes the status + reviewer + timestamp and notifies the
+// learner. No birthdate is stored - only the guide's yes/no on the self-report.
+async function renderPitchApprovals(learners, session, onChange) {
+  const section = document.getElementById('guide-pitch-approvals');
+  const list = document.getElementById('guide-pitch-list');
+  if (!section || !list) return;
+  const pending = (learners || []).filter((l) => l.pitchAgeStatus === 'pending' && l.pitchTargetStudio);
+  if (!pending.length) { section.hidden = true; list.innerHTML = ''; return; }
+  section.hidden = false;
+  list.innerHTML = '';
+  pending.forEach((l) => {
+    const cut = pitchCutoff(l.pitchTargetStudio) || { entryAge: '', cutoffLabel: 'next year' };
+    const card = document.createElement('div');
+    card.className = 'pitch-approval-card';
+    card.innerHTML = `
+      <div class="pitch-approval-body">
+        <p class="pitch-approval-who"><strong>${escapeHtml(l.name)}</strong> wants to pitch up to <strong>${escapeHtml(getStudioName(l.pitchTargetStudio))}</strong>.</p>
+        <p class="pitch-approval-gate">They said yes to: turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Your call - a "yes, they'll be old enough," not a birthday check.</p>
+      </div>
+      <div class="pitch-approval-actions">
+        <button type="button" class="btn btn-primary" data-pitch-approve="${escapeHtml(l.id)}">Approve</button>
+        <button type="button" class="btn btn-text" data-pitch-deny="${escapeHtml(l.id)}">Not yet</button>
+      </div>`;
+    list.appendChild(card);
+  });
+  list.querySelectorAll('[data-pitch-approve]').forEach((btn) => {
+    btn.addEventListener('click', () => decidePitch(btn.dataset.pitchApprove, 'approved', learners, session, onChange));
+  });
+  list.querySelectorAll('[data-pitch-deny]').forEach((btn) => {
+    btn.addEventListener('click', () => decidePitch(btn.dataset.pitchDeny, 'denied', learners, session, onChange));
+  });
+}
+
+async function decidePitch(learnerId, decision, learners, session, onChange) {
+  const learner = (learners || []).find((l) => l.id === learnerId);
+  if (!learner) return;
+  // Guides have guideId; owners use the same view (flat staff power) and fall back to
+  // their session id, so the reviewer is always recorded.
+  const reviewerId = session?.guideId || session?.id || null;
+  await saveLearner({
+    id: learnerId,
+    pitchAgeStatus: decision,
+    pitchAgeReviewedBy: reviewerId,
+    pitchAgeReviewedAt: new Date().toISOString(),
+  });
+  const target = getStudioName(learner.pitchTargetStudio);
+  if (decision === 'approved') {
+    await addNotification({
+      recipientId: learnerId,
+      type: 'pitch-approved',
+      title: 'Your pitch is confirmed',
+      body: `Your guide confirmed you're set to pitch up to ${target}. Keep working your thresholds!`,
+      fromId: reviewerId,
+    });
+  } else {
+    await addNotification({
+      recipientId: learnerId,
+      type: 'pitch-denied',
+      title: 'About your pitch',
+      body: `Your guide feels this isn't the year to pitch to ${target} - and that's okay. Let's make this year count where you are.`,
+      fromId: reviewerId,
+    });
+  }
+  if (onChange) await onChange();
 }
 
 // Landscape gradient definitions (matching the body class CSS).
