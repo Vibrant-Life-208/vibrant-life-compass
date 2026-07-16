@@ -319,8 +319,21 @@ export async function renderYearView(learnerId) {
   const goalFor = (cat) => goals.find((g) => g.categoryId === cat.id && g.text && g.text.trim().length > 0);
   const plannedCategories = categories.filter((cat) => goalFor(cat));
 
+  // A pitcher plans on the studio they're growing INTO, so their year goals land on
+  // slice categories (slice_mind, etc.) that aren't in THIS learner's own category
+  // set - so they'd save but never render. Surface them so nothing they wrote is lost.
+  // Wheel-agnostic: renders whatever slice_* goals exist, labeled by their lifeArea.
+  // (Interim visibility fix; the full wheel-grouped learner view awaits the wheel
+  // direction re-ratification + the gated academic->slice mapping.)
+  const knownCatIds = new Set(categories.map((c) => c.id));
+  const orphanSliceGoals = goals.filter((g) =>
+    g.text && g.text.trim().length > 0 &&
+    typeof g.categoryId === 'string' && g.categoryId.startsWith('slice_') &&
+    !knownCatIds.has(g.categoryId)
+  );
+
   // Nothing planned yet -> point at the walkthrough, not a blank grid.
-  if (plannedCategories.length === 0) {
+  if (plannedCategories.length === 0 && orphanSliceGoals.length === 0) {
     const empty = document.createElement('p');
     empty.className = 'north-vision-empty';
     empty.innerHTML = 'No goals set yet. Head to <strong>Setup</strong> to walk through your goals one area at a time - it builds this page for you.';
@@ -341,6 +354,7 @@ export async function renderYearView(learnerId) {
     plannedCategories.forEach((cat) => {
       list.appendChild(buildCategoryCard(cat, goalFor(cat)));
     });
+    renderPitchSliceGoals(list, orphanSliceGoals, learner);
     return;
   }
 
@@ -400,6 +414,47 @@ export async function renderYearView(learnerId) {
     offWheel.forEach(({ card }) => section.appendChild(card));
     list.appendChild(section);
   }
+}
+
+// A pitcher's slice goals live on the studio they're growing INTO, so their
+// categoryIds (slice_mind, etc.) aren't in this learner's own category set and would
+// otherwise never render. Surface them read-only under a "From your pitch" section,
+// labeled by each goal's stored lifeArea, so nothing they wrote is lost. (Captain
+// 2026-07-16 - interim; the full editable wheel-grouped learner view awaits the wheel
+// re-ratification + the gated academic->slice mapping.)
+function renderPitchSliceGoals(list, orphanGoals, learner) {
+  if (!orphanGoals || !orphanGoals.length) return;
+  const section = document.createElement('section');
+  section.className = 'wheel-slice wheel-slice-offwheel';
+
+  const header = document.createElement('h3');
+  header.className = 'wheel-slice-name';
+  const targetName = learner?.pitchTargetStudio ? getStudioName(learner.pitchTargetStudio) : null;
+  header.textContent = targetName ? `From your pitch to ${targetName}` : 'From your pitch';
+  section.appendChild(header);
+
+  const note = document.createElement('p');
+  note.className = 'wheel-slice-note';
+  note.textContent = 'The year you set on the wheel you are growing into - held here for now.';
+  section.appendChild(note);
+
+  orphanGoals
+    .slice()
+    .sort((a, b) => (a.lifeArea || '').localeCompare(b.lifeArea || ''))
+    .forEach((g) => {
+      const card = document.createElement('div');
+      card.className = 'category-card';
+      card.innerHTML = `
+        <div class="category-header">
+          <span class="category-name">${escapeHtml(g.lifeArea || 'Life area')}</span>
+          <span class="category-kind">carried</span>
+        </div>
+        <p class="category-goal">${escapeHtml(g.text)}</p>
+      `;
+      section.appendChild(card);
+    });
+
+  list.appendChild(section);
 }
 
 // Flatten a year goal's weeklySteps { 1:[w1..], 2:[..], 3:[..] } into ordered
