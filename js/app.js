@@ -554,7 +554,9 @@ async function renderRoleView(role, learnerId) {
     // Pending pitch approvals: learners who opted into a pitch and need the guide
     // to confirm the age gate (captain 2026-07-10 - a "yes, they'll be old enough,"
     // not a birthday check). Approve/deny writes the status + notifies the learner.
-    await renderPitchApprovals(learners, session, () => renderRoleView('guide', learnerId));
+    // Guarded so a backend hiccup can't break the rest of the guide dashboard.
+    try { await renderPitchApprovals(learners, session, () => renderRoleView('guide', learnerId)); }
+    catch (e) { console.warn('pitch approvals:', e); }
   }
   if (role === 'parent') {
     import('./parent-view.js').then(m => m.renderParentView());
