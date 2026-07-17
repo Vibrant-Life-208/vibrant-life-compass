@@ -191,6 +191,27 @@ time.
   not forced onto every empty week. No "3 of 4 weeks planned" meter; no "2 of 5 tasks done"
   shame — relief framing throughout (build condition 3).
 
+### The Learning/Heart cadence split (interaction-layer review, 2026-07-17 — RESOLVED)
+
+The 2026-07-17 interaction-layer review resolved the "compound question" (does a weekly
+question pressing on 4 locked Heart goals become oppressive?). The answer is a **cadence
+split by goal type**:
+
+- **Learning skill-goals** get the **finish-shaped** weekly progressing question ("what will
+  you finish this week?") — you *do* finish a skill.
+- **Heart "becoming" goals** carry a **presence register** — *noticing*, not finishing
+  ("what did you notice this week?") — **learner-invited, never pushed.** Rationale: *"you
+  don't finish becoming heroic; a finish-shaped weekly question on character is a category
+  error."*
+- **The question surfaces on PULL** (entering a goal), **never as a per-goal push-strip.**
+  Ten pushed prompts is the load; one pulled prompt is presence. This is what severs
+  count × cadence.
+- **Condition 2, code-grounded:** the completion affordance **never attaches to a locked
+  carried-threshold row** ("a lock is a permission, not a pixel"); no write-edge from the
+  weekly/daily generation layer to any threshold row. Code fact to preserve in the redesign:
+  `session-view.js` mark-complete writes *session goals*; `thresholds.js` renders thresholds
+  *read-only* — the two are separable today and must stay separable.
+
 ### Open question (captain, undecided — carry to the build meeting)
 
 - **Order of work:** does the learner work **backwards from the halfway point**, or
