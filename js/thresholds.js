@@ -100,10 +100,23 @@ export function getThresholds(targetStudio) {
 // It passed the coverage-frame review the v0.18 note references - captain sign-off
 // on placements, Accord (trauma-informed) + TCC (data-sovereignty) on the frame.
 // Jake's separate pedagogy read and the watch-with-a-real-learner gate remain open;
-// this flag is a code-enable, not learner exposure. While it was false the slice
-// step rendered BLANK boxes for everyone (no unratified placement reached a
+// this flag is a code-enable, not learner exposure. While it is false the slice
+// step renders BLANK boxes for everyone (no unratified placement reaches a
 // learner). See docs/design/2026-07-14-threshold-to-wheel-slice-mapping-v0.1.md.
-export const MAPPING_RATIFIED = true;
+//
+// *** HELD 2026-07-16 (tripwire fired — captain). *** The 2026-07-16 re-ratification
+// moved the direction to the CURRENT (Discovery) wheel and left this target-wheel
+// flag live under a tripwire: hold before any real-learner watch/onboarding that
+// predates the current-wheel ship. Guides log in Aug 2, Session 1 Aug 17 (first
+// real-learner exposure) and the current-wheel direction is not shipping by then,
+// so the tripwire fires. Held = false: pitchers get blank invitational slice boxes
+// (coverage frame intact); the interim year-view visibility fix still surfaces
+// whatever they write. DO NOT re-enable by flipping back to true — the next
+// activation is the current-wheel Discovery mapping (THRESHOLD_LIFE_AREA below maps
+// to ADVENTURE), which needs its own Accord + TCC/Satis coverage-frame review first.
+// Refs: agents/meetings/2026/07/2026-07-16-compass-threshold-wheel-slice-reratification.md;
+// docs/design/2026-07-16-current-wheel-build-scope.md.
+export const MAPPING_RATIFIED = false;
 
 export const THRESHOLD_LIFE_AREA = {
   // Discovery -> Adventure. Target wheel: Movement, Mind, Spirit, Emotions, Family,

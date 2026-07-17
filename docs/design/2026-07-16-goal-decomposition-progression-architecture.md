@@ -8,6 +8,38 @@ has shipped or changed production. Prototype lives at
 `prototypes/halfway-slice-concept.html` (open via a local static server; it is NOT
 committed to main / not deployed).
 
+**Design-direction re-ratification (2026-07-16):** the current-wheel (Discovery)
+direction — read-only green carried thresholds in "Learning," finer child-written
+per-goal breakdown, plant/cultivate split — was **re-ratified by Accord (coverage
+frame) + TCC/Satis (data sovereignty)**, superseding their 2026-07-15 target-wheel
+sign-off. Conditional re-sign; three convergent build conditions bind (see below). This
+is a **direction** re-ratification only — the direction remains prototype-only, so
+nothing is enabled in code today. Live-state decision (re-ratification): leave the 7/15
+target-wheel `MAPPING_RATIFIED=true` live under a tripwire — hold before any
+real-learner watch/onboarding that predates the current-wheel ship.
+**TRIPWIRE FIRED 2026-07-16 (captain): `MAPPING_RATIFIED` set to `false`.** Guides log
+in Aug 2, Session 1 Aug 17 (first real-learner exposure), current-wheel direction not
+shipping by then → the hold-the-flag path was chosen. Held = pitchers get blank
+invitational slice boxes (coverage frame intact; verified against running code); the
+interim year-view visibility fix still surfaces whatever they write. The next
+activation is the current-wheel Discovery mapping, which needs its own Accord + TCC/Satis
+review first — do NOT re-enable by flipping back to true. The
+watch-with-a-real-learner gate remains open and governs actual exposure regardless.
+Refs: `docs/design/2026-07-16-current-wheel-build-scope.md` (hold branch).
+Refs: `agents/meetings/2026/07/2026-07-16-compass-threshold-wheel-slice-reratification.md`.
+
+**Binding build conditions from the re-ratification (all three are conditions, not hopes):**
+1. **Open-by-choice is a first-class STORED state, never inferred emptiness.** (Convergent
+   — Accord: inferred-empty is classification-without-consent; Satis: inferred-empty is a
+   steering vector.) The record must distinguish "child chose to leave this open" from
+   "data missing."
+2. **Read-only green carried thresholds are read-only to the SYSTEM too** — a commitment
+   shown, not silently re-mapped, rewritten, or auto-completed after declaration (Satis,
+   activation-gates at the display layer).
+3. **The "N things — that's it" count stays a ceiling-as-relief and never acquires a
+   denominator** — the moment it reads "3 of 7" / "3 left" / red, coverage frame breaks
+   and Accord's sign-off is void.
+
 ## The north star (captain, 2026-07-16)
 
 Hero's Compass is a **tool of education in self-efficacy**, not only a goal tracker.
@@ -103,11 +135,15 @@ None of it is surveillance.
 
 ## Open design decisions (NOT settled — carry into any future build)
 
-1. **Current (Discovery) wheel vs target (Adventure) wheel.** The room + captain favor
-   the **current** wheel (developmentally right; also closes the ratified doc's own
-   display gap because `slice_learning` already renders in year-view). BUT this **reopens
-   the 2026-07-15 threshold→wheel-slice mapping that TCC/Satis co-signed** on the target
-   wheel. **Must return to TCC before any production change.** Provisional only.
+1. **Current (Discovery) wheel vs target (Adventure) wheel.** ~~The room + captain favor
+   the **current** wheel ... Must return to TCC before any production change. Provisional
+   only.~~ **RESOLVED 2026-07-16:** current-wheel direction **re-ratified by Accord +
+   TCC/Satis** (superseding the 7/15 target-wheel sign-off). Both signers found the
+   current wheel a *stronger* surface — developmentally right (Jake), closes the display
+   gap (`slice_learning` renders in year-view; Lux), and the read-only-green /
+   editable-own severing is more honest than the target-wheel's lumped Mind box.
+   Conditional re-sign; three build conditions above bind. Direction cleared; **learner
+   exposure still gated** by the watch-with-a-real-learner requirement.
 2. **Merge the halfway + slice_plan steps** into one surface; **retire the Setup academic
    grid** so there is one year-goal home (kills double-entry). Provisional.
 3. **Mandatory vs invitational split:** the vision reflection is mandatory (captain's
