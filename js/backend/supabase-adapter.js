@@ -100,7 +100,7 @@ export async function getLearner(id) {
   const c = getClient();
   let { data, error } = await c
     .from('learners')
-    .select('id, studio, setup_completed_at, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, profiles!learners_id_fkey(name, email)')
+    .select('id, studio, setup_completed_at, open_by_choice, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, profiles!learners_id_fkey(name, email)')
     .eq('id', id)
     .single();
   if (error) {
@@ -120,6 +120,9 @@ export async function getLearner(id) {
     email: data.profiles?.email,
     studio: data.studio,
     setupCompletedAt: data.setup_completed_at ?? null,
+    // Stage P3: slices the learner chose to leave open (invitation, not missing-data).
+    // Dormant until Stage O writes it; [] when the column/value is absent.
+    openByChoice: Array.isArray(data.open_by_choice) ? data.open_by_choice : [],
     pitchTargetStudio: data.pitch_target_studio ?? null,
     pitchIntentAt: data.pitch_intent_at ?? null,
     pitchAgeSelfReport: data.pitch_age_self_report ?? null,
@@ -802,6 +805,7 @@ export async function saveLearner(data) {
   const learnerRow = {};
   if (data.studio !== undefined) learnerRow.studio = data.studio;
   if (data.setupCompletedAt !== undefined) learnerRow.setup_completed_at = data.setupCompletedAt;
+  if (data.openByChoice !== undefined) learnerRow.open_by_choice = data.openByChoice;
   if (data.pitchTargetStudio !== undefined) learnerRow.pitch_target_studio = data.pitchTargetStudio;
   if (data.pitchIntentAt !== undefined) learnerRow.pitch_intent_at = data.pitchIntentAt;
   if (data.pitchAgeSelfReport !== undefined) learnerRow.pitch_age_self_report = data.pitchAgeSelfReport;

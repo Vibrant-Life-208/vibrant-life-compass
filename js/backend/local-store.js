@@ -69,7 +69,8 @@ export async function getLearners() {
 export async function getLearner(id) {
   const learners = await getLearners();
   const learner = learners.find((l) => l.id === id);
-  if (learner) return learner;
+  // Parity with the supabase adapter: openByChoice defaults to [] (Stage P3, dormant).
+  if (learner) return { ...learner, openByChoice: Array.isArray(learner.openByChoice) ? learner.openByChoice : [] };
   // Guide-as-protagonist fallback (Captain 2026-05-15): when a guide is
   // signed in and their own id is being used as the protagonist id,
   // return the guide record with a synthetic studio so all the learner-
