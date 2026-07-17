@@ -21,13 +21,24 @@ Decision log / minutes: evoke-agents-backup `agents/{decision-logs,meetings}/202
   `js/weekly-answers.js`. All behind `CURRENT_WHEEL_BUILD` (still `false`); the legacy lumped grid
   is preserved when the flag is off (`renderSliceWalk()` vs `renderSlicePlanLegacy()`). Verified:
   flag dark, all JS parses, gating clean.
-- **C1 verification — BUILT, all 3 PASS.** `scripts/c1.mjs` runner + c1-render-conditions /
-  c1-read-only-to-system / c1-no-aggregation. Static halves done. **Owed at Stage V:** C1 #2's
-  RUNTIME write-wall (La'an's binding assertion at `store.js` `saveGoal`).
-- **Stage V — checklist drafted (`docs/design/2026-07-17-stage-v-flip-checklist.md`); NOT started.**
-  The flag flip is gated on: the runtime write-wall, storage migrations (weekly answers off
-  `localStorage`; goal-field projection), built-surface re-walk (Jake + Accord + Comes),
-  live-browser walk (flag-on), and watch-with-a-real-learner. Flip waits for all of these.
+- **C1 verification — BUILT, all 4 PASS.** `scripts/c1.mjs` runner + c1-render-conditions /
+  c1-read-only-to-system (static) / c1-write-wall-runtime / c1-no-aggregation.
+- **C1 #2 runtime write-wall — BUILT, dark (2026-07-17).** La'an's binding assertion at the
+  single store write edge (`store.js` `saveGoal`), in `js/goal-write-wall.js`: a threshold id
+  can never be persisted as a goal row. Ships log-and-report (guards the live surface);
+  promotion to throw is captain-gated (`setWriteWallMode`) at Stage V. `c1-write-wall-runtime.mjs`
+  exercises the real `saveGoal` edge (threshold-id write refused; slice_* writes clean). Closes C1 #2.
+- **Storage migration — BUILT (dark) + SQL owed-to-apply (2026-07-17).** Weekly answers moved off
+  device-local `localStorage` through the store facade into synced storage (local parity +
+  supabase `weekly_answers` table); §5 preserved structurally (get-one/save-one, no timestamp).
+  SQL `migrations/2026-07-17-v0.21-weekly-answers.sql`. Goal-field projection: SQL
+  `migrations/2026-07-17-v0.22-goal-decomposition.sql` (jsonb `decomposition` column); adapter
+  wiring (`goalToRow`/`rowToGoal`) SEQUENCED to land AFTER the captain applies v0.22, because
+  `year-view.js:206` is a LIVE write path — the wiring diff is documented in the v0.22 file.
+- **Stage V — checklist drafted (`docs/design/2026-07-17-stage-v-flip-checklist.md`); NOT flipped.**
+  Remaining before the flag flip: captain applies v0.21 + v0.22 and the v0.22 adapter wiring
+  lands; built-surface re-walk (Jake + Accord + Comes); live-browser walk (flag-on); and
+  watch-with-a-real-learner. Flip waits for all of these.
 
 ## Two architectural rules that make the walls enforceable
 - **Geordi's projection rule:** carried thresholds are **render-time projections, never
