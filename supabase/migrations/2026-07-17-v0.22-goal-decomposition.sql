@@ -36,15 +36,12 @@ commit;
 --   * existing goals are unaffected: decomposition is '{}' on every prior row.
 --   * no new RLS policy was added (row-level learner_id policies still govern).
 --
--- THEN (and only then) wire the adapter - this is the "sequence wiring after the column
--- exists" step, mirroring v0.19/v0.20. In js/backend/supabase-adapter.js:
---   * goalToRow: add
---       decomposition: {
---         baseline: goal.baseline, halfwayPoint: goal.halfwayPoint,
---         quarterPoint: goal.quarterPoint, eos1Point: goal.eos1Point,
---         weeklySteps: goal.weeklySteps, targetSession: goal.targetSession,
---       }  (drop undefined keys)
---   * rowToGoal: spread row.decomposition back to the top level
---       ...(row.decomposition || {})
--- Landing that write path BEFORE the column exists would break every live year-goal save
--- (year-view.js:206 is not behind the flag), which is why it is sequenced here.
+-- ADAPTER WIRING: LANDED (2026-07-17, after this column was applied + verified) - the
+-- "sequence wiring after the column exists" step, mirroring v0.19/v0.20. In
+-- js/backend/supabase-adapter.js:
+--   * goalToRow packs the defined decomposition fields (baseline, halfwayPoint, quarterPoint,
+--     eos1Point, weeklySteps, targetSession) into `decomposition`, and OMITS the column when
+--     empty so a partial update never clobbers stored decomposition.
+--   * rowToGoal spreads row.decomposition back to the top level.
+-- This was held until the column existed because landing the write path first would break
+-- every live year-goal save (year-view.js:206 is not behind the flag).

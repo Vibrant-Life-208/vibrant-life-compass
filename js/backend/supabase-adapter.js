@@ -470,11 +470,17 @@ function rowToGoal(row) {
     lifeArea: row.life_area || null,  // wheel slice; NULL = not placed (v0.18)
     status: row.status,
     createdAt: row.created_at,
+    ...(row.decomposition || {}),  // v0.22 extended fields back to top level (baseline, halfwayPoint, weeklySteps, ...)
   };
 }
 
+// The extended decomposition fields the year-goal modal writes. Packed into the v0.22
+// `decomposition` jsonb column so they survive on the synced backend (goalToRow used to drop
+// them), matching what local-store already keeps by spread.
+const DECOMPOSITION_FIELDS = ['baseline', 'halfwayPoint', 'quarterPoint', 'eos1Point', 'weeklySteps', 'targetSession'];
+
 function goalToRow(goal) {
-  return {
+  const row = {
     learner_id: goal.learnerId,
     category_id: goal.categoryId,
     scope: goal.scope,
@@ -483,6 +489,14 @@ function goalToRow(goal) {
     life_area: goal.lifeArea || null,  // wheel slice; NULL = not placed (v0.18)
     status: goal.status || 'active',
   };
+  // Only defined keys are packed, and the column is OMITTED entirely when nothing is present,
+  // so a partial update (a caller that doesn't carry the decomposition) never clobbers a goal's
+  // stored decomposition. A threshold id is never a goal row (La'an's write-wall guards the
+  // edge); this column only carries the learner's own decomposition of their own goal.
+  const decomposition = {};
+  for (const k of DECOMPOSITION_FIELDS) if (goal[k] !== undefined) decomposition[k] = goal[k];
+  if (Object.keys(decomposition).length) row.decomposition = decomposition;
+  return row;
 }
 
 // ============================================================================
