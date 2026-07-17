@@ -1,11 +1,16 @@
-# Category -> wheel-slice mapping (v0.1, DRAFT - not ratified)
+# Category -> wheel-slice mapping (v0.1)
 
 Date: 2026-07-16
-Status: **DRAFT. Gated behind the same coverage-frame review as the threshold mapping.**
-The `CATEGORY_LIFE_AREA` learner-tier entries in `js/studios.js` stay **empty** until this
-is ratified (captain + Jake + Accord coverage-frame + TCC). Until then, learner year-view
-stays the flat category list (no wheel-slice grouping), and the interim
+Status: **PLACEMENTS RATIFIED by Accord + Jake + TCC (voiced Satis, w/ Tutela + Claritas),
+2026-07-16.** This is a PLACEMENT / DATA approval only, NOT a code change. The
+`CATEGORY_LIFE_AREA` learner-tier entries in `js/studios.js` stay **empty**; `year-view.js`
+`useSlices` stays `guide-summer`-only. Code-fill is **deferred to the full-wheel-view build**,
+which still waits on the deploy pipeline + the standing watch-with-a-real-learner gate. This
+meeting clears the placements; it does not enable them. Until the build ships, learner
+year-view stays the flat category list (no wheel-slice grouping), and the interim
 `renderPitchSliceGoals` fix surfaces a pitcher's slice goals so nothing is lost.
+Minutes: `agents/meetings/2026/07/2026-07-16-category-to-slice-mapping-placement-signoff.md`
+(evoke-agents-backup). Decision log: `agents/decision-logs/2026/07/2026-07-16-category-to-slice-mapping-placement-signoff.md`.
 
 ## What this is (pedagogy, not plumbing)
 
@@ -37,8 +42,8 @@ empty.
 | Reading | `reading` | **Learning** | academic (also legacy `lexia`, `deepBook`) |
 | Writing | `noRedInk` | **Learning** | academic |
 | Civ | `civ` | **Learning** | academic (history / civilization) |
-| Character | `characterTrait` | **Heart** | virtue / inner life (candidate: Friends - it's often relational) |
-| Quest | `quest` | **Friends** | group project + exhibition = community (candidate: Fun) |
+| Character | `characterTrait` | **Heart** | virtue / inner life - RATIFIED Heart (NOT Friends): a becoming-slice, not a social-performance slice |
+| Quest | `quest` | **Friends** | group project + exhibition = community - RATIFIED Friends (NOT Fun) |
 | Badges | `pathway` | **Fun** | passion / creative pursuit - "the one that feels most alive" |
 
 Slices with no category (invitations, the child's to fill): **Movement, Family.**
@@ -48,10 +53,10 @@ Slices with no category (invitations, the child's to fill): **Movement, Family.*
 | Category | id | -> Slice | Rationale |
 |---|---|---|---|
 | Math / Reading / Writing / Civ | `khan`/`reading`/`noRedInk`/`civ` | **Mind** | academic |
-| Character | `characterTrait` | **Spirit** | who I'm becoming (candidate: Emotions - regulation) |
+| Character | `characterTrait` | **Spirit** | who I'm becoming - RATIFIED Spirit (NOT Emotions: Emotions would read Character as a regulation problem = pathologizing) |
 | Quest | `quest` | **Friends** | community |
 | Badges | `pathway` | **Joy** | passion / delight |
-| Apprenticeship | `apprenticeship` | **Home** | real-world / vocational (candidate: unmapped - Adventure has no Calling) |
+| Apprenticeship | `apprenticeship` | **Home** | real-world / vocational - RATIFIED Home (Adventure has no Calling slice; note for future wheel revision) |
 
 Empty (invitations): **Movement, Emotions, Family** (and Spirit if Character -> Emotions).
 
@@ -63,8 +68,8 @@ Empty (invitations): **Movement, Emotions, Family** (and Spirit if Character -> 
 | Character | `characterTrait` | **Spirit** | who I'm becoming |
 | Quest | `quest` | **Friends** | community |
 | Badges | `pathway` | **Joy** | passion / portfolio-quality output |
-| Apprenticeship | `apprenticeship` | **Calling** | vocational -> the calling slice |
-| Thresholds | `thresholds` | **Calling** | portfolio / pitch-readiness work (candidate: Mind) |
+| Apprenticeship | `apprenticeship` | **Calling** | vocational -> the calling slice - RATIFIED Calling |
+| Thresholds | `thresholds` | **Mind** | RATIFIED Mind (NOT Calling): the per-threshold mapping takes precedence and scatters items across slices; the category-level home is a FALLBACK and must not contradict the academic threshold majority (education slice). Calling would split academic work across Calling + Mind - the divergence consistency-check 4 forbids. |
 
 Empty (invitations): **Movement, Time, Emotions, Family, Home, Money.**
 
@@ -72,19 +77,30 @@ Empty (invitations): **Movement, Time, Emotions, Family, Home, Money.**
 
 Sparks is **parent-facing and screen-free** (the parent holds it). Its wheel (Movement,
 Heart, Family, Play) has **no academic slice**, and its categories are minimal
-(`characterTrait`, `reading`, `quest`). Proposal: **do not force academic homes here** -
-Character -> **Heart**, and leave Reading / Quest to the parent (or Reading -> **Play** as
-early literacy-as-play). Open question below.
+(`characterTrait`, `reading`, `quest`).
 
-## Open placement questions (for the reviewers)
+**RATIFIED (2026-07-16): the parent holds Sparks un-sliced. No learner-facing slice grid.**
+Four-to-seven is the age most vulnerable to classification; do not force slice homes onto tot
+categories. Character may read as **Heart** on the parent's own reflection surface only -
+never a child-facing grid, wheel, or measure. (Accord: "the most frightened body in the whole
+document." Jake: "slicing must grow with the child as the wheel does - a Sparks child gets no
+life-areas grid, same as they get no adult 12-ring." Matches the shipped family-login
+reflection-only view.)
 
-1. **Character** -> Heart or Friends (Discovery)? Spirit or Emotions (Adventure / Launch Pad)?
-2. **Quest** -> Friends or Fun (Discovery)?
-3. **Apprenticeship** -> Home (Adventure, which has no Calling) vs Calling (Launch Pad) - confirm.
-4. **Thresholds** category -> Calling vs Mind (Launch Pad)?
-5. **Sparks**: do the tot categories need slice homes at all, or does the parent hold it un-sliced?
-6. Confirm the **academic cluster in Learning / Mind** carries the same coverage-frame
-   acceptance the room gave the threshold mapping ("the mind at work").
+## Open placement questions - RESOLVED (Accord + Jake + TCC, 2026-07-16)
+
+1. **Character** -> **Heart** (Discovery), **Spirit** (Adventure / Launch Pad). NOT Emotions -
+   Emotions would read Character as a regulation problem (pathologizing); Heart/Spirit are
+   becoming-slices. Consistent with the threshold mapping (`courage_book` -> Spirit).
+2. **Quest** -> **Friends** (all tiers). Group project + exhibition = community, not solo play.
+3. **Apprenticeship** -> **Home** (Adventure), **Calling** (Launch Pad). Confirmed. Adventure
+   has no Calling slice; Home carries real-world/hands-on work. Flag for a future wheel revision.
+4. **Thresholds** category -> **Mind** (Launch Pad). Consistency decides it: per-threshold
+   mapping governs and takes precedence; the category fallback must not contradict the academic
+   threshold majority (education slice). Calling would split the same work across two life areas.
+5. **Sparks** -> parent holds un-sliced; no learner-facing slice grid (see above).
+6. **Academic cluster in Learning / Mind** -> ACCEPTED under the same coverage frame the room
+   gave the threshold mapping ("the mind at work - it is education").
 
 ## Consistency with the threshold mapping (must hold)
 
@@ -93,6 +109,17 @@ slice (Learning, per the current-wheel re-ratification). This category mapping p
 **academic categories** in the same slice. They must not diverge: a threshold and the
 category it belongs to should render in the **same** slice, or the learner sees the same
 work split across two life areas.
+
+**Verified 2026-07-16 (Satis + Claritas):** consistency holds at the principle level -
+academics land in the education slice of the *active* wheel (Learning on Discovery, Mind on
+Adventure / Launch Pad) in BOTH documents. **Recorded lockstep condition (not a blocker to the
+placements, binding on the build):** the threshold mapping's only *concrete* table today is the
+Adventure/target-wheel one (`adv_* -> Mind`), currently held with `MAPPING_RATIFIED=false`.
+Under the current-wheel direction a Discovery pitcher's carried thresholds must surface in
+**Learning** (matching where the academic *categories* land on Discovery). A concrete
+Discovery-wheel threshold table must be authored to match **before** code-fill, and it rides
+the same Accord + TCC review gate as the current-wheel build. "Show me that ledger at build
+time" (Satis).
 
 ## How this is consumed (the plumbing)
 
@@ -108,12 +135,26 @@ work split across two life areas.
 
 ## Sign-off checklist (before filling `CATEGORY_LIFE_AREA` for learner tiers)
 
-- [ ] Captain: the placements are right; the Learning/Mind academic cluster is accepted (coverage frame).
-- [ ] Jake + Accord: coverage-frame review - empty slices read as invitation; no placement pathologizes a child.
-- [ ] TCC: the gated-mapping convention (same as v0.18 / the threshold mapping).
-- [ ] Resolve the open placement questions above.
-- [ ] Confirm consistency with the threshold mapping (a threshold and its category share a slice).
-- [ ] Watch-with-a-real-learner before any child sees a sliced year (standing gate).
+- [x] Jake + Accord: coverage-frame review - empty slices read as invitation; no placement
+      pathologizes a child. **Signed 2026-07-16.** (Character -> Heart/Spirit not Emotions is
+      load-bearing to both sign-offs; Sparks un-sliced is load-bearing.)
+- [x] TCC (voiced Satis, w/ Tutela + Claritas): the gated-mapping convention (same as v0.18 /
+      the threshold mapping). **Signed 2026-07-16, conditional:** `CATEGORY_LIFE_AREA` empty
+      until ratified in the build; `useSlices` guide-summer-only until the build; the three
+      re-ratification render conditions bind (open-by-choice STORED; count never gets a
+      denominator; empty == unfinished visually); verification is against running code at build
+      time, not this doc.
+- [x] Resolve the open placement questions above. **Done 2026-07-16 - see resolutions.**
+- [x] Confirm consistency with the threshold mapping. **Verified at principle level;** the
+      concrete Discovery-wheel threshold table is owed before code-fill (lockstep condition above).
+- [ ] Captain: placements are the room's calls; captain's own read/ratify as she wishes (the
+      room signed the fleet-internal coverage + gated-mapping review).
+- [ ] Author the Discovery-wheel threshold table (adv thresholds -> Learning) before code-fill;
+      route to Accord + TCC. **Owner: whoever opens the full-wheel-view build.**
+- [ ] Watch-with-a-real-learner before any child sees a sliced year (standing gate, unchanged).
+
+**Code-fill is deferred to the full-wheel-view BUILD** (deploy pipeline + watch gate). This
+sign-off does NOT fill `CATEGORY_LIFE_AREA` and does NOT extend `year-view`'s `useSlices`.
 
 ## References
 
