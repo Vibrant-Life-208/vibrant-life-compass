@@ -53,6 +53,12 @@ function isBecomingSlice(lifeArea) {
   return String(lifeArea || '').trim().toLowerCase() === 'heart';
 }
 
+// The cadence-split kind for a slice: Heart 'becoming' goals register PRESENCE; everything
+// else takes the FINISH-shaped question. Exported so the modal can tag the saved answer.
+export function weeklyKindFor(lifeArea) {
+  return isBecomingSlice(lifeArea) ? 'presence' : 'finish';
+}
+
 // The pulled weekly progressing question for a slice, cadence-split. Read-only prompt in
 // M1 (the "pull" is that the learner opened the goal); M2 makes it answerable. Never a
 // per-goal push-strip (§7).
@@ -68,7 +74,7 @@ function weeklyPrompt(lifeArea) {
 //   lifeArea  the wheel slice label (e.g. 'Learning', 'Heart') - drives the cadence split
 //   position  { session, week } from currentArcPosition
 //   todayTasks array of { text, status } for today for this goal (read-only in M1)
-export function renderGoalArcHtml(goal, { lifeArea = null, position = { session: 1, week: 1 }, todayTasks = [] } = {}) {
+export function renderGoalArcHtml(goal, { lifeArea = null, position = { session: 1, week: 1 }, todayTasks = [], weeklyAnswer = '' } = {}) {
   const area = lifeArea || goal?.lifeArea || null;
   const destination = (goal?.text || '').trim();
 
@@ -97,10 +103,18 @@ export function renderGoalArcHtml(goal, { lifeArea = null, position = { session:
   // The zoom: THIS week + today only. No "see all weeks," no back-through-the-ladder, no
   // progress strip - those re-create the overwhelm (§8). The phase spine above is a still
   // orientation, not a navigable ladder.
+  // M2: the prompt is answerable, THIS WEEK ONLY. Prefilled with this week's answer; no
+  // prior weeks, no history, no "last answered" - each week is its own moment (§5/§8). The
+  // modal wires save; a blank save withdraws the answer (not a zero).
   const week = `
     <section class="arc-week">
       <h4 class="arc-zoom-heading">This week</h4>
       <p class="arc-week-prompt">${weeklyPrompt(area)}</p>
+      <textarea id="arc-week-answer" class="arc-week-input" rows="2" placeholder="Just this week - a sentence is plenty.">${escapeHtml(weeklyAnswer)}</textarea>
+      <div class="arc-week-actions">
+        <button type="button" class="btn btn-text" id="arc-week-save">Save this week</button>
+        <span class="arc-week-saved" id="arc-week-saved" hidden>Saved for this week</span>
+      </div>
     </section>`;
 
   const todayList = todayTasks.length

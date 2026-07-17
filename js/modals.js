@@ -12,7 +12,8 @@ import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar } from './studios.js';
 import { lifeWheelSvgFor } from './wheel.js';
 import { renderThresholdsHtml, buildSlicePlan, CURRENT_WHEEL_BUILD } from './thresholds.js';
-import { renderGoalArcHtml, currentArcPosition } from './goal-arc.js';
+import { renderGoalArcHtml, currentArcPosition, weeklyKindFor } from './goal-arc.js';
+import { getWeeklyAnswer, saveWeeklyAnswer } from './weekly-answers.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
@@ -951,14 +952,31 @@ export async function openGoalArcModal({ goal, learnerId = null, lifeArea = null
       todayTasks = (tasks || []).filter((t) => t.goalId === goal.id);
     } catch (e) { /* non-fatal: today panel just shows the empty state */ }
   }
+  // M2: this week's progressing answer, cadence-split. Read the ONE current-week record
+  // (there is no history reader by design, §5); the modal saves it back on demand.
+  const kind = weeklyKindFor(lifeArea);
+  const weeklyAnswer = (learnerId && goal?.id)
+    ? getWeeklyAnswer(learnerId, goal.id, position.session, position.week)
+    : '';
   setModalTitle('Your goal');
   document.getElementById('form-fields').innerHTML = `
-    ${renderGoalArcHtml(goal, { lifeArea, position, todayTasks })}
+    ${renderGoalArcHtml(goal, { lifeArea, position, todayTasks, weeklyAnswer })}
     <div class="confirm-actions">
       <button type="button" class="btn btn-primary" id="arc-close">Close</button>
     </div>`;
   const defaultActions = document.querySelector('#goal-form .modal-actions');
   if (defaultActions) defaultActions.style.display = 'none';
+  // Save this week's answer (blank withdraws it). This-week-only: the record is keyed to
+  // the current session+week, so nothing accumulates into a trend or streak (§5).
+  const saveBtn = document.getElementById('arc-week-save');
+  if (saveBtn && learnerId && goal?.id) {
+    saveBtn.addEventListener('click', () => {
+      const ta = document.getElementById('arc-week-answer');
+      saveWeeklyAnswer(learnerId, { goalId: goal.id, session: position.session, week: position.week, kind, text: ta?.value || '' });
+      const saved = document.getElementById('arc-week-saved');
+      if (saved) saved.hidden = false;
+    });
+  }
   document.getElementById('arc-close')?.addEventListener('click', () => closeModal());
   activeSubmit = null;
   openModal();
