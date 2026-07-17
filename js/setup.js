@@ -134,17 +134,14 @@ export async function renderSetupView(learnerId) {
     </div>
 
     <section class="setup-section">
-      <h3 class="setup-section-title">1. About you</h3>
+      <h3 class="setup-section-title">1. Your studio</h3>
       <div class="setup-form">
         <div class="form-field">
-          <label for="setup-studio">Your studio</label>
-          <select id="setup-studio">
-            ${Object.entries(STUDIOS).map(([id, s]) =>
-              `<option value="${id}" ${id === learner.studio ? 'selected' : ''}>${escapeHtml(s.name)} (${escapeHtml(s.ageRange || '')})</option>`
-            ).join('')}
-          </select>
+          ${learner.studio
+            ? `<p class="setup-studio-readonly"><strong>${escapeHtml(STUDIOS[learner.studio]?.name || learner.studio)}</strong>${STUDIOS[learner.studio]?.ageRange ? ` (${escapeHtml(STUDIOS[learner.studio].ageRange)})` : ''}</p>
+               <p class="setup-hint">Your studio is set by your guide. If it looks wrong, ask them to change it — you can't change it here.</p>`
+            : `<p class="setup-hint">No studio assigned yet. Ask your guide to set your studio before you start.</p>`}
         </div>
-        <button type="button" id="setup-save-about" class="btn btn-primary">${aboutComplete ? 'Save changes' : 'Save and continue'}</button>
       </div>
     </section>
 
@@ -217,36 +214,9 @@ export async function renderSetupView(learnerId) {
     });
   });
 
-  // Reactive: when the studio dropdown or age input is changed AFTER initial
-  // save, hide sections 2-4 with a "Save your changes" cue. Prevents the
-  // stale-list bug where the partner list shows the old studio's candidates.
-  if (aboutComplete) {
-    const studioSelect = document.getElementById('setup-studio');
-    const restOfSetup = container.querySelectorAll('.setup-section:not(:first-of-type), .setup-footer');
-    const checkDirty = () => {
-      const dirty = studioSelect.value !== learner.studio;
-      restOfSetup.forEach((el) => el.style.display = dirty ? 'none' : '');
-      let cue = document.getElementById('setup-dirty-cue');
-      if (dirty && !cue) {
-        cue = document.createElement('p');
-        cue.id = 'setup-dirty-cue';
-        cue.className = 'setup-hint';
-        cue.style.cssText = 'background:var(--warm-white,#f5efe6); padding:0.75rem 1rem; border-radius:8px; border-left:3px solid var(--earth,#8a6a3a); margin-top:0.75rem;';
-        cue.textContent = 'Save your changes to refresh your goals and partner list for the new studio.';
-        document.querySelector('.setup-form').appendChild(cue);
-      } else if (!dirty && cue) {
-        cue.remove();
-      }
-    };
-    studioSelect.addEventListener('change', checkDirty);
-  }
-
-  // Wire the about-you save
-  document.getElementById('setup-save-about')?.addEventListener('click', async () => {
-    const studio = document.getElementById('setup-studio').value;
-    await saveLearner({ id: learner.id, studio });
-    await renderSetupView(learnerId);
-  });
+  // Studio is now read-only in Setup (assigned by the guide at account
+  // creation). The old reactive dirty-check + about-you save handler were
+  // removed with the studio dropdown so a learner can't reassign their studio.
 
   // Wire the continue button - submit year plan to partner for approval
   document.getElementById('setup-continue')?.addEventListener('click', async () => {
