@@ -86,7 +86,7 @@ function extract(name) {
   }
   throw new Error('unbalanced: ' + name);
 }
-const NAMES = ['walkSliceListFor', 'walkSliceList', 'sliceWalkChrome', 'sliceCarriedField', 'sliceInvitationCopy', 'renderSliceYearPage', 'renderSliceReflectPage'];
+const NAMES = ['walkSliceListFor', 'walkSliceList', 'sliceWalkChrome', 'sliceCarriedField', 'sliceInvitationCopy', 'sliceMaxAdd', 'carriedGoalCard', 'personalGoalCard', 'renderSliceYearPage', 'renderSliceReflectPage'];
 const body = NAMES.map(extract).join('\n');
 const escapeHtml = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const escapeAttr = (s) => escapeHtml(s).replace(/'/g, '&#39;');

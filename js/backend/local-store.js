@@ -30,6 +30,7 @@ const KEYS = {
   profileHorizons: 'hc_profile_horizons', // {id: {beyond_5yr,...}} (v0.3 cascade)
   onboarding: 'hc_onboarding',            // {id: {step, skipped, completedAt, updatedAt}}
   weeklyAnswers: 'hc_weekly_answers_v0',  // {learnerId|goalId|s{n}|w{n}: {text, kind, session, week}} — no timestamp (§5)
+  thresholdAdditions: 'hc_threshold_additions_v0', // {learnerId: {thresholdId: {now, halfway}}} — child records, NEVER goal rows
 };
 
 function read(key) {
@@ -311,6 +312,26 @@ export async function saveWeeklyAnswer(learnerId, { goalId, session, week, kind 
   if (!trimmed) { delete map[k]; }                            // blank clears — an answer withdrawn, not a zero
   else { map[k] = { text: trimmed, kind, session, week }; }   // no timestamp — §5
   write(KEYS.weeklyAnswers, map);
+}
+
+// ============================================================================
+// Threshold additions (Stage O goals-as-cards; behind CURRENT_WHEEL_BUILD).
+//
+// A learner's "where you are now" / "halfway point" for a CARRIED THRESHOLD, stored as a
+// child record keyed to the threshold id (Geordi's projection rule). This is NEVER a goal
+// row: a carried threshold stays read-only to the system (La'an's write-wall) while the
+// learner can attach their own detail to it. Keyed learnerId -> { thresholdId: {now, halfway} }.
+// ============================================================================
+export async function getThresholdAdditions(learnerId) {
+  const all = read(KEYS.thresholdAdditions) || {};
+  return all[learnerId] || {};
+}
+
+export async function saveThresholdAdditions(learnerId, additions) {
+  if (!learnerId || !additions) return;
+  const all = read(KEYS.thresholdAdditions) || {};
+  all[learnerId] = { ...(all[learnerId] || {}), ...additions };
+  write(KEYS.thresholdAdditions, all);
 }
 
 // ============================================================================

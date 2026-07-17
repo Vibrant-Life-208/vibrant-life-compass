@@ -51,7 +51,7 @@ const goalArc = read('goal-arc.js');
 
 // 2. PERSISTENCE IS SLICE-KEYED: the two dark write paths must key goal rows by the slice
 //    id, never by a threshold id or a carried-threshold item id.
-for (const fn of ['upsertYearGoals', 'persistHalfwayGoals']) {
+for (const fn of ['upsertYearGoals', 'persistHalfwayGoals', 'persistSliceGoals']) {
   const body = extract(modals, fn);
   if (!body) { fail(`could not find ${fn} in modals.js`); continue; }
   if (!/categoryId:\s*sliceId\b/.test(body)) fail(`${fn}: a persisted goal row is not keyed by sliceId (categoryId: sliceId expected)`);

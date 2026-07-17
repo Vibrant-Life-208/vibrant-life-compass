@@ -533,6 +533,22 @@ export async function saveWeeklyAnswer(learnerId, { goalId, session, week, kind 
 }
 
 // ============================================================================
+// Threshold additions (Stage O goals-as-cards; behind CURRENT_WHEEL_BUILD).
+//
+// Child records keyed to a threshold id (the learner's now/halfway for a carried threshold) -
+// NEVER a goal row, so read-only-to-system holds. DORMANT: a synced table + migration is a
+// follow-up; the current-wheel build is dark, so this never runs in production yet. Local-store
+// holds it for the built-surface walk. (When the synced table lands, mirror local-store here.)
+// ============================================================================
+export async function getThresholdAdditions(learnerId) {
+  return {};
+}
+
+export async function saveThresholdAdditions(learnerId, additions) {
+  /* TODO: synced threshold_additions table (follow-up); dormant while dark. */
+}
+
+// ============================================================================
 // Tasks
 // ============================================================================
 export async function getTasks(learnerId) {
