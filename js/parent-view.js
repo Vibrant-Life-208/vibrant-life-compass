@@ -3,10 +3,7 @@
 import { getLearners, getGoals, getSession, getNotifications, markNotificationRead, getParents, getParentLearnerLinks } from './store.js';
 import { getCategoriesForStudio, PARENT_SUPPORT_HINTS } from './studios.js';
 import { computeYearPosition } from './year-map.js';
-import {
-  PARENT_BADGE_ARC, SAFE_BASE_DAILY_GOALS, BADGE_HONESTY,
-  isPtFamily, setPtFamily, isHoldingBadge, setHoldingBadge,
-} from './parent-badges.js';
+import { renderParentBadgesJourney } from './parent-badges.js';
 
 // Which kid this parent is currently viewing (per-session, in-memory).
 // Reset on every renderParentView call if not set.
@@ -27,10 +24,16 @@ export async function renderParentView() {
 
   container.innerHTML = '';
 
-  // Parents & Tots recognition arc (self-disclosed, local-only, never tracked).
-  // Rendered first so a P&T family with no learner record still has a home here.
-  // Category wall: recognition of a parent posture, never learner mastery.
-  renderParentsAndTots(container, session.parentId);
+  // Parents & Tots recognition - the canonical gated four-badge journey from
+  // js/parent-badges.js (single source of truth). Rendered first so a P&T parent
+  // whose tot isn't on Compass still has a home here. This legacy per-parent path
+  // is being retired by the family-login migration (captain 2026-06-28); migrated
+  // parents get this same component in the family view. Previously this rendered a
+  // divergent local copy (renderParentsAndTots) that carried a "Session undefined"
+  // kicker and lacked the conversation-first gate - removed 2026-07-17.
+  const ptHost = document.createElement('div');
+  container.appendChild(ptHost);
+  renderParentBadgesJourney(ptHost, session.parentId);
 
   const [allLearners, allLinks] = await Promise.all([getLearners(), getParentLearnerLinks()]);
   const myLinks = allLinks.filter((l) => l.parentId === session.parentId);
@@ -112,93 +115,6 @@ export async function renderParentView() {
 
   const supportCard = renderSupportSuggestion(learner, goals, currentSession);
   if (supportCard) container.appendChild(supportCard);
-}
-
-// --- Parents & Tots recognition arc --------------------------------------
-// Self-disclosed, local-only, never tracked. Recognition of a parent posture,
-// rendered visually distinct from learner mastery. Category wall enforced: no
-// count, streak, completion, or guide/admin visibility ever appears here.
-// See js/parent-badges.js. Build step 1: the Safe Base worked example.
-function renderParentsAndTots(container, parentId) {
-  const card = document.createElement('section');
-  card.className = 'parent-pt-card';
-
-  // Not yet self-identified as a P&T family: a quiet invitation, easy to ignore.
-  if (!isPtFamily(parentId)) {
-    card.classList.add('parent-pt-optin');
-    card.innerHTML = `
-      <div class="parent-section-label">Parents &amp; Tots</div>
-      <p class="pt-optin-line">Are you a <b>Parents &amp; Tots</b> family? Your own Hero's Journey has recognitions here - for you, not your child.</p>
-      <button type="button" class="pt-btn pt-btn-quiet" data-pt-join>Show my Tots arc</button>
-    `;
-    card.querySelector('[data-pt-join]').addEventListener('click', () => {
-      setPtFamily(parentId, true);
-      renderParentView();
-    });
-    container.appendChild(card);
-    return;
-  }
-
-  const badge = PARENT_BADGE_ARC[0]; // Safe Base - the worked example (build step 1)
-  const holding = isHoldingBadge(parentId, badge.id);
-
-  // NOTE: "The Path" (the four-badge marker) was removed from step 1 by owner
-  // review (2026-07-08, convergent signal: Accord/Comes/Salus/Polaris). A fixed
-  // "you are here = 1 of 4" read as a developmental ladder / loading bar. It
-  // returns in step 2 as a moving LOOP synced to the real session (never a
-  // fixed rung, never a percentage). For now, step 1 is the Safe Base card alone.
-
-  const goalsBlock = holding ? `
-    <div class="pt-goals-wrap">
-      <p class="pt-goals-label">A gentle prompt for each day - invitations, never a checklist</p>
-      <ul class="pt-goals">
-        ${SAFE_BASE_DAILY_GOALS.map((g) => `
-          <li class="pt-goal">
-            <span class="pt-goal-name">${escapeHtml(g.goal)}</span>
-            <span class="pt-goal-why">${escapeHtml(g.why)}</span>
-          </li>`).join('')}
-      </ul>
-    </div>` : '';
-
-  card.innerHTML = `
-    <div class="pt-head">
-      <div class="parent-section-label">Parents &amp; Tots · Your Hero's Journey</div>
-      <button type="button" class="pt-manage" data-pt-leave>This isn't us</button>
-    </div>
-    <p class="pt-recognition-note">A recognition, not a reward. Nothing to complete, nothing counted - this names a way of being you already practice.</p>
-
-    <div class="pt-badge">
-      <div class="pt-badge-kicker">Session ${badge.session} · ${escapeHtml(badge.stage)}</div>
-      <h3 class="pt-badge-name">${escapeHtml(badge.name)}</h3>
-      <p class="pt-badge-quote">"${escapeHtml(badge.quote)}"</p>
-      <p class="pt-badge-practice"><b>The practice:</b> ${escapeHtml(badge.practice)}</p>
-      <p class="pt-badge-why">${escapeHtml(badge.why)}</p>
-      <button type="button" class="pt-btn${holding ? ' is-holding' : ''}" data-pt-hold>
-        ${holding ? "You're holding The Safe Base" : "I'm holding this"}
-      </button>
-      <p class="pt-hard-day">The hard day is allowed - some days you leave before they're ready. A clean, short goodbye is how, and you have not failed a test.</p>
-      <p class="pt-device-note">Saved on this device only, just for you - never shared, never counted.</p>
-    </div>
-
-    ${goalsBlock}
-
-    <details class="pt-honesty">
-      <summary>What we promise about this badge</summary>
-      <ul>${BADGE_HONESTY.map((h) => `<li>${escapeHtml(h)}</li>`).join('')}</ul>
-      <p class="pt-sources">Where this comes from: ask Ms. Erin, or see the Parent Badges Sources &amp; Discussion sheet. We show our work, including anything we've since corrected.</p>
-    </details>
-  `;
-
-  card.querySelector('[data-pt-hold]').addEventListener('click', () => {
-    setHoldingBadge(parentId, badge.id, !holding);
-    renderParentView();
-  });
-  card.querySelector('[data-pt-leave]').addEventListener('click', () => {
-    setPtFamily(parentId, false);
-    renderParentView();
-  });
-
-  container.appendChild(card);
 }
 
 function renderRecap(learner, allGoals, sessionIndex) {
