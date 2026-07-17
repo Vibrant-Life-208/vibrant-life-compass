@@ -1,7 +1,8 @@
 // C1 #2 read-only-to-system — STATIC half (build plan Stage V / C1 #2; Geordi's
 // projection rule, testable). La'an's binding RUNTIME write-wall at the store.js write
-// edge is a separate, captain-gated piece (it touches the live store); this test proves
-// the static invariant that makes the wall true by construction:
+// edge is a separate piece (c1-write-wall-runtime.mjs + js/goal-write-wall.js); it ships in
+// log-and-report mode to guard the live store, and its promotion to throw is captain-gated
+// (Stage V). This test proves the static invariant that makes the wall true by construction:
 //
 //   A carried threshold is a render-time PROJECTION, never a persisted goal row.
 //   No goal row is ever written whose category is a threshold id.

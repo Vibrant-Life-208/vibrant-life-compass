@@ -10,6 +10,7 @@
 import { BACKEND_TYPE } from './backend/config.js';
 import * as localImpl from './backend/local-store.js';
 import * as supabaseImpl from './backend/supabase-adapter.js';
+import { assertGoalWritable } from './goal-write-wall.js';
 
 const impl = BACKEND_TYPE === 'supabase' ? supabaseImpl : localImpl;
 
@@ -37,7 +38,6 @@ export const {
   getGuide,
   saveGuide,
   getGoals,
-  saveGoal,
   getCheckIns,
   addCheckIn,
   getPosts,
@@ -103,3 +103,13 @@ export const {
   toggleTaskDone,
   deleteTask,
 } = impl;
+
+// La'an's runtime write-wall — the single store write edge for goal rows. saveGoal dispatches
+// to both adapters (local + supabase), so this one assertion covers every persisted goal
+// write. A threshold id can never be persisted as a goal row (read-only-to-system, C1 #2
+// runtime half). Ships log-and-report to guard the live surface; promotion to throw is
+// captain-gated at Stage V. See js/goal-write-wall.js.
+export async function saveGoal(goal) {
+  assertGoalWritable(goal);
+  return impl.saveGoal(goal);
+}

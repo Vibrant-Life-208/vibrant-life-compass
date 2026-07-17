@@ -1,11 +1,14 @@
 // C1 — the three standing tests that fail the build on a current-wheel regression
 // (build plan Stage R/V; Garak + Satis). Runs all three; exits non-zero if any fails.
 //   #1 render-conditions   no denominator / meter / sequence / red-zero / colour-only
-//   #2 read-only-to-system  no threshold id persisted as a goal row (projection rule, static)
+//   #2 read-only-to-system  no threshold id persisted as a goal row — static (projection rule)
+//                           + runtime (La'an's write-wall assertion at the store.js write edge)
 //   #3 no-aggregation       weekly answers are discrete per-moment records, never a trend
 //
-// The runtime half of #2 (La'an's write-wall assertion at the store.js write edge) is
-// NOT here: it touches the live store and lands captain-gated at Stage V.
+// C1 #2 is now static + runtime: the static half proves no code path persists a threshold id;
+// the runtime half exercises the real saveGoal edge and shows a threshold-id write is refused.
+// The wall ships in log-and-report mode (live-surface guard); the runtime test drives it to
+// throw to prove enforceability. Promotion of the live default to throw is captain-gated (Stage V).
 // Run: node scripts/c1.mjs
 
 import { spawnSync } from 'child_process';
@@ -13,7 +16,12 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const tests = ['c1-render-conditions.mjs', 'c1-read-only-to-system.mjs', 'c1-no-aggregation.mjs'];
+const tests = [
+  'c1-render-conditions.mjs',
+  'c1-read-only-to-system.mjs',
+  'c1-write-wall-runtime.mjs',
+  'c1-no-aggregation.mjs',
+];
 
 let failed = 0;
 for (const t of tests) {
