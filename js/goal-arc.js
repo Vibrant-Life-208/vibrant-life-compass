@@ -117,13 +117,28 @@ export function renderGoalArcHtml(goal, { lifeArea = null, position = { session:
       </div>
     </section>`;
 
+  // M3: daily tasks under this week's answer. Each is toggle-able (done/undone), no count,
+  // no "2 of 3 done" meter (§1). The "two doors" every day: one small step (the add row)
+  // AND rest today (a first-class choice, never a miss - the SDT wall). Self-only (§6).
   const todayList = todayTasks.length
-    ? `<ul class="arc-today-list">${todayTasks.map((t) => `<li class="arc-today-task${t.status === 'done' ? ' is-done' : ''}">${escapeHtml(t.text)}</li>`).join('')}</ul>`
+    ? `<ul class="arc-today-list">${todayTasks.map((t) => `
+        <li class="arc-today-task${t.status === 'done' ? ' is-done' : ''}">
+          <button type="button" class="arc-today-toggle" data-task-id="${escapeHtml(t.id)}" aria-pressed="${t.status === 'done'}">${t.status === 'done' ? 'Done' : 'Mark'}</button>
+          <span class="arc-today-text">${escapeHtml(t.text)}</span>
+        </li>`).join('')}</ul>`
     : `<p class="arc-today-empty">Nothing set for today yet - a small step, or rest. Both are real.</p>`;
   const todayPanel = `
     <section class="arc-today">
       <h4 class="arc-zoom-heading">Today</h4>
       ${todayList}
+      <div class="arc-today-add-row">
+        <input type="text" id="arc-today-input" class="arc-today-input" placeholder="One small step for today">
+        <button type="button" class="btn btn-text" id="arc-today-add">Add</button>
+      </div>
+      <div class="arc-two-doors">
+        <button type="button" class="btn btn-text" id="arc-today-rest">Rest today</button>
+        <span class="arc-today-rest-note" id="arc-today-rest-note" hidden>Rest is a real choice, never a miss. See you tomorrow.</span>
+      </div>
     </section>`;
 
   const areaLine = area ? `<p class="arc-area">${escapeHtml(area)}</p>` : '';

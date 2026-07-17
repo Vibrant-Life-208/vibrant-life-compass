@@ -6,7 +6,7 @@ import {
   getProfileHorizons, setProfileHorizon,
   getOnboardingState, setOnboardingStep, markOnboardingStepSkipped, completeOnboarding,
   setQuoteAnchor, setStrengthRanking, setValuesFreetext, getValuesFreetext,
-  saveLearner, saveGoal, getGoals, getLearner, getTasksForDate,
+  saveLearner, saveGoal, getGoals, getLearner, getTasksForDate, saveTask, toggleTaskDone,
 } from './store.js';
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar } from './studios.js';
@@ -943,41 +943,76 @@ export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabe
 export async function openGoalArcModal({ goal, learnerId = null, lifeArea = null }) {
   const calendar = getYearCalendar();
   const position = currentArcPosition(calendar);
-  let todayTasks = [];
-  if (learnerId && goal?.id) {
-    try {
-      const d = new Date();
-      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      const tasks = await getTasksForDate(learnerId, iso);
-      todayTasks = (tasks || []).filter((t) => t.goalId === goal.id);
-    } catch (e) { /* non-fatal: today panel just shows the empty state */ }
-  }
-  // M2: this week's progressing answer, cadence-split. Read the ONE current-week record
-  // (there is no history reader by design, §5); the modal saves it back on demand.
   const kind = weeklyKindFor(lifeArea);
-  const weeklyAnswer = (learnerId && goal?.id)
-    ? getWeeklyAnswer(learnerId, goal.id, position.session, position.week)
-    : '';
-  setModalTitle('Your goal');
-  document.getElementById('form-fields').innerHTML = `
-    ${renderGoalArcHtml(goal, { lifeArea, position, todayTasks, weeklyAnswer })}
-    <div class="confirm-actions">
-      <button type="button" class="btn btn-primary" id="arc-close">Close</button>
-    </div>`;
-  const defaultActions = document.querySelector('#goal-form .modal-actions');
-  if (defaultActions) defaultActions.style.display = 'none';
-  // Save this week's answer (blank withdraws it). This-week-only: the record is keyed to
-  // the current session+week, so nothing accumulates into a trend or streak (§5).
-  const saveBtn = document.getElementById('arc-week-save');
-  if (saveBtn && learnerId && goal?.id) {
-    saveBtn.addEventListener('click', () => {
-      const ta = document.getElementById('arc-week-answer');
-      saveWeeklyAnswer(learnerId, { goalId: goal.id, session: position.session, week: position.week, kind, text: ta?.value || '' });
-      const saved = document.getElementById('arc-week-saved');
-      if (saved) saved.hidden = false;
+  const d = new Date();
+  const todayISO = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const canPersist = Boolean(learnerId && goal?.id);
+
+  async function fetchTodayTasks() {
+    if (!canPersist) return [];
+    try {
+      const tasks = await getTasksForDate(learnerId, todayISO);
+      return (tasks || []).filter((t) => t.goalId === goal.id);
+    } catch (e) { return []; }
+  }
+
+  // Render + wire the whole arc. `prefillWeekly` carries an unsaved weekly answer across a
+  // today-task re-render so nothing the learner typed is lost.
+  async function renderAndWire(prefillWeekly) {
+    const todayTasks = await fetchTodayTasks();
+    const weeklyAnswer = prefillWeekly !== undefined ? prefillWeekly
+      : (canPersist ? getWeeklyAnswer(learnerId, goal.id, position.session, position.week) : '');
+    document.getElementById('form-fields').innerHTML = `
+      ${renderGoalArcHtml(goal, { lifeArea, position, todayTasks, weeklyAnswer })}
+      <div class="confirm-actions">
+        <button type="button" class="btn btn-primary" id="arc-close">Close</button>
+      </div>`;
+    const defaultActions = document.querySelector('#goal-form .modal-actions');
+    if (defaultActions) defaultActions.style.display = 'none';
+    document.getElementById('arc-close')?.addEventListener('click', () => closeModal());
+
+    // M2: save this week's answer (blank withdraws it). This-week-only key -> no streak (§5).
+    const saveBtn = document.getElementById('arc-week-save');
+    if (saveBtn && canPersist) {
+      saveBtn.addEventListener('click', () => {
+        const ta = document.getElementById('arc-week-answer');
+        saveWeeklyAnswer(learnerId, { goalId: goal.id, session: position.session, week: position.week, kind, text: ta?.value || '' });
+        const saved = document.getElementById('arc-week-saved');
+        if (saved) saved.hidden = false;
+      });
+    }
+
+    // M3: daily tasks under the week's answer - the two doors (one small step / rest today).
+    const curWeekly = () => document.getElementById('arc-week-answer')?.value;
+    if (canPersist) {
+      document.getElementById('arc-today-add')?.addEventListener('click', async () => {
+        const input = document.getElementById('arc-today-input');
+        const text = (input?.value || '').trim();
+        if (!text) return;
+        const carry = curWeekly();
+        try { await saveTask(learnerId, { text, plannedFor: todayISO, goalId: goal.id, categoryId: goal.categoryId || null, lifeArea, status: 'open' }); }
+        catch (e) { /* non-fatal */ }
+        await renderAndWire(carry);
+      });
+      document.querySelectorAll('.arc-today-toggle').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.taskId;
+          if (!id) return;
+          const carry = curWeekly();
+          try { await toggleTaskDone(learnerId, id); } catch (e) { /* non-fatal */ }
+          await renderAndWire(carry);
+        });
+      });
+    }
+    // Rest today: a first-class choice, never a miss. No storage, no streak to break.
+    document.getElementById('arc-today-rest')?.addEventListener('click', () => {
+      const note = document.getElementById('arc-today-rest-note');
+      if (note) note.hidden = false;
     });
   }
-  document.getElementById('arc-close')?.addEventListener('click', () => closeModal());
+
+  setModalTitle('Your goal');
+  await renderAndWire();
   activeSubmit = null;
   openModal();
 }
