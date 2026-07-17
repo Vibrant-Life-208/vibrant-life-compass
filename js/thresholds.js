@@ -118,6 +118,15 @@ export function getThresholds(targetStudio) {
 // docs/design/2026-07-16-current-wheel-build-scope.md.
 export const MAPPING_RATIFIED = false;
 
+// Current-wheel build gate (Stage P2, 2026-07-17). Separate from MAPPING_RATIFIED by design:
+// the 2026-07-16 re-ratification moved the direction to the learner's CURRENT wheel and ruled
+// the legacy target-wheel flag must NOT be flipped back to true - the current-wheel activation
+// needs its own gate. While this is false, buildSlicePlan and thresholdLifeArea behave exactly
+// as the legacy target-wheel path did (pitchers see the target wheel, blank boxes). Flips only
+// at build-plan Stage V, under the watch-with-a-real-learner gate, with a signed audit entry.
+// Ref: docs/design/2026-07-17-build-plan.md.
+export const CURRENT_WHEEL_BUILD = false;
+
 export const THRESHOLD_LIFE_AREA = {
   // Discovery -> Adventure. Target wheel: Movement, Mind, Spirit, Emotions, Family,
   // Friends, Home, Joy (getWheelAreas('adventure')).
@@ -137,28 +146,61 @@ export const THRESHOLD_LIFE_AREA = {
     adv_leadership: 'Friends',      // leadership & culture building = community
     adv_courage_book: 'Spirit',     // reading Courage to Grow = meaning / who I'm becoming
   },
+
+  // Discovery (current-wheel direction). Build-plan Stage P1 (2026-07-17): the SIGNED
+  // Discovery placement of the pitch thresholds. A Discovery learner pitching to Adventure
+  // plans on their OWN (Discovery) wheel: Movement, Learning, Heart, Family, Friends, Fun.
+  // Emotions and Spirit have no Discovery home, so the becoming cluster collapses into Heart.
+  // DORMANT: thresholdLifeArea() still returns null (MAPPING_RATIFIED=false), and nothing
+  // passes targetStudio:'discovery' until Stage P2 inverts buildSlicePlan. Activation is
+  // Stage V only, under the watch. Load: Learning 6, Heart 4, Friends 2; Movement/Family/Fun
+  // are invitations (no threshold). Signed 2026-07-17 (Jake+Accord+TCC, 5/5, no dissent).
+  // Ref: docs/design/2026-07-17-discovery-wheel-threshold-mapping-v0.1.md.
+  discovery: {
+    // Academics + tools -> Learning (Discovery's education slice; the mind at work).
+    adv_khan: 'Learning',
+    adv_lexia: 'Learning',
+    adv_spelling: 'Learning',
+    adv_handwriting: 'Learning',    // skill, not fine-motor (captain 7/15) -> Learning, not Movement
+    adv_jt: 'Learning',
+    adv_typing: 'Learning',
+    // Leading peers / studio culture -> Friends.
+    adv_lead_launches: 'Friends',
+    adv_leadership: 'Friends',
+    // Becoming cluster -> Heart (no Emotions/Spirit slice on Discovery; Heart is the
+    // becoming-slice, NOT a regulation/inventory slice - render as portrait).
+    adv_mindset: 'Heart',
+    adv_effort: 'Heart',            // RESOLVED to Heart 2026-07-17 (Learning would read effort as measured achievement)
+    adv_soaring: 'Heart',
+    adv_courage_book: 'Heart',
+  },
 };
 
-// The wheel slice a threshold belongs to for a given target studio, or null if
-// unplaced ("not placed yet" -> the render treats it as invitation, never
-// deficit). Returns null whenever the mapping is unratified, so nothing
-// unratified can steer a learner's year.
-export function thresholdLifeArea(targetStudio, thresholdId) {
-  if (!MAPPING_RATIFIED) return null;
-  return THRESHOLD_LIFE_AREA[targetStudio]?.[thresholdId] ?? null;
+// The wheel slice a threshold belongs to for a given placement studio, or null if
+// unplaced ("not placed yet" -> the render treats it as invitation, never deficit).
+// Gated per mapping: the `discovery` (current-wheel) placement is gated by
+// CURRENT_WHEEL_BUILD; the legacy target-wheel placement by MAPPING_RATIFIED (held
+// false). Either way, null until its gate opens, so nothing unratified steers a year.
+export function thresholdLifeArea(placementStudio, thresholdId) {
+  const gate = placementStudio === 'discovery' ? CURRENT_WHEEL_BUILD : MAPPING_RATIFIED;
+  if (!gate) return null;
+  return THRESHOLD_LIFE_AREA[placementStudio]?.[thresholdId] ?? null;
 }
 
-// Every threshold (skills + character) for a target studio as a flat list, in
-// display order, each tagged with its mapped slice (null until ratified).
-function thresholdsWithSlice(targetStudio) {
-  const t = getThresholds(targetStudio);
+// Every threshold (skills + character) for a threshold studio as a flat list, in
+// display order, each tagged with its mapped slice (null until the relevant gate opens).
+// `thresholdStudio` is the studio whose thresholds to list (the pitch target); `placementStudio`
+// is the wheel that places them (defaults to the same studio; the current-wheel path passes the
+// learner's current studio so the target's thresholds are placed on the current wheel).
+function thresholdsWithSlice(thresholdStudio, placementStudio = thresholdStudio) {
+  const t = getThresholds(thresholdStudio);
   if (!t) return [];
   return [...(t.skills || []), ...(t.character || [])].map((it) => ({
     id: it.id,
     name: it.name,
     explain: it.explain,
     struggling: it.struggling,
-    slice: thresholdLifeArea(targetStudio, it.id),
+    slice: thresholdLifeArea(placementStudio, it.id),
   }));
 }
 
@@ -174,11 +216,21 @@ function thresholdsWithSlice(targetStudio) {
 // pass null/undefined for a learner who is not pitching.
 export function buildSlicePlan({ currentStudio, pitchTargetStudio }) {
   const pitching = Boolean(pitchTargetStudio);
-  const wheelStudio = pitching ? pitchTargetStudio : currentStudio;
+  // Current-wheel direction (Stage P2, behind CURRENT_WHEEL_BUILD): EVERYONE plans on their
+  // own current wheel, including pitchers. A pitcher's threshold SET still comes from the
+  // target studio; its slice PLACEMENT moves to the current wheel. While CURRENT_WHEEL_BUILD
+  // is false this is byte-identical to the legacy target-wheel path (pitcher -> target wheel,
+  // blank boxes). NOTE for Stage O: when the flag flips, wheelStudio (current) no longer
+  // equals the pitch target, so the onboarding lead copy ("your pitch to <wheelStudio>") must
+  // be rewritten to name the target separately from the wheel being planned on.
+  const wheelStudio = CURRENT_WHEEL_BUILD
+    ? currentStudio
+    : (pitching ? pitchTargetStudio : currentStudio);
+  const placementStudio = CURRENT_WHEEL_BUILD ? currentStudio : pitchTargetStudio;
   const areas = getWheelAreas(wheelStudio);
   const prefill = {};
-  if (pitching && MAPPING_RATIFIED) {
-    for (const item of thresholdsWithSlice(pitchTargetStudio)) {
+  if (pitching && (CURRENT_WHEEL_BUILD || MAPPING_RATIFIED)) {
+    for (const item of thresholdsWithSlice(pitchTargetStudio, placementStudio)) {
       if (!item.slice) continue;
       (prefill[item.slice] ||= []).push(item);
     }
@@ -186,7 +238,8 @@ export function buildSlicePlan({ currentStudio, pitchTargetStudio }) {
   return {
     wheelStudio,
     pitching,
-    ratified: MAPPING_RATIFIED,
+    pitchTargetStudio: pitchTargetStudio || null,
+    ratified: CURRENT_WHEEL_BUILD || MAPPING_RATIFIED,
     areas: areas.map((label) => ({
       label,
       sliceId: sliceIdForLabel(label),
