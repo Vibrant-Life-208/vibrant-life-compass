@@ -15,10 +15,19 @@ Decision log / minutes: evoke-agents-backup `agents/{decision-logs,meetings}/202
   flag + inverted `buildSlicePlan`, verified byte-identical while dark), P3 (`open_by_choice`
   v0.20 migration applied + wired through both adapters). All dark; production unchanged. Commits
   on `main`: discovery key + buildSlicePlan (5f515c4), migration file (9454175), adapter wiring (2296a08).
-- **Stage O — QUEUED (not started).** Onboarding per-slice walk, to be built in a fresh session in
-  sub-steps (O1 year pass → O2 now+halfway), behind `CURRENT_WHEEL_BUILD`. Legacy lumped grid
-  preserved when the flag is off.
-- Stages R, V — not started.
+- **Stages O, M, R — BUILT, dark (2026-07-17).** O1 per-slice YEAR walk + O2 now+halfway reflect
+  pass; M1–M3 per-goal arc + answerable weekly progressing question (Learning/Heart cadence split,
+  `weeklyKindFor`) + daily tasks; R render/a11y conditions. New modules `js/goal-arc.js`,
+  `js/weekly-answers.js`. All behind `CURRENT_WHEEL_BUILD` (still `false`); the legacy lumped grid
+  is preserved when the flag is off (`renderSliceWalk()` vs `renderSlicePlanLegacy()`). Verified:
+  flag dark, all JS parses, gating clean.
+- **C1 verification — BUILT, all 3 PASS.** `scripts/c1.mjs` runner + c1-render-conditions /
+  c1-read-only-to-system / c1-no-aggregation. Static halves done. **Owed at Stage V:** C1 #2's
+  RUNTIME write-wall (La'an's binding assertion at `store.js` `saveGoal`).
+- **Stage V — checklist drafted (`docs/design/2026-07-17-stage-v-flip-checklist.md`); NOT started.**
+  The flag flip is gated on: the runtime write-wall, storage migrations (weekly answers off
+  `localStorage`; goal-field projection), built-surface re-walk (Jake + Accord + Comes),
+  live-browser walk (flag-on), and watch-with-a-real-learner. Flip waits for all of these.
 
 ## Two architectural rules that make the walls enforceable
 - **Geordi's projection rule:** carried thresholds are **render-time projections, never
@@ -39,19 +48,19 @@ Decision log / minutes: evoke-agents-backup `agents/{decision-logs,meetings}/202
   thresholds = render-time projections (never rows); learner additions = child records keyed to threshold id.
 - `CATEGORY_LIFE_AREA` learner tiers stay EMPTY; `useSlices` unchanged. → satisfies §4, §2/§3 seam prep.
 
-### Stage O — Onboarding per-slice walk (behind flag) — ⏳ QUEUED (not started)
+### Stage O — Onboarding per-slice walk (behind flag) — ✅ BUILT (dark) 2026-07-17
 - Six Discovery pages: Movement → Learning → Heart → Family → Friends → Fun.
 - year → now → write-halfway; carried thresholds broken out, read-only, **as a field**; authored
   "yours-to-fill" invitations (Family most careful); backward decompose **once** at halfway-goal setting.
 - → satisfies §2, §4, §9.
 
-### Stage M — Main-page per-goal arc (behind flag)
+### Stage M — Main-page per-goal arc (behind flag) — ✅ BUILT (dark) 2026-07-17
 - FORWARD S1 → S2 → S3; weekly progressing question **pull-only, asked-live, this-week-only**;
   Learning = finish-shaped, Heart = presence register (invited); daily tasks under the week's answer;
   Session 4 renders identically regardless of on-time.
 - → satisfies §1, §5, §6, §7, §8, §10, §11.
 
-### Stage R — Render conditions (cross-cutting; gates O + M)
+### Stage R — Render conditions (cross-cutting; gates O + M) — ✅ BUILT (dark) 2026-07-17
 - Field-not-sequence (incl. a11y tree); no denominator/meter/red-zero; empty renders identically to
   unfinished at every zoom incl. a11y tree; no color-only; two doors 44×44.
 - → satisfies §1, §2, a11y parity.
