@@ -100,12 +100,13 @@ export async function getLearner(id) {
   const c = getClient();
   let { data, error } = await c
     .from('learners')
-    .select('id, studio, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, profiles!learners_id_fkey(name, email)')
+    .select('id, studio, setup_completed_at, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, profiles!learners_id_fkey(name, email)')
     .eq('id', id)
     .single();
   if (error) {
-    // Deploy-before-migration safety: the v0.17 pitch columns may not exist yet.
-    // Re-read the base columns so learner loading never breaks.
+    // Deploy-before-migration safety: the v0.17 pitch / v0.19 setup columns may not
+    // exist yet. Re-read the base columns so learner loading never breaks (the
+    // setupCompletedAt fallback is then null, which just re-gates Setup - safe).
     ({ data, error } = await c
       .from('learners')
       .select('id, studio, profiles!learners_id_fkey(name, email)')
@@ -118,6 +119,7 @@ export async function getLearner(id) {
     name: data.profiles?.name,
     email: data.profiles?.email,
     studio: data.studio,
+    setupCompletedAt: data.setup_completed_at ?? null,
     pitchTargetStudio: data.pitch_target_studio ?? null,
     pitchIntentAt: data.pitch_intent_at ?? null,
     pitchAgeSelfReport: data.pitch_age_self_report ?? null,
@@ -799,6 +801,7 @@ export async function saveLearner(data) {
   }
   const learnerRow = {};
   if (data.studio !== undefined) learnerRow.studio = data.studio;
+  if (data.setupCompletedAt !== undefined) learnerRow.setup_completed_at = data.setupCompletedAt;
   if (data.pitchTargetStudio !== undefined) learnerRow.pitch_target_studio = data.pitchTargetStudio;
   if (data.pitchIntentAt !== undefined) learnerRow.pitch_intent_at = data.pitchIntentAt;
   if (data.pitchAgeSelfReport !== undefined) learnerRow.pitch_age_self_report = data.pitchAgeSelfReport;
