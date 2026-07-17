@@ -1083,8 +1083,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // Stage O (behind CURRENT_WHEEL_BUILD): the per-slice onboarding walk cursor +
     // stored open-by-choice. Entirely dormant while the flag is off - the legacy
     // lumped slice grid renders and none of this is read. See docs/design/2026-07-17-build-plan.md.
-    sliceWalk: { pass: 'year', idx: 0 }, // which pass (year|halfway) + which slice
+    sliceWalk: { pass: 'year', idx: 0 }, // which pass (year|reflect) + which slice
     openByChoice: [], // sliceIds the learner chose to leave open (§4; loaded + persisted)
+    sliceNow: {},      // sliceId -> "where I am now" text (O2; held during the walk, not persisted)
+    sliceHalfway: {},  // sliceId -> halfway-goal text (O2; persisted as the Session-3 goal)
   };
 
   setModalTitle(role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass');
@@ -1130,13 +1132,24 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     } catch (e) { /* non-fatal: the slice boxes just start blank */ }
   }
 
-  // Stage O (behind the flag): preload the learner's stored open-by-choice slices so
-  // the per-slice walk shows prior "left open" choices on resume. Dormant otherwise.
+  // Stage O (behind the flag): preload the learner's stored open-by-choice slices and
+  // any prior per-slice halfway goals (Session-3 goals keyed by slice) so the walk
+  // shows prior choices/answers. Dormant otherwise. "Now" is not persisted (it is the
+  // in-walk anchor for the one backward-decompose), so nothing to preload for it.
   if (CURRENT_WHEEL_BUILD && hasSlicePlan && learnerId) {
     try {
       const lr = await getLearner(learnerId);
       state.openByChoice = Array.isArray(lr?.openByChoice) ? [...lr.openByChoice] : [];
     } catch (e) { /* non-fatal: starts empty */ }
+    try {
+      const existingGoals = await getGoals(learnerId);
+      for (const g of existingGoals) {
+        if (g.scope === 'session' && g.sessionIndex === 3 && typeof g.categoryId === 'string'
+            && g.categoryId.startsWith('slice_') && g.text) {
+          state.sliceHalfway[g.categoryId] = g.text;
+        }
+      }
+    } catch (e) { /* non-fatal: halfway boxes just start blank */ }
   }
 
   function curStep() { return steps[state.idx]; }
@@ -1473,33 +1486,72 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     catch (e) { /* non-fatal: the walk still completes */ }
   }
 
+  // Stage O2: persist each halfway goal as the learner's Session-3 goal for that slice
+  // ("the halfway goal IS the Session 3 goal"). scope:'session' sessionIndex:3, keyed by
+  // slice, upserted so a re-walk edits rather than duplicates. Empty boxes untouched
+  // (invitational). Stage M reads these as the working start of each goal. Behind the flag.
+  async function persistHalfwayGoals() {
+    if (!learnerId) return;
+    let existing = [];
+    try { existing = await getGoals(learnerId); } catch (e) { existing = []; }
+    const byCat = new Map(
+      existing.filter((g) => g.scope === 'session' && g.sessionIndex === 3).map((g) => [g.categoryId, g])
+    );
+    for (const [sliceId, raw] of Object.entries(state.sliceHalfway)) {
+      const text = (raw || '').trim();
+      if (!text) continue;
+      const prior = byCat.get(sliceId);
+      await saveGoal({
+        id: prior?.id,
+        learnerId,
+        categoryId: sliceId,
+        scope: 'session',
+        sessionIndex: 3,
+        text,
+        lifeArea: state.sliceLabels[sliceId] || null,
+        status: prior?.status || 'active',
+      });
+    }
+  }
+
   // Stage O walk wiring (flag-on slice_plan only). Owns Back / Continue / leave-open
-  // so the walk advances slice-by-slice; the generic step handlers are skipped.
+  // for all three passes; the generic step handlers are skipped. Which box captures
+  // where depends on the pass (year -> sliceText, now -> sliceNow, halfway -> sliceHalfway).
   function wireSliceWalk() {
     const plan = buildSlicePlan({
       currentStudio: studio,
       pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
     });
-    const slices = plan.areas;
-    const i = Math.min(state.sliceWalk.idx, slices.length - 1);
+    const pass = state.sliceWalk.pass;
+    const slices = walkSliceList(plan);
+    const i = Math.min(state.sliceWalk.idx, Math.max(0, slices.length - 1));
     const slice = slices[i];
 
-    // Capture the current slice's box into state. Typing into a slice un-marks any
-    // prior "left open" - a written slice is not open-by-choice (§4).
+    // Capture the current page's box(es) for this pass. Year page has one box
+    // (onb-slice-box); the reflect page has two (now + halfway). On the year pass,
+    // typing un-marks any prior "left open" - a written slice is not open-by-choice (§4).
     const captureCurrent = () => {
-      const ta = document.getElementById('onb-slice-box');
-      if (!ta) return;
-      state.sliceText[slice.sliceId] = ta.value;
-      state.sliceLabels[slice.sliceId] = ta.dataset.sliceLabel || null;
-      if (ta.value.trim() && state.openByChoice.includes(slice.sliceId)) {
-        state.openByChoice = state.openByChoice.filter((s) => s !== slice.sliceId);
+      if (!slice) return;
+      if (pass === 'year') {
+        const ta = document.getElementById('onb-slice-box');
+        if (!ta) return;
+        state.sliceLabels[slice.sliceId] = ta.dataset.sliceLabel || state.sliceLabels[slice.sliceId] || null;
+        state.sliceText[slice.sliceId] = ta.value;
+        if (ta.value.trim() && state.openByChoice.includes(slice.sliceId)) {
+          state.openByChoice = state.openByChoice.filter((s) => s !== slice.sliceId);
+        }
+      } else { // reflect: now + halfway together
+        const nowTa = document.getElementById('onb-slice-now');
+        const hwTa = document.getElementById('onb-slice-halfway');
+        if (nowTa) state.sliceNow[slice.sliceId] = nowTa.value;
+        if (hwTa) state.sliceHalfway[slice.sliceId] = hwTa.value;
+        state.sliceLabels[slice.sliceId] = nowTa?.dataset.sliceLabel || hwTa?.dataset.sliceLabel || state.sliceLabels[slice.sliceId] || null;
       }
     };
 
+    // Year pass only: "leave this open" records a stored open-by-choice and advances.
     document.getElementById('onb-slice-open')?.addEventListener('click', () => {
       captureCurrent();
-      // Record a stored open-by-choice; clear any year text so the slice reads as
-      // consciously open, not half-filled. Then advance.
       state.openByChoice = [...new Set([...state.openByChoice, slice.sliceId])];
       state.sliceText[slice.sliceId] = '';
       advanceWalk();
@@ -1512,33 +1564,54 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
     document.getElementById('onb-back')?.addEventListener('click', () => {
       captureCurrent();
-      if (state.sliceWalk.idx > 0) {
-        state.sliceWalk.idx -= 1;
-        render();
-      } else {
-        back(); // at the first slice, leave slice_plan for the prior onboarding step
-      }
+      retreatWalk();
     });
   }
 
-  // Advance the per-slice walk. Within the YEAR pass, step to the next slice; at the
-  // end of the year pass, persist (year goals + open-by-choice) and finish onboarding.
-  // O2 (now + halfway) is not built yet - the O1/O2 checkpoint lands right here.
+  // Advance the walk. Within a pass, step to the next slice. At a pass boundary,
+  // persist that pass and start the next (year -> now -> halfway), skipping a pass with
+  // no active slices. When the halfway pass ends, persist halfway goals and finish.
   async function advanceWalk() {
     const plan = buildSlicePlan({
       currentStudio: studio,
       pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
     });
-    const lastIdx = plan.areas.length - 1;
-    if (state.sliceWalk.idx < lastIdx) {
+    const pass = state.sliceWalk.pass;
+    const list = walkSliceList(plan);
+    if (state.sliceWalk.idx < list.length - 1) {
       state.sliceWalk.idx += 1;
       render();
       return;
     }
-    await advance(async () => {
+    if (pass === 'year') {
       await upsertYearGoals();
       await persistOpenByChoice();
+      await startPass(plan, 'reflect');
+      return;
+    }
+    // reflect pass complete -> persist the Session-3 halfway goals and leave slice_plan.
+    await advance(async () => { await persistHalfwayGoals(); });
+  }
+
+  // Enter a pass at its first slice. If the reflect pass has nothing to narrow (every
+  // slice left open or empty), skip it and finish onboarding.
+  async function startPass(plan, pass) {
+    state.sliceWalk = { pass, idx: 0 };
+    if (walkSliceListFor(plan, pass).length) { render(); return; }
+    await advance(async () => { await persistHalfwayGoals(); });
+  }
+
+  // Step the walk backwards: within a pass to the prior slice; at the reflect pass's
+  // first slice, back into the year pass's last slice; at the first year slice, leave
+  // slice_plan for the prior onboarding step.
+  function retreatWalk() {
+    const plan = buildSlicePlan({
+      currentStudio: studio,
+      pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
     });
+    if (state.sliceWalk.idx > 0) { state.sliceWalk.idx -= 1; render(); return; }
+    if (state.sliceWalk.pass === 'reflect') { state.sliceWalk = { pass: 'year', idx: plan.areas.length - 1 }; render(); return; }
+    back(); // year pass, first slice -> leave slice_plan for the prior onboarding step
   }
 
   // A threshold "carried from the pitch" into its slice: the name plus the same
@@ -1615,21 +1688,70 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     `;
   }
 
-  // ── Stage O: the per-slice YEAR walk (behind CURRENT_WHEEL_BUILD) ────────────
+  // ── Stage O: the per-slice walk (behind CURRENT_WHEEL_BUILD) ─────────────────
   // Retires the lumped grid ("a wall" - captain 2026-07-16) for a focused page per
   // Discovery slice, walked one at a time: Movement -> Learning -> Heart -> Family
-  // -> Friends -> Fun. Chunking, not depth - still 1-year-per-slice, direction only,
-  // NO decomposition here (the Compass cultivates; onboarding only plants). O1 is the
-  // year pass; O2 (now + halfway) lands after the O1/O2 checkpoint. Honors the
-  // consolidated build conditions: carried thresholds render broken out, read-only,
-  // AS A FIELD (§2 field-not-sequence, §3 read-only to the system); each empty slice
-  // carries an authored invitation + a stored "leave open" (§4). Verified against
-  // running code; nothing ships before Stage V's watch-with-a-real-learner gate.
+  // -> Friends -> Fun. Chunking, not depth - direction only, NO full decomposition
+  // here (the Compass cultivates; onboarding only plants). Two passes (captain
+  // 2026-07-17, "now and halfway for each slice one at a time after the year run"):
+  //   year    - a 1-year aim per slice, all six (O1)
+  //   reflect  - per ACTIVE slice, one at a time: where you are NOW + the HALFWAY goal,
+  //             framed by Now -> Year, on ONE focused page. The halfway is persisted as
+  //             the Session-3 goal ("the halfway goal IS the Session 3 goal") (O2)
+  // Finishing a slice's now+halfway before the next keeps the frame narrow (captain:
+  // "more focused, less overwhelming"). Backward-decompose happens ONCE, at halfway;
+  // execution stays forward. Honors the consolidated conditions: carried thresholds
+  // render broken out, read-only, AS A FIELD (§2/§3); empty slices carry an authored
+  // invitation + a stored "leave open" (§4); no denominator/meter anywhere (§1). The
+  // reflect pass skips open/empty slices - nothing to narrow, so no pressure. Nothing
+  // ships before Stage V's watch-with-a-real-learner gate.
   function renderSliceWalk() {
     const plan = buildSlicePlan({
       currentStudio: studio,
       pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
     });
+    return state.sliceWalk.pass === 'reflect' ? renderSliceReflectPage(plan) : renderSliceYearPage(plan);
+  }
+
+  // The slices a pass walks. YEAR visits all six; REFLECT visits only slices with
+  // something to progress toward (a written year aim or carried thresholds), so a slice
+  // left open (§4) or empty is never pressed for a "now" or a halfway goal.
+  function walkSliceListFor(plan, pass) {
+    if (pass === 'year') return plan.areas;
+    return plan.areas.filter((s) => (state.sliceText[s.sliceId] || '').trim() || s.prefill.length > 0);
+  }
+  function walkSliceList(plan) { return walkSliceListFor(plan, state.sliceWalk.pass); }
+
+  // Shared page chrome: the pinned CURRENT wheel + the lead-copy seam banner. The
+  // banner names the pitch target (e.g. Adventure) SEPARATELY from the current wheel
+  // (Discovery) being planned, since with the flag on they are no longer the same.
+  function sliceWalkChrome(plan) {
+    const wheelName = getStudioName(plan.wheelStudio);
+    const targetName = plan.pitchTargetStudio ? getStudioName(plan.pitchTargetStudio) : null;
+    const banner = plan.pitching && targetName
+      ? `<p class="onb-slice-context">Working toward your pitch to <strong>${escapeHtml(targetName)}</strong>, planned across your <strong>${escapeHtml(wheelName)}</strong> year.</p>`
+      : '';
+    return { wheelName, targetName, banner, wheel: `<div class="onb-wheel-pin">${lifeWheelSvgFor(plan.wheelStudio)}</div>` };
+  }
+
+  // A slice's carried thresholds, broken out read-only AS A FIELD (§2 field-not-sequence;
+  // §3 read-only to the system, "a lock is a permission, not a pixel"). Shared across the
+  // three passes so the carried work stays visible as context. No rank/number, no
+  // completion/decompose affordance; render-time projection, never a goal row.
+  function sliceCarriedField(slice, targetName) {
+    if (!slice.prefill.length) return '';
+    return `<div class="slice-carried slice-carried-field">
+           <span class="slice-carried-label">Already yours, carried from your pitch${targetName ? ` to ${escapeHtml(targetName)}` : ''}</span>
+           <ul class="slice-carried-list slice-carried-readonly">
+             ${slice.prefill.map((t) => `<li class="slice-carried-name">${escapeHtml(t.name)}</li>`).join('')}
+           </ul>
+           <p class="slice-carried-note">These are yours to keep. You'll grow them in your Compass - nothing to do here.</p>
+         </div>`;
+  }
+
+  // YEAR pass (O1): a 1-year aim per slice, plus the carried field and, for empty
+  // slices, an authored invitation + a stored "leave open."
+  function renderSliceYearPage(plan) {
     const slices = plan.areas;
     const i = Math.min(state.sliceWalk.idx, slices.length - 1);
     const slice = slices[i];
@@ -1637,39 +1759,13 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const val = state.sliceText[slice.sliceId] || '';
     const isOpen = state.openByChoice.includes(slice.sliceId);
     const hasCarried = slice.prefill.length > 0;
-
-    // Lead-copy seam (flag-on): the wheel being planned is the learner's CURRENT
-    // (Discovery) wheel, which is NO LONGER the pitch target. Name the target
-    // separately from the wheel so "your pitch to X" never mislabels the wheel.
-    const wheelName = getStudioName(plan.wheelStudio);
-    const targetName = plan.pitchTargetStudio ? getStudioName(plan.pitchTargetStudio) : null;
-    const banner = plan.pitching && targetName
-      ? `<p class="onb-slice-context">Working toward your pitch to <strong>${escapeHtml(targetName)}</strong>, planned across your <strong>${escapeHtml(wheelName)}</strong> year.</p>`
-      : '';
-
-    const wheel = `<div class="onb-wheel-pin">${lifeWheelSvgFor(plan.wheelStudio)}</div>`;
-
-    // Carried thresholds: broken out, read-only, AS A FIELD - no rank, no number, no
-    // completion affordance (§2 field-not-sequence; §3 read-only to the system, "a
-    // lock is a permission, not a pixel"). Deliberately NO decompose here - onboarding
-    // plants, the Compass cultivates. These are render-time projections, never written
-    // as goal rows (Geordi's projection rule).
-    const carried = hasCarried
-      ? `<div class="slice-carried slice-carried-field">
-           <span class="slice-carried-label">Already yours, carried from your pitch${targetName ? ` to ${escapeHtml(targetName)}` : ''}</span>
-           <ul class="slice-carried-list slice-carried-readonly">
-             ${slice.prefill.map((t) => `<li class="slice-carried-name">${escapeHtml(t.name)}</li>`).join('')}
-           </ul>
-           <p class="slice-carried-note">These are yours to keep. You'll grow them in your Compass - nothing to do here.</p>
-         </div>`
-      : '';
-
-    // Authored "yours-to-fill" invitation for the empty slices (Movement / Family /
-    // Fun). FLAGGED for the built-surface re-walk (Jake + Accord + Comes) before ship.
-    const invitation = !hasCarried ? sliceInvitationCopy(slice.label) : '';
-
-    // The learner's own year aim for this slice. Invitational everywhere; for a slice
-    // that already carries thresholds it reads as an optional "anything else."
+    // The "empty" affordances (invitation + leave-open) show only for a slice with no
+    // carried work AND nothing written yet. Once the learner writes an aim, they engaged
+    // - the invitation and the leave-open option step aside (§4: written != open).
+    const isEmpty = !hasCarried && !val.trim();
+    const { wheel, banner, targetName } = sliceWalkChrome(plan);
+    const carried = sliceCarriedField(slice, targetName);
+    const invitation = isEmpty ? sliceInvitationCopy(slice.label) : '';
     const boxLabel = hasCarried
       ? `Anything else you want to grow in ${escapeHtml(slice.label)} this year?`
       : `A year from now, in ${escapeHtml(slice.label)}…`;
@@ -1678,15 +1774,12 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <label class="slice-box-label" for="onb-slice-box">${boxLabel}</label>
         <textarea id="onb-slice-box" class="slice-box" data-slice-id="${escapeAttr(slice.sliceId)}" data-slice-label="${escapeAttr(slice.label)}" rows="3" placeholder="By next year, in ${escapeAttr(slice.label)}, I want to…">${escapeHtml(val)}</textarea>
       </div>`;
-
-    // "Leave open" is the invitational escape at the slice grain: a STORED open-by-choice
-    // (§4), distinct from an empty box (missing-data). Offered only for slices with no
-    // carried work - a slice that already carries thresholds is not "open."
-    const leaveOpen = !hasCarried
+    const leaveOpen = isEmpty
       ? `<button type="button" id="onb-slice-open" class="btn btn-text slice-open-btn${isOpen ? ' is-open' : ''}">${isOpen ? 'Left open for now ✓ (tap to write instead)' : 'Leave this open for now'}</button>`
       : '';
-
-    const continueLabel = isLastSlice ? 'Done with my year' : 'Next part of life';
+    // Last-slice CTA leads into the NOW pass, unless nothing is active to narrow.
+    const willNarrow = walkSliceListFor(plan, 'now').length > 0;
+    const continueLabel = isLastSlice ? (willNarrow ? 'Next: where you are now' : 'Enter your Compass') : 'Next part of life';
     return `
       ${wheel}
       ${banner}
@@ -1701,6 +1794,57 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <button type="button" id="onb-back" class="btn btn-text">Back</button>
         <div class="onb-step-actions-right">
           ${leaveOpen}
+          <button type="button" id="onb-continue" class="btn btn-primary">${escapeHtml(continueLabel)}</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // REFLECT pass (O2): one focused page per ACTIVE slice, walked one slice at a time
+  // after the year run - captain's "now and halfway for each slice one at a time." Each
+  // page holds BOTH the mirror (where you are now) and the halfway goal, framed by
+  // Now -> Year (the two the midpoint sits between). The halfway becomes the Session-3
+  // goal. Both boxes are invitational (may be left blank). "Now" is held for the frame
+  // only; it is not persisted (the step restarts fresh on resume). No denominator, no
+  // deadline-as-pressure (§1, §9 - the "one step more" gift stays in the Compass, not here).
+  function renderSliceReflectPage(plan) {
+    const slices = walkSliceList(plan);
+    const i = Math.min(state.sliceWalk.idx, Math.max(0, slices.length - 1));
+    const slice = slices[i];
+    const isLastSlice = i === slices.length - 1;
+    const { wheel, banner, targetName } = sliceWalkChrome(plan);
+    const carried = sliceCarriedField(slice, targetName);
+    const yearText = (state.sliceText[slice.sliceId] || '').trim();
+    const yearContext = yearText
+      ? `<div class="slice-frame-card slice-year-context"><span class="slice-context-label">By next year</span><p class="slice-context-text">${escapeHtml(yearText)}</p></div>`
+      : '';
+    const nowVal = state.sliceNow[slice.sliceId] || '';
+    const hwVal = state.sliceHalfway[slice.sliceId] || '';
+    const nowBox = `
+      <div class="slice-now-box">
+        <label class="slice-box-label" for="onb-slice-now">Where are you right now in ${escapeHtml(slice.label)}?</label>
+        <textarea id="onb-slice-now" class="slice-box" data-slice-id="${escapeAttr(slice.sliceId)}" data-slice-label="${escapeAttr(slice.label)}" rows="2" placeholder="Right now, in ${escapeAttr(slice.label)}, I am…">${escapeHtml(nowVal)}</textarea>
+      </div>`;
+    const halfwayBox = `
+      <div class="slice-halfway-box">
+        <label class="slice-box-label" for="onb-slice-halfway">Halfway there in ${escapeHtml(slice.label)} - what does it look like?</label>
+        <textarea id="onb-slice-halfway" class="slice-box" data-slice-id="${escapeAttr(slice.sliceId)}" data-slice-label="${escapeAttr(slice.label)}" rows="2" placeholder="Halfway, in ${escapeAttr(slice.label)}, I will…">${escapeHtml(hwVal)}</textarea>
+      </div>`;
+    const continueLabel = isLastSlice ? 'Enter your Compass' : 'Next part of life';
+    return `
+      ${wheel}
+      ${banner}
+      <div class="onb-horizon-prompt">
+        <h3 class="onb-horizon-heading">${escapeHtml(slice.label)} - now and halfway</h3>
+        <p class="onb-horizon-body">Two small steps for this part of your life: where you are today, and the halfway point on the way to your year. Look at both and set your middle-of-the-year goal - you do not have to hold the whole year at once.</p>
+      </div>
+      ${carried}
+      ${yearContext}
+      ${nowBox}
+      ${halfwayBox}
+      <div class="onb-step-actions">
+        <button type="button" id="onb-back" class="btn btn-text">Back</button>
+        <div class="onb-step-actions-right">
           <button type="button" id="onb-continue" class="btn btn-primary">${escapeHtml(continueLabel)}</button>
         </div>
       </div>
