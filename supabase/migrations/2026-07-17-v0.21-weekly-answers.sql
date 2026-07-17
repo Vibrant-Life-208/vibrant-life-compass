@@ -35,9 +35,13 @@ create index if not exists idx_weekly_answers_lookup
 alter table weekly_answers enable row level security;
 
 -- Row-level: read for anyone who can see the learner; write only for the learner themselves.
--- Mirrors goals_read / goals_write (schema.sql), reusing the my_visible_learners function.
+-- Mirrors goals_read / goals_write (schema.sql), reusing the my_visible_learners view.
+-- CREATE POLICY is not idempotent (no "if not exists"), so drop-then-create makes this whole
+-- migration safe to re-run even if a prior attempt committed before the SQL client crashed.
+drop policy if exists "weekly_answers_read" on weekly_answers;
 create policy "weekly_answers_read" on weekly_answers for select
   using (learner_id in (select learner_id from my_visible_learners));
+drop policy if exists "weekly_answers_write" on weekly_answers;
 create policy "weekly_answers_write" on weekly_answers for all
   using (learner_id = auth.uid()) with check (learner_id = auth.uid());
 
