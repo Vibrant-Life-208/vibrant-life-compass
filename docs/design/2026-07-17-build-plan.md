@@ -10,6 +10,15 @@ Contract: `docs/design/2026-07-17-consolidated-build-conditions.md` (§1–§12)
 maps to the sections it must satisfy; C1 (§12) verifies against running code.
 Decision log / minutes: evoke-agents-backup `agents/{decision-logs,meetings}/2026/07/2026-07-17-build-plan-current-wheel-per-goal-decomposition.md`.
 
+## Progress
+- **Stage P — COMPLETE (2026-07-17).** P1 (signed `discovery` key), P2 (`CURRENT_WHEEL_BUILD`
+  flag + inverted `buildSlicePlan`, verified byte-identical while dark), P3 (`open_by_choice`
+  v0.20 migration applied + wired through both adapters). All dark; production unchanged. Commits
+  on `main`: discovery key + buildSlicePlan (5f515c4), migration file (9454175), adapter wiring (2296a08).
+- **Stage O — IN PROGRESS.** Onboarding per-slice walk, in sub-steps (O1 year pass → O2 now+halfway),
+  behind `CURRENT_WHEEL_BUILD`. Legacy lumped grid preserved when the flag is off.
+- Stages R, V — not started.
+
 ## Two architectural rules that make the walls enforceable
 - **Geordi's projection rule:** carried thresholds are **render-time projections, never
   persisted goal rows**; a learner's additions are **child records keyed to the threshold id**.
@@ -21,7 +30,7 @@ Decision log / minutes: evoke-agents-backup `agents/{decision-logs,meetings}/202
 
 ## Stages
 
-### Stage P — Plumbing (data-dormant)
+### Stage P — Plumbing (data-dormant) — ✅ COMPLETE 2026-07-17
 - **P1** add a signed `discovery` key to `THRESHOLD_LIFE_AREA` (Learning ×6, Heart ×4, Friends ×2),
   gated by the flag so `thresholdLifeArea()` still returns null.
 - **P2** invert `buildSlicePlan` to plan on the current (Discovery) wheel; prefill via the `discovery` key.
@@ -29,7 +38,7 @@ Decision log / minutes: evoke-agents-backup `agents/{decision-logs,meetings}/202
   thresholds = render-time projections (never rows); learner additions = child records keyed to threshold id.
 - `CATEGORY_LIFE_AREA` learner tiers stay EMPTY; `useSlices` unchanged. → satisfies §4, §2/§3 seam prep.
 
-### Stage O — Onboarding per-slice walk (behind flag)
+### Stage O — Onboarding per-slice walk (behind flag) — 🔨 IN PROGRESS
 - Six Discovery pages: Movement → Learning → Heart → Family → Friends → Fun.
 - year → now → write-halfway; carried thresholds broken out, read-only, **as a field**; authored
   "yours-to-fill" invitations (Family most careful); backward decompose **once** at halfway-goal setting.
