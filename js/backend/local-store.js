@@ -29,6 +29,7 @@ const KEYS = {
   profileAnchor: 'hc_profile_anchor',     // {id: {values:[], strengths:[]}} (v0.2 anchor)
   profileHorizons: 'hc_profile_horizons', // {id: {beyond_5yr,...}} (v0.3 cascade)
   onboarding: 'hc_onboarding',            // {id: {step, skipped, completedAt, updatedAt}}
+  weeklyAnswers: 'hc_weekly_answers_v0',  // {learnerId|goalId|s{n}|w{n}: {text, kind, session, week}} — no timestamp (§5)
 };
 
 function read(key) {
@@ -282,6 +283,34 @@ export async function saveGoal(goal) {
   all.push(created);
   write(KEYS.goals, all);
   return created;
+}
+
+// ============================================================================
+// Weekly answers (Stage M2 progressing answer; synced-storage parity with the
+// supabase adapter — build plan Stage V / flip-checklist §3).
+//
+// One discrete record per (learner, goal, session, week). §5: get-one + save-one ONLY —
+// there is deliberately no list / count / streak / trend reader, and NO timestamp is stored,
+// so nothing can be aggregated over time. A weekly answer is a presence, not a metric.
+// ============================================================================
+function weeklyAnswerKey(learnerId, goalId, session, week) {
+  return `${learnerId}|${goalId}|s${session}|w${week}`;
+}
+
+export async function getWeeklyAnswer(learnerId, goalId, session, week) {
+  if (!learnerId || !goalId) return null;
+  const map = read(KEYS.weeklyAnswers) || {};
+  return map[weeklyAnswerKey(learnerId, goalId, session, week)] || null;
+}
+
+export async function saveWeeklyAnswer(learnerId, { goalId, session, week, kind = 'finish', text = '' }) {
+  if (!learnerId || !goalId) return;
+  const map = read(KEYS.weeklyAnswers) || {};
+  const k = weeklyAnswerKey(learnerId, goalId, session, week);
+  const trimmed = (text || '').trim();
+  if (!trimmed) { delete map[k]; }                            // blank clears — an answer withdrawn, not a zero
+  else { map[k] = { text: trimmed, kind, session, week }; }   // no timestamp — §5
+  write(KEYS.weeklyAnswers, map);
 }
 
 // ============================================================================

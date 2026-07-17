@@ -11,45 +11,28 @@
 // it stores NO timestamp - there is nothing to aggregate over time even if a later caller
 // were tempted. A weekly answer is a presence, not a metric. (Interaction review 2026-07-17.)
 //
-// STORAGE SEAM (captain 2026-07-17, "decide when I build M2"): backed local-first, in a
-// dedicated localStorage key, backend-agnostic - it does NOT touch the goals table or
-// either backend adapter. This matches how the other extended goal fields (weeklySteps,
-// halfwayPoint) live today (local-only; supabase goalToRow drops them). Stage V owns the
-// migration: move weekly answers to synced storage (a weekly_answers table or the goals
-// extended-field persistence) at the same time the flag flips and useSlices opens. Until
-// then this is device-local and gated dark, so no real learner depends on cross-device sync.
+// STORAGE SEAM (build plan Stage V / flip-checklist §3): now backed by SYNCED storage via the
+// store facade - getWeeklyAnswer / saveWeeklyAnswer route through the active backend adapter
+// (local-store's 'hc_weekly_answers_v0' key for parity, or the supabase weekly_answers table,
+// migration v0.21). A real learner's answer survives across devices. The §5 guarantee is
+// preserved at every layer: the adapters expose only get-one/save-one, and neither the local
+// key nor the weekly_answers table stores a timestamp. Still gated dark behind
+// CURRENT_WHEEL_BUILD until Stage V.
 
-const KEY = 'hc_weekly_answers_v0';
-
-function readAll() {
-  try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; }
-  catch (e) { return {}; }
-}
-function writeAll(map) {
-  try { localStorage.setItem(KEY, JSON.stringify(map)); } catch (e) { /* storage full / disabled: non-fatal */ }
-}
-
-// One record per goal+session+week. Kept intentionally coarse (no per-day, no history).
-function recordKey(learnerId, goalId, session, week) {
-  return `${learnerId}|${goalId}|s${session}|w${week}`;
-}
+import { getWeeklyAnswer as storeGetWeeklyAnswer, saveWeeklyAnswer as storeSaveWeeklyAnswer } from './store.js';
 
 // The learner's answer for THIS week's question on this goal, or '' if unanswered.
 // Single-record read only - there is deliberately no "all answers for this goal" reader.
-export function getWeeklyAnswer(learnerId, goalId, session, week) {
+export async function getWeeklyAnswer(learnerId, goalId, session, week) {
   if (!learnerId || !goalId) return '';
-  const rec = readAll()[recordKey(learnerId, goalId, session, week)];
+  const rec = await storeGetWeeklyAnswer(learnerId, goalId, session, week);
   return rec && typeof rec.text === 'string' ? rec.text : '';
 }
 
 // Save (or clear, if blank) this week's answer. `kind` is 'finish' | 'presence' - the
 // cadence-split shape, stored for record only, never summed. No timestamp is written.
-export function saveWeeklyAnswer(learnerId, { goalId, session, week, kind = 'finish', text = '' }) {
+// A blank text clears the record (an answer withdrawn, not a zero); the adapter handles it.
+export async function saveWeeklyAnswer(learnerId, { goalId, session, week, kind = 'finish', text = '' }) {
   if (!learnerId || !goalId) return;
-  const map = readAll();
-  const k = recordKey(learnerId, goalId, session, week);
-  const trimmed = (text || '').trim();
-  if (!trimmed) { delete map[k]; }        // blank clears - an answer withdrawn, not a zero
-  else { map[k] = { text: trimmed, kind, session, week }; }
-  writeAll(map);
+  await storeSaveWeeklyAnswer(learnerId, { goalId, session, week, kind, text });
 }

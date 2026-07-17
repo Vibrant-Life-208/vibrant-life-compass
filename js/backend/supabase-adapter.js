@@ -486,6 +486,39 @@ function goalToRow(goal) {
 }
 
 // ============================================================================
+// Weekly answers (Stage M2 progressing answer; synced storage — build plan Stage V /
+// flip-checklist §3). Targets the weekly_answers table (migration v0.21).
+//
+// DORMANT until v0.21 is applied AND CURRENT_WHEEL_BUILD flips: the goal arc that calls this
+// is behind the flag, so this never runs in production while dark. §5: get-one + save-one
+// ONLY — no list / count / streak reader, and the table stores NO timestamp (nothing to
+// aggregate over time). A weekly answer is a presence, not a metric.
+// ============================================================================
+export async function getWeeklyAnswer(learnerId, goalId, session, week) {
+  if (!learnerId || !goalId) return null;
+  const { data } = await getClient().from('weekly_answers')
+    .select('text, kind, session, week')  // deliberately no timestamp column exists to select
+    .eq('learner_id', learnerId).eq('goal_id', goalId).eq('session', session).eq('week', week)
+    .maybeSingle();
+  return data || null;
+}
+
+export async function saveWeeklyAnswer(learnerId, { goalId, session, week, kind = 'finish', text = '' }) {
+  if (!learnerId || !goalId) return;
+  const trimmed = (text || '').trim();
+  if (!trimmed) {
+    // blank clears — an answer withdrawn, not a zero
+    await getClient().from('weekly_answers').delete()
+      .eq('learner_id', learnerId).eq('goal_id', goalId).eq('session', session).eq('week', week);
+    return;
+  }
+  // save-one = upsert on the (learner, goal, session, week) unique key. No timestamp written.
+  await getClient().from('weekly_answers')
+    .upsert({ learner_id: learnerId, goal_id: goalId, session, week, kind, text: trimmed },
+      { onConflict: 'learner_id,goal_id,session,week' });
+}
+
+// ============================================================================
 // Tasks
 // ============================================================================
 export async function getTasks(learnerId) {

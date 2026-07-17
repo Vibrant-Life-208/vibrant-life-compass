@@ -102,6 +102,9 @@ export const {
   moveTask,
   toggleTaskDone,
   deleteTask,
+  // Weekly answers (Stage M2; synced storage — get-one/save-one only, no aggregation, §5).
+  getWeeklyAnswer,
+  saveWeeklyAnswer,
 } = impl;
 
 // La'an's runtime write-wall — the single store write edge for goal rows. saveGoal dispatches

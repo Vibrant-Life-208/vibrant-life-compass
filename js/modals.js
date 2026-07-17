@@ -961,7 +961,7 @@ export async function openGoalArcModal({ goal, learnerId = null, lifeArea = null
   async function renderAndWire(prefillWeekly) {
     const todayTasks = await fetchTodayTasks();
     const weeklyAnswer = prefillWeekly !== undefined ? prefillWeekly
-      : (canPersist ? getWeeklyAnswer(learnerId, goal.id, position.session, position.week) : '');
+      : (canPersist ? await getWeeklyAnswer(learnerId, goal.id, position.session, position.week) : '');
     document.getElementById('form-fields').innerHTML = `
       ${renderGoalArcHtml(goal, { lifeArea, position, todayTasks, weeklyAnswer })}
       <div class="confirm-actions">
@@ -974,9 +974,9 @@ export async function openGoalArcModal({ goal, learnerId = null, lifeArea = null
     // M2: save this week's answer (blank withdraws it). This-week-only key -> no streak (§5).
     const saveBtn = document.getElementById('arc-week-save');
     if (saveBtn && canPersist) {
-      saveBtn.addEventListener('click', () => {
+      saveBtn.addEventListener('click', async () => {
         const ta = document.getElementById('arc-week-answer');
-        saveWeeklyAnswer(learnerId, { goalId: goal.id, session: position.session, week: position.week, kind, text: ta?.value || '' });
+        await saveWeeklyAnswer(learnerId, { goalId: goal.id, session: position.session, week: position.week, kind, text: ta?.value || '' });
         const saved = document.getElementById('arc-week-saved');
         if (saved) saved.hidden = false;
       });
