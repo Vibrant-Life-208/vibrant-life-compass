@@ -86,7 +86,7 @@ coverage frame is unchanged and still intended to hold.
 
 ### For TCC (data sovereignty — the three binding build conditions)
 - **Condition 1 — open-by-choice is a STORED state, never inferred emptiness.** Does the
-  multi-goal list preserve "child chose to leave this open" vs "data missing"?
+  multi-goal list preserve "learner chose to leave this open" vs "data missing"?
 - **Condition 2 — read-only carried thresholds are read-only to the SYSTEM too.** Is
   "add-to yes / delete + edit-first-text no" a faithful implementation? Nothing silently
   re-maps or auto-completes a declared threshold?

@@ -9,7 +9,7 @@ has shipped or changed production. Prototype lives at
 committed to main / not deployed).
 
 **Design-direction re-ratification (2026-07-16):** the current-wheel (Discovery)
-direction — read-only green carried thresholds in "Learning," finer child-written
+direction — read-only green carried thresholds in "Learning," finer learner-written
 per-goal breakdown, plant/cultivate split — was **re-ratified by Accord (coverage
 frame) + TCC/Satis (data sovereignty)**, superseding their 2026-07-15 target-wheel
 sign-off. Conditional re-sign; three convergent build conditions bind (see below). This
@@ -31,7 +31,7 @@ Refs: `agents/meetings/2026/07/2026-07-16-compass-threshold-wheel-slice-reratifi
 **Binding build conditions from the re-ratification (all three are conditions, not hopes):**
 1. **Open-by-choice is a first-class STORED state, never inferred emptiness.** (Convergent
    — Accord: inferred-empty is classification-without-consent; Satis: inferred-empty is a
-   steering vector.) The record must distinguish "child chose to leave this open" from
+   steering vector.) The record must distinguish "learner chose to leave this open" from
    "data missing."
 2. **Read-only green carried thresholds are read-only to the SYSTEM too** — a commitment
    shown, not silently re-mapped, rewritten, or auto-completed after declaration (Satis,
@@ -49,7 +49,7 @@ goals into bite-sized daily tasks is the pedagogy, not chrome: it "makes an elep
 seem eatable." The deeper aim is to equip learners with the tools to act **even when
 motivation is absent** — because motivation is a feeling, and the plan carries you when
 the feeling doesn't. Empower at all ages. Measure of success: **graduation, not
-engagement** — the child eventually needs the tool *less* (we evoke, we never extract).
+engagement** — the learner eventually needs the tool *less* (we evoke, we never extract).
 
 ## Core principle: onboarding plants, the Compass cultivates
 
@@ -74,7 +74,7 @@ Two homes, two jobs — this is how we "have both" without overloading the one-t
   **Still bound by:** the three re-ratification build conditions (empty slice = stored
   open-by-choice invitation, no denominator, read-only carried thresholds) and the
   watch-with-a-real-learner gate. This is part of the gated current-wheel build — it does
-  NOT ship to a child before that watch. Note: this refines "the onboarding cascade stays
+  NOT ship to a learner before that watch. Note: this refines "the onboarding cascade stays
   intact" — the *cascade* stays, the slice_plan *step's presentation* changes from lumped
   to paged.
 - **The Compass (living, recurring):** *cultivates*. This is where each goal breaks into
@@ -239,7 +239,7 @@ watch-with-a-real-learner gate governs exposure.
   read as a checklist/load to an 8-year-old? Condition 3 (no denominator) must be tested
   against "reach halfway by Session 3."
 - Still bound by the three re-ratification build conditions and the **watch-with-a-real-
-  learner** gate. Nothing here ships to a child before that watch.
+  learner** gate. Nothing here ships to a learner before that watch.
 - Also folds in the concrete fix already made: **studio is read-only in Setup** (learner
   can't reassign it; guide sets it at account creation).
 
@@ -265,7 +265,7 @@ watch-with-a-real-learner gate governs exposure.
 - **Not a fixed 5–7. Age-scaled and small, a soft ceiling — never a quota.**
   Matches the app's existing per-studio `dailyTaskThreshold`:
   **Sparks ~2 · Discovery ~3 · Adventure ~5 · Launch Pad ~7.**
-- Over the number → a gentle "that's a lot for today — move one to tomorrow?" The child,
+- Over the number → a gentle "that's a lot for today — move one to tomorrow?" The learner,
   with their guide, decides.
 - **Cross-goal, not per-goal:** today draws a few tasks from *across* the wheel, so no
   single goal floods the day.
@@ -307,7 +307,7 @@ None of it is surveillance.
   zeros; empty and unfinished look the same.
 - **Graduation, not engagement:** success = the learner needing the tool less over time.
 - **Rest is a real choice:** the "act when unmotivated" edge always paired with rest.
-- **Developmental fit:** current wheel, age-scaled daily counts, child-written breakdowns.
+- **Developmental fit:** current wheel, age-scaled daily counts, learner-written breakdowns.
 - **Re-look models staying, not scolding:** undone tasks meet "what's the one small
   step?" — the return asks "what did you notice?" before "what's undone."
 
@@ -350,7 +350,7 @@ None of it is surveillance.
 The live onboarding cascade, the Setup view, and the backend. This is a design
 exploration held in a local prototype. Nothing ships without: the captain's decision to
 migrate, TCC re-ratification of the wheel choice, and the standing
-watch-with-a-real-learner gate (no child has touched any of this — the biggest open risk,
+watch-with-a-real-learner gate (no learner has touched any of this — the biggest open risk,
 named by Vedek in the meeting).
 
 ## References

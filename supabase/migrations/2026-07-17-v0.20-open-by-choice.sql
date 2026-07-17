@@ -1,0 +1,11 @@
+-- v0.20: stored open-by-choice slices (build Stage P3).
+--
+-- Which wheel slices a learner has consciously left open. Distinguishes "the learner
+-- chose to leave this open" (an invitation) from "no data" — the coverage frame forbids
+-- reading an empty slice as a deficit (consolidated build conditions §4 / §S1).
+--
+-- Additive and safe for the 44 existing learners: not-null jsonb with an empty-array default,
+-- so existing rows get '[]' and nothing needs backfilling. Dormant until the onboarding
+-- per-slice walk (build Stage O) writes it; the current-wheel build stays gated behind
+-- CURRENT_WHEEL_BUILD regardless. See docs/design/2026-07-17-build-plan.md (Stage P3).
+alter table learners add column if not exists open_by_choice jsonb not null default '[]'::jsonb;

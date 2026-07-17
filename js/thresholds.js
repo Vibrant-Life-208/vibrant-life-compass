@@ -96,7 +96,7 @@ export function getThresholds(targetStudio) {
 // deficit. Do not "balance" the map by inventing placements to fill every slice.
 //
 // *** RATIFIED 2026-07-15 (Accord + TCC coverage-frame sign-off). *** This is a
-// values judgment about where a child's readiness work lives across their life.
+// values judgment about where a learner's readiness work lives across their life.
 // It passed the coverage-frame review the v0.18 note references - captain sign-off
 // on placements, Accord (trauma-informed) + TCC (data-sovereignty) on the frame.
 // Jake's separate pedagogy read and the watch-with-a-real-learner gate remain open;

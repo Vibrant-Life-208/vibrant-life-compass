@@ -24,7 +24,7 @@ answer" sections). Also read: the RE-REVIEW minutes
 
 There is **no built weekly-question surface yet** — it is design intention, not running code.
 Comes, Accord, and every reviewer on this brief hold the same discipline: *principles without
-code are suggestions; I re-walk the built surface before it reaches a child.* So this is a
+code are suggestions; I re-walk the built surface before it reaches a learner.* So this is a
 **design-intention pass**, and a **built-surface re-walk is owed at build regardless of the
 outcome here.** State that in the sign-off. The value of running it now is to catch structural
 seams while the interaction is still cheap to change — not to certify a surface that does not
@@ -76,7 +76,7 @@ agenda item *after* the counts are settled (see below).
   build as a query; name it here as the spec refusal.
 - **Tutela (T1, the privacy grain):** does the weekly answer or the daily task list generate
   any partner-, parent-, or guide-visible artifact at the weekly or daily grain? Witnessing
-  lives only at the session crossing the child chose to reach; the daily list is self-only. A
+  lives only at the session crossing the learner chose to reach; the daily list is self-only. A
   "share this week" surface below the session grain breaches the wall.
 
 ---

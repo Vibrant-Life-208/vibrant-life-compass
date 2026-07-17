@@ -51,7 +51,7 @@ slice, no Spirit slice** (both Adventure-only). So the Adventure table cannot ca
 ### For Jake (developmental fit) — the center of this review
 - **Heart-with-4-carried-goals is the #1 question.** The Emotions+Spirit cluster (heroic
   mindset, excellent effort, soaring, read "Courage to Grow") all land in Heart. Your 7/16 call
-  put Character → Heart precisely because Emotions reads a child's character as a regulation
+  put Character → Heart precisely because Emotions reads a learner's character as a regulation
   problem. So the *destination* honors your call — but does a **Heart slice showing four locked
   "carried" goals** read as *"who you're becoming"*, or as a self-improvement checklist pinned
   to an eight-year-old's character? If the latter, the table needs a rethink, not just a render.

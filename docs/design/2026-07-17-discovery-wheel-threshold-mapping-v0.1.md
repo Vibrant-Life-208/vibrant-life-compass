@@ -68,7 +68,7 @@ thresholds). Only the destination wheel changed.
 | `adv_courage_book` | Read "Courage to Grow" | **Heart** | meaning / becoming (no Spirit slice on Discovery; collapses to Heart) |
 
 **Slices with no threshold (invitations): `Movement`, `Family`, `Fun`.**
-Per the coverage frame, these are correct and intended — the child's to fill from their own
+Per the coverage frame, these are correct and intended — the learner's to fill from their own
 life. Do NOT invent placements to "balance" the table.
 
 **Slice load:** Learning 6 · Heart 4 · Friends 2 · Movement/Family/Fun 0.
@@ -80,7 +80,7 @@ life. Do NOT invent placements to "balance" the table.
 1. **Emotions + Spirit collapse into Heart (the load-bearing change).** On Adventure, `mindset`
    / `effort` / `soaring` sat in **Emotions** and `courage_book` in **Spirit**. Discovery has
    neither slice, so all four land in **Heart** (4 carried goals). This is consistent with
-   Jake's 2026-07-16 call — *Character → Heart, NOT Emotions, because Emotions reads a child's
+   Jake's 2026-07-16 call — *Character → Heart, NOT Emotions, because Emotions reads a learner's
    character as a regulation problem to be managed; Heart is the becoming-slice that passes the
    Exhale Test.* **The #1 review question for Jake:** under the slice-as-list redesign, does a
    **Heart slice showing four locked "carried" goals** (heroic mindset, excellent effort,
