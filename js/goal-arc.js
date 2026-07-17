@@ -113,7 +113,7 @@ export function renderGoalArcHtml(goal, { lifeArea = null, position = { session:
       <textarea id="arc-week-answer" class="arc-week-input" rows="2" placeholder="Just this week - a sentence is plenty.">${escapeHtml(weeklyAnswer)}</textarea>
       <div class="arc-week-actions">
         <button type="button" class="btn btn-text" id="arc-week-save">Save this week</button>
-        <span class="arc-week-saved" id="arc-week-saved" hidden>Saved for this week</span>
+        <span class="arc-week-saved" id="arc-week-saved" role="status" aria-live="polite" hidden>Saved for this week</span>
       </div>
     </section>`;
 
@@ -123,7 +123,7 @@ export function renderGoalArcHtml(goal, { lifeArea = null, position = { session:
   const todayList = todayTasks.length
     ? `<ul class="arc-today-list">${todayTasks.map((t) => `
         <li class="arc-today-task${t.status === 'done' ? ' is-done' : ''}">
-          <button type="button" class="arc-today-toggle" data-task-id="${escapeHtml(t.id)}" aria-pressed="${t.status === 'done'}">${t.status === 'done' ? 'Done' : 'Mark'}</button>
+          <button type="button" class="arc-today-toggle" data-task-id="${escapeHtml(t.id)}" aria-pressed="${t.status === 'done'}" aria-label="${t.status === 'done' ? 'Done' : 'Mark done'}: ${escapeHtml(t.text)}">${t.status === 'done' ? 'Done' : 'Mark'}</button>
           <span class="arc-today-text">${escapeHtml(t.text)}</span>
         </li>`).join('')}</ul>`
     : `<p class="arc-today-empty">Nothing set for today yet - a small step, or rest. Both are real.</p>`;
@@ -137,7 +137,7 @@ export function renderGoalArcHtml(goal, { lifeArea = null, position = { session:
       </div>
       <div class="arc-two-doors">
         <button type="button" class="btn btn-text" id="arc-today-rest">Rest today</button>
-        <span class="arc-today-rest-note" id="arc-today-rest-note" hidden>Rest is a real choice, never a miss. See you tomorrow.</span>
+        <span class="arc-today-rest-note" id="arc-today-rest-note" role="status" aria-live="polite" hidden>Rest is a real choice, never a miss. See you tomorrow.</span>
       </div>
     </section>`;
 

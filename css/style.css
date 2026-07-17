@@ -3977,3 +3977,89 @@ body.landscape-mountain {
   border: 1px solid #e3ddd0; border-radius: 12px;
   padding: 0.7rem 0.8rem; background: #fff;
 }
+
+/* ── Current-wheel build (Stage O onboarding walk + Stage M per-goal arc) ───────
+   Render conditions (Stage R). These classes only appear when CURRENT_WHEEL_BUILD is
+   on, so this block is inert on the live surface until the flag flips. The rules that
+   matter: state is NEVER conveyed by colour alone (§ no-colour-only) - the done state
+   carries a strikethrough + the button's own "Done" text, and the current phase carries
+   a left accent + a "you are here" text chip; every tap target is >= 44x44 (dignity);
+   focus is always visible; empty reads as invitation, never deficit (coverage frame). */
+
+/* Stage O — per-slice walk */
+.onb-slice-context { color: var(--text-muted, #8a8a80); font-size: 0.85rem; margin: 0 0 0.6rem; }
+.onb-slice-invitation {
+  margin: 0.4rem 0 0.6rem; padding: 0.7rem 0.85rem; border-radius: 10px;
+  background: rgba(255,255,255,0.5); color: var(--text-soft, #5a5a52);
+  font-size: 0.92rem; line-height: 1.5;   /* soft; no red, no alarm border */
+}
+.slice-year-box, .slice-now-box, .slice-halfway-box { margin-top: 0.6rem; }
+.slice-box-label { display: block; margin-bottom: 0.3rem; color: var(--text, #3a3a34); font-weight: 500; font-size: 0.92rem; }
+.slice-carried-field { margin: 0.55rem 0; padding: 0.6rem 0.75rem; border-radius: 10px; background: rgba(255,255,255,0.55); }
+.slice-carried-readonly { list-style: none; padding: 0; margin: 0.35rem 0 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.slice-carried-name { color: var(--text, #3a3a34); font-size: 0.9rem; }
+.slice-carried-note { margin: 0.45rem 0 0; color: var(--text-muted, #8a8a80); font-size: 0.82rem; line-height: 1.45; }
+.slice-frame-card {
+  margin: 0.4rem 0; padding: 0.5rem 0.75rem; border-radius: 10px;
+  background: rgba(255,255,255,0.55); border-left: 3px solid var(--border, #cdbfa6);
+}
+.slice-context-label { display: block; font-size: 0.76rem; letter-spacing: 0.02em; text-transform: uppercase; color: var(--text-muted, #8a8a80); }
+.slice-context-text { margin: 0.15rem 0 0; color: var(--text, #3a3a34); font-size: 0.9rem; }
+.slice-open-btn { min-height: 44px; padding: 0.5rem 0.9rem; }
+.slice-open-btn.is-open { text-decoration: underline; }   /* not colour-only: text says "Left open ✓" */
+
+/* Stage M — per-goal arc */
+.goal-arc { display: flex; flex-direction: column; gap: 0.55rem; }
+.category-card-clickable { cursor: pointer; }
+.category-card-clickable:focus-visible { outline: 2px solid var(--sage, #7a8a6a); outline-offset: 2px; }
+.arc-area { margin: 0; font-size: 0.78rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted, #8a8a80); }
+.arc-destination-label { margin: 0; font-size: 0.8rem; color: var(--text-muted, #8a8a80); }
+.arc-destination { margin: 0 0 0.3rem; font-size: 1.05rem; font-weight: 600; color: var(--text, #3a3a34); line-height: 1.35; }
+.arc-destination-empty { font-weight: 400; color: var(--text-soft, #5a5a52); }
+.arc-spine { list-style: none; padding: 0; margin: 0.2rem 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.arc-phase {
+  padding: 0.55rem 0.75rem; border-radius: 10px; background: rgba(255,255,255,0.45);
+  border-left: 3px solid transparent;   /* the accent is a SHAPE signal, paired with the chip below */
+}
+.arc-phase-here { border-left-color: var(--sage, #7a8a6a); background: rgba(255,255,255,0.7); }
+.arc-phase-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.4rem; }
+.arc-phase-name { font-weight: 600; color: var(--text, #3a3a34); }
+.arc-phase-here-chip {
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em;
+  color: var(--sage, #5f6f4f); border: 1px solid var(--sage, #7a8a6a); border-radius: 999px; padding: 0.05rem 0.5rem;
+}
+.arc-phase-tag { color: var(--text-muted, #8a8a80); font-size: 0.82rem; }
+.arc-phase-body { margin: 0.2rem 0 0; color: var(--text-soft, #5a5a52); font-size: 0.88rem; line-height: 1.45; }
+.arc-grace { margin: 0.3rem 0; padding: 0.55rem 0.75rem; border-radius: 10px; background: rgba(255,255,255,0.4); color: var(--text-soft, #5a5a52); font-size: 0.86rem; line-height: 1.5; }
+.arc-zoom { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 0.3rem; }
+.arc-zoom-heading { margin: 0 0 0.3rem; font-size: 0.95rem; color: var(--text, #3a3a34); }
+.arc-week-prompt { margin: 0 0 0.4rem; color: var(--text-soft, #5a5a52); font-size: 0.9rem; line-height: 1.45; }
+.arc-week-input, .arc-today-input {
+  width: 100%; padding: 0.5rem 0.65rem; border: 1px solid var(--border, #cdbfa6); border-radius: 8px;
+  background: #fff; font-family: inherit; font-size: 0.9rem; line-height: 1.4; resize: vertical;
+}
+.arc-week-actions { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.3rem; }
+.arc-week-saved, .arc-today-rest-note { color: var(--text-muted, #8a8a80); font-size: 0.82rem; }
+.arc-today-list { list-style: none; padding: 0; margin: 0 0 0.5rem; display: flex; flex-direction: column; gap: 0.3rem; }
+.arc-today-task { display: flex; align-items: center; gap: 0.5rem; }
+.arc-today-task.is-done .arc-today-text { text-decoration: line-through; opacity: 0.7; }  /* shape + opacity, not colour alone */
+.arc-today-text { color: var(--text, #3a3a34); font-size: 0.9rem; }
+.arc-today-empty { margin: 0 0 0.5rem; color: var(--text-soft, #5a5a52); font-size: 0.88rem; line-height: 1.45; }  /* invitation, never deficit */
+.arc-today-add-row { display: flex; gap: 0.5rem; align-items: stretch; }
+.arc-today-add-row .arc-today-input { flex: 1; }
+.arc-two-doors { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.5rem; }
+
+/* Tap targets >= 44x44 across the arc's interactive controls (dignity + a11y). */
+.arc-today-toggle {
+  min-height: 44px; min-width: 44px; padding: 0.3rem 0.7rem;
+  border: 1px solid var(--border, #cdbfa6); border-radius: 999px; background: #fff;
+  color: var(--text-soft, #5a5a52); cursor: pointer; font-size: 0.82rem;
+}
+.arc-today-toggle[aria-pressed="true"] { border-color: var(--sage, #7a8a6a); font-weight: 600; }  /* + the visible "Done" text */
+#arc-today-add, #arc-today-rest, #arc-week-save { min-height: 44px; }
+
+/* Focus is always visible on the current-wheel interactive controls. */
+.arc-today-toggle:focus-visible, .arc-week-input:focus-visible, .arc-today-input:focus-visible,
+.slice-open-btn:focus-visible, .arc-today-task:focus-within {
+  outline: 2px solid var(--sage, #7a8a6a); outline-offset: 2px;
+}
