@@ -28,13 +28,16 @@ Decision log / minutes: evoke-agents-backup `agents/{decision-logs,meetings}/202
   can never be persisted as a goal row. Ships log-and-report (guards the live surface);
   promotion to throw is captain-gated (`setWriteWallMode`) at Stage V. `c1-write-wall-runtime.mjs`
   exercises the real `saveGoal` edge (threshold-id write refused; slice_* writes clean). Closes C1 #2.
-- **Storage migration — BUILT (dark) + SQL owed-to-apply (2026-07-17).** Weekly answers moved off
-  device-local `localStorage` through the store facade into synced storage (local parity +
-  supabase `weekly_answers` table); §5 preserved structurally (get-one/save-one, no timestamp).
-  SQL `migrations/2026-07-17-v0.21-weekly-answers.sql`. Goal-field projection: SQL
-  `migrations/2026-07-17-v0.22-goal-decomposition.sql` (jsonb `decomposition` column); adapter
-  wiring (`goalToRow`/`rowToGoal`) SEQUENCED to land AFTER the captain applies v0.22, because
-  `year-view.js:206` is a LIVE write path — the wiring diff is documented in the v0.22 file.
+- **Storage migration — COMPLETE (2026-07-17): both migrations applied + adapters wired.**
+  Weekly answers moved off device-local `localStorage` through the store facade into synced
+  storage (local parity + supabase `weekly_answers` table); §5 preserved structurally
+  (get-one/save-one, no timestamp). `migrations/2026-07-17-v0.21-weekly-answers.sql` APPLIED;
+  supabase adapter dormant behind `CURRENT_WHEEL_BUILD`. Goal-field projection:
+  `migrations/2026-07-17-v0.22-goal-decomposition.sql` (jsonb `decomposition` column) APPLIED;
+  `goalToRow`/`rowToGoal` wired (sequenced after the column existed). **Note:** the goals
+  wiring is on the LIVE year-goal path (`year-view.js:206`, not flag-gated) — it corrects a
+  pre-existing supabase data-loss (decomposition fields were dropped), so from now on those
+  fields persist cross-device. Additive; verified round-trip + partial-update safety.
 - **Stage V — checklist drafted (`docs/design/2026-07-17-stage-v-flip-checklist.md`); NOT flipped.**
   Remaining before the flag flip: captain applies v0.21 + v0.22 and the v0.22 adapter wiring
   lands; built-surface re-walk (Jake + Accord + Comes); live-browser walk (flag-on); and
