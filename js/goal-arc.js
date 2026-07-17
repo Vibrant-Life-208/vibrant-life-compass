@@ -20,8 +20,9 @@
 
 // The three-session spine. FORWARD, lived order. Copy from the captain's decomposition
 // model (2026-07-16): each phase has a job, and Session 1's easy win is the mastery
-// experience that answers the overwhelm.
-const ARC_PHASES = [
+// experience that answers the overwhelm. Exported so the C1 render guard can assert the
+// spine's phases NEVER render over a becoming-goal (built-surface re-walk 2026-07-17, Dec. 2).
+export const ARC_PHASES = [
   { session: 1, name: 'Set up', tag: 'clear the runway',
     body: 'Make starting easy - clear the space, gather what you need, and tell someone you are beginning.' },
   { session: 2, name: 'The challenge', tag: 'the hard middle',
@@ -77,28 +78,52 @@ function weeklyPrompt(lifeArea) {
 export function renderGoalArcHtml(goal, { lifeArea = null, position = { session: 1, week: 1 }, todayTasks = [], weeklyAnswer = '' } = {}) {
   const area = lifeArea || goal?.lifeArea || null;
   const destination = (goal?.text || '').trim();
+  const becoming = isBecomingSlice(area);
 
-  // Phase spine, FORWARD. The current phase is clamped to 1..3 (Session 4+ = all three
-  // behind you, in grace). Marked "you are here" with NO number and NO "2 of 3" (§1).
-  const currentPhase = Math.min(Math.max(1, position.session), 3);
-  const inGrace = position.session >= 4;
-  const spine = ARC_PHASES.map((p) => {
-    const here = !inGrace && p.session === currentPhase;
-    return `
-      <li class="arc-phase${here ? ' arc-phase-here' : ''}">
-        <div class="arc-phase-head">
-          <span class="arc-phase-name">${escapeHtml(p.name)}</span>
-          ${here ? '<span class="arc-phase-here-chip">you are here</span>' : ''}
-          <span class="arc-phase-tag">${escapeHtml(p.tag)}</span>
-        </div>
-        <p class="arc-phase-body">${escapeHtml(p.body)}</p>
-      </li>`;
-  }).join('');
-
-  // Session 4 grace - IDENTICAL regardless of on-time (§1 grace-not-remediation; §9 the
-  // "one step more" gift is offered AFTER done, never as a gate).
-  const grace = `
-    <p class="arc-grace">After the finish line, Session 4 is room to land it - no rush, and never "behind." If you get there in three, the fourth is yours: rest, or add one step more just because you can.</p>`;
+  // The middle of the arc, between the destination and the weekly zoom.
+  //
+  // A SKILL goal (Learning et al.) gets the FORWARD three-phase spine + the Session-4 grace
+  // buffer. A BECOMING goal (Heart) gets NEITHER: you do not cross a finish line on becoming
+  // heroic, so a finish-shaped SEQUENCE must never render over it. This is the built-surface
+  // re-walk's Decision 2 (2026-07-17; Comes + Accord convergent) - a structural REFUSAL of the
+  // spine, NOT a verb-swap. In its place, a still presence line: the destination is held, and
+  // nothing shaped like a sequence sits between it and the weekly noticing below (Comes: "the
+  // destination and the noticing, and nothing shaped like a sequence between them"). The weekly
+  // question already carries the presence register (weeklyPrompt: "you do not finish becoming").
+  //
+  // PROVISIONAL COPY: the exact presence shape of this line is Comes' + Accord's to author at
+  // their design walk / the flag-on browser walk. This satisfies the structural refusal (no
+  // phases, no "you are here", no "finish line") until they set the final shape. Still dark
+  // behind CURRENT_WHEEL_BUILD; nothing ships before the watch-with-a-real-learner gate.
+  let middle;
+  if (becoming) {
+    middle = `
+      <p class="arc-becoming-note">This one is a becoming, not a finish - there is no line to cross. You grow it by noticing it, a little at a time, and it is here whenever you come back.</p>`;
+  } else {
+    // Phase spine, FORWARD. The current phase is clamped to 1..3 (Session 4+ = all three
+    // behind you, in grace). Marked "you are here" with NO number and NO "2 of 3" (§1).
+    const currentPhase = Math.min(Math.max(1, position.session), 3);
+    const inGrace = position.session >= 4;
+    const spine = ARC_PHASES.map((p) => {
+      const here = !inGrace && p.session === currentPhase;
+      return `
+        <li class="arc-phase${here ? ' arc-phase-here' : ''}">
+          <div class="arc-phase-head">
+            <span class="arc-phase-name">${escapeHtml(p.name)}</span>
+            ${here ? '<span class="arc-phase-here-chip">you are here</span>' : ''}
+            <span class="arc-phase-tag">${escapeHtml(p.tag)}</span>
+          </div>
+          <p class="arc-phase-body">${escapeHtml(p.body)}</p>
+        </li>`;
+    }).join('');
+    // Session 4 grace - IDENTICAL regardless of on-time (§1 grace-not-remediation; §9 the
+    // "one step more" gift is offered AFTER done, never as a gate).
+    const grace = `
+      <p class="arc-grace">After the finish line, Session 4 is room to land it - no rush, and never "behind." If you get there in three, the fourth is yours: rest, or add one step more just because you can.</p>`;
+    middle = `
+      <ul class="arc-spine">${spine}</ul>
+      ${grace}`;
+  }
 
   // The zoom: THIS week + today only. No "see all weeks," no back-through-the-ladder, no
   // progress strip - those re-create the overwhelm (§8). The phase spine above is a still
@@ -147,12 +172,11 @@ export function renderGoalArcHtml(goal, { lifeArea = null, position = { session:
     : `<p class="arc-destination arc-destination-empty">Set your halfway goal in your walk-through, and it lands here as your middle-of-the-year target.</p>`;
 
   return `
-    <div class="goal-arc">
+    <div class="goal-arc${becoming ? ' goal-arc-becoming' : ''}">
       ${areaLine}
       <p class="arc-destination-label">Your goal for the middle of the year</p>
       ${destinationBlock}
-      <ul class="arc-spine">${spine}</ul>
-      ${grace}
+      ${middle}
       <div class="arc-zoom">
         ${week}
         ${todayPanel}

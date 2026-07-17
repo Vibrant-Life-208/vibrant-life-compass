@@ -126,6 +126,21 @@ if (!/you are here/.test(arcDone)) fail('a11y', 'current-phase state not carried
 // Empty today must read as invitation (rest is real), not a deficit.
 if (!/a small step, or rest/i.test(arcEmpty)) fail('a11y', 'empty today panel is not framed as invitation');
 
+// ── 4. BECOMING GOALS: no finish-line spine (built-surface re-walk 2026-07-17, Decision 2) ──
+// A Heart/becoming goal must NEVER render the forward finish-line phase spine or the "finish
+// line" grace - you do not cross a finish line on becoming heroic (§11; Comes + Accord
+// convergent). The refusal is scoped: a skill goal (Learning) still gets the forward spine.
+const heartArc = arc.renderGoalArcHtml({ id: 'gH', text: 'lead a Launch with courage', lifeArea: 'Heart' }, { lifeArea: 'Heart', position: { session: 3, week: 1 }, todayTasks: [] });
+const learningArc = arc.renderGoalArcHtml(goal, { lifeArea: 'Learning', position: { session: 3, week: 1 }, todayTasks: [] });
+for (const p of arc.ARC_PHASES) if (heartArc.includes(p.name)) fail('becoming', `Heart arc renders finish-line phase "${p.name}" (no finish-shaped sequence over a becoming)`);
+if (/you are here/.test(heartArc)) fail('becoming', 'Heart arc renders a "you are here" phase marker (a becoming has no phase position)');
+if (/finish line/i.test(heartArc)) fail('becoming', 'Heart arc contains "finish line" language (a becoming is not finished)');
+if (!/notice|becoming/i.test(heartArc)) fail('becoming', 'Heart arc lost its presence/noticing framing');
+// Scoped, not a blanket removal: a skill goal still gets the forward spine + its "you are here".
+if (!heartArc.includes('goal-arc-becoming')) fail('becoming', 'Heart arc is not tagged goal-arc-becoming');
+if (!/Cross the finish line/.test(learningArc)) fail('becoming', 'Learning (skill) arc lost the forward phase spine - the fix must be scoped to becoming');
+if (!/you are here/.test(learningArc)) fail('becoming', 'Learning (skill) arc lost its "you are here" phase marker');
+
 // ── report ───────────────────────────────────────────────────────────────────
 if (failures.length) {
   console.error('C1 RENDER-CONDITIONS: FAIL\n' + failures.map((f) => '  ✗ ' + f).join('\n'));
