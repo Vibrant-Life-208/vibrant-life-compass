@@ -2,7 +2,8 @@
 
 import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getProfileHorizons, setProfileHorizon, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval, addNotification, getParentLearnerLinks } from './store.js';
 import { getCategoriesForStudio, getStudioName, lifeAreaForCategory } from './studios.js';
-import { openGoalModal, openQuoteModal, openHorizonModal, openTraitsModal, openConfirmModal, openYearGoalModal } from './modals.js';
+import { openGoalModal, openQuoteModal, openHorizonModal, openTraitsModal, openConfirmModal, openYearGoalModal, openGoalArcModal } from './modals.js';
+import { CURRENT_WHEEL_BUILD } from './thresholds.js';
 import { renderYearMap } from './year-map.js';
 import { getYearMapClickHandler } from './north.js';
 import { renderLifeWheel, getWheelAreas } from './wheel.js';
@@ -354,7 +355,7 @@ export async function renderYearView(learnerId) {
     plannedCategories.forEach((cat) => {
       list.appendChild(buildCategoryCard(cat, goalFor(cat)));
     });
-    renderPitchSliceGoals(list, orphanSliceGoals, learner);
+    renderPitchSliceGoals(list, orphanSliceGoals, learner, learnerId, allGoals);
     return;
   }
 
@@ -422,7 +423,7 @@ export async function renderYearView(learnerId) {
 // labeled by each goal's stored lifeArea, so nothing they wrote is lost. (Captain
 // 2026-07-16 - interim; the full editable wheel-grouped learner view awaits the wheel
 // re-ratification + the gated academic->slice mapping.)
-function renderPitchSliceGoals(list, orphanGoals, learner) {
+function renderPitchSliceGoals(list, orphanGoals, learner, learnerId = null, allGoals = []) {
   if (!orphanGoals || !orphanGoals.length) return;
   const section = document.createElement('section');
   section.className = 'wheel-slice wheel-slice-offwheel';
@@ -451,6 +452,16 @@ function renderPitchSliceGoals(list, orphanGoals, learner) {
         </div>
         <p class="category-goal">${escapeHtml(g.text)}</p>
       `;
+      // Stage M (behind the flag): the slice card opens the per-goal working arc, which
+      // starts at the HALFWAY (Session-3) goal for this slice - the year text is context,
+      // not the working view. Flag off, the card stays read-only (byte-identical).
+      if (CURRENT_WHEEL_BUILD) {
+        card.classList.add('category-card-clickable');
+        card.addEventListener('click', () => {
+          const halfway = allGoals.find((x) => x.scope === 'session' && x.sessionIndex === 3 && x.categoryId === g.categoryId);
+          openGoalArcModal({ goal: halfway || g, learnerId, lifeArea: g.lifeArea });
+        });
+      }
       section.appendChild(card);
     });
 

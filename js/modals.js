@@ -6,12 +6,13 @@ import {
   getProfileHorizons, setProfileHorizon,
   getOnboardingState, setOnboardingStep, markOnboardingStepSkipped, completeOnboarding,
   setQuoteAnchor, setStrengthRanking, setValuesFreetext, getValuesFreetext,
-  saveLearner, saveGoal, getGoals, getLearner,
+  saveLearner, saveGoal, getGoals, getLearner, getTasksForDate,
 } from './store.js';
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar } from './studios.js';
 import { lifeWheelSvgFor } from './wheel.js';
 import { renderThresholdsHtml, buildSlicePlan, CURRENT_WHEEL_BUILD } from './thresholds.js';
+import { renderGoalArcHtml, currentArcPosition } from './goal-arc.js';
 
 let activeSubmit = null;
 let activeOnClose = null;
@@ -929,6 +930,36 @@ export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabe
     });
   }
   // Confirm has no form-submit path; null out activeSubmit so Enter doesn't fire.
+  activeSubmit = null;
+  openModal();
+}
+
+// Stage M (behind CURRENT_WHEEL_BUILD): open the per-goal working arc. "Clicking into a
+// goal starts at the halfway" - this opens on the halfway (Session-3) goal and shows the
+// forward 3-phase spine + the this-week/today zoom (see js/goal-arc.js). M1 is read-only
+// structure; M2/M3 add the answerable weekly question + daily tasks. Dark: only reached
+// when the flag is on. Nothing ships before Stage V's watch.
+export async function openGoalArcModal({ goal, learnerId = null, lifeArea = null }) {
+  const calendar = getYearCalendar();
+  const position = currentArcPosition(calendar);
+  let todayTasks = [];
+  if (learnerId && goal?.id) {
+    try {
+      const d = new Date();
+      const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const tasks = await getTasksForDate(learnerId, iso);
+      todayTasks = (tasks || []).filter((t) => t.goalId === goal.id);
+    } catch (e) { /* non-fatal: today panel just shows the empty state */ }
+  }
+  setModalTitle('Your goal');
+  document.getElementById('form-fields').innerHTML = `
+    ${renderGoalArcHtml(goal, { lifeArea, position, todayTasks })}
+    <div class="confirm-actions">
+      <button type="button" class="btn btn-primary" id="arc-close">Close</button>
+    </div>`;
+  const defaultActions = document.querySelector('#goal-form .modal-actions');
+  if (defaultActions) defaultActions.style.display = 'none';
+  document.getElementById('arc-close')?.addEventListener('click', () => closeModal());
   activeSubmit = null;
   openModal();
 }
