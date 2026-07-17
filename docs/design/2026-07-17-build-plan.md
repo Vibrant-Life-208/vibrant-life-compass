@@ -15,8 +15,9 @@ Decision log / minutes: evoke-agents-backup `agents/{decision-logs,meetings}/202
   flag + inverted `buildSlicePlan`, verified byte-identical while dark), P3 (`open_by_choice`
   v0.20 migration applied + wired through both adapters). All dark; production unchanged. Commits
   on `main`: discovery key + buildSlicePlan (5f515c4), migration file (9454175), adapter wiring (2296a08).
-- **Stage O — IN PROGRESS.** Onboarding per-slice walk, in sub-steps (O1 year pass → O2 now+halfway),
-  behind `CURRENT_WHEEL_BUILD`. Legacy lumped grid preserved when the flag is off.
+- **Stage O — QUEUED (not started).** Onboarding per-slice walk, to be built in a fresh session in
+  sub-steps (O1 year pass → O2 now+halfway), behind `CURRENT_WHEEL_BUILD`. Legacy lumped grid
+  preserved when the flag is off.
 - Stages R, V — not started.
 
 ## Two architectural rules that make the walls enforceable
@@ -38,7 +39,7 @@ Decision log / minutes: evoke-agents-backup `agents/{decision-logs,meetings}/202
   thresholds = render-time projections (never rows); learner additions = child records keyed to threshold id.
 - `CATEGORY_LIFE_AREA` learner tiers stay EMPTY; `useSlices` unchanged. → satisfies §4, §2/§3 seam prep.
 
-### Stage O — Onboarding per-slice walk (behind flag) — 🔨 IN PROGRESS
+### Stage O — Onboarding per-slice walk (behind flag) — ⏳ QUEUED (not started)
 - Six Discovery pages: Movement → Learning → Heart → Family → Friends → Fun.
 - year → now → write-halfway; carried thresholds broken out, read-only, **as a field**; authored
   "yours-to-fill" invitations (Family most careful); backward decompose **once** at halfway-goal setting.
