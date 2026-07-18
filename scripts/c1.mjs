@@ -1,9 +1,11 @@
-// C1 — the three standing tests that fail the build on a current-wheel regression
-// (build plan Stage R/V; Garak + Satis). Runs all three; exits non-zero if any fails.
+// C1 — the standing tests that fail the build on a current-wheel regression
+// (build plan Stage R/V; Garak + Satis). Runs all; exits non-zero if any fails.
 //   #1 render-conditions   no denominator / meter / sequence / red-zero / colour-only
 //   #2 read-only-to-system  no threshold id persisted as a goal row — static (projection rule)
 //                           + runtime (La'an's write-wall assertion at the store.js write edge)
 //   #3 no-aggregation       weekly answers are discrete per-moment records, never a trend
+//   #5 no-sorting          no sorting in either direction across the dark render (PDC no-sorting
+//                          + SSC app-never-scores + MAC belonging-not-achievement / anti-ladder)
 //
 // C1 #2 is now static + runtime: the static half proves no code path persists a threshold id;
 // the runtime half exercises the real saveGoal edge and shows a threshold-id write is refused.
@@ -21,6 +23,7 @@ const tests = [
   'c1-read-only-to-system.mjs',
   'c1-write-wall-runtime.mjs',
   'c1-no-aggregation.mjs',
+  'c1-no-sorting.mjs',
 ];
 
 let failed = 0;
