@@ -161,6 +161,16 @@ walkthrough review; file:line verified.
       siblings sharing a family view; "family view is values + strengths only, reflection-only, forever"
       must be an ENFORCED wall, not a code comment (`family.js:157`), before any progress field turns
       four siblings into a within-family ladder.
+- [ ] 🧑‍⚖️🔨 **[NEW 07-18, TCC] Family credential has no forced rotation.** `must_change_password`
+      is a `profiles` column; a family login has NO profile row (its row is in `families`), so a
+      temp/issuer-set family credential can never be forced to rotate — the issuer's password stays
+      valid indefinitely over a login that can **write minors' data**. `auth.js:49-53` returns to the
+      picker before any such check. The v0.11 families migration already asked for this review
+      ("Recommend a TCC review"); this is it coming due. Riker + Worf assessment + drafted fix
+      (add `families.must_change_password`; adult-gated rotation before the picker; revoke the temp;
+      **open: crypto re-wrap on rotation**) held behind the review:
+      `2026-07-18-family-credential-rotation-TCC-review.md`. Route to TCC (Riker + Worf + La'an).
+      Surfaced by Europa (test-family login showed no reset prompt).
 
 ## 🔒 Standing gates (do not flip the flag until ALL hold)
 
