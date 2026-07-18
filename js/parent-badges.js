@@ -234,14 +234,16 @@ export function renderParentBadgesJourney(host, parentId) {
       </li>`;
   }).join('');
 
-  // Stacked one card per row, in arc order (captain 2026-07-18): the wrap grid
-  // ragged-aligned cards of unequal length. Decision 4 / Troi's anti-rank condition
-  // is preserved in substance - equal weight, NO rank numbers, no "you are here" -
-  // so a vertical order does not read as a ladder the parent is graded on. (The
-  // guide REFERENCE view keeps the unordered wrap grid.)
+  // Stacked one card per row (captain 2026-07-18); the wrap grid ragged-aligned
+  // cards of unequal length. Decision 4 was AMENDED by Troi 2026-07-18 to permit a
+  // vertical layout when the framing holds the postures as co-present: no "path" in
+  // the title, child-anchored stages, and present-tense "all four at once" so the
+  // column cannot read as a ladder the parent climbs. Equal weight + no rank numbers
+  // remain required. (Guide REFERENCE view keeps the unordered wrap grid.)
   host.innerHTML = `
-    <h3 class="pt-journey-title">Your Parents &amp; Tots journey · The Path</h3>
-    <p class="pt-journey-sub">Recognition of a posture you're already practicing - private to you, never scored, seen by no one else. Nothing here is counted, and you can close it anytime.</p>
+    <h3 class="pt-journey-title">Your Parents &amp; Tots journey · The postures you hold</h3>
+    <p class="pt-journey-sub">Recognition of a posture you're already practicing - private to you, never scored, seen by no one else. Nothing here is counted, and you can close it anytime. <strong>All four are yours at once</strong> - hold whichever the day asks for; none is a step above another.</p>
+    <p class="pt-journey-arc-note">The stages name where your <em>child</em> is on their journey; the posture is the one you bring to it.</p>
     <p class="pt-journey-hardday">${esc(PARENT_GATE.hardDay)}</p>
     <ul class="pt-path">${steps}</ul>
     <details class="pt-honesty"><summary>What these are, honestly</summary>

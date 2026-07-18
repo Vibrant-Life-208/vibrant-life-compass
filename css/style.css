@@ -3940,6 +3940,7 @@ body.landscape-mountain {
 .pt-optin-text { margin: 0 0 0.6rem; color: #5a5a52; font-size: 0.92rem; }
 .pt-journey-title { margin: 0 0 0.25rem; color: var(--sage); font-weight: 500; }
 .pt-journey-sub { margin: 0 0 0.9rem; color: #8a8a80; font-size: 0.88rem; }
+.pt-journey-arc-note { margin: 0 0 0.9rem; color: #8a8a80; font-size: 0.85rem; font-style: italic; }
 .pt-path { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.7rem; }
 .pt-step {
   border: 1px solid #e3ddd0; border-left: 3px solid #cdbfa6; border-radius: 12px;
