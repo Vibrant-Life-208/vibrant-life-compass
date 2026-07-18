@@ -4112,3 +4112,92 @@ body.landscape-mountain {
 .cal-session-date { color: var(--text-muted); font-size: 0.78rem; }
 .cal-session-goals { margin: 0; padding-left: 1.1rem; }
 .cal-session-goals li { font-size: 0.86rem; color: var(--text-soft); line-height: 1.4; margin-bottom: 0.15rem; }
+
+/* ==================== GUIDE "YOUR PRACTICE" (v0.24) ====================
+   Scoped under #practice-view / #crossing-overlay. No scores, tiers, or bars —
+   glyphs breathe, they never fill. */
+
+#practice-view .practice-header { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.5rem; }
+#practice-view .practice-header h2 { font-size: 1.15rem; font-weight: 600; color: var(--sage); }
+#practice-view .present-toggle { border: 1px solid var(--earth-light); background: var(--warm-white); color: var(--text-soft); font-size: 0.75rem; font-weight: 500; padding: 0.35rem 0.7rem; border-radius: 999px; cursor: pointer; }
+#practice-view .present-toggle.on { background: var(--sage-pale); color: var(--sage); border-color: var(--sage); }
+#practice-view .practice-greeting { font-size: 0.85rem; color: var(--text-soft); margin-bottom: 0.75rem; }
+
+#practice-view .pulse-optin { display: flex; align-items: flex-start; gap: 0.5rem; background: var(--warm-white); border-radius: var(--radius-sm); padding: 0.6rem 0.75rem; margin-bottom: 1.25rem; font-size: 0.78rem; color: var(--text-soft); box-shadow: var(--shadow); }
+#practice-view .pulse-optin input { margin-top: 0.15rem; flex-shrink: 0; }
+#practice-view .pulse-optin em { color: var(--text-muted); font-style: italic; }
+
+/* Present-mode: the whole surface quiets and softens. */
+#practice-view.present .constellation,
+#practice-view.present .center-star { opacity: 0.55; filter: saturate(0.7); transition: opacity 0.6s ease, filter 0.6s ease; }
+
+#practice-view .center-star { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+#practice-view .constellation { margin-bottom: 1.5rem; }
+#practice-view .constellation-name { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.6rem; }
+#practice-view .star-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+#practice-view .glyph-tile { flex: 1 1 8rem; min-width: 7rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 0.9rem 0.6rem; background: var(--warm-white); border: none; border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; text-align: center; font: inherit; }
+#practice-view .glyph-tile:active { transform: scale(0.97); box-shadow: var(--shadow-lg); }
+#practice-view .glyph-tile.center { flex: 0 1 14rem; padding: 1.1rem 1rem; background: var(--sage-pale); }
+#practice-view .glyph-title { font-size: 0.8rem; font-weight: 500; color: var(--text); line-height: 1.3; }
+
+/* The glyph — state is fidelity of return, never a score. Living breathes (~6s). */
+#practice-view .glyph { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; }
+#practice-view .glyph.large { width: 52px; height: 52px; }
+#practice-view .glyph.dormant { background: var(--earth-pale); border: 1px solid var(--earth-light); }
+#practice-view .glyph.tended { background: var(--sage-pale); border: 1.5px solid var(--sage-light); }
+#practice-view .glyph.living { background: var(--sage-light); border: 1.5px solid var(--sage); animation: glyph-breath 6s ease-in-out infinite; }
+@keyframes glyph-breath { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.12); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { #practice-view .glyph.living { animation: none; } }
+
+#practice-view .practice-back { background: none; border: none; color: var(--sage); font: inherit; font-size: 0.85rem; cursor: pointer; padding: 0.25rem 0; margin-bottom: 0.75rem; }
+#practice-view .station-head { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 0.6rem; }
+#practice-view .station-title { font-size: 1.05rem; font-weight: 600; color: var(--text); line-height: 1.3; }
+#practice-view .station-doing, #practice-view .station-being { font-size: 0.82rem; color: var(--text-soft); margin-top: 0.2rem; }
+#practice-view .station-doing span, #practice-view .station-being span { color: var(--text-muted); font-style: italic; }
+#practice-view .station-state { font-size: 0.85rem; color: var(--sage); margin: 0.75rem 0 1rem; }
+
+#practice-view .practice-mirror { background: var(--warm-white); border-radius: var(--radius); padding: 0.9rem 1rem; box-shadow: var(--shadow); margin-bottom: 0.9rem; }
+#practice-view .mirror-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem; }
+#practice-view .mirror-prompt { font-size: 0.95rem; color: var(--text); line-height: 1.45; }
+#practice-view .station-rest { font-size: 0.9rem; color: var(--text-soft); padding: 1rem 0; }
+#practice-view .mark-btn { width: 100%; margin: 0 0 1.25rem; }
+
+#practice-view .history-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.6rem; }
+#practice-view .station-empty { font-size: 0.85rem; color: var(--text-muted); padding: 0.5rem 0; }
+#practice-view .crossing-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; padding: 0; }
+#practice-view .crossing { background: var(--warm-white); border-radius: var(--radius); padding: 0.75rem 0.9rem; box-shadow: var(--shadow); }
+#practice-view .crossing-date { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+#practice-view .crossing-story { font-size: 0.88rem; color: var(--text); line-height: 1.45; white-space: pre-wrap; }
+#practice-view .crossing-remove { background: none; border: none; color: var(--text-muted); font: inherit; font-size: 0.72rem; cursor: pointer; padding: 0.25rem 0; margin-top: 0.35rem; }
+#practice-view .crossing-remove:hover { color: var(--danger); }
+
+/* Shared button styles inside the practice surface + overlay */
+#practice-view .btn-primary,
+#crossing-overlay .btn-primary { padding: 0.65rem 1.25rem; border: none; border-radius: var(--radius-sm); font: inherit; font-size: 0.9rem; font-weight: 500; cursor: pointer; background: var(--sage); color: #fff; }
+#practice-view .btn-primary:hover,
+#crossing-overlay .btn-primary:hover { background: var(--sage-light); }
+#crossing-overlay .btn-quiet { padding: 0.65rem 1.25rem; border: none; border-radius: var(--radius-sm); font: inherit; font-size: 0.9rem; font-weight: 500; cursor: pointer; background: var(--earth-pale); color: var(--text-soft); }
+
+/* Crossing overlay — the self-named vow and its pause */
+.crossing-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.3); z-index: 100; align-items: flex-end; justify-content: center; }
+.crossing-overlay.active { display: flex; }
+#crossing-overlay .crossing-sheet { background: var(--warm-white); border-radius: var(--radius) var(--radius) 0 0; width: 100%; max-width: 480px; padding: 1.25rem; position: relative; }
+#crossing-overlay .crossing-cancel { position: absolute; top: 0.9rem; right: 1rem; background: none; border: none; font-size: 1.5rem; line-height: 1; color: var(--text-muted); cursor: pointer; }
+#crossing-overlay .crossing-heading { font-size: 1.05rem; font-weight: 600; color: var(--sage); margin-bottom: 1rem; padding-right: 2rem; }
+#crossing-overlay .crossing-field-label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-soft); margin-bottom: 0.35rem; }
+#crossing-overlay .private-note { color: var(--text-muted); font-weight: 400; font-style: italic; }
+#crossing-overlay .crossing-input { width: 100%; min-height: 90px; padding: 0.65rem 0.75rem; border: 1px solid var(--earth-light); border-radius: var(--radius-sm); background: var(--cream); color: var(--text); font: inherit; font-size: 0.9rem; resize: vertical; margin-bottom: 1rem; }
+#crossing-overlay .crossing-moment { width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--earth-light); border-radius: var(--radius-sm); background: var(--cream); color: var(--text); font: inherit; font-size: 0.9rem; margin-bottom: 1.25rem; }
+#crossing-overlay .crossing-input:focus, #crossing-overlay .crossing-moment:focus { outline: none; border-color: var(--sage); box-shadow: 0 0 0 2px var(--sage-pale); }
+#crossing-overlay .crossing-sheet .btn-primary { width: 100%; }
+#crossing-overlay .crossing-sheet.pause { text-align: center; padding: 2.5rem 1.5rem; }
+#crossing-overlay .pause-line { font-size: 1rem; color: var(--text); line-height: 1.5; }
+#crossing-overlay .pause-sub { font-size: 0.9rem; color: var(--text-soft); margin-top: 0.4rem; margin-bottom: 1.75rem; }
+#crossing-overlay .pause-actions { display: flex; gap: 0.75rem; justify-content: center; }
+#crossing-overlay .pause-actions .btn-primary, #crossing-overlay .pause-actions .btn-quiet { width: auto; }
+
+@media (min-width: 600px) {
+  .crossing-overlay { align-items: center; }
+  #crossing-overlay .crossing-sheet { border-radius: var(--radius); }
+}

@@ -31,6 +31,7 @@ const KEYS = {
   onboarding: 'hc_onboarding',            // {id: {step, skipped, completedAt, updatedAt}}
   weeklyAnswers: 'hc_weekly_answers_v0',  // {learnerId|goalId|s{n}|w{n}: {text, kind, session, week}} — no timestamp (§5)
   thresholdAdditions: 'hc_threshold_additions_v0', // {learnerId: {thresholdId: {now, halfway}}} — child records, NEVER goal rows
+  crossings: 'hc_guide_crossings',        // guide "Your Practice" reflections (v0.24); story/moment encrypted at rest
 };
 
 function read(key) {
@@ -442,6 +443,7 @@ export async function setYearTraits(identityId, traits) {
 // Password is encrypted at rest via crypto.js (AES-GCM 256).
 // ============================================================================
 import { getOrCreateLearnerKey, encryptString, decryptString, isEnvelope } from '../crypto.js';
+import { encryptField, decryptField } from '../crypto.js';
 
 export async function getLogins(learnerId) {
   const all = read(KEYS.logins) || {};
@@ -1030,4 +1032,91 @@ export async function getValuesFreetext(identityId) {
   const all = read(KEYS.profileAnchor) || {};
   const a = all[identityId] || {};
   return { values: a.valuesFreetext || [], archetype: a.valuesArchetype || '' };
+}
+
+// ============================================================================
+// Guide practice — "Your Practice" (v0.24). Skeleton parity with the Supabase
+// adapter: story/moment are encrypted at rest even in localStorage (child-
+// adjacent free text — TCC 2026-07-18), and the bloom mirrors the suppressed
+// studio_practice_pulse (v_min=3, per-characteristic floor, graceful empty).
+// ============================================================================
+
+async function practiceUserId() {
+  const s = read(KEYS.session);
+  return s?.id || s?.learnerId || null;
+}
+
+export async function addCrossing({ characteristic, story, moment }) {
+  const uid = await practiceUserId();
+  if (!uid) return null;
+  const all = read(KEYS.crossings) || [];
+  const record = {
+    id: generateId(),
+    guide_id: uid,
+    characteristic,
+    story: await encryptField(uid, story || ''),
+    moment: await encryptField(uid, moment || ''),
+    created_at: new Date().toISOString(),
+  };
+  all.push(record);
+  write(KEYS.crossings, all);
+  return { ...record, story: story || '', moment: moment || '' };
+}
+
+export async function getCrossings(characteristic = null) {
+  const uid = await practiceUserId();
+  if (!uid) return [];
+  let rows = (read(KEYS.crossings) || []).filter((r) => r.guide_id === uid);
+  if (characteristic) rows = rows.filter((r) => r.characteristic === characteristic);
+  rows.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
+  return Promise.all(rows.map(async (r) => ({
+    ...r,
+    story: await decryptField(uid, r.story),
+    moment: await decryptField(uid, r.moment),
+  })));
+}
+
+export async function deleteCrossing(id) {
+  const all = read(KEYS.crossings) || [];
+  write(KEYS.crossings, all.filter((r) => r.id !== id));
+}
+
+export async function getSharePracticePulse() {
+  const uid = await practiceUserId();
+  const guides = read(KEYS.guides) || [];
+  const g = guides.find((x) => x.id === uid);
+  return Boolean(g?.share_practice_pulse);
+}
+
+export async function setSharePracticePulse(on) {
+  const uid = await practiceUserId();
+  const guides = read(KEYS.guides) || [];
+  const idx = guides.findIndex((x) => x.id === uid);
+  if (idx >= 0) { guides[idx] = { ...guides[idx], share_practice_pulse: !!on }; write(KEYS.guides, guides); }
+}
+
+export async function getStudioPracticePulse(tribe) {
+  const MIN = 3;
+  const guides = read(KEYS.guides) || [];
+  const optedIds = new Set(
+    guides
+      .filter((g) => Array.isArray(g.tribes) && g.tribes.includes(tribe) && g.share_practice_pulse)
+      .map((g) => g.id)
+  );
+  const groupSize = optedIds.size;
+  if (groupSize < MIN) return [];                 // graceful degradation: too small to anonymize
+  const since = Date.now() - 90 * 24 * 60 * 60 * 1000;
+  const seen = new Set();                          // distinct (guide, characteristic)
+  const perChar = {};
+  (read(KEYS.crossings) || []).forEach((r) => {
+    if (!optedIds.has(r.guide_id)) return;
+    if (new Date(r.created_at).getTime() < since) return;
+    const k = r.guide_id + '|' + r.characteristic;
+    if (seen.has(k)) return;
+    seen.add(k);
+    perChar[r.characteristic] = (perChar[r.characteristic] || 0) + 1;
+  });
+  return Object.entries(perChar)
+    .filter(([, cnt]) => cnt >= MIN)               // never reveal a small count
+    .map(([characteristic, cnt]) => ({ characteristic, guides: cnt, group_size: groupSize }));
 }

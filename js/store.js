@@ -109,6 +109,15 @@ export const {
   // never a goal row (read-only-to-system / write-wall).
   getThresholdAdditions,
   saveThresholdAdditions,
+  // Guide "Your Practice" + owner culture bloom (v0.24). story/moment encrypted
+  // at rest in the adapter; crossings are guide-private (RLS self-only); the
+  // bloom is a suppressed, anonymized aggregate (counts only).
+  addCrossing,
+  getCrossings,
+  deleteCrossing,
+  getSharePracticePulse,
+  setSharePracticePulse,
+  getStudioPracticePulse,
 } = impl;
 
 // La'an's runtime write-wall — the single store write edge for goal rows. saveGoal dispatches

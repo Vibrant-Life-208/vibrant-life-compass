@@ -15,6 +15,7 @@ import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderAnchorInsights } from './insights.js';
 import { renderSetupView } from './setup.js';
 import { renderCalendarView } from './calendar-view.js';
+import { renderPractice } from './practice.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
@@ -45,6 +46,7 @@ const TABS_BY_ROLE = {
     { id: 'year-view', label: 'Compass' },
     { id: 'session-view', label: 'Session' },
     { id: 'patterns-view', label: 'Patterns' },
+    { id: 'practice-view', label: 'Practice' },
     { id: 'passwords-view', label: 'Passwords' },
   ],
 };
@@ -488,6 +490,7 @@ async function showTab(tabId, learnerId) {
     import('./session-view.js').then(m => applyLandscape(m.getCurrentSession()));
   }
   if (tabId === 'patterns-view') await renderPatterns(learnerId);
+  if (tabId === 'practice-view') await renderPractice();
   if (tabId === 'passwords-view') await renderLogins(learnerId);
   if (tabId === 'partner-view') await renderPartnerPage(learnerId);
   if (tabId === 'guide-view') await renderRoleView('guide', learnerId);

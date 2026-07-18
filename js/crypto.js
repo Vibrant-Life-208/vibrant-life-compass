@@ -94,6 +94,29 @@ export function isEnvelope(v) {
 }
 
 // ============================================================================
+// Field-at-rest helpers — encrypt one string to a JSON-serialized envelope,
+// using the person's own local key. The single crypto chokepoint for guide
+// reflections (story/moment): child-adjacent free text that must not sit
+// plaintext at rest (TCC ratification 2026-07-18, Worf + Tutela). The store
+// adapters call these on every write/read so the obligation cannot be forgotten.
+// ============================================================================
+
+export async function encryptField(personId, plaintext) {
+  if (!plaintext) return '';                       // empty stays empty (e.g. optional moment)
+  const key = await getOrCreateLearnerKey(personId);
+  return JSON.stringify(await encryptString(plaintext, key));
+}
+
+export async function decryptField(personId, stored) {
+  if (!stored) return '';
+  let env;
+  try { env = JSON.parse(stored); } catch { return stored; } // tolerate legacy plaintext
+  if (!isEnvelope(env)) return typeof stored === 'string' ? stored : '';
+  const key = await getOrCreateLearnerKey(personId);
+  return decryptString(env, key);
+}
+
+// ============================================================================
 // Password hashing - PBKDF2-SHA256, 100k iterations.
 // For local-auth account passwords. Plaintext never stored.
 // Stored as { salt: base64, hash: base64 } on the account record.

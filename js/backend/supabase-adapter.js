@@ -10,6 +10,7 @@
 // BACKEND_TYPE === 'supabase'.
 
 import { SUPABASE_CONFIG } from './config.js';
+import { encryptField, decryptField } from '../crypto.js';
 
 let client = null;
 
@@ -1207,3 +1208,73 @@ export async function getUnreadCount(recipientId) {
 // Admin helper exported for the bulk-import flow.
 // ============================================================================
 export { adminCreateAccount };
+
+// ============================================================================
+// Guide practice — "Your Practice" (migration v0.24).
+//
+// story + moment are ENCRYPTED AT REST here (encryptField / decryptField) — the
+// crypto is enforced at the store boundary so a UI can never forget it (TCC
+// ratification 2026-07-18: moment can hold a child's name). Reflections are
+// guide-private by RLS (guide_crossings_self: guide_id = auth.uid()) — no owner
+// or peer path exists. The bloom (studio_practice_pulse) reads only
+// characteristic + created_at, so encryption costs it nothing.
+// ============================================================================
+
+export async function addCrossing({ characteristic, story, moment }) {
+  const uid = await currentUserId();
+  if (!uid) return null;
+  const row = {
+    guide_id: uid,
+    characteristic,
+    story: await encryptField(uid, story || ''),
+    moment: await encryptField(uid, moment || ''),
+  };
+  const { data, error } = await getClient()
+    .from('guide_crossings').insert(row).select().single();
+  if (error) { console.warn('addCrossing:', error.message); return null; }
+  // Hand back the plaintext the caller just gave us (never re-read ciphertext).
+  return { ...data, story: story || '', moment: moment || '' };
+}
+
+export async function getCrossings(characteristic = null) {
+  const uid = await currentUserId();
+  if (!uid) return [];
+  let q = getClient()
+    .from('guide_crossings').select('*')
+    .eq('guide_id', uid)                         // explicit + belt-and-suspenders to RLS
+    .order('created_at', { ascending: false });
+  if (characteristic) q = q.eq('characteristic', characteristic);
+  const { data, error } = await q;
+  if (error) { console.warn('getCrossings:', error.message); return []; }
+  return Promise.all((data || []).map(async (r) => ({
+    ...r,
+    story: await decryptField(uid, r.story),
+    moment: await decryptField(uid, r.moment),
+  })));
+}
+
+export async function deleteCrossing(id) {
+  const { error } = await getClient().from('guide_crossings').delete().eq('id', id);
+  if (error) console.warn('deleteCrossing:', error.message);
+}
+
+export async function getSharePracticePulse() {
+  const uid = await currentUserId();
+  if (!uid) return false;
+  const { data } = await getClient()
+    .from('profiles').select('share_practice_pulse').eq('id', uid).maybeSingle();
+  return Boolean(data?.share_practice_pulse);
+}
+
+export async function setSharePracticePulse(on) {
+  const uid = await currentUserId();
+  if (!uid) return;
+  await getClient().from('profiles').update({ share_practice_pulse: !!on }).eq('id', uid);
+}
+
+// The owner/guide culture bloom — a suppressed, anonymized aggregate. Counts only.
+export async function getStudioPracticePulse(tribe) {
+  const { data, error } = await getClient().rpc('studio_practice_pulse', { p_tribe: tribe });
+  if (error) { console.warn('getStudioPracticePulse:', error.message); return []; }
+  return data || [];
+}
