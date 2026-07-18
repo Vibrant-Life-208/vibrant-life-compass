@@ -10,7 +10,7 @@ import {
 } from './store.js';
 import { STUDIOS, getCategoriesForStudio, getCalendarForStudio } from './studios.js';
 import { openYearGoalModal, openConfirmModal, openGoalSetupModal } from './modals.js';
-import { CURRENT_WHEEL_BUILD } from './thresholds.js';
+import { isCurrentWheelBuild } from './thresholds.js';
 
 const MIN_GOALS = 5;
 const TOP_PRIORITIES = 3;
@@ -71,6 +71,8 @@ export async function renderSetupView(learnerId) {
     container.innerHTML = '<p class="learners-empty">No learner record.</p>';
     return;
   }
+  // Per-learner current-wheel gate (v0.23). Flag off => the legacy setup copy + flow.
+  const currentWheel = isCurrentWheelBuild(learner);
 
   const allGoals = await getGoals(learnerId);
   const yearGoals = allGoals.filter((g) => g.scope === 'year');
@@ -150,11 +152,11 @@ export async function renderSetupView(learnerId) {
     <section class="setup-section">
       <div class="setup-progress">
         <h3 class="setup-section-title">2. Your year goals</h3>
-        <span class="setup-count ${filledGoals.length >= MIN_GOALS ? 'is-met' : ''}">${CURRENT_WHEEL_BUILD
+        <span class="setup-count ${filledGoals.length >= MIN_GOALS ? 'is-met' : ''}">${currentWheel
           ? (filledGoals.length >= MIN_GOALS ? 'Ready when you are' : '')
           : `${filledGoals.length} of ${MIN_GOALS} minimum`}</span>
       </div>
-      <p class="setup-hint">${CURRENT_WHEEL_BUILD
+      <p class="setup-hint">${currentWheel
         ? `Tap a goal to plan it - where you are now, your halfway milestone, and a few first steps.`
         : `Set at least ${MIN_GOALS} year goals. Tap a category to walk through the 9-stage plan (End of Session 6 → baseline → End of Session 3 → End of Session 2 → End of Session 1 → weekly steps for Sessions 1, 2, 3).`}</p>
       <div id="setup-goals-grid" class="setup-goals-grid"></div>
@@ -163,13 +165,13 @@ export async function renderSetupView(learnerId) {
     <section class="setup-section ${filledGoals.length >= MIN_GOALS ? '' : 'is-disabled'}">
       <div class="setup-progress">
         <h3 class="setup-section-title">3. Your top ${TOP_PRIORITIES} priorities</h3>
-        <span class="setup-count ${priorityIds.length === TOP_PRIORITIES ? 'is-met' : ''}">${CURRENT_WHEEL_BUILD
+        <span class="setup-count ${priorityIds.length === TOP_PRIORITIES ? 'is-met' : ''}">${currentWheel
           ? (priorityIds.length === TOP_PRIORITIES ? 'Ready when you are' : '')
           : `${priorityIds.length} of ${TOP_PRIORITIES} starred`}</span>
       </div>
       <p class="setup-hint">${filledGoals.length >= MIN_GOALS
-        ? (CURRENT_WHEEL_BUILD ? 'Which few matter most right now? Tap to star.' : `Of your ${filledGoals.length} goals, which ${TOP_PRIORITIES} matter most? Tap to star.`)
-        : (CURRENT_WHEEL_BUILD ? 'Available once you have set a few goals.' : `Available once you've set ${MIN_GOALS} goals.`)}</p>
+        ? (currentWheel ? 'Which few matter most right now? Tap to star.' : `Of your ${filledGoals.length} goals, which ${TOP_PRIORITIES} matter most? Tap to star.`)
+        : (currentWheel ? 'Available once you have set a few goals.' : `Available once you've set ${MIN_GOALS} goals.`)}</p>
       <div id="setup-priority-list" class="setup-priority-list"></div>
     </section>
 
@@ -188,7 +190,7 @@ export async function renderSetupView(learnerId) {
       </button>
       <p class="setup-footer-hint">${
         filledGoals.length < MIN_GOALS
-          ? (CURRENT_WHEEL_BUILD ? 'Set a few more goals to continue.' : `Fill at least ${MIN_GOALS - filledGoals.length} more goal${MIN_GOALS - filledGoals.length === 1 ? '' : 's'} to continue.`)
+          ? (currentWheel ? 'Set a few more goals to continue.' : `Fill at least ${MIN_GOALS - filledGoals.length} more goal${MIN_GOALS - filledGoals.length === 1 ? '' : 's'} to continue.`)
           : priorityIds.length === 0
           ? 'Top 3 priorities are optional — you can star them any time. Ready to send your plan to your partner for sign-off.'
           : 'Ready to send to your partner for sign-off.'
@@ -253,6 +255,8 @@ export async function renderSetupView(learnerId) {
 function renderGoalsGrid(learner, filledGoals) {
   const grid = document.getElementById('setup-goals-grid');
   if (!grid) return;
+  // Per-learner current-wheel gate (v0.23). Flag off => the legacy card copy + edit path.
+  const currentWheel = isCurrentWheelBuild(learner);
   const cats = getCategoriesForStudio(learner.studio);
 
   grid.innerHTML = '';
@@ -265,14 +269,14 @@ function renderGoalsGrid(learner, filledGoals) {
       <span class="setup-goal-cat">${escapeHtml(cat.name)}</span>
       <span class="setup-goal-kind">${escapeHtml(cat.kind)}</span>
       <p class="setup-goal-text">${filled ? escapeHtml(filled.text) : 'Tap to plan this goal'}</p>
-      ${filled?.halfwayPoint ? `<span class="setup-goal-eos3"><strong>${CURRENT_WHEEL_BUILD ? 'Your milestone:' : 'End of Session 3:'}</strong> ${escapeHtml(filled.halfwayPoint)}</span>` : ''}
+      ${filled?.halfwayPoint ? `<span class="setup-goal-eos3"><strong>${currentWheel ? 'Your milestone:' : 'End of Session 3:'}</strong> ${escapeHtml(filled.halfwayPoint)}</span>` : ''}
     `;
     card.addEventListener('click', () => {
       // Stage M (behind the flag): a goal with no milestone yet opens the ratified per-goal
       // setup flow (now -> milestone -> a few near-steps; 8-agent review 2026-07-17) instead of
       // the 9-stage modal. Milestone-already-set stays on the 9-stage edit path for now. Flag
       // off: byte-identical to before.
-      if (CURRENT_WHEEL_BUILD && !(filled && filled.halfwayPoint)) {
+      if (currentWheel && !(filled && filled.halfwayPoint)) {
         openGoalSetupModal({ goal: filled || null, category: cat, learnerId: learner.id, onDone: () => renderSetupView(learner.id) });
         return;
       }

@@ -1,0 +1,15 @@
+-- v0.23: per-learner current-wheel test flag (cohort allow-list).
+--
+-- Replaces the single global CURRENT_WHEEL_BUILD boolean (thresholds.js) with a
+-- per-learner gate. Default false = today's production behavior: every learner sees
+-- the legacy flow. Set true ONLY for a supervised test cohort, and ONLY after the
+-- SSC safety-lock ruling (Salus + PDC). Building the column exposes no one - the app
+-- ships inert until an explicit `update learners set current_wheel_test = true` is run
+-- for a named, supervised learner.
+--
+-- Additive and safe for existing learners: not-null boolean with a false default, so
+-- every existing row gets false and nothing needs backfilling. The resolver
+-- isCurrentWheelBuild(learner) returns false for a false/absent flag on production
+-- (BACKEND_TYPE !== 'local'), which is byte-for-byte today's behavior.
+-- See docs/design/2026-07-18-cohort-gated-wheel-flag-spec.md.
+alter table learners add column if not exists current_wheel_test boolean not null default false;

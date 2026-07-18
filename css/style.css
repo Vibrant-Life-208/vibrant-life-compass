@@ -4064,3 +4064,66 @@ body.landscape-mountain {
 .slice-open-btn:focus-visible, .arc-today-task:focus-within {
   outline: 2px solid var(--sage, #7a8a6a); outline-offset: 2px;
 }
+
+/* ── Calendar View ─────────────────────────────────────────────────────────
+   Read-only year-at-a-glance for Launch Pad learners + adults. Renders over
+   existing data (session dates, session goals, planned tasks); writes nothing.
+   Palette + card conventions follow the Year Map. */
+.calendar-title { margin: 0 0 0.25rem; font-size: 1.35rem; color: var(--text); }
+.calendar-sub { margin: 0 0 1rem; color: var(--text-soft); font-size: 0.9rem; }
+
+.calendar-legend {
+  display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem;
+  margin: 0 0 1.25rem; font-size: 0.8rem; color: var(--text-soft);
+}
+.cal-legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+.cal-swatch { width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--earth-light); display: inline-block; }
+.cal-swatch-session { background: var(--sage-pale); border-color: var(--sage-light); }
+.cal-swatch-start { background: #fff; border: 2px solid var(--sage); }
+.cal-swatch-today { background: var(--earth-pale); border: 2px solid var(--earth); }
+
+.calendar-months {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem; margin-bottom: 1.75rem;
+}
+.cal-month {
+  background: var(--warm-white); border: 1px solid var(--earth-pale);
+  border-radius: var(--radius); box-shadow: var(--shadow); padding: 0.75rem;
+}
+.cal-month-title { font-size: 0.95rem; font-weight: 600; color: var(--sage); margin: 0 0 0.5rem; text-align: center; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-dow { text-align: center; font-size: 0.66rem; color: var(--text-muted); padding-bottom: 2px; }
+
+.cal-cell {
+  position: relative; aspect-ratio: 1 / 1; min-height: 30px;
+  border-radius: var(--radius-sm); border: 1px solid transparent;
+  display: flex; align-items: flex-start; justify-content: flex-start;
+  padding: 2px 3px; font-size: 0.72rem; color: var(--text-soft);
+}
+.cal-cell.is-blank { border: none; background: none; }
+.cal-cell.out-of-cycle { color: var(--text-muted); opacity: 0.45; }
+.cal-cell.in-session.session-odd { background: var(--sage-pale); border-color: var(--sage-light); }
+.cal-cell.in-session.session-even { background: var(--earth-pale); border-color: var(--earth-light); }
+.cal-cell.is-session-start { border: 2px solid var(--sage); font-weight: 600; color: var(--text); }
+.cal-cell.is-today { border: 2px solid var(--earth); font-weight: 700; color: var(--text); }
+.cal-num { line-height: 1; }
+.cal-session-tag {
+  position: absolute; bottom: 2px; right: 3px; font-size: 0.55rem;
+  font-weight: 700; color: var(--sage); letter-spacing: 0.02em;
+}
+.cal-task-dot {
+  position: absolute; bottom: 3px; left: 3px; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--earth); display: inline-block;
+}
+.cal-task-dot.is-multi { box-shadow: 4px 0 0 var(--earth-light); }
+
+.calendar-sessions-title { font-size: 1.05rem; color: var(--text); margin: 0 0 0.75rem; }
+.calendar-empty { color: var(--text-muted); font-size: 0.88rem; }
+.cal-session-row {
+  border-left: 3px solid var(--sage-light); padding: 0.4rem 0 0.4rem 0.75rem; margin-bottom: 0.6rem;
+}
+.cal-session-head { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.25rem; }
+.cal-session-num { font-weight: 600; color: var(--sage); font-size: 0.9rem; }
+.cal-session-date { color: var(--text-muted); font-size: 0.78rem; }
+.cal-session-goals { margin: 0; padding-left: 1.1rem; }
+.cal-session-goals li { font-size: 0.86rem; color: var(--text-soft); line-height: 1.4; margin-bottom: 0.15rem; }

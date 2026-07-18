@@ -100,7 +100,7 @@ export async function getLearner(id) {
   const c = getClient();
   let { data, error } = await c
     .from('learners')
-    .select('id, studio, setup_completed_at, open_by_choice, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, profiles!learners_id_fkey(name, email)')
+    .select('id, studio, setup_completed_at, open_by_choice, current_wheel_test, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, profiles!learners_id_fkey(name, email)')
     .eq('id', id)
     .single();
   if (error) {
@@ -123,6 +123,10 @@ export async function getLearner(id) {
     // Stage P3: slices the learner chose to leave open (invitation, not missing-data).
     // Dormant until Stage O writes it; [] when the column/value is absent.
     openByChoice: Array.isArray(data.open_by_choice) ? data.open_by_choice : [],
+    // v0.23 cohort gate: read by isCurrentWheelBuild(learner). Snake_case key on purpose -
+    // the resolver reads learner.current_wheel_test verbatim. Default false when the column
+    // is absent (deploy-before-migration) or null, so prod stays on the legacy flow.
+    current_wheel_test: Boolean(data.current_wheel_test),
     pitchTargetStudio: data.pitch_target_studio ?? null,
     pitchIntentAt: data.pitch_intent_at ?? null,
     pitchAgeSelfReport: data.pitch_age_self_report ?? null,
@@ -869,6 +873,9 @@ export async function saveLearner(data) {
   if (data.studio !== undefined) learnerRow.studio = data.studio;
   if (data.setupCompletedAt !== undefined) learnerRow.setup_completed_at = data.setupCompletedAt;
   if (data.openByChoice !== undefined) learnerRow.open_by_choice = data.openByChoice;
+  // v0.23 cohort gate. Setting it true is a supervised, SSC-cleared action (normally done via
+  // SQL, not the app), but carry it here for parity so a write path never silently drops it.
+  if (data.current_wheel_test !== undefined) learnerRow.current_wheel_test = data.current_wheel_test;
   if (data.pitchTargetStudio !== undefined) learnerRow.pitch_target_studio = data.pitchTargetStudio;
   if (data.pitchIntentAt !== undefined) learnerRow.pitch_intent_at = data.pitchIntentAt;
   if (data.pitchAgeSelfReport !== undefined) learnerRow.pitch_age_self_report = data.pitchAgeSelfReport;

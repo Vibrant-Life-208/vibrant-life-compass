@@ -16,6 +16,7 @@
 
 import { getStudioName, sliceIdForLabel } from './studios.js';
 import { getWheelAreas } from './wheel.js';
+import { BACKEND_TYPE } from './backend/config.js';
 
 export const THRESHOLDS = {
   adventure: {
@@ -118,14 +119,37 @@ export function getThresholds(targetStudio) {
 // docs/design/2026-07-16-current-wheel-build-scope.md.
 export const MAPPING_RATIFIED = false;
 
-// Current-wheel build gate (Stage P2, 2026-07-17). Separate from MAPPING_RATIFIED by design:
-// the 2026-07-16 re-ratification moved the direction to the learner's CURRENT wheel and ruled
-// the legacy target-wheel flag must NOT be flipped back to true - the current-wheel activation
-// needs its own gate. While this is false, buildSlicePlan and thresholdLifeArea behave exactly
-// as the legacy target-wheel path did (pitchers see the target wheel, blank boxes). Flips only
-// at build-plan Stage V, under the watch-with-a-real-learner gate, with a signed audit entry.
-// Ref: docs/design/2026-07-17-build-plan.md.
-export const CURRENT_WHEEL_BUILD = false;
+// Current-wheel build gate (Stage P2, 2026-07-17; per-learner as of v0.23, 2026-07-18).
+// Separate from MAPPING_RATIFIED by design: the 2026-07-16 re-ratification moved the
+// direction to the learner's CURRENT wheel and ruled the legacy target-wheel flag must
+// NOT be flipped back to true - the current-wheel activation needs its own gate. When the
+// resolver returns false, buildSlicePlan and thresholdLifeArea behave exactly as the legacy
+// target-wheel path did (pitchers see the target wheel, blank boxes).
+//
+// Replaces the old uncommitted global boolean. Local dev sees the full build for everyone
+// (no real learners exist locally). Production gates PER-LEARNER via the current_wheel_test
+// allow-list column (v0.23) - default false = today's behavior for everyone. Enabling a real
+// learner is Salus + PDC's ruling, not an infra flip. Committable and safe: prod default is
+// false = today. Ref: docs/design/2026-07-18-cohort-gated-wheel-flag-spec.md.
+//
+// Mature-tier auto-on (2026-07-18): the SSC safety lock protects ONLY the vulnerable young
+// tiers - Sparks / Discovery / Adventure. Everyone outside that lock - Launch Pad learners and
+// the guide/adult protagonist - gets the current-wheel cadence automatically, no per-learner
+// flag needed. 'launchpad' is the Launch Pad learner studio; 'guide-summer' is the synthetic
+// studio getLearner attaches to a guide test-driving as protagonist (see local-store getLearner
+// fallback + wheel.js ADULT_AREAS). The three young tiers stay gated per-learner on
+// current_wheel_test, byte-identical to the prior resolver: a young learner is NEVER auto-enabled
+// here - only Salus + PDC may flip their flag. Non-learner adults (parents/owners) on production
+// have no `learners` row, so getLearner returns null and every call site short-circuits before
+// this resolver; they are current-wheel via the BACKEND_TYPE gate in local dev and simply have no
+// learner-shaped cadence surface to gate in production.
+const MATURE_STUDIOS = new Set(['launchpad', 'guide-summer']);
+export function isCurrentWheelBuild(learner) {
+  if (BACKEND_TYPE === 'local') return true;
+  if (!learner) return false;
+  if (MATURE_STUDIOS.has(learner.studio)) return true;
+  return Boolean(learner.current_wheel_test);
+}
 
 export const THRESHOLD_LIFE_AREA = {
   // Discovery -> Adventure. Target wheel: Movement, Mind, Spirit, Emotions, Family,
@@ -179,10 +203,12 @@ export const THRESHOLD_LIFE_AREA = {
 // The wheel slice a threshold belongs to for a given placement studio, or null if
 // unplaced ("not placed yet" -> the render treats it as invitation, never deficit).
 // Gated per mapping: the `discovery` (current-wheel) placement is gated by
-// CURRENT_WHEEL_BUILD; the legacy target-wheel placement by MAPPING_RATIFIED (held
-// false). Either way, null until its gate opens, so nothing unratified steers a year.
-export function thresholdLifeArea(placementStudio, thresholdId) {
-  const gate = placementStudio === 'discovery' ? CURRENT_WHEEL_BUILD : MAPPING_RATIFIED;
+// `currentWheel` (resolved per-learner via isCurrentWheelBuild by the caller); the legacy
+// target-wheel placement by MAPPING_RATIFIED (held false). Either way, null until its gate
+// opens, so nothing unratified steers a year. `currentWheel` defaults to false so a caller
+// that omits it gets the legacy (flag-off) placement path.
+export function thresholdLifeArea(placementStudio, thresholdId, currentWheel = false) {
+  const gate = placementStudio === 'discovery' ? currentWheel : MAPPING_RATIFIED;
   if (!gate) return null;
   return THRESHOLD_LIFE_AREA[placementStudio]?.[thresholdId] ?? null;
 }
@@ -192,7 +218,7 @@ export function thresholdLifeArea(placementStudio, thresholdId) {
 // `thresholdStudio` is the studio whose thresholds to list (the pitch target); `placementStudio`
 // is the wheel that places them (defaults to the same studio; the current-wheel path passes the
 // learner's current studio so the target's thresholds are placed on the current wheel).
-function thresholdsWithSlice(thresholdStudio, placementStudio = thresholdStudio) {
+function thresholdsWithSlice(thresholdStudio, placementStudio = thresholdStudio, currentWheel = false) {
   const t = getThresholds(thresholdStudio);
   if (!t) return [];
   return [...(t.skills || []), ...(t.character || [])].map((it) => ({
@@ -200,7 +226,7 @@ function thresholdsWithSlice(thresholdStudio, placementStudio = thresholdStudio)
     name: it.name,
     explain: it.explain,
     struggling: it.struggling,
-    slice: thresholdLifeArea(placementStudio, it.id),
+    slice: thresholdLifeArea(placementStudio, it.id, currentWheel),
   }));
 }
 
@@ -214,23 +240,27 @@ function thresholdsWithSlice(thresholdStudio, placementStudio = thresholdStudio)
 //
 // pitchTargetStudio is the value stored on learner.pitchTargetStudio at opt-in;
 // pass null/undefined for a learner who is not pitching.
-export function buildSlicePlan({ currentStudio, pitchTargetStudio }) {
+//
+// `currentWheel` is the per-learner gate the caller resolves via isCurrentWheelBuild(learner)
+// - it replaces the old module-level CURRENT_WHEEL_BUILD constant. It defaults to false so an
+// omitting caller gets the legacy (flag-off) target-wheel path, byte-identical to before.
+export function buildSlicePlan({ currentStudio, pitchTargetStudio, currentWheel = false }) {
   const pitching = Boolean(pitchTargetStudio);
-  // Current-wheel direction (Stage P2, behind CURRENT_WHEEL_BUILD): EVERYONE plans on their
+  // Current-wheel direction (Stage P2, gated by `currentWheel`): EVERYONE plans on their
   // own current wheel, including pitchers. A pitcher's threshold SET still comes from the
-  // target studio; its slice PLACEMENT moves to the current wheel. While CURRENT_WHEEL_BUILD
+  // target studio; its slice PLACEMENT moves to the current wheel. While `currentWheel`
   // is false this is byte-identical to the legacy target-wheel path (pitcher -> target wheel,
-  // blank boxes). NOTE for Stage O: when the flag flips, wheelStudio (current) no longer
+  // blank boxes). NOTE for Stage O: when the flag is on, wheelStudio (current) no longer
   // equals the pitch target, so the onboarding lead copy ("your pitch to <wheelStudio>") must
   // be rewritten to name the target separately from the wheel being planned on.
-  const wheelStudio = CURRENT_WHEEL_BUILD
+  const wheelStudio = currentWheel
     ? currentStudio
     : (pitching ? pitchTargetStudio : currentStudio);
-  const placementStudio = CURRENT_WHEEL_BUILD ? currentStudio : pitchTargetStudio;
+  const placementStudio = currentWheel ? currentStudio : pitchTargetStudio;
   const areas = getWheelAreas(wheelStudio);
   const prefill = {};
-  if (pitching && (CURRENT_WHEEL_BUILD || MAPPING_RATIFIED)) {
-    for (const item of thresholdsWithSlice(pitchTargetStudio, placementStudio)) {
+  if (pitching && (currentWheel || MAPPING_RATIFIED)) {
+    for (const item of thresholdsWithSlice(pitchTargetStudio, placementStudio, currentWheel)) {
       if (!item.slice) continue;
       (prefill[item.slice] ||= []).push(item);
     }
@@ -239,7 +269,7 @@ export function buildSlicePlan({ currentStudio, pitchTargetStudio }) {
     wheelStudio,
     pitching,
     pitchTargetStudio: pitchTargetStudio || null,
-    ratified: CURRENT_WHEEL_BUILD || MAPPING_RATIFIED,
+    ratified: currentWheel || MAPPING_RATIFIED,
     areas: areas.map((label) => ({
       label,
       sliceId: sliceIdForLabel(label),

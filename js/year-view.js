@@ -3,7 +3,7 @@
 import { getLearner, getGoals, saveGoal, getYearQuote, setYearQuote, getProfileHorizons, setProfileHorizon, getYearTraits, setYearTraits, getActivePartnerOf, markYearGoalPendingApproval, addNotification, getParentLearnerLinks } from './store.js';
 import { getCategoriesForStudio, getStudioName, lifeAreaForCategory } from './studios.js';
 import { openGoalModal, openQuoteModal, openHorizonModal, openTraitsModal, openConfirmModal, openYearGoalModal, openGoalArcModal, openGoalSetupModal } from './modals.js';
-import { CURRENT_WHEEL_BUILD } from './thresholds.js';
+import { isCurrentWheelBuild } from './thresholds.js';
 import { renderYearMap } from './year-map.js';
 import { getYearMapClickHandler } from './north.js';
 import { renderLifeWheel, getWheelAreas } from './wheel.js';
@@ -55,6 +55,9 @@ export async function renderYearView(learnerId) {
     list.innerHTML = '<p class="learners-empty">No learner profile yet.</p>';
     return;
   }
+  // Per-learner current-wheel gate (v0.23). Local dev: always true; prod: this learner's
+  // current_wheel_test flag. Flag off => byte-identical to the legacy year view.
+  const currentWheel = isCurrentWheelBuild(learner);
   // Wheel of Life: reflection-only whole-life frame above the goals. Grows with
   // the child - each studio gets its own age-appropriate ring (Sparks 4 areas ->
   // adult 12). See wheel.js. (Captain design 2026-07-09.)
@@ -201,7 +204,7 @@ export async function renderYearView(learnerId) {
       // setup flow (now -> milestone -> a few near-steps; 8-agent review 2026-07-17). A goal
       // that already has a milestone stays on the existing edit path for now (arc handoff is a
       // later increment). Flag off: byte-identical to before.
-      if (CURRENT_WHEEL_BUILD && !(goal && goal.halfwayPoint)) {
+      if (currentWheel && !(goal && goal.halfwayPoint)) {
         openGoalSetupModal({ goal: goal || null, category: cat, learnerId, onDone: () => renderYearView(learnerId) });
         return;
       }
@@ -433,6 +436,8 @@ export async function renderYearView(learnerId) {
 // re-ratification + the gated academic->slice mapping.)
 function renderPitchSliceGoals(list, orphanGoals, learner, learnerId = null, allGoals = []) {
   if (!orphanGoals || !orphanGoals.length) return;
+  // Per-learner current-wheel gate (v0.23). isCurrentWheelBuild handles a null learner safely.
+  const currentWheel = isCurrentWheelBuild(learner);
   const section = document.createElement('section');
   section.className = 'wheel-slice wheel-slice-offwheel';
 
@@ -463,7 +468,7 @@ function renderPitchSliceGoals(list, orphanGoals, learner, learnerId = null, all
       // Stage M (behind the flag): the slice card opens the per-goal working arc, which
       // starts at the HALFWAY (Session-3) goal for this slice - the year text is context,
       // not the working view. Flag off, the card stays read-only (byte-identical).
-      if (CURRENT_WHEEL_BUILD) {
+      if (currentWheel) {
         card.classList.add('category-card-clickable');
         card.addEventListener('click', () => {
           const halfway = allGoals.find((x) => x.scope === 'session' && x.sessionIndex === 3 && x.categoryId === g.categoryId);

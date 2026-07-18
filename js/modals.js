@@ -12,7 +12,7 @@ import {
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar } from './studios.js';
 import { lifeWheelSvgFor } from './wheel.js';
-import { renderThresholdsHtml, buildSlicePlan, CURRENT_WHEEL_BUILD, getThresholds } from './thresholds.js';
+import { renderThresholdsHtml, buildSlicePlan, isCurrentWheelBuild, getThresholds } from './thresholds.js';
 import { renderGoalArcHtml, currentArcPosition, weeklyKindFor } from './goal-arc.js';
 import { getWeeklyAnswer, saveWeeklyAnswer } from './weekly-answers.js';
 
@@ -1272,6 +1272,12 @@ const HORIZON_STACK_LABEL = {
 };
 
 export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, learnerId = null, onComplete }) {
+  // Per-learner current-wheel gate (v0.23). Resolved once from the learner in scope and used
+  // for every gate below (which pages the cascade shows, the slice walk vs the legacy grid).
+  // Local dev: always true. Prod: this learner's current_wheel_test flag; null/absent learner
+  // (e.g. an adult onboarding with no learnerId) resolves false = the legacy flow, unchanged.
+  const onbLearner = learnerId ? await getLearner(learnerId) : null;
+  const currentWheel = isCurrentWheelBuild(onbLearner);
   const steps = [...(studio === 'sparks' ? CASCADE_SPARKS : CASCADE_FULL)];
   // 1-year plan, organized by wheel slice (captain 2026-07-14): the last step of the
   // cascade for learners. A learner who opted into the pitch plans by the wheel of the
@@ -1283,8 +1289,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // runs, it asks year / now / halfway PER SLICE, so the generic whole-life 1-year / now
   // / halfway single-text horizon pages are redundant. Drop them and go straight from the
   // 5-year vision + pitch into the slices. The 10yr + 5yr vision pages stay. Scoped to
-  // CURRENT_WHEEL_BUILD, so today's flag-off onboarding is unchanged (no live regression).
-  if (CURRENT_WHEEL_BUILD && hasSlicePlan) {
+  // `currentWheel`, so today's flag-off onboarding is unchanged (no live regression).
+  if (currentWheel && hasSlicePlan) {
     for (const s of ['within_1yr', 'current_state', 'halfway']) {
       const at = steps.indexOf(s);
       if (at >= 0) steps.splice(at, 1);
@@ -1403,7 +1409,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // any prior per-slice halfway goals (Session-3 goals keyed by slice) so the walk
   // shows prior choices/answers. Dormant otherwise. "Now" is not persisted (it is the
   // in-walk anchor for the one backward-decompose), so nothing to preload for it.
-  if (CURRENT_WHEEL_BUILD && hasSlicePlan && learnerId) {
+  if (currentWheel && hasSlicePlan && learnerId) {
     try {
       const lr = await getLearner(learnerId);
       state.openByChoice = Array.isArray(lr?.openByChoice) ? [...lr.openByChoice] : [];
@@ -1453,7 +1459,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     if (steps[state.idx] === 'pitch') state.pitchStage = 'ask-age';
     // Stage O: entering the slice-plan step fresh - start the per-slice walk at its
     // intro page (orients before the year pass; behind the flag; legacy grid ignores this).
-    if (CURRENT_WHEEL_BUILD && steps[state.idx] === 'slice_plan') state.sliceWalk = { pass: 'intro', idx: 0 };
+    if (currentWheel && steps[state.idx] === 'slice_plan') state.sliceWalk = { pass: 'intro', idx: 0 };
     if (profileId && !NON_RESUME_STEPS.has(steps[state.idx])) await setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
@@ -1827,6 +1833,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const plan = buildSlicePlan({
       currentStudio: studio,
       pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
+      currentWheel,
     });
     const pass = state.sliceWalk.pass;
     // Intro page: only Back / Start, no slice boxes to capture.
@@ -1894,6 +1901,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const plan = buildSlicePlan({
       currentStudio: studio,
       pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
+      currentWheel,
     });
     const pass = state.sliceWalk.pass;
     if (pass === 'intro') { state.sliceWalk = { pass: 'year', idx: 0 }; render(); return; }
@@ -1928,6 +1936,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const plan = buildSlicePlan({
       currentStudio: studio,
       pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
+      currentWheel,
     });
     if (state.sliceWalk.pass === 'intro') { back(); return; } // intro -> leave slice_plan for the prior onboarding step
     if (state.sliceWalk.idx > 0) { state.sliceWalk.idx -= 1; render(); return; }
@@ -1963,7 +1972,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // pre-Stage-O. Flag ON -> the Stage O per-slice walk. Nothing on the flag-on path
   // reaches a learner before Stage V's watch-with-a-real-learner gate.
   function renderSlicePlan() {
-    return CURRENT_WHEEL_BUILD ? renderSliceWalk() : renderSlicePlanLegacy();
+    return currentWheel ? renderSliceWalk() : renderSlicePlanLegacy();
   }
 
   // The 1-year plan, organized by wheel slice. A pitching learner plans by the
@@ -1973,6 +1982,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const plan = buildSlicePlan({
       currentStudio: studio,
       pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
+      currentWheel,
     });
     const wheel = `<div class="onb-wheel-pin">${lifeWheelSvgFor(plan.wheelStudio)}</div>`;
     const placedLine = plan.pitching && plan.ratified
@@ -2030,6 +2040,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const plan = buildSlicePlan({
       currentStudio: studio,
       pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
+      currentWheel,
     });
     if (state.sliceWalk.pass === 'intro') return renderSliceIntroPage(plan);
     return state.sliceWalk.pass === 'reflect' ? renderSliceReflectPage(plan) : renderSliceYearPage(plan);
@@ -2271,7 +2282,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // Stage O (behind the flag): the per-slice walk owns its own Back / Continue /
     // leave-open wiring, so skip the generic step handlers below. Flag off falls
     // through to the legacy grid wiring unchanged.
-    if (CURRENT_WHEEL_BUILD && step === 'slice_plan') { wireSliceWalk(); return; }
+    if (currentWheel && step === 'slice_plan') { wireSliceWalk(); return; }
 
     document.getElementById('onb-back')?.addEventListener('click', back);
     document.getElementById('onb-skip')?.addEventListener('click', skipStep);

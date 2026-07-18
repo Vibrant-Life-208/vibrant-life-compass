@@ -71,8 +71,15 @@ export async function getLearners() {
 export async function getLearner(id) {
   const learners = await getLearners();
   const learner = learners.find((l) => l.id === id);
-  // Parity with the supabase adapter: openByChoice defaults to [] (Stage P3, dormant).
-  if (learner) return { ...learner, openByChoice: Array.isArray(learner.openByChoice) ? learner.openByChoice : [] };
+  // Parity with the supabase adapter: openByChoice defaults to [] (Stage P3, dormant),
+  // current_wheel_test defaults to false (v0.23). NB: local dev is always current-wheel via
+  // the BACKEND_TYPE gate in isCurrentWheelBuild, so this value is not consulted locally - it
+  // is carried only for adapter parity.
+  if (learner) return {
+    ...learner,
+    openByChoice: Array.isArray(learner.openByChoice) ? learner.openByChoice : [],
+    current_wheel_test: Boolean(learner.current_wheel_test),
+  };
   // Guide-as-protagonist fallback (Captain 2026-05-15): when a guide is
   // signed in and their own id is being used as the protagonist id,
   // return the guide record with a synthetic studio so all the learner-

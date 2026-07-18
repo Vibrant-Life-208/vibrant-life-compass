@@ -14,6 +14,7 @@ import { renderPartnerPage } from './partner.js';
 import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderAnchorInsights } from './insights.js';
 import { renderSetupView } from './setup.js';
+import { renderCalendarView } from './calendar-view.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
@@ -421,9 +422,28 @@ async function showSetupView(learnerId) {
 async function buildTabs(role) {
   const nav = document.getElementById('tab-nav');
   nav.innerHTML = '';
-  const tabs = TABS_BY_ROLE[role] || TABS_BY_ROLE.learner;
+  const tabs = [...(TABS_BY_ROLE[role] || TABS_BY_ROLE.learner)];
   const session = await requireSession();
   const learnerId = await resolveLearnerId(session);
+
+  // Calendar tab (2026-07-18): a read-only year-at-a-glance for the mature tiers only -
+  // Launch Pad learners plus adults (guides / parents / owners). The vulnerable young
+  // tiers (Sparks / Discovery / Adventure) never see it. Guides/parents/owners are
+  // eligible by role; a learner qualifies only when their studio is Launch Pad. Injected
+  // dynamically (not in TABS_BY_ROLE) so the studio gate lives in one place and young
+  // learners get a byte-identical tab bar to before.
+  let calendarEligible = role === 'guide' || role === 'parent' || !!session.is_owner;
+  if (!calendarEligible && role === 'learner' && learnerId) {
+    const { getLearner } = await import('./store.js');
+    const l = await getLearner(learnerId);
+    calendarEligible = l?.studio === 'launchpad';
+  }
+  if (calendarEligible && !tabs.some((t) => t.id === 'calendar-view')) {
+    const at = tabs.findIndex((t) => t.id === 'year-view');
+    const calTab = { id: 'calendar-view', label: 'Calendar' };
+    if (at >= 0) tabs.splice(at + 1, 0, calTab);
+    else tabs.push(calTab);
+  }
 
   // Compute notification count for the Partner tab (learners only).
   let partnerNotifCount = 0;
@@ -471,6 +491,7 @@ async function showTab(tabId, learnerId) {
   if (tabId === 'partner-view') await renderPartnerPage(learnerId);
   if (tabId === 'guide-view') await renderRoleView('guide', learnerId);
   if (tabId === 'parent-view') await renderRoleView('parent', learnerId);
+  if (tabId === 'calendar-view') await renderCalendarView(learnerId);
 }
 
 async function renderRoleView(role, learnerId) {
