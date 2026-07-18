@@ -42,9 +42,15 @@ taps straight to the arc.
 Session / week structure is task storage; the learner never sees "Session N" or a week count.
 They experience one continuous flow at setup, then this-week's tasks in the arc.
 
-## Standing gate (unchanged)
+## Standing gate (updated by the 3 circle reviews, 2026-07-17)
 Built-surface re-walk (Jake + Accord + Comes) before any flag flip; then watch-with-a-real-learner.
-Nothing ships to learners.
+Nothing ships to learners. Additions from the circle-by-circle reviews (see
+`2026-07-17-discovery-flow-design-principles.md`):
+- **Watch (PDC):** watch-with-a-real-learner must include a *staying* learner AND a *first-year*
+  learner - not only a pitcher.
+- **Safety lock (SSC):** the flag does not flip for any cohort that could contain a pitch-and-fall
+  or a first-year learner until the third-learner soft landing AND the newcomer floor exist and are
+  walked. Salus's CONTRAINDICATED rating is a lock on exposure, not a note.
 
 ## Build increments
 1. **Milestone setup flow** (this doc's core): the 3-step spine + a few near-steps -> tasks;

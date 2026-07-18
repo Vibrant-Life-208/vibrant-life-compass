@@ -1070,24 +1070,24 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         <textarea id="gs-yeargoal" class="slice-box" rows="3" placeholder="By next year, in ${escapeAttr(catName)}, I want to…">${escapeHtml(s.yeargoal)}</textarea>`;
     } else if (st === 'now') {
       body = `
-        <h3 class="onb-horizon-heading">Where are you now?</h3>
+        <h3 class="onb-horizon-heading">Where are you starting from?</h3>
         ${contextCard('Your year goal', s.yeargoal)}
-        <p class="onb-horizon-body">Honestly - where are you today in ${escapeHtml(catName)}? This is the mirror, not the dream.</p>
-        <textarea id="gs-now" class="slice-box" rows="3" placeholder="Right now, in ${escapeAttr(catName)}, I am…">${escapeHtml(s.now)}</textarea>`;
+        <p class="onb-horizon-body">Honestly - where are you starting from in ${escapeHtml(catName)}? This is the mirror, not the dream.</p>
+        <textarea id="gs-now" class="slice-box" rows="3" placeholder="Starting out, in ${escapeAttr(catName)}, I am…">${escapeHtml(s.now)}</textarea>`;
     } else if (st === 'milestone') {
       body = `
-        <h3 class="onb-horizon-heading">Your halfway milestone</h3>
+        <h3 class="onb-horizon-heading">A marker along the way</h3>
         ${contextCard('Your year goal', s.yeargoal)}
-        ${contextCard('Where you are now', s.now)}
-        <p class="onb-horizon-body">Look at both. Halfway between where you are and your year goal - what does it look like? How will you know you're on your way?</p>
-        <textarea id="gs-milestone" class="slice-box" rows="3" placeholder="Halfway, I will…">${escapeHtml(s.milestone)}</textarea>`;
+        ${contextCard('Where you are starting from', s.now)}
+        <p class="onb-horizon-body">Look at both. Somewhere between where you're starting and your year goal - a marker you'd love to reach. What does it look like?</p>
+        <textarea id="gs-milestone" class="slice-box" rows="3" placeholder="A marker I'd love to reach:">${escapeHtml(s.milestone)}</textarea>`;
     } else {
       const near = s.near.length ? s.near : [''];
       const inputs = near.map((v, i) => `<input type="text" class="gs-near slice-box" data-idx="${i}" value="${escapeAttr(v)}" placeholder="One thing - be specific">`).join('');
       body = `
-        <h3 class="onb-horizon-heading">Imagine achieving it</h3>
-        ${contextCard('Your halfway milestone', s.milestone)}
-        <p class="onb-horizon-body">Imagine yourself achieving this goal - what are a few things you'd have to have done to reach your milestone? Just a few to start; you will come back for more as you go.</p>
+        <h3 class="onb-horizon-heading">Imagine reaching it</h3>
+        ${contextCard('The marker you\'d love to reach', s.milestone)}
+        <p class="onb-horizon-body">Imagine yourself reaching this marker - what are a few things you'd have done along the way? Just a few to start; you will come back for more as you go.</p>
         <div class="gs-near-list">${inputs}</div>
         ${near.length < MAX_NEAR ? '<button type="button" class="btn btn-text" id="gs-near-add">+ add another</button>' : ''}`;
     }
