@@ -150,20 +150,26 @@ export async function renderSetupView(learnerId) {
     <section class="setup-section">
       <div class="setup-progress">
         <h3 class="setup-section-title">2. Your year goals</h3>
-        <span class="setup-count ${filledGoals.length >= MIN_GOALS ? 'is-met' : ''}">${filledGoals.length} of ${MIN_GOALS} minimum</span>
+        <span class="setup-count ${filledGoals.length >= MIN_GOALS ? 'is-met' : ''}">${CURRENT_WHEEL_BUILD
+          ? (filledGoals.length >= MIN_GOALS ? 'Ready when you are' : '')
+          : `${filledGoals.length} of ${MIN_GOALS} minimum`}</span>
       </div>
-      <p class="setup-hint">Set at least ${MIN_GOALS} year goals. Tap a category to walk through the 9-stage plan (End of Session 6 → baseline → End of Session 3 → End of Session 2 → End of Session 1 → weekly steps for Sessions 1, 2, 3).</p>
+      <p class="setup-hint">${CURRENT_WHEEL_BUILD
+        ? `Tap a goal to plan it - where you are now, your halfway milestone, and a few first steps.`
+        : `Set at least ${MIN_GOALS} year goals. Tap a category to walk through the 9-stage plan (End of Session 6 → baseline → End of Session 3 → End of Session 2 → End of Session 1 → weekly steps for Sessions 1, 2, 3).`}</p>
       <div id="setup-goals-grid" class="setup-goals-grid"></div>
     </section>
 
     <section class="setup-section ${filledGoals.length >= MIN_GOALS ? '' : 'is-disabled'}">
       <div class="setup-progress">
         <h3 class="setup-section-title">3. Your top ${TOP_PRIORITIES} priorities</h3>
-        <span class="setup-count ${priorityIds.length === TOP_PRIORITIES ? 'is-met' : ''}">${priorityIds.length} of ${TOP_PRIORITIES} starred</span>
+        <span class="setup-count ${priorityIds.length === TOP_PRIORITIES ? 'is-met' : ''}">${CURRENT_WHEEL_BUILD
+          ? (priorityIds.length === TOP_PRIORITIES ? 'Ready when you are' : '')
+          : `${priorityIds.length} of ${TOP_PRIORITIES} starred`}</span>
       </div>
       <p class="setup-hint">${filledGoals.length >= MIN_GOALS
-        ? `Of your ${filledGoals.length} goals, which ${TOP_PRIORITIES} matter most? Tap to star.`
-        : `Available once you've set ${MIN_GOALS} goals.`}</p>
+        ? (CURRENT_WHEEL_BUILD ? 'Which few matter most right now? Tap to star.' : `Of your ${filledGoals.length} goals, which ${TOP_PRIORITIES} matter most? Tap to star.`)
+        : (CURRENT_WHEEL_BUILD ? 'Available once you have set a few goals.' : `Available once you've set ${MIN_GOALS} goals.`)}</p>
       <div id="setup-priority-list" class="setup-priority-list"></div>
     </section>
 
@@ -182,7 +188,7 @@ export async function renderSetupView(learnerId) {
       </button>
       <p class="setup-footer-hint">${
         filledGoals.length < MIN_GOALS
-          ? `Fill at least ${MIN_GOALS - filledGoals.length} more goal${MIN_GOALS - filledGoals.length === 1 ? '' : 's'} to continue.`
+          ? (CURRENT_WHEEL_BUILD ? 'Set a few more goals to continue.' : `Fill at least ${MIN_GOALS - filledGoals.length} more goal${MIN_GOALS - filledGoals.length === 1 ? '' : 's'} to continue.`)
           : priorityIds.length === 0
           ? 'Top 3 priorities are optional — you can star them any time. Ready to send your plan to your partner for sign-off.'
           : 'Ready to send to your partner for sign-off.'
@@ -259,7 +265,7 @@ function renderGoalsGrid(learner, filledGoals) {
       <span class="setup-goal-cat">${escapeHtml(cat.name)}</span>
       <span class="setup-goal-kind">${escapeHtml(cat.kind)}</span>
       <p class="setup-goal-text">${filled ? escapeHtml(filled.text) : 'Tap to plan this goal'}</p>
-      ${filled?.halfwayPoint ? `<span class="setup-goal-eos3"><strong>End of Session 3:</strong> ${escapeHtml(filled.halfwayPoint)}</span>` : ''}
+      ${filled?.halfwayPoint ? `<span class="setup-goal-eos3"><strong>${CURRENT_WHEEL_BUILD ? 'Your milestone:' : 'End of Session 3:'}</strong> ${escapeHtml(filled.halfwayPoint)}</span>` : ''}
     `;
     card.addEventListener('click', () => {
       // Stage M (behind the flag): a goal with no milestone yet opens the ratified per-goal
