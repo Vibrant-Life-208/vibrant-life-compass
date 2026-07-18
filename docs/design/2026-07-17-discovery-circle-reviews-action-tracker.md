@@ -111,6 +111,46 @@ Adventure learner too.
 
 ---
 
+## Launchpad (Adventure → Launchpad) — requirements are FIRST-YEAR PRIORITIES, not entry gates
+
+**Finding (2026-07-18):** only `THRESHOLDS.adventure` is authored today (thresholds.js:21) — the
+Discovery→Adventure entry gates. There is **no `THRESHOLDS.launchpad`**. What exists for Launchpad
+is per-category *example goals* in studios.js (the Launchpad experience: self-paced academics, a
+six-week apprenticeship, Threshold portfolio projects, advanced badges, mentoring a Discovery
+learner, leading a Quest) and `STUDIO_ENTRY_AGE.launchpad = 15`.
+
+**Captain's key distinction (working understanding — CONFIRM WITH THE SCHOOL):** the Launchpad
+(high-school) requirements do **NOT** have to be met to *enter*. Entry happens (~age 15 + general
+readiness); the requirements are a **first-year priority** — worked on *once you're in*, not cleared
+to get in. This is structurally different from the Adventure model:
+
+- Adventure thresholds = **pre-entry gates** (met before acceptance).
+- Launchpad requirements = **first-year goals/roots**, carried onto the Launchpad wheel AFTER entry.
+
+**Consequences:**
+- Do NOT clone the Adventure gate semantics for Launchpad. Launchpad requirements attach *after*
+  entry as first-year goals, not as a `THRESHOLDS.launchpad` pitch-set that mirrors Adventure.
+- This is the **purest fit for the three circle principles**: if entry isn't gated by meeting the
+  requirements, there is no "fell short" pitch to fail — no pre-entry sorting at all. The
+  requirements simply ARE the first-year's Root · Tend · Deepen work. The un-sorting room /
+  app-never-scores fall out for free because the school isn't scoring entry.
+- An Adventure learner crossing into Launchpad looks less like a "pitcher" and more like a
+  **first-year fresh-start in a new studio, carrying named priorities** — a blend of two of the four
+  paths (first-year + mover-up).
+
+**To do:**
+- [ ] 🧑‍⚖️ **Confirm with the school:** are Launchpad requirements truly first-year priorities, not
+      entry gates? Is the Adventure→Launchpad rite named ("the Threshold" / "Next Great Adventure"),
+      and does that naming lead the copy? What are the real requirements (skills / character /
+      opportunities / signer)?
+- [ ] 🎨 **Model Launchpad requirements as carried first-year GOALS** (roots on the Launchpad wheel),
+      NOT pre-entry thresholds — once confirmed. Author the content the captain sources.
+- [ ] ⚠️ **Terminology collision:** "Threshold" means two things — the generic pitch-readiness gates
+      AND the specific Acton "Threshold" portfolio projects (named Launchpad work). Keep them
+      distinct in any Launchpad copy.
+
+---
+
 ## Remaining circles in the series
 
 PDC ✅ · SSC ✅ · MAC ✅ · **COC** (does the data model narrate one story? roots-not-rungs, path-blind
