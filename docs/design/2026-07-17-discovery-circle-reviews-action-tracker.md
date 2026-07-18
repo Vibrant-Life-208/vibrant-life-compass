@@ -76,6 +76,41 @@ Status key: ✅ done · 🔨 scoped-engineering · 🎨 design-session · 🧑�
 
 ---
 
+## Adventure parity (2026-07-17 — the flow is ALREADY one flow, not two)
+
+**Finding:** there is **zero per-studio branching** in the onboarding / setup / arc code. The whole
+flow is parameterized by `studio` through three data sources: `getWheelAreas(studio)` (the slices),
+per-studio example goals in `studios.js` (already written for adventure), and
+`THRESHOLD_LIFE_AREA[studio]` (the threshold→slice placement). Studio ladder:
+**sparks → discovery → adventure → launchpad**, each pitching to the next. So an Adventure learner
+IS the same flow (plan on the Adventure wheel, optionally carry Launchpad-pitch thresholds as roots).
+**Everything built for Discovery is wheel-agnostic and covers Adventure** — the milestone flow, the
+goal arc, the two doors, all three circle-review principles, and the C1 guards. Adventure is NOT a
+separate build. The wheels differ (discovery = 6 slices: Movement/Learning/Heart/Family/Friends/Fun;
+adventure = 8: Movement/**Mind/Spirit/Emotions**/Family/Friends/**Home/Joy**).
+
+Three real deltas remain — **behavior/data, not copy** (won't happen automatically):
+
+- [ ] 🧑‍⚖️🔨 **Extend the becoming-vs-skill classification.** `isBecomingSlice` (`goal-arc.js:54`) is
+      hardcoded to `'heart'`. Adventure has NO Heart — its becomings are **Spirit + Emotions**
+      (Joy? Home? Family? = the design call). Without this, every Adventure area wrongly gets the
+      finish-line spine instead of the presence-note. **First concrete step; needs a which-areas-are-
+      becomings decision** (bring to the next circle). Then C1 render-conditions/no-sorting get an
+      Adventure snapshot.
+- [ ] 🎨 **Ratify the Adventure threshold→slice mapping.** It exists in `THRESHOLD_LIFE_AREA.adventure`
+      but is gated behind `MAPPING_RATIFIED` (held false). Needs the same Accord + Jake + TCC review
+      Discovery's placements got (2026-07-16) before carried-thresholds-as-roots land on the right
+      slices.
+- [ ] 🧑‍⚖️ **Decide the flag gating.** `thresholdLifeArea` gates `discovery` behind
+      `CURRENT_WHEEL_BUILD` and everything else behind `MAPPING_RATIFIED`. Lighting up Adventure =
+      widen the flag OR ratify the mapping. Deliberate choice, not automatic.
+
+Smaller: the 5-goal minimum + star-top-3 will *feel* different across 8 slices vs 6 (review); add an
+Adventure plan snapshot to the C1 guards; the watch-with-a-real-learner set should include an
+Adventure learner too.
+
+---
+
 ## Remaining circles in the series
 
 PDC ✅ · SSC ✅ · MAC ✅ · **COC** (does the data model narrate one story? roots-not-rungs, path-blind
