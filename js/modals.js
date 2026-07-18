@@ -1018,6 +1018,157 @@ export async function openGoalArcModal({ goal, learnerId = null, lifeArea = null
   openModal();
 }
 
+// Stage M setup flow (behind CURRENT_WHEEL_BUILD): the per-goal decomposition on the MAIN
+// Compass page, ratified by the 8-agent review 2026-07-17. Replaces the 9-stage
+// openYearGoalModal for setting a goal's milestone. The learner sees the year goal, names
+// where they are NOW, sets a halfway MILESTONE (saved as the Session-3 goal), and names a FEW
+// near-steps (stored as tasks). BINDING (Decision 2): no full multi-week ladder authored up
+// front - a few near-steps only; Sessions 4 & 7 refocus re-open the rest. Sessions are never
+// named to the learner. Store the structure; surface this week; never a scoreboard.
+// Spec: docs/design/2026-07-17-main-page-goal-decomposition-build-spec.md.
+export async function openGoalSetupModal({ goal = null, category = null, learnerId = null, onDone = null }) {
+  const catId = category?.id || goal?.categoryId;
+  const catName = category?.name || goal?.lifeArea || 'this goal';
+  const dnow = new Date();
+  const todayISO = `${dnow.getFullYear()}-${String(dnow.getMonth() + 1).padStart(2, '0')}-${String(dnow.getDate()).padStart(2, '0')}`;
+  const MAX_NEAR = 3; // ceiling-as-relief; a FEW, never the full ladder (Decision 2)
+
+  const s = {
+    // 'yeargoal' shows only when the year goal has no text yet; then now -> milestone -> steps.
+    steps: (goal?.text ? [] : ['yeargoal']).concat(['now', 'milestone', 'nearsteps']),
+    idx: 0,
+    yeargoal: goal?.text || '',
+    now: goal?.baseline || '',
+    milestone: goal?.halfwayPoint || '',
+    near: [''],
+  };
+  const step = () => s.steps[s.idx];
+
+  function capture() {
+    const st = step();
+    if (st === 'yeargoal') s.yeargoal = document.getElementById('gs-yeargoal')?.value ?? s.yeargoal;
+    else if (st === 'now') s.now = document.getElementById('gs-now')?.value ?? s.now;
+    else if (st === 'milestone') s.milestone = document.getElementById('gs-milestone')?.value ?? s.milestone;
+    else if (st === 'nearsteps') {
+      const near = [];
+      document.querySelectorAll('.gs-near').forEach((inp) => near.push(inp.value));
+      s.near = near.length ? near : [''];
+    }
+  }
+
+  const contextCard = (label, text) => (text
+    ? `<div class="gs-context-card"><span class="gs-context-label">${escapeHtml(label)}</span><p class="gs-context-text">${escapeHtml(text)}</p></div>`
+    : '');
+
+  function renderStep() {
+    const st = step();
+    let body = '';
+    if (st === 'yeargoal') {
+      body = `
+        <h3 class="onb-horizon-heading">${escapeHtml(catName)} - your year goal</h3>
+        <p class="onb-horizon-body">A year from now, what's different about you in ${escapeHtml(catName)}? How would your guide know you got there?</p>
+        <textarea id="gs-yeargoal" class="slice-box" rows="3" placeholder="By next year, in ${escapeAttr(catName)}, I want to…">${escapeHtml(s.yeargoal)}</textarea>`;
+    } else if (st === 'now') {
+      body = `
+        <h3 class="onb-horizon-heading">Where are you now?</h3>
+        ${contextCard('Your year goal', s.yeargoal)}
+        <p class="onb-horizon-body">Honestly - where are you today in ${escapeHtml(catName)}? This is the mirror, not the dream.</p>
+        <textarea id="gs-now" class="slice-box" rows="3" placeholder="Right now, in ${escapeAttr(catName)}, I am…">${escapeHtml(s.now)}</textarea>`;
+    } else if (st === 'milestone') {
+      body = `
+        <h3 class="onb-horizon-heading">Your halfway milestone</h3>
+        ${contextCard('Your year goal', s.yeargoal)}
+        ${contextCard('Where you are now', s.now)}
+        <p class="onb-horizon-body">Look at both. Halfway between where you are and your year goal - what does it look like? How will you know you're on your way?</p>
+        <textarea id="gs-milestone" class="slice-box" rows="3" placeholder="Halfway, I will…">${escapeHtml(s.milestone)}</textarea>`;
+    } else {
+      const near = s.near.length ? s.near : [''];
+      const inputs = near.map((v, i) => `<input type="text" class="gs-near slice-box" data-idx="${i}" value="${escapeAttr(v)}" placeholder="One thing - be specific">`).join('');
+      body = `
+        <h3 class="onb-horizon-heading">Imagine achieving it</h3>
+        ${contextCard('Your halfway milestone', s.milestone)}
+        <p class="onb-horizon-body">Imagine yourself achieving this goal - what are a few things you'd have to have done to reach your milestone? Just a few to start; you will come back for more as you go.</p>
+        <div class="gs-near-list">${inputs}</div>
+        ${near.length < MAX_NEAR ? '<button type="button" class="btn btn-text" id="gs-near-add">+ add another</button>' : ''}`;
+    }
+    const isFirst = s.idx === 0;
+    const isLast = s.idx === s.steps.length - 1;
+    document.getElementById('form-fields').innerHTML = `
+      <div class="goal-setup">${body}</div>
+      <div class="onb-step-actions">
+        <button type="button" class="btn btn-text" id="gs-back">${isFirst ? 'Cancel' : 'Back'}</button>
+        <div class="onb-step-actions-right">
+          <button type="button" class="btn btn-primary" id="gs-next">${isLast ? 'Save this goal' : 'Next'}</button>
+        </div>
+      </div>`;
+    const defaultActions = document.querySelector('#goal-form .modal-actions');
+    if (defaultActions) defaultActions.style.display = 'none';
+
+    document.getElementById('gs-near-add')?.addEventListener('click', () => {
+      capture();
+      if (s.near.length < MAX_NEAR) s.near.push('');
+      renderStep();
+    });
+    document.getElementById('gs-back')?.addEventListener('click', () => {
+      if (isFirst) { closeModal(); return; }
+      capture(); s.idx -= 1; renderStep();
+    });
+    document.getElementById('gs-next')?.addEventListener('click', async () => {
+      capture();
+      if (!isLast) { s.idx += 1; renderStep(); return; }
+      await persist();
+      closeModal();
+      if (onDone) await onDone();
+    });
+  }
+
+  async function persist() {
+    if (!learnerId) return;
+    let existingGoals = [];
+    try { existingGoals = await getGoals(learnerId); } catch (e) { /* non-fatal */ }
+    // 1. The year goal row (baseline = now, halfwayPoint = milestone).
+    const prior = goal?.id ? { id: goal.id, status: goal.status } : existingGoals.find((g) => g.scope === 'year' && g.categoryId === catId);
+    let saved = null;
+    try {
+      saved = await saveGoal({
+        id: prior?.id,
+        learnerId,
+        categoryId: catId,
+        scope: 'year',
+        text: (s.yeargoal || '').trim(),
+        baseline: (s.now || '').trim() || undefined,
+        halfwayPoint: (s.milestone || '').trim() || undefined,
+        targetSession: 6,
+        status: prior?.status || 'active',
+      });
+    } catch (e) { /* non-fatal */ }
+    // 2. The milestone IS the Session-3 goal (reuse the seed pattern; Decision 4). Sessions are
+    //    never named to the learner - this is backend task/goal storage.
+    const milestone = (s.milestone || '').trim();
+    if (milestone) {
+      const existingS3 = existingGoals.find((g) => g.scope === 'session' && g.sessionIndex === 3 && g.categoryId === catId);
+      try {
+        if (!existingS3) await saveGoal({ learnerId, categoryId: catId, scope: 'session', sessionIndex: 3, text: milestone, autoPopulated: true, status: 'active' });
+        else if (existingS3.autoPopulated) await saveGoal({ ...existingS3, text: milestone, autoPopulated: true });
+      } catch (e) { /* non-fatal */ }
+    }
+    // 3. The FEW near-steps -> tasks, planned THIS WEEK (Decision 2/3: a few, stored, surfaced
+    //    this week via the arc, never a persisted full multi-week ladder). Linked by goalId.
+    const goalId = saved?.id || prior?.id || null;
+    for (const raw of s.near) {
+      const text = (raw || '').trim();
+      if (!text) continue;
+      try { await saveTask(learnerId, { text, plannedFor: todayISO, goalId, categoryId: catId, status: 'open' }); }
+      catch (e) { /* non-fatal */ }
+    }
+  }
+
+  setModalTitle(catName);
+  renderStep();
+  activeSubmit = null;
+  openModal();
+}
+
 // v0.3 first-run cascade - resumable, gating onboarding. Per the 2026-06-22
 // fleet meeting. Replaces the v0.2 3-step anchor modal with the telescoping
 // cascade: body-first breath -> VIA strengths (link-out) -> Values (link-out) ->

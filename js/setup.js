@@ -9,7 +9,8 @@ import {
   proposePartner, respondToPartnerProposal, saveTask,
 } from './store.js';
 import { STUDIOS, getCategoriesForStudio, getCalendarForStudio } from './studios.js';
-import { openYearGoalModal, openConfirmModal } from './modals.js';
+import { openYearGoalModal, openConfirmModal, openGoalSetupModal } from './modals.js';
+import { CURRENT_WHEEL_BUILD } from './thresholds.js';
 
 const MIN_GOALS = 5;
 const TOP_PRIORITIES = 3;
@@ -261,6 +262,14 @@ function renderGoalsGrid(learner, filledGoals) {
       ${filled?.halfwayPoint ? `<span class="setup-goal-eos3"><strong>End of Session 3:</strong> ${escapeHtml(filled.halfwayPoint)}</span>` : ''}
     `;
     card.addEventListener('click', () => {
+      // Stage M (behind the flag): a goal with no milestone yet opens the ratified per-goal
+      // setup flow (now -> milestone -> a few near-steps; 8-agent review 2026-07-17) instead of
+      // the 9-stage modal. Milestone-already-set stays on the 9-stage edit path for now. Flag
+      // off: byte-identical to before.
+      if (CURRENT_WHEEL_BUILD && !(filled && filled.halfwayPoint)) {
+        openGoalSetupModal({ goal: filled || null, category: cat, learnerId: learner.id, onDone: () => renderSetupView(learner.id) });
+        return;
+      }
       openYearGoalModal({
         category: cat,
         existing: filled,
