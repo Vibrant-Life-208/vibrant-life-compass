@@ -427,12 +427,13 @@ async function buildTabs(role) {
   const learnerId = await resolveLearnerId(session);
 
   // Calendar tab (2026-07-18): a read-only year-at-a-glance for the mature tiers only -
-  // Launch Pad learners plus adults (guides / parents / owners). The vulnerable young
-  // tiers (Sparks / Discovery / Adventure) never see it. Guides/parents/owners are
+  // Launch Pad learners plus guides and owners. The vulnerable young tiers (Sparks /
+  // Discovery / Adventure) never see it. Parents are excluded too (captain call
+  // 2026-07-18): their surface stays session goals + recap only. Guides/owners are
   // eligible by role; a learner qualifies only when their studio is Launch Pad. Injected
   // dynamically (not in TABS_BY_ROLE) so the studio gate lives in one place and young
   // learners get a byte-identical tab bar to before.
-  let calendarEligible = role === 'guide' || role === 'parent' || !!session.is_owner;
+  let calendarEligible = role === 'guide' || !!session.is_owner;
   if (!calendarEligible && role === 'learner' && learnerId) {
     const { getLearner } = await import('./store.js');
     const l = await getLearner(learnerId);

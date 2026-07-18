@@ -1,7 +1,7 @@
 // Calendar view - a read-only, month-by-month picture of the academic-year cycle.
-// Available to Launch Pad learners and adults (guides / parents / owners) only; the
-// tab itself is gated in app.js (young tiers - Sparks / Discovery / Adventure - never
-// see it). This view renders over EXISTING data only - it writes nothing and adds no
+// Available to Launch Pad learners and staff adults (guides / owners) only; the tab
+// itself is gated in app.js (young tiers - Sparks / Discovery / Adventure - and parents
+// never see it). This view renders over EXISTING data only - it writes nothing and adds no
 // schema:
 //   - getYearCalendar()  -> the cycle's session start dates + week counts (studios.js)
 //   - goals.sessionIndex -> per-session goals, grouped under their session
