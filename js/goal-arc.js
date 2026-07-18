@@ -47,11 +47,18 @@ export function currentArcPosition(calendar, today = new Date()) {
   return { session: s + 1, week };
 }
 
-// Is this a Heart ("becoming") goal? Heart carries a PRESENCE register - noticing, not
-// finishing - because "you don't finish becoming heroic" (§7/§11). Everything else takes
-// the finish-shaped progressing question. Keyed off the slice label the goal carries.
+// Becoming slices carry a PRESENCE register - noticing, not finishing - because "you don't
+// finish becoming heroic" (§7/§11). Everything else takes the finish-shaped progressing
+// question. Keyed off the slice label the goal carries.
+// Discovery becoming = Heart. Adventure becomings = Spirit + Emotions (confirmed minimum).
+// Fix 2026-07-18: hardcoding to 'heart' alone gave every Adventure Spirit/Emotions goal the
+// finish-line spine (verified: weeklyKindFor('Spirit') === 'finish'). Fail toward presence
+// for the confirmed becomings. Joy/Home/Family are the open which-areas call for the school
+// and keep the default register until ratified.
+// TODO: replace with a per-studio becoming map (tracker: "Generalize the Discovery-first data layer").
+const BECOMING_SLICES = new Set(['heart', 'spirit', 'emotions']);
 function isBecomingSlice(lifeArea) {
-  return String(lifeArea || '').trim().toLowerCase() === 'heart';
+  return BECOMING_SLICES.has(String(lifeArea || '').trim().toLowerCase());
 }
 
 // The cadence-split kind for a slice: Heart 'becoming' goals register PRESENCE; everything

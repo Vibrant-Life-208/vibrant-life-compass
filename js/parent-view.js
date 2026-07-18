@@ -123,18 +123,17 @@ function renderRecap(learner, allGoals, sessionIndex) {
   );
   if (sessionGoals.length === 0) return document.createElement('div');
 
-  const approved = sessionGoals.filter((g) => g.status === 'approved' || g.status === 'done');
-  const pct = Math.round((approved.length / sessionGoals.length) * 100);
-
+  // Reflection, not verdict: show what the learner worked on this session — their own
+  // goals, self-referenced, no count/percentage/comparison. (Principle 2, sharpened
+  // 2026-07-18: reflect competence informationally; never score. A parent scorecard reads
+  // to a child as distrust of their competence — a measured harm, not just a breach.)
   const wrap = document.createElement('div');
   wrap.className = 'parent-recap-card';
   wrap.innerHTML = `
     <div class="parent-recap-header">
-      <span class="parent-section-label">Session ${sessionIndex} recap</span>
-      <span class="parent-recap-pct">${pct}%</span>
+      <span class="parent-section-label">What they worked on, session ${sessionIndex}</span>
     </div>
-    <p class="parent-recap-line">${approved.length} of ${sessionGoals.length} session goals reached.</p>
-    ${approved.length > 0 ? `<ul class="parent-celebrations">${approved.map((g) => `<li>${escapeHtml(g.text)}</li>`).join('')}</ul>` : ''}
+    <ul class="parent-celebrations">${sessionGoals.map((g) => `<li>${escapeHtml(g.text)}</li>`).join('')}</ul>
   `;
   return wrap;
 }
@@ -158,11 +157,12 @@ function renderCurrentSessionFocus(learner, allGoals, sessionIndex) {
   sessionGoals.forEach((g) => {
     const cat = findCategoryName(learner.studio, g.categoryId);
     const status = g.status || 'active';
+    // "In review" pending-approval badge removed (2026-07-18): a verdict-in-waiting on the
+    // parent surface. The broader approval-verb -> witness conversion is a leadership call
+    // (fix-now vs at-flip) tracked separately.
     const statusBadge = status === 'approved' || status === 'done'
       ? '<span class="parent-goal-status parent-goal-done">Done</span>'
-      : status === 'pending-approval'
-        ? '<span class="parent-goal-status parent-goal-pending">In review</span>'
-        : '';
+      : '';
     const li = document.createElement('li');
     li.className = 'parent-goal-item' + (status === 'approved' || status === 'done' ? ' is-done' : '');
     li.innerHTML = `

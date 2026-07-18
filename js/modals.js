@@ -12,7 +12,7 @@ import {
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar } from './studios.js';
 import { lifeWheelSvgFor } from './wheel.js';
-import { renderThresholdsHtml, buildSlicePlan, CURRENT_WHEEL_BUILD } from './thresholds.js';
+import { renderThresholdsHtml, buildSlicePlan, CURRENT_WHEEL_BUILD, getThresholds } from './thresholds.js';
 import { renderGoalArcHtml, currentArcPosition, weeklyKindFor } from './goal-arc.js';
 import { getWeeklyAnswer, saveWeeklyAnswer } from './weekly-answers.js';
 
@@ -1297,7 +1297,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // enum, so advance()/back() never persist it as the resume pointer - its data lives on
   // the learner row. (Captain design 2026-07-10.)
   const pitchTarget = role === 'learner' ? nextStudio(studio) : null;
-  if (pitchTarget) {
+  // Only insert the pitch step when the target studio has authored thresholds. For
+  // Adventure -> Launch Pad, getThresholds('launchpad') is null: showing the pitch there
+  // fires an age-gate self-report ("15 by December, will you have?") AND opts the learner
+  // into a confirmed-but-empty ceremony (a "working toward your pitch" banner over blank
+  // slices). Launch Pad requirements are first-year priorities, not pre-entry gates, so no
+  // pitch belongs here yet. Suppressing the step also keeps pitchOptedIn false, so no
+  // pitchTargetStudio and no empty banner render downstream. Fix 2026-07-18.
+  if (pitchTarget && getThresholds(pitchTarget)) {
     const at = steps.indexOf('within_1yr');
     if (at >= 0) steps.splice(at, 0, 'pitch');
     else steps.push('pitch');

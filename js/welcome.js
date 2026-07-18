@@ -8,7 +8,7 @@ import { computeYearPosition } from './year-map.js';
 import { hasCompletedOnboarding } from './store.js';
 
 const ROLE_TITLES = {
-  guide: 'Welcome, Guide.',
+  guide: 'Welcome.',
   learner: 'Welcome.',
   parent: 'Welcome.',
 };
