@@ -2232,31 +2232,11 @@ textarea[data-autogrow] {
   font-style: italic;
   line-height: 1.5;
 }
-/* The Path - a loop of session markers, not a filled bar. */
-.pt-path {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.9rem;
-  padding: 0.5rem 0 0.8rem;
-  border-bottom: 1px dashed #f0d9bf;
-  margin-bottom: 0.85rem;
-}
-.pt-step {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-}
-.pt-step-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 999px;
-  background: #e9c9a3;
-  flex: none;
-}
-.pt-step.is-here { color: var(--pt-orange); font-weight: 600; }
-.pt-step.is-here .pt-step-dot { background: var(--pt-orange-soft); box-shadow: 0 0 0 3px #ff8c1a33; }
+/* Removed 2026-07-18: dead ".pt-path / .pt-step" session-marker block (a horizontal
+   breadcrumb of dots that no JS renders). It COLLIDED with the Parents & Tots posture
+   journey, which reuses .pt-path/.pt-step - the old `display:flex` forced each posture
+   card's content into a cramped horizontal row. The journey's own .pt-path/.pt-step
+   rules (further down) now stand uncontested, so each card stacks vertically. */
 .pt-badge-kicker {
   color: var(--pt-orange);
   font-size: 0.72rem;
@@ -3941,6 +3921,11 @@ body.landscape-mountain {
 .pt-journey-title { margin: 0 0 0.25rem; color: var(--sage); font-weight: 500; }
 .pt-journey-sub { margin: 0 0 0.9rem; color: #8a8a80; font-size: 0.88rem; }
 .pt-journey-arc-note { margin: 0 0 0.9rem; color: #8a8a80; font-size: 0.85rem; font-style: italic; }
+/* Gate choices: the two conversation-gate buttons. pt-gate-none had no styling and
+   rendered as a raw browser button - give it a quiet text-link look beside the primary. */
+.pt-gate-choices { display: flex; flex-wrap: wrap; gap: 0.6rem 1rem; align-items: center; margin-top: 1rem; }
+.pt-gate-none { border: none; background: none; color: #8a8a80; font-size: 0.9rem; text-decoration: underline; cursor: pointer; padding: 0.3rem 0.2rem; }
+.pt-gate-none:hover { color: #5a5a52; }
 .pt-path { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.7rem; }
 .pt-step {
   border: 1px solid #e3ddd0; border-left: 3px solid #cdbfa6; border-radius: 12px;
