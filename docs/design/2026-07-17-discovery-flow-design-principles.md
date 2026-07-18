@@ -36,9 +36,28 @@ can produce shame or a verdict) and steps back to *support the human* when a gui
 present. Parent **approval → witness** (nothing to approve *against*, so an approval flow cannot
 become a weapon).
 
+**Verdict vs. reflection (sharpened 2026-07-18, PDC research cycle).** "Never scores" means never a
+*verdict* — never a rank, a pass/fail, a percentage, or a comparison to another learner. It does
+**not** mean never reflecting the learner's own competence back to them. Self-determination research
+(need-support meta-analyses, combined N in the hundreds of thousands) finds **competence is the single
+strongest driver of self-directed motivation**, and it is fed by *informational, self-referenced*
+feedback — the learner's own prior words and work shown back: "here is what you built, learned, can now
+do." So the growth-mirror is not a tolerated exception to this principle; it is the principle's
+**positive obligation**. The failure mode is symmetrical: a surface that scores the learner *sorts*
+them (the wound we know), and a surface that reflects *nothing* *starves* the competence that motivates
+them (the wound we were about to build). Reflect competence; never grade it. And the same research names
+the cost of getting it wrong on the parent side: monitoring a child reads to them as *distrust of their
+competence*, which measurably lowers autonomy and raises anxiety — so a parent scorecard is not only a
+principle breach, it is a measured harm. *(Refs: `2026-07-18-pdc-research-brief.md`.)*
+
 *Check:* can any configuration, path, or outcome cause this surface to deliver a verdict, a rank, or
 a comparison? If yes, it fails. **The growth-mirror is path-blind and outcome-blind — it literally
 cannot tell the four paths apart.**
+
+*Check (positive obligation):* does this surface reflect the learner's own competence back to them —
+informationally and self-referenced (compared only to their own past), never against a bar or another
+learner? Informational and self-referenced = keep. Evaluative or comparative = kill. A surface that
+reflects nothing fails this check as surely as one that grades.
 
 ### 3. THE ROOM NEEDS A MYTH, NOT JUST A MERCY — the belonging-spine (MAC)
 
