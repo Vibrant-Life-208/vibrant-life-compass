@@ -143,7 +143,12 @@ export const MAPPING_RATIFIED = false;
 // have no `learners` row, so getLearner returns null and every call site short-circuits before
 // this resolver; they are current-wheel via the BACKEND_TYPE gate in local dev and simply have no
 // learner-shaped cadence surface to gate in production.
-const MATURE_STUDIOS = new Set(['launchpad', 'guide-summer']);
+// Launchpad removed from auto-on (2026-07-18, captain + review): launchpad learners are
+// 15-18, still minors, and Salus's supervised-watch ruling never cleared them - they stay
+// cohort-gated on current_wheel_test like every other learner until she rules. (They keep the
+// Calendar tab - that is harmless.) guide-summer stays but is inert on prod: guides/owners
+// have no learners row, so getLearner returns null and short-circuits before this resolver.
+const MATURE_STUDIOS = new Set(['guide-summer']);
 export function isCurrentWheelBuild(learner) {
   if (BACKEND_TYPE === 'local') return true;
   if (!learner) return false;
