@@ -200,11 +200,12 @@ export async function renderYearView(learnerId) {
 
     card.addEventListener('click', (e) => {
       if (e.target.classList.contains('goal-checkoff')) return;
-      // Stage M (behind the flag): a goal with no milestone yet opens the ratified per-goal
-      // setup flow (now -> milestone -> a few near-steps; 8-agent review 2026-07-17). A goal
-      // that already has a milestone stays on the existing edit path for now (arc handoff is a
-      // later increment). Flag off: byte-identical to before.
-      if (currentWheel && !(goal && goal.halfwayPoint)) {
+      // Stage M (current-wheel build): EVERY goal opens the ratified per-goal setup flow
+      // (year goal -> now -> milestone -> a few near-steps; 8-agent review 2026-07-17). It
+      // pre-fills from an existing goal, so a decomposed goal no longer drops into the legacy
+      // 9-stage modal (captain 2026-07-18 - that legacy fallback was the confusing surface).
+      // Flag off: byte-identical to before (legacy modal).
+      if (currentWheel) {
         openGoalSetupModal({ goal: goal || null, category: cat, learnerId, onDone: () => renderYearView(learnerId) });
         return;
       }

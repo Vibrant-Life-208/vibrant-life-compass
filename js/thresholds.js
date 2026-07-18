@@ -149,7 +149,14 @@ export const MAPPING_RATIFIED = false;
 // Calendar tab - that is harmless.) guide-summer stays but is inert on prod: guides/owners
 // have no learners row, so getLearner returns null and short-circuits before this resolver.
 const MATURE_STUDIOS = new Set(['guide-summer']);
+// GLOBAL FLIP (captain 2026-07-18): the current-wheel build is ON for EVERYONE on production
+// for a live test - deliberately overriding the per-learner cohort gate AND the SSC
+// supervised-only ruling (Salus). Captain's call, logged in the decision record.
+// REVERT INSTANTLY: set this to false to restore the gated behavior below (per-learner
+// current_wheel_test + guide-summer auto + local dev).
+const CURRENT_WHEEL_GLOBAL_FLIP = true;
 export function isCurrentWheelBuild(learner) {
+  if (CURRENT_WHEEL_GLOBAL_FLIP) return true;
   if (BACKEND_TYPE === 'local') return true;
   if (!learner) return false;
   if (MATURE_STUDIOS.has(learner.studio)) return true;
