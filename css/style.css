@@ -901,12 +901,6 @@ header h1 {
 }
 .parent-anchor-strengths {
   margin: 0 0 1.25rem;
-  padding: 1rem 1rem 1rem 2.2rem;
-  background: var(--warm-white);
-  border-left: 3px solid var(--sage);
-  border-radius: var(--radius);
-  font-weight: 600;
-  color: var(--sage);
 }
 .parent-anchor-why-heading {
   margin: 0 0 0.6rem;
@@ -3738,14 +3732,28 @@ body.landscape-mountain {
 
 /* "Why your strengths matter" page (after the VIA import). Learner's top
    strengths pinned on top, then generic kid-friendly copy. */
-.onb-why-strengths {
+/* Character-strength "oval pill" list - stadium-shaped rows stacked one per line.
+   Visual only: strengths come from the ranked VIA import, nothing to select. */
+.strength-pill-list {
+  list-style: none;
   margin: 0 0 1.5rem;
-  padding: 1rem 1rem 1rem 2.2rem;
-  background: var(--warm-white);
-  border-left: 3px solid var(--sage);
-  border-radius: var(--radius);
-  font-weight: 600;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.strength-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  background: var(--cream);
+  border: 1px solid var(--sage);
   color: var(--sage);
+  font-weight: 600;
+  text-align: center;
 }
 .onb-why-heading {
   margin: 0 0 0.75rem;

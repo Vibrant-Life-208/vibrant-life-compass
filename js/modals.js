@@ -1613,10 +1613,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // strengthResult holds the full top8 when they just uploaded; on a rare
     // resume-then-back it may be absent, so fall back to the saved top strengths.
     const ids = (state.strengthResult ? state.strengthResult.top8 : state.strengths).slice(0, 5);
-    const chips = ids.map((id) => `<li>${escapeHtml(labels[id] || id)}</li>`).join('');
+    const chips = ids.map((id) => `<li class="strength-pill">${escapeHtml(labels[id] || id)}</li>`).join('');
     return `
       <div class="onb-strengths-why">
-        <ol class="via-preview-list onb-why-strengths">${chips}</ol>
+        <ul class="strength-pill-list">${chips}</ul>
         <h3 class="onb-why-heading">Tools you already have</h3>
         <p class="onb-why-body">Meet your strengths. These are some of the best parts of who you are. You use them every day, in your own way - maybe you help a friend, ask a great question, make someone laugh, or keep going when something gets tricky.</p>
         <p class="onb-why-body">Your strengths are like tools you carry with you everywhere. When you want to learn something new or change something, you don't have to start from nothing. You get to use what you are already good at.</p>

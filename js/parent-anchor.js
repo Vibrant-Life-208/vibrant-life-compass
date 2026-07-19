@@ -68,7 +68,7 @@ export async function renderParentAnchor(host, parentId, { onChange } = {}) {
   `;
 
   const strengthsBlock = hasStrengths ? `
-    <ol class="via-preview-list parent-anchor-strengths">${top.slice(0, 5).map((id) => `<li>${escapeHtml(labels[id] || id)}</li>`).join('')}</ol>
+    <ul class="strength-pill-list parent-anchor-strengths">${top.slice(0, 5).map((id) => `<li class="strength-pill">${escapeHtml(labels[id] || id)}</li>`).join('')}</ul>
     ${whyStrengthsHtml()}
     <button type="button" class="btn btn-text parent-anchor-edit" data-strengths-edit>Retake your strengths</button>
   ` : `
