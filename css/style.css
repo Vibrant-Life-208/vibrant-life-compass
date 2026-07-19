@@ -869,6 +869,34 @@ header h1 {
   line-height: 1.5;
 }
 
+/* Parent "mini North" - the parent's own quote anchor on their home surface. */
+.parent-anchor-host:empty {
+  display: none;
+}
+.parent-anchor {
+  margin-bottom: 2rem;
+}
+.parent-anchor-label {
+  margin: 0 0 0.6rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.parent-anchor-edit {
+  display: block;
+  margin: 0.6rem auto 0;
+}
+.parent-anchor-empty {
+  text-align: center;
+}
+.parent-anchor-empty-text {
+  margin: 0 0 0.9rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 /* Confirmation modal action row */
 .confirm-actions {
   display: flex;

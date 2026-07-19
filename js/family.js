@@ -168,6 +168,7 @@ export async function renderFamilyView(familyId, { onBack } = {}) {
     <div class="picker-container family-view">
       <h1 class="picker-title">${family.name}</h1>
       <p class="picker-sub">Your family's values and character strengths, side by side. Reflection only - nothing is scored.</p>
+      <div id="parent-anchor-host" class="parent-anchor-host"></div>
       ${shared}
       <div class="family-updates">
         <h3>Updates from your learners</h3>
@@ -185,6 +186,8 @@ export async function renderFamilyView(familyId, { onBack } = {}) {
   const activeMember = (family.members || []).find((m) => m.profileId === session?.activeProfileId);
   if (activeMember && activeMember.kind === 'parent') {
     renderParentBadgesJourney(document.getElementById('pt-journey'), activeMember.profileId);
+    const { renderParentAnchor } = await import('./parent-anchor.js');
+    renderParentAnchor(document.getElementById('parent-anchor-host'), activeMember.profileId);
   }
 }
 

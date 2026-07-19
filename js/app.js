@@ -42,6 +42,7 @@ const TABS_BY_ROLE = {
   // accountability model). No Partner tab here.
   guide: [
     { id: 'guide-view', label: 'My learners' },
+    { id: 'school-view', label: 'School' },
     { id: 'north-view', label: 'North' },
     { id: 'year-view', label: 'Compass' },
     { id: 'session-view', label: 'Session' },
@@ -164,6 +165,7 @@ async function onSignedIn() {
   if (session.familyId && session.role === 'parent') {
     const { renderFamilyView } = await import('./family.js');
     await renderFamilyView(session.familyId, { onBack: () => reopenFamilyPicker(onSignedIn) });
+    await maybePromptParentQuote(session); // skippable, on top of the family view
     return;
   }
 
@@ -320,8 +322,10 @@ async function onSignedIn() {
   // walked BEFORE a learner can reach the main face. The modals are non-dismissable
   // (js/modals.js setModalGated), and while a gate is pending we do NOT render a tab
   // behind it - the gate's onComplete renders the right surface once it is walked.
+  // Parents are excluded from this hard gate: their quote is offered as a
+  // skippable mini-North prompt (below / maybePromptParentQuote), never a wall.
   let gatingPending = false;
-  if (ownIdentity) {
+  if (ownIdentity && session.role !== 'parent') {
     const currentCycle = getYearCalendar().yearStartISO;
     const quote = await getQuoteState(ownIdentity);
     // The quote is the front-of-line anchor: missing, or stamped for a past cycle.
@@ -389,6 +393,34 @@ async function onSignedIn() {
     const defaultTab = TABS_BY_ROLE[session.role][0].id;
     await showTab(defaultTab, learnerId);
   }
+
+  // Non-family parents: offer the skippable quote on top of their rendered tab.
+  // (Family parents are handled in their own branch above.)
+  if (session.role === 'parent' && !session.familyId) {
+    await maybePromptParentQuote(session);
+  }
+}
+
+// Parents: a personal year-quote anchor, offered (never forced) and re-offered
+// each new cycle. Opened on top of the parent's already-rendered home, so a skip
+// simply lands them back on it. The quote then lives in the mini North
+// (parent-anchor.js). (Captain 2026-07-19.)
+async function maybePromptParentQuote(session) {
+  const parentId = session.id || session.parentId;
+  if (!parentId) return;
+  const currentCycle = getYearCalendar().yearStartISO;
+  const quote = await getQuoteState(parentId);
+  if (quote.text && quote.cycle === currentCycle) return; // already set this cycle
+  openQuoteFlow({
+    profileId: parentId,
+    currentCycle,
+    existing: quote,
+    gated: false, // skippable for parents
+    onComplete: () => {
+      const host = document.getElementById('parent-anchor-host');
+      if (host) import('./parent-anchor.js').then((m) => m.renderParentAnchor(host, parentId));
+    },
+  });
 }
 
 async function needsOnboarding(identityId) {
@@ -491,6 +523,7 @@ async function showTab(tabId, learnerId) {
   }
   if (tabId === 'patterns-view') await renderPatterns(learnerId);
   if (tabId === 'practice-view') await renderPractice();
+  if (tabId === 'school-view') { try { await renderAnchorInsights(); } catch (e) { console.warn('anchor insights:', e); } }
   if (tabId === 'passwords-view') await renderLogins(learnerId);
   if (tabId === 'partner-view') await renderPartnerPage(learnerId);
   if (tabId === 'guide-view') await renderRoleView('guide', learnerId);
@@ -552,9 +585,8 @@ async function renderRoleView(role, learnerId) {
     await renderAdminAccounts();
     initAdmin();
 
-    // Anchor insights (counts only; guide-only; small-group suppressed). Guarded
-    // so a backend hiccup can't break the rest of the guide view.
-    try { await renderAnchorInsights(); } catch (e) { console.warn('anchor insights:', e); }
+    // Anchor insights now live on their own "School" tab (school-view dispatch),
+    // not buried at the bottom of My Learners.
 
     // Parents & Tots recognition arc - REFERENCE only, content-only, no per-parent
     // state (Polaris ruling 2026-07-08). Shown to Tots guides + owners only.

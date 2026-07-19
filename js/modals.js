@@ -2477,7 +2477,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 // from Begin when the quote is missing/stale - never resumed-past like a cascade
 // step. Saves all three fields + stamps the cycle. If the person closes the modal
 // without saving, it simply re-prompts next sign-in.
-export function openQuoteFlow({ profileId = null, currentCycle = '', existing = {}, onComplete } = {}) {
+export function openQuoteFlow({ profileId = null, currentCycle = '', existing = {}, onComplete, gated = true } = {}) {
   const SCREENS = ['intro', 'form'];
   const state = {
     idx: 0,
@@ -2582,7 +2582,10 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
 
   render();
   openModal();
-  setModalGated(true); // first-run gate: the quote anchor must be set, not escaped
+  // Learners/guides: first-run gate - the quote anchor must be set, not escaped.
+  // Parents (gated:false): the quote is an offered personal anchor, skippable via
+  // the X/backdrop, re-offered next cycle. (Captain 2026-07-19.)
+  setModalGated(gated);
 }
 
 // Standalone pitch opt-in: the same age self-report + opt-in as the onboarding

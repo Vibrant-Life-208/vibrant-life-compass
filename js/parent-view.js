@@ -24,6 +24,14 @@ export async function renderParentView() {
 
   container.innerHTML = '';
 
+  // Parent mini North - their own year quote as a personal anchor, at the top.
+  const anchorHost = document.createElement('div');
+  anchorHost.id = 'parent-anchor-host';
+  anchorHost.className = 'parent-anchor-host';
+  container.appendChild(anchorHost);
+  const { renderParentAnchor } = await import('./parent-anchor.js');
+  renderParentAnchor(anchorHost, session.parentId);
+
   // Parents & Tots recognition - the canonical gated four-badge journey from
   // js/parent-badges.js (single source of truth). Rendered first so a P&T parent
   // whose tot isn't on Compass still has a home here. This legacy per-parent path

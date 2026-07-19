@@ -270,6 +270,17 @@
     <!-- Guide "Your Practice" — private reflection surface (filled by practice.js) -->
     <main id="practice-view" class="tab-content"></main>
 
+    <!-- Guide "Whole School" — anchor insights, role-aware + ≥5 suppressed (insights.js) -->
+    <main id="school-view" class="tab-content">
+      <section id="anchor-insights-section" class="admin-section">
+        <div class="admin-header">
+          <h3 class="admin-title">Whole School</h3>
+        </div>
+        <p class="admin-sub">What the community is choosing for values and character strengths - by studio and school-wide. Counts only; no individual's selections are shown. A studio appears once 5+ of its learners have set an anchor.</p>
+        <div id="anchor-insights-body" class="anchor-insights-body"></div>
+      </section>
+    </main>
+
     <!-- Calendar View (Launch Pad learners + guides/owners only) -->
     <main id="calendar-view" class="tab-content">
       <div id="calendar-view-content"></div>
@@ -303,13 +314,7 @@
         <p class="admin-sub">Vibrant Life staff only. Create accounts for hero geniuses, parents, and fellow guides. No emails are collected; identity stays inside Vibrant Life. Temporary passwords are shown once on creation - write them down and hand them to the user.</p>
         <div id="admin-accounts" class="admin-accounts"></div>
       </section>
-      <section id="anchor-insights-section" class="admin-section">
-        <div class="admin-header">
-          <h3 class="admin-title">Anchor insights</h3>
-        </div>
-        <p class="admin-sub">What the community is choosing for values and character strengths - by studio and school-wide. Counts only; no individual's selections are shown.</p>
-        <div id="anchor-insights-body" class="anchor-insights-body"></div>
-      </section>
+      <!-- Anchor insights moved to their own "School" tab (school-view). -->
       <!-- Parents & Tots recognition arc - reference only, never a tracker.
            Populated by parent-badges.js, shown to Tots guides + owners. -->
       <section id="pt-recognition-section" class="admin-section" hidden></section>
