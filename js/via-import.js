@@ -77,7 +77,7 @@ export async function openViaImportModal({ profileId = null, onSaved } = {}) {
   const defaultActions = document.querySelector('#goal-form .modal-actions');
   if (defaultActions) defaultActions.style.display = 'none';
 
-  const listHtml = (ids) => `<ul class="strength-pill-list">${ids.map((id) => `<li class="strength-pill">${labels[id] || id}</li>`).join('')}</ul>`;
+  const listHtml = (ids) => `<ol class="via-preview-list">${ids.map((id) => `<li>${labels[id] || id}</li>`).join('')}</ol>`;
 
   function renderDrop(msg) {
     ff.innerHTML = `
