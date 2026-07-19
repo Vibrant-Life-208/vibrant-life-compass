@@ -1585,7 +1585,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const surveyName = childStrengths ? 'VIA Youth Survey (ages 8-17)' : 'VIA Survey';
     const r = state.strengthResult;
     const preview = r
-      ? `<div class="onb-via-found"><p class="onb-step-instruction">Got it - your top strengths:</p><ol class="via-preview-list">${r.top8.slice(0, 5).map((id) => `<li>${escapeHtml(labels[id] || id)}</li>`).join('')}</ol></div>`
+      ? `<div class="onb-via-found"><p class="onb-step-instruction">Got it - your top strengths:</p><ul class="strength-pill-list">${r.top8.slice(0, 5).map((id) => `<li class="strength-pill">${escapeHtml(labels[id] || id)}</li>`).join('')}</ul></div>`
       : '';
     const errored = state.strengthError ? `<p class="via-import-error">${escapeHtml(state.strengthError)}</p>` : '';
     return `
