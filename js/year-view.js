@@ -16,7 +16,7 @@ let wired = false;
 // cascade writes (js/backend supabase columns vision_beyond_5yr / _within_5yr /
 // _within_1yr), so it shows exactly what they wrote. (Captain 2026-07-15.)
 const HORIZON_VIEW = [
-  { key: 'beyond_5yr', label: '10 years from now', prompt: 'Ten years from now - who have you become? What does your life look like? Let yourself imagine. There is no wrong answer.' },
+  { key: 'beyond_5yr', label: '10 years from now', prompt: "Ten years from now - picture it, really picture it. Where do you live, and who's with you? What's your home like, and what have you filled it with? What do your days look like - the work you do, the things you make, the people around you? Where do you go? What do you do just for the joy of it? And underneath all of it: what do you really want out of your life? Let yourself imagine. There's no wrong answer." },
   { key: 'within_5yr', label: '5 years from now', prompt: 'Now bring it closer. Five years from now - what do you want to be true?' },
   { key: 'within_1yr', label: '1 year from now', prompt: 'Twelve months from now - what do you want to have grown into?' },
 ];

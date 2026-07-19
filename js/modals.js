@@ -1031,16 +1031,27 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
   const catName = category?.name || goal?.lifeArea || 'this goal';
   const dnow = new Date();
   const todayISO = `${dnow.getFullYear()}-${String(dnow.getMonth() + 1).padStart(2, '0')}-${String(dnow.getDate()).padStart(2, '0')}`;
-  const MAX_NEAR = 3; // ceiling-as-relief; a FEW, never the full ladder (Decision 2)
+  const MAX_ITEMS = 3; // up to three per phase; a FEW, never the full ladder (Decision 2 + captain 2026-07-18)
+  const threeUp = (arr, fallback) => {
+    const a = (Array.isArray(arr) ? arr : (fallback ? [fallback] : []))
+      .map((x) => (x || '').trim()).filter(Boolean).slice(0, MAX_ITEMS);
+    return a.length ? a : [''];
+  };
 
   const s = {
-    // 'yeargoal' shows only when the year goal has no text yet; then now -> milestone -> steps.
-    steps: (goal?.text ? [] : ['yeargoal']).concat(['now', 'milestone', 'nearsteps']),
+    // 'yeargoal' shows only when the year goal has no text yet; then now -> the three phases.
+    // The three phases hold up to three items each (captain 2026-07-18). Order is backward-
+    // planning from the goal: halfway markers -> challenges -> set-up-first actions, ending on
+    // set-up so the learner flows straight into the North page to break those into daily tasks.
+    // Weekly / daily breakdown is a LATER step (North page, after the accountability partner) -
+    // it is NOT captured here. Phase->session storage: setup=S1, challenges=S2, threshold=S3.
+    steps: (goal?.text ? [] : ['yeargoal']).concat(['now', 'threshold', 'challenges', 'setup']),
     idx: 0,
     yeargoal: goal?.text || '',
     now: goal?.baseline || '',
-    milestone: goal?.halfwayPoint || '',
-    near: [''],
+    threshold: threeUp(goal?.threshold, goal?.halfwayPoint), // S3 halfway markers
+    challenges: threeUp(goal?.challenges),                   // S2 biggest challenges
+    setup: threeUp(goal?.setup),                             // S1 set-up-first actions
   };
   const step = () => s.steps[s.idx];
 
@@ -1048,11 +1059,10 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     const st = step();
     if (st === 'yeargoal') s.yeargoal = document.getElementById('gs-yeargoal')?.value ?? s.yeargoal;
     else if (st === 'now') s.now = document.getElementById('gs-now')?.value ?? s.now;
-    else if (st === 'milestone') s.milestone = document.getElementById('gs-milestone')?.value ?? s.milestone;
-    else if (st === 'nearsteps') {
-      const near = [];
-      document.querySelectorAll('.gs-near').forEach((inp) => near.push(inp.value));
-      s.near = near.length ? near : [''];
+    else if (st === 'threshold' || st === 'challenges' || st === 'setup') {
+      const vals = [];
+      document.querySelectorAll(`.gs-item[data-phase="${st}"]`).forEach((inp) => vals.push(inp.value));
+      s[st] = vals.length ? vals : [''];
     }
   }
 
@@ -1074,22 +1084,38 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         ${contextCard('Your year goal', s.yeargoal)}
         <p class="onb-horizon-body">Honestly - where are you starting from in ${escapeHtml(catName)}? This is the mirror, not the dream.</p>
         <textarea id="gs-now" class="slice-box" rows="3" placeholder="Starting out, in ${escapeAttr(catName)}, I am…">${escapeHtml(s.now)}</textarea>`;
-    } else if (st === 'milestone') {
-      body = `
-        <h3 class="onb-horizon-heading">A marker along the way</h3>
-        ${contextCard('Your year goal', s.yeargoal)}
-        ${contextCard('Where you are starting from', s.now)}
-        <p class="onb-horizon-body">Look at both. Somewhere between where you're starting and your year goal - a marker you'd love to reach. What does it look like?</p>
-        <textarea id="gs-milestone" class="slice-box" rows="3" placeholder="A marker I'd love to reach:">${escapeHtml(s.milestone)}</textarea>`;
     } else {
-      const near = s.near.length ? s.near : [''];
-      const inputs = near.map((v, i) => `<input type="text" class="gs-near slice-box" data-idx="${i}" value="${escapeAttr(v)}" placeholder="One thing - be specific">`).join('');
+      // The three phases, each up to three items. st is 'threshold' | 'challenges' | 'setup'.
+      // Halfway language is retained on 'threshold' (captain 2026-07-18). The daily/weekly
+      // breakdown of these items is deferred to the North page (not captured here).
+      const phase = {
+        threshold: {
+          heading: 'A marker along the way',
+          body: 'About halfway there - what would you have reached? Name up to three markers you would love to hit between where you are starting and your year goal.',
+          placeholder: 'A halfway marker - be specific',
+          cards: contextCard('Your year goal', s.yeargoal) + contextCard('Where you are starting from', s.now),
+        },
+        challenges: {
+          heading: 'The biggest challenges',
+          body: 'What are the biggest challenges between you and this goal? Name up to three - naming them is how you plan for them.',
+          placeholder: 'A challenge - be specific',
+          cards: contextCard('Your year goal', s.yeargoal),
+        },
+        setup: {
+          heading: 'Setting yourself up',
+          body: 'What do you need to set up to give yourself the best start? Up to three things that clear the runway. You will break these into day-to-day steps on your North page.',
+          placeholder: 'One thing to set up - be specific',
+          cards: contextCard('Your year goal', s.yeargoal),
+        },
+      }[st];
+      const items = s[st].length ? s[st] : [''];
+      const inputs = items.map((v, i) => `<input type="text" class="gs-item slice-box" data-phase="${st}" data-idx="${i}" value="${escapeAttr(v)}" placeholder="${escapeAttr(phase.placeholder)}">`).join('');
       body = `
-        <h3 class="onb-horizon-heading">Imagine reaching it</h3>
-        ${contextCard('The marker you\'d love to reach', s.milestone)}
-        <p class="onb-horizon-body">Imagine yourself reaching this marker - what are a few things you'd have done along the way? Just a few to start; you will come back for more as you go.</p>
-        <div class="gs-near-list">${inputs}</div>
-        ${near.length < MAX_NEAR ? '<button type="button" class="btn btn-text" id="gs-near-add">+ add another</button>' : ''}`;
+        <h3 class="onb-horizon-heading">${escapeHtml(phase.heading)}</h3>
+        ${phase.cards}
+        <p class="onb-horizon-body">${escapeHtml(phase.body)}</p>
+        <div class="gs-item-list">${inputs}</div>
+        ${items.length < MAX_ITEMS ? `<button type="button" class="btn btn-text" id="gs-item-add" data-phase="${st}">+ add another</button>` : ''}`;
     }
     const isFirst = s.idx === 0;
     const isLast = s.idx === s.steps.length - 1;
@@ -1104,9 +1130,10 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     const defaultActions = document.querySelector('#goal-form .modal-actions');
     if (defaultActions) defaultActions.style.display = 'none';
 
-    document.getElementById('gs-near-add')?.addEventListener('click', () => {
+    document.getElementById('gs-item-add')?.addEventListener('click', (e) => {
       capture();
-      if (s.near.length < MAX_NEAR) s.near.push('');
+      const ph = e.currentTarget.dataset.phase;
+      if (s[ph] && s[ph].length < MAX_ITEMS) s[ph].push('');
       renderStep();
     });
     document.getElementById('gs-back')?.addEventListener('click', () => {
@@ -1126,41 +1153,48 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     if (!learnerId) return;
     let existingGoals = [];
     try { existingGoals = await getGoals(learnerId); } catch (e) { /* non-fatal */ }
-    // 1. The year goal row (baseline = now, halfwayPoint = milestone).
+    const clean = (arr) => (arr || []).map((x) => (x || '').trim()).filter(Boolean).slice(0, MAX_ITEMS);
+    const threshold = clean(s.threshold); // S3 halfway markers
+    const challenges = clean(s.challenges); // S2 biggest challenges
+    const setup = clean(s.setup);           // S1 set-up-first actions
+    // 1. The year goal row. baseline = now; halfwayPoint = the primary (first) halfway marker,
+    //    so the arc/timeline surface keeps working. The three phase arrays ride along as named
+    //    fields so rowToGoal spreads them back to the top level on read.
+    //    PERSISTENCE PENDING (2026-07-18): goalToRow only packs DECOMPOSITION_FIELDS. To store
+    //    setup/challenges/threshold on the synced backend, add those three names to
+    //    DECOMPOSITION_FIELDS in js/backend/supabase-adapter.js (and local-store.js). Until that
+    //    one-line add lands, these three are silently DROPPED on save (no corruption) - which is
+    //    why this modal is HELD from push until the adapter commit clears. See the design doc:
+    //    docs/design/2026-07-18-north-daily-tasks-reflection-roadmap.md.
     const prior = goal?.id ? { id: goal.id, status: goal.status } : existingGoals.find((g) => g.scope === 'year' && g.categoryId === catId);
-    let saved = null;
     try {
-      saved = await saveGoal({
+      await saveGoal({
         id: prior?.id,
         learnerId,
         categoryId: catId,
         scope: 'year',
         text: (s.yeargoal || '').trim(),
         baseline: (s.now || '').trim() || undefined,
-        halfwayPoint: (s.milestone || '').trim() || undefined,
+        halfwayPoint: threshold[0] || undefined,
         targetSession: 6,
         status: prior?.status || 'active',
+        setup: setup.length ? setup : undefined,
+        challenges: challenges.length ? challenges : undefined,
+        threshold: threshold.length ? threshold : undefined,
       });
     } catch (e) { /* non-fatal */ }
-    // 2. The milestone IS the Session-3 goal (reuse the seed pattern; Decision 4). Sessions are
-    //    never named to the learner - this is backend task/goal storage.
-    const milestone = (s.milestone || '').trim();
-    if (milestone) {
+    // 2. The primary halfway marker seeds the Session-3 goal (reuse the seed pattern; Decision 4).
+    //    Sessions are never named to the learner - this is backend goal storage for the arc.
+    const marker = threshold[0] || '';
+    if (marker) {
       const existingS3 = existingGoals.find((g) => g.scope === 'session' && g.sessionIndex === 3 && g.categoryId === catId);
       try {
-        if (!existingS3) await saveGoal({ learnerId, categoryId: catId, scope: 'session', sessionIndex: 3, text: milestone, autoPopulated: true, status: 'active' });
-        else if (existingS3.autoPopulated) await saveGoal({ ...existingS3, text: milestone, autoPopulated: true });
+        if (!existingS3) await saveGoal({ learnerId, categoryId: catId, scope: 'session', sessionIndex: 3, text: marker, autoPopulated: true, status: 'active' });
+        else if (existingS3.autoPopulated) await saveGoal({ ...existingS3, text: marker, autoPopulated: true });
       } catch (e) { /* non-fatal */ }
     }
-    // 3. The FEW near-steps -> tasks, planned THIS WEEK (Decision 2/3: a few, stored, surfaced
-    //    this week via the arc, never a persisted full multi-week ladder). Linked by goalId.
-    const goalId = saved?.id || prior?.id || null;
-    for (const raw of s.near) {
-      const text = (raw || '').trim();
-      if (!text) continue;
-      try { await saveTask(learnerId, { text, plannedFor: todayISO, goalId, categoryId: catId, status: 'open' }); }
-      catch (e) { /* non-fatal */ }
-    }
+    // 3. NO tasks are created here. Breaking the phase items into day-to-day steps is deferred to
+    //    the North page, after the learner has an accountability partner (captain 2026-07-18).
   }
 
   setModalTitle(catName);
@@ -1230,9 +1264,9 @@ const NON_RESUME_STEPS = new Set(['pitch', 'slice_plan']);
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
   beyond_5yr: {
-    heading: 'See yourself in 10 years.',
-    body: 'Ten years from now - who have you become? What does your life look like? Let yourself imagine. There is no wrong answer.',
-    placeholder: 'In ten years...',
+    heading: 'See your life in 10 years.',
+    body: "Ten years from now - picture it, really picture it. Where do you live, and who's with you? What's your home like, and what have you filled it with? What do your days look like - the work you do, the things you make, the people around you? Where do you go? What do you do just for the joy of it? And underneath all of it: what do you really want out of your life? Let yourself imagine. There's no wrong answer.",
+    placeholder: 'In ten years, I...',
   },
   within_5yr: {
     heading: 'See yourself in 5 years.',
@@ -1269,6 +1303,18 @@ const HORIZON_STACK_LABEL = {
   within_5yr: '5 years',
   within_1yr: '1 year',
   current_state: 'Right now',
+};
+
+// Tier-aware "sparks" for the 10-year step (Option 2, captain-approved 2026-07-18). Gentle
+// example prompts shown below the body - never required fields. Keyed off a distinct
+// mature-vs-young signal (studio + role), NOT isCurrentWheelBuild (which also fires for a
+// cohort-flagged young learner). Mature = launchpad+ learners + guides / parents / owners;
+// young = sparks / discovery / adventure learners. Money is framed as freedom ("how much you
+// work - or how little"), never a figure - the "we evoke, we never extract" grain.
+const TENYR_SPARKS_MATURE_STUDIOS = new Set(['launchpad', 'guide-summer']);
+const TENYR_SPARKS = {
+  mature: "Let these spark you: What kind of home, and where - a place in the city, by the water? A car, a boat, a garden? How do you earn, and how much do you work - or how little? Where do you travel? Pets? What excites you, and how often do you make room for it?",
+  young: "Let these spark you: Who's with you? What are you really good at? Where would you go? What pets, what adventures? What do you do that makes you lose track of time?",
 };
 
 export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, learnerId = null, onComplete }) {
@@ -1703,6 +1749,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="onb-horizon-prompt">
         <h3 class="onb-horizon-heading">${escapeHtml(p.heading)}</h3>
         <p class="onb-horizon-body">${escapeHtml(p.body)}</p>
+        ${step === 'beyond_5yr' ? `<p class="onb-horizon-sparks">${escapeHtml((role !== 'learner' || TENYR_SPARKS_MATURE_STUDIOS.has(studio)) ? TENYR_SPARKS.mature : TENYR_SPARKS.young)}</p>` : ''}
       </div>
       <div class="form-field">
         <textarea id="onb-horizon" rows="4" placeholder="${escapeAttr(p.placeholder)}">${escapeHtml(state.horizons[step] || '')}</textarea>
@@ -2425,13 +2472,13 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 }
 
 // Quote flow (2026-06-24): the quote anchors the top of the page for the cycle.
-// Two teaching screens (why a quote, who inspires you) then one form (the quote,
-// who said it, what it means to you). Its OWN front-of-line flow so it always runs
+// One teaching screen (why a quote + who inspires you, combined) then one form
+// (the quote, who said it, what it means to you). Its OWN front-of-line flow so it always runs
 // from Begin when the quote is missing/stale - never resumed-past like a cascade
 // step. Saves all three fields + stamps the cycle. If the person closes the modal
 // without saving, it simply re-prompts next sign-in.
 export function openQuoteFlow({ profileId = null, currentCycle = '', existing = {}, onComplete } = {}) {
-  const SCREENS = ['why', 'inspires', 'form'];
+  const SCREENS = ['intro', 'form'];
   const state = {
     idx: 0,
     text: existing.text || '',
@@ -2458,29 +2505,14 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
     if (n) state.note = n.value.trim();
   }
 
-  function renderWhy() {
+  function renderIntro() {
     return `
       <div class="onb-horizon-prompt">
         <h3 class="onb-horizon-heading">Why a quote?</h3>
-        <p class="onb-horizon-body">A single line, chosen on purpose, can carry you through a whole year. When the days get hard, it’s something to come back to - a bearing in words. The one you pick stays at the top of your page all year.</p>
+        <p class="onb-horizon-body">A single line, chosen on purpose, can carry you through a whole year - a north star in words when the days get hard, kept at the top of your page. Think of words that inspire you, or someone you admire - a teacher, a writer, someone you love, a person whose life fills you with awe or wonder. On the next screen, you’ll write down the line you carry.</p>
       </div>
       <div class="onb-step-actions">
         <span></span>
-        <div class="onb-step-actions-right">
-          <button type="button" id="qf-next" class="btn btn-primary">Continue</button>
-        </div>
-      </div>
-    `;
-  }
-
-  function renderInspires() {
-    return `
-      <div class="onb-horizon-prompt">
-        <h3 class="onb-horizon-heading">Who inspires you?</h3>
-        <p class="onb-horizon-body">Think of someone whose words have stayed with you - a writer, a teacher, someone you love, a voice from your faith or your family. What did they say that you carry? On the next screen, you’ll write it down.</p>
-      </div>
-      <div class="onb-step-actions">
-        <button type="button" id="qf-back" class="btn btn-text">Back</button>
         <div class="onb-step-actions-right">
           <button type="button" id="qf-next" class="btn btn-primary">Continue</button>
         </div>
@@ -2519,8 +2551,7 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
   function render() {
     const formFields = document.getElementById('form-fields');
     const screen = SCREENS[state.idx];
-    if (screen === 'why') formFields.innerHTML = renderWhy();
-    else if (screen === 'inspires') formFields.innerHTML = renderInspires();
+    if (screen === 'intro') formFields.innerHTML = renderIntro();
     else formFields.innerHTML = renderForm();
     wire();
     if (screen === 'form') setTimeout(() => document.getElementById('qf-text')?.focus(), 50);

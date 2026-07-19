@@ -108,6 +108,15 @@ walkthrough review; file:line verified.
 - [ ] 🔨 **[NEW 07-18] Reconcile `goals.status` enum.** Schema allows ('active','done','archived'); the
       app renders 'approved'/'pending-approval'. One source of truth; 'approved' should not be a state
       if the app never scores. *(COC.)*
+- [ ] 🔨 **[NEW 07-18, captain] Extend the per-goal working cadence to ADULTS.** Guides / parents /
+      owners clicking their own year goals get a different (legacy) view than the discovery/adventure
+      per-goal working arc (`goal-arc.js` milestone spine + weekly progressing question + daily tasks).
+      Make the arc cadence render for guide/parent/owner goals too, on their own wheels. Entangled with
+      the current-wheel build (the cadence IS that build) — composes with the cohort-gate flag work.
+- [ ] 🔨 **[NEW 07-18, captain] Full CALENDAR tab for Launchpad-and-up** (launchpad learners + guides +
+      parents + owners only — NOT sparks/discovery/adventure). A visual calendar surface over goals /
+      tasks / sessions (data exists: `tasks.planned_for`, `getYearCalendar`, session weeks). Net-new
+      surface, mature-tier scope.
 
 ## 🎨 Design sessions (need Accord / Comes / Bareil; gated by the safety lock)
 

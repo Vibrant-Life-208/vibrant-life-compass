@@ -482,7 +482,10 @@ function rowToGoal(row) {
 // The extended decomposition fields the year-goal modal writes. Packed into the v0.22
 // `decomposition` jsonb column so they survive on the synced backend (goalToRow used to drop
 // them), matching what local-store already keeps by spread.
-const DECOMPOSITION_FIELDS = ['baseline', 'halfwayPoint', 'quarterPoint', 'eos1Point', 'weeklySteps', 'targetSession'];
+// setup/challenges/threshold: the 3-phase goal cadence arrays (up to 3 each) written by
+// openGoalSetupModal (captain 2026-07-18). Stored as arrays in the same jsonb; rowToGoal
+// spreads them back to the top level on read.
+const DECOMPOSITION_FIELDS = ['baseline', 'halfwayPoint', 'quarterPoint', 'eos1Point', 'weeklySteps', 'targetSession', 'setup', 'challenges', 'threshold'];
 
 function goalToRow(goal) {
   const row = {

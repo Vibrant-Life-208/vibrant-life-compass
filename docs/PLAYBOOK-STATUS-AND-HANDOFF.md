@@ -4,6 +4,22 @@
 
 ---
 
+## 2026-07-16 update - editable web version live + values integrated
+
+- **Editable website (so Jenna can edit remotely, keeps all graphics):**
+  - Playbook: https://vl-playbook-site.vercel.app
+  - Combined video scripts: https://vl-playbook-site.vercel.app/scripts.html
+  - Each page: click-to-edit (toggle Edit, edit any box, Add Text/Box/Space blocks, adjust spacing, copy/delete blocks), Save-a-copy (downloads a self-contained HTML), and a Download-PDF button. Public/unlisted link. Standalone Vercel project `vl-playbook-site`; deploy folder `/Users/europa/Code/vl-playbook-site/`.
+  - Workflow is **edit-and-send-back** (not live sync): Jenna edits, Saves a copy, emails it back to merge on our side. Hosted PDFs are snapshots - regenerate after edits land.
+- **Values swap (from Jenna):** the opening "Learn / Do / Be" chips are replaced by **Identity -> Values -> Outcome** (Identity "We are the creators of our lives" / Values "Curiosity. Courage. Connection." / Outcome "Purpose. Clarity. Joy."), with Jenna's "Education is more than academics" five-areas pyramid graphic embedded right below (`docs/design/vl-values-pyramid.png`).
+- **Scripts combined:** all four v0.2 videos in one doc, organized by voice (Jenna / learner / guides): `docs/design/2026-07-16-family-playbook-video-scripts-COMBINED.md`.
+- **Source files:** `docs/design/playbook-EDITABLE.html` + `docs/design/scripts-EDITABLE.html` (the editable pages). Originals `playbook-vl-brand.html` / `playbook-preview.html` untouched - and NOTE they still carry the old Learn/Do/Be chips (source drift; sync them before any re-render from those files).
+- **Open decisions:** (1) Studio Shorts (Video 3) casting - guide-voiced vs learner-narrated (needs parent consent if learner). (2) Discovery & Adventure quest topics still pending those two guides (unchanged from below). (3) Email to Jenna with the links **sent 2026-07-16** - awaiting her reply, any edited HTML to merge, and her call on the casting.
+
+---
+
+---
+
 ## What this is
 A condensation + upgrade of Jenna's 64-page 2025-2026 Family Playbook into a warm, mission-first 2026-2027 version, with four short animated companion videos that *add to* (never recite) the page.
 
