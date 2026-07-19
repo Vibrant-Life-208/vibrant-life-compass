@@ -74,6 +74,13 @@ let wired = false;
 function allStars() { return [...FAMILIES.flatMap((f) => f.stars), CENTER_STAR]; }
 function findStar(id) { return allStars().find((s) => s.id === id) || null; }
 
+// The human title for a characteristic id ('c1'..'c13'). Used by the owner
+// culture-bloom to name what guides are returning to — counts only, no names.
+export function characteristicLabel(id) {
+  const s = findStar(id);
+  return s ? s.title : id;
+}
+
 function isPresent() {
   try { return localStorage.getItem(PRESENT_KEY) === '1'; } catch { return false; }
 }
