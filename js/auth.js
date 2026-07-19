@@ -21,11 +21,13 @@ export function initAuth(onSignedIn) {
     el.hidden = !isProd;
   });
 
-  // Hero-name + password sign-in.
-  const submitBtn = document.getElementById('signin-submit');
-  if (submitBtn && !submitBtn.dataset.wired) {
-    submitBtn.dataset.wired = '1';
-    submitBtn.addEventListener('click', async () => {
+  // Hero-name + password sign-in. Wired on the form's submit event so pressing
+  // Enter in either field submits, not just clicking the button.
+  const signinForm = document.getElementById('signin-form');
+  if (signinForm && !signinForm.dataset.wired) {
+    signinForm.dataset.wired = '1';
+    signinForm.addEventListener('submit', async (e) => {
+      e.preventDefault(); // no page reload; we handle sign-in in JS
       const heroNameEl = document.getElementById('signin-hero');
       const passwordEl = document.getElementById('signin-password');
       const heroName = heroNameEl?.value?.trim().toLowerCase() || '';
