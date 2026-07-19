@@ -9,19 +9,21 @@
 
 ---
 
-## 1. Status at a glance
+## 1. Status at a glance — SHIPPED & LIVE (2026-07-19)
 
 | Thing | State |
 |---|---|
-| Branch | `feat/guide-practice-surface` (pushed to origin) |
-| Commits over `origin/main` | 4 — guide surface+backend, owner bloom, docs, migration idempotency fix |
-| Delta vs real main (`origin/main`) | **14 files, ~+1,045 lines** — all guide-practice, nothing else |
-| Migration `v0.24` | **Applied to prod** (re-run 42710 → made idempotent). Confirm with §5 queries. |
-| Merge | Clean — branch is `origin/main` + 4 commits, no divergence. Not yet merged. |
-| Deploy | **Not live** — feature lives only on the branch until merged to `main` (Vercel auto-deploys `main`). |
+| Deploy | **LIVE on `main`** — merged and deployed via Vercel. |
+| Migration `v0.24` | **Applied to prod** (idempotent; re-runnable). Confirmed live. |
+| Guide "Your Practice" | Live (a tab in the guide dashboard). |
+| Owner "Tending the Studio" | Live (owner-home card). Shows "still gathering" — see §10. |
+| Guide "School" tab (bonus) | Live — whole-school anchor insights, relocated from the buried bottom of My Learners. Role-aware, ≥5 suppressed. |
 
-> Note: your *local* `main` may be stale (behind `origin/main`). Always compare
-> against `origin/main` — that's the real main.
+> **How it shipped:** the `feat/guide-practice-surface` branch (guide surface,
+> owner bloom, migration, docs) merged to `main`, then the "School" tab landed via
+> a parallel session's commit. This repo takes **direct, parallel commits to `main`**
+> from multiple sessions — always `git fetch` and compare against `origin/main`
+> (your *local* `main` goes stale) before assuming anything.
 
 ---
 
@@ -135,10 +137,36 @@ If `v0.24` is NOT applied, paste the migration file into the SQL editor and run
 - **Region C — offer-to-commons** (owner posts a launch/story guides can pick up):
   **not built.** Needs a guide-facing *reader* surface (the old "Everyone" broadcast
   was removed). Building the write half alone would be a dead end.
-- **Owner UI never visually screenshotted** — the driving logic is verified, not the
-  pixels. Worth a look in a real browser before merge.
-- **Local `main` is stale** — fetch/reset it before comparing or you'll see a false
-  "huge diff."
+- **Prod smoke test not yet done** — verified in the local backend, not visually
+  against live Supabase. 2 min: guide → Practice (mark a crossing) + School (insights
+  render); Jenna → Tending the Studio ("still gathering" expected).
+
+---
+
+## 10. Real-world finding — the bloom won't populate at current scale
+
+The suppression floor is `v_min = 3`. The current staff (2026-07-19) is ~6 guides
+spread across studios, **1–2 per studio** (adventure: Ben; discovery: Rose; sparks:
+Megan + Erin; tot/launchpad: Erin). **No single studio will ever reach 3 opted-in
+guides**, so the *per-tribe* "Tending the Studio" bloom will **always** show the
+"still gathering" message. That's the wall holding (better empty than de-anonymized),
+not a bug — but the owner bloom has ~no utility at this size.
+
+- **The real value shipped is the guide's OWN Practice surface** (each guide
+  reflecting privately) + the School tab. Those work for everyone today.
+- **Recommended next pass (needs the privacy panel per Naomi's standing condition):**
+  a **school-level bloom** — aggregate all ~6 guides school-wide instead of per-tribe.
+  Once 3+ opt in and reflect, Jenna/Wes see an anonymized school pulse. It's *more*
+  anonymous (bigger pool), and it actually populates at this scale.
+
+## 11. Data quirks to tidy (found 2026-07-19)
+
+- **"Test Parent" had `is_owner = true`** — a test account with whole-school scope.
+  Flip to false via the SQL in the session notes (needs the v0.14 identity trigger
+  briefly disabled: `is_owner` is service-role-only).
+- **"Jenna Jones" appears twice** (one `is_owner: true`, one `false`, both
+  `role='guide'`) — likely a duplicate profile; could put a stray tile in the picker.
+  Inspect the two rows before deciding which to keep.
 
 ---
 
