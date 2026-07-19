@@ -59,6 +59,10 @@ alter table guide_crossings enable row level security;
 
 -- SELF-ONLY. This single policy is the wall: a row is readable/writable only by
 -- the guide who authored it. There is deliberately NO owner or peer read path.
+-- IDEMPOTENCY (2026-07-18): drop-then-create so a re-run never trips on an existing
+-- policy (`create policy` has no `if not exists`). Same pattern as the v0.21
+-- weekly_answers migration. Surfaced by a prod apply that hit 42710 on the second run.
+drop policy if exists "guide_crossings_self" on guide_crossings;
 create policy "guide_crossings_self" on guide_crossings
   for all using (guide_id = auth.uid()) with check (guide_id = auth.uid());
 
