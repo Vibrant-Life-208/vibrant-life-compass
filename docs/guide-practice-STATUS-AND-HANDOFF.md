@@ -161,12 +161,30 @@ not a bug — but the owner bloom has ~no utility at this size.
 
 ## 11. Data quirks to tidy (found 2026-07-19)
 
-- **"Test Parent" had `is_owner = true`** — a test account with whole-school scope.
-  Flip to false via the SQL in the session notes (needs the v0.14 identity trigger
-  briefly disabled: `is_owner` is service-role-only).
+- **"Test Parent" `is_owner`** — a test account had whole-school scope. **Fix RAN
+  2026-07-19** (disable-trigger → `update is_owner=false` → re-enable, one txn;
+  editor said "Success. No rows returned"). **CONFIRM PENDING:** an UPDATE reports
+  "no rows returned" whether it matched 1 or 0 rows — verify with
+  `select name, is_owner from profiles where name='Test Parent';` (expect `false`).
+  If still `true`, the name didn't match exactly — re-run keyed on the row's `id`.
 - **"Jenna Jones" appears twice** (one `is_owner: true`, one `false`, both
   `role='guide'`) — likely a duplicate profile; could put a stray tile in the picker.
-  Inspect the two rows before deciding which to keep.
+  **Still open** — inspect the two rows before deciding which to keep.
+
+---
+
+## 12. Security review (2026-07-19)
+
+Independent security review of the guide-practice feature (child-facing app):
+**no HIGH-confidence, concretely-exploitable vulnerabilities.** All six surfaces
+resolved secure: self-only RLS is the sole policy on `guide_crossings`;
+`studio_practice_pulse` is role-gated + `search_path`-pinned + `p_tribe`-parameterized
++ doubly-suppressed (emits only counts ≥3, never story/moment/guide_id); no
+cross-user XSS path (reflections render self-only + escaped; the owner bloom renders
+only hardcoded labels); encryption has no cross-user decryption path; the v0.14
+identity trigger still protects `role/email/id/is_owner/tribes`. No code fixes
+needed. Belt-and-suspenders (optional): `deleteCrossing` relies on RLS rather than
+an explicit `guide_id` filter — RLS covers it; the filter would be defense-in-depth.
 
 ---
 
