@@ -33,8 +33,8 @@ expose the same function names.
 | **Learner** — Discovery / Adventure / Launch Pad (8+) | their **own** hero-name (e.g. `mason-j`) | their Compass | own goals, daily steps, horizons, wheel |
 | **Young learner** — Tot / Spark (2–7) | **none** | — | Spark: an *optional*, parent-run child-version values/strengths quiz (create-on-demand). Tot: nothing yet. |
 | **Parent** | the **shared family login** (e.g. `jones-family`) → member picker | family view | everyone's **values + character strengths** + the **updates** learners chose to share. **Never goals.** |
-| **Guide** | their **own** login (e.g. `rose-l-guide`) | guide dashboard | **their tribe(s)** + **whole-school** insights (counts only, ≥5-learner suppression) |
-| **Owner** — Jenna **and** Wes | the **shared family login** → picker (their tiles are owners) | **owner home** | **Whole School** (every tribe) · **My Family** · **My Compass** |
+| **Guide** | their **own** login (e.g. `rose-l-guide`) | guide dashboard | **their tribe(s)** + **whole-school** insights (counts only, ≥5-learner suppression) + own **Practice** (private guide-skill reflections; visible to no one else) |
+| **Owner** — Jenna **and** Wes | the **shared family login** → picker (their tiles are owners) | **owner home** | **Whole School** (every tribe) · **Tending the Studio** (anonymized guide-practice bloom, counts only) · **My Family** · **My Compass** |
 
 **Key ideas:**
 - A **family login is one shared credential** per household. Signing in opens a
@@ -62,6 +62,12 @@ expose the same function names.
   with `studio='guide-summer'` (their own Compass journey).
 - **`family_updates`** — the learner-shared feed (goal celebration / note). Learner
   writes; the family reads. Receive-only for parents.
+- **`guide_crossings`** (v0.24) — a guide's private "Your Practice" reflections on
+  the twelve Key Characteristics. RLS **self-only** (`guide_id = auth.uid()`) — no
+  owner or peer path. `story` + `moment` are AES-GCM envelopes at rest (the `moment`
+  field can hold a child's name). `profiles.share_practice_pulse` (opt-in, default
+  false) lets a guide feed the anonymized studio bloom via
+  `public.studio_practice_pulse(tribe)` — counts only, ≥3 suppression floor.
 
 **Studios / tribes:** `tot`, `sparks`, `discovery`, `adventure`, `launchpad`
 (+ `guide-summer` for guides). Only **Discovery / Adventure / Launch Pad** get
@@ -155,6 +161,7 @@ quote author/note, anchor_aggregates, must_change_password, values_freetext.)*
 | **v0.16** visible-learners function | moves `my_visible_learners` view into a private SECURITY DEFINER function; repoints 8 read policies | ⚠️ **confirm applied** |
 | **v0.17** pitch intent + guide age-approval | pitch-readiness self-report + guide confirm columns | ⚠️ **confirm applied** |
 | **v0.18** life_area on goals + tasks | nullable `life_area` (wheel slice) on `goals` and `tasks`; additive, no RLS/data change. Powers the 1-year-by-wheel-slice view (guide-summer). Learner seeding GATED (see §10). | ⬜ **pending — apply for the sliced view** |
+| **v0.24** guide practice + studio pulse | `guide_crossings` (RLS self-only) + `profiles.share_practice_pulse` + `public.studio_practice_pulse()` (suppressed counts-only bloom, ≥3 floor). Ratified-with-changes by the 2026-07-18 privacy panel. `story`/`moment` encrypted at rest client-side. | ⬜ **pending — apply before merging the Practice branch to main** |
 
 ---
 
@@ -183,7 +190,8 @@ quote author/note, anchor_aggregates, must_change_password, values_freetext.)*
   view; learner → Compass).
 - `js/auth.js` — sign-in, the family picker flow, forced password change.
 - `js/family.js` — member picker, family view + updates feed, share modal.
-- `js/owner.js` — the owner home (Whole School / My Family / My Compass).
+- `js/owner.js` — the owner home (Whole School / **Tending the Studio** / My Family / My Compass).
+- `js/practice.js` — the guide "Your Practice" reflection surface + the owner bloom's `characteristicLabel`.
 - `js/insights.js` — anchor aggregates, tribe-scoped.
 - `js/studios.js` — studio/tribe definitions + guide categories.
 - `js/backend/{store,supabase-adapter,local-store}.js` — the data layer.

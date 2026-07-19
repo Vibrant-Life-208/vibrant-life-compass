@@ -18,6 +18,8 @@ Hero's Compass is a closed-system goal-tracking PWA for one Acton-shaped school 
 | Account takeover | Stolen Google identity | Local auth (username + password) - no Google OAuth, no email exposure |
 | Network sniffing | Wifi attacker | TLS for all traffic when Supabase backend is active; local-VPN deployment for in-school traffic |
 | Insider abuse | Disgruntled staff with backend access | Supabase Row Level Security policies enforce per-user access even at the DB layer |
+| Owner/peer reading a guide's private reflections | The Practice surface (guide self-reflection) | RLS **self-only** on `guide_crossings` (`guide_id = auth.uid()`) — no owner or peer read path exists; the culture bloom is a suppressed counts-only aggregate, never the text |
+| Child name in a guide's reflection leaking at rest | The optional "moment" field invites a child's name | `story` + `moment` encrypted at rest (AES-GCM envelope), so RLS is not the only line of defense against insider/DB-compromise |
 
 ## Identity model (local auth only)
 
@@ -37,6 +39,7 @@ Hero's Compass does not use Google OAuth, social login, or any external identity
 | Year goals + session goals + tasks | Not encrypted (visible to learner + parents + guides) | TLS | N/A |
 | Motivational quote, character traits | Not encrypted (visible to learner + parents + guides) | TLS | N/A |
 | External-service passwords (Khan, Lexia, etc.) | AES-GCM 256 envelope `{ ct, iv }` per password | TLS | Visible for 10 seconds when learner taps Reveal, then auto-hidden |
+| Guide reflections — `story` + `moment` (Practice surface) | AES-GCM 256 envelope, per-guide key (same as passwords) | TLS | Held in the DOM only while the guide views their own Practice tab |
 | Hero's Compass password itself | bcrypt hash via Supabase Auth | TLS | Plaintext only during login submission |
 
 ### External-service password encryption details
@@ -46,6 +49,15 @@ Hero's Compass does not use Google OAuth, social login, or any external identity
 - Key storage: IndexedDB as a non-extractable `CryptoKey` object - the raw bytes of the key are never accessible to JavaScript
 - IV: 12 random bytes per encryption, stored alongside the ciphertext
 - Test: `JSON.stringify(localStorage)` searched for known plaintext returns false (verified during Decision 4 ship)
+
+### Guide reflections — the Practice surface (v0.24)
+
+The guide "Your Practice" surface lets a guide record private, self-named reflections ("crossings") on the twelve Key Characteristics. It is not a badge system — no scores, tiers, ranks, or leaderboards — and its privacy is enforced at two layers:
+
+- **The wall (RLS self-only).** `guide_crossings` has a single policy, `guide_crossings_self` (`guide_id = auth.uid()` for all operations). There is deliberately **no owner path, no peer path, no visible-set membership** — an owner (including Jenna and Wes) literally cannot `select` another guide's crossing. This is the insider-abuse / peer-surveillance mitigation applied to the guide's own inner reflections.
+- **Encryption at rest.** `story` and `moment` are stored as AES-GCM envelopes (same mechanism as external passwords), written/read at the store-adapter boundary so the crypto cannot be forgotten. The `moment` field invites "a child or moment you want to remember," so it can hold a child's name — child-adjacent free text must not sit plaintext behind RLS alone. Only `characteristic` and `created_at` stay plaintext (they feed the aggregate; they carry no reflection content).
+- **The culture bloom is counts-only.** The owner "Tending the Studio" surface reads `public.studio_practice_pulse(tribe)`, a `SECURITY DEFINER` aggregate that returns per-characteristic counts of *distinct opted-in guides* who reflected this season — never the story, the moment, or a guide id. It suppresses any count below `v_min = 3` and returns nothing at all for a studio with fewer than 3 opted-in guides (graceful degradation — better an empty bloom than a de-anonymized one). Contribution is opt-in per guide (`profiles.share_practice_pulse`, default false).
+- **Ratified** by the privacy panel 2026-07-18 (Naomi/G1, Worf + Tutela/TCC, Accord, Geordi). Standing condition: any future migration reading `guide_crossings` must preserve self-only-or-suppressed-aggregate and return to that panel.
 
 ## Data scope per role
 
