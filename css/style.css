@@ -3739,21 +3739,19 @@ body.landscape-mountain {
   margin: 0 0 1.5rem;
   padding: 0;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 .strength-pill {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0.6rem 1.1rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 999px;
   background: var(--cream);
   border: 1px solid var(--sage);
   color: var(--sage);
+  font-size: 0.85rem;
   font-weight: 600;
-  text-align: center;
 }
 .onb-why-heading {
   margin: 0 0 0.75rem;
