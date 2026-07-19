@@ -832,14 +832,54 @@ export async function setProfileStrengths(id, strengthIds) {
   write(KEYS.profileAnchor, all);
 }
 
-// Minimal reference vocabularies for skeleton review (production reads Supabase).
+// Reference vocabularies for skeleton/dev review (production reads Supabase).
+// Mirrors the values_lexicon v0.25 seed so local dev shows the real list + defs.
 export async function getValuesLexicon() {
   return [
-    { id: 'truth', display_label_adult: 'Truth', sort_order: 1 },
-    { id: 'love', display_label_adult: 'Love', sort_order: 2 },
-    { id: 'courage', display_label_adult: 'Courage', sort_order: 3 },
-    { id: 'kindness', display_label_adult: 'Kindness', sort_order: 4 },
-    { id: 'unity', display_label_adult: 'Unity', sort_order: 5 },
+    { id: 'assertiveness',   display_label_adult: 'Assertiveness',   definition: 'Speaking your truth and asking for what you need, without stepping on anyone else to do it.', sort_order: 1 },
+    { id: 'caring',          display_label_adult: 'Caring',          definition: 'Letting how someone else is doing matter to you, enough to do something about it.', sort_order: 2 },
+    { id: 'cleanliness',     display_label_adult: 'Cleanliness',     definition: 'Tending your space and your body with care, so what surrounds you feels clear.', sort_order: 3 },
+    { id: 'commitment',      display_label_adult: 'Commitment',      definition: 'Staying with a promise after the excitement fades, because you said you would.', sort_order: 4 },
+    { id: 'compassion',      display_label_adult: 'Compassion',      definition: 'Feeling another’s hurt as if it were your own, and letting it soften how you treat them.', sort_order: 5 },
+    { id: 'confidence',      display_label_adult: 'Confidence',      definition: 'Trusting that you can meet what comes, even before you know exactly how.', sort_order: 6 },
+    { id: 'connection',      display_label_adult: 'Connection',      definition: 'The bond that forms when you truly meet another person, and neither of you is alone in it.', sort_order: 7 },
+    { id: 'consideration',   display_label_adult: 'Consideration',   definition: 'Thinking of how your choices land on others before you make them.', sort_order: 8 },
+    { id: 'cooperation',     display_label_adult: 'Cooperation',     definition: 'Joining your effort with others, so together you reach what none could alone.', sort_order: 9 },
+    { id: 'courtesy',        display_label_adult: 'Courtesy',        definition: 'Small acts of respect that tell another person they are seen.', sort_order: 10 },
+    { id: 'creation',        display_label_adult: 'Creation',        definition: 'Making something that was not here before, and trusting that what you bring into the world matters.', sort_order: 11 },
+    { id: 'detachment',      display_label_adult: 'Detachment',      definition: 'Loving what you have without clutching it, so an open hand leaves you free.', sort_order: 12 },
+    { id: 'determination',   display_label_adult: 'Determination',   definition: 'Choosing to keep going toward what matters, long after the first burst of wanting fades.', sort_order: 13 },
+    { id: 'diligence',       display_label_adult: 'Diligence',       definition: 'Giving your steady, careful best to the work in front of you, again and again.', sort_order: 14 },
+    { id: 'enthusiasm',      display_label_adult: 'Enthusiasm',      definition: 'Meeting what you do with your whole spark, so the doing comes alive.', sort_order: 15 },
+    { id: 'excellence',      display_label_adult: 'Excellence',      definition: 'Caring enough to do a thing as well as it can be done, for its own sake.', sort_order: 16 },
+    { id: 'flexibility',     display_label_adult: 'Flexibility',     definition: 'Bending with what changes instead of breaking against it, and finding the new way through.', sort_order: 17 },
+    { id: 'friendliness',    display_label_adult: 'Friendliness',    definition: 'Meeting others with an open, warm face, so they feel welcome near you.', sort_order: 18 },
+    { id: 'generosity',      display_label_adult: 'Generosity',      definition: 'Giving freely of what you have - time, help, or heart - without keeping score.', sort_order: 19 },
+    { id: 'gentleness',      display_label_adult: 'Gentleness',      definition: 'Handling people and moments softly, knowing soft is not the same as weak.', sort_order: 20 },
+    { id: 'helpfulness',     display_label_adult: 'Helpfulness',     definition: 'Noticing where a hand is needed, and offering yours before you are asked.', sort_order: 21 },
+    { id: 'honor',           display_label_adult: 'Honor',           definition: 'Keeping faith with your word and your name, even when no one is watching.', sort_order: 22 },
+    { id: 'idealism',        display_label_adult: 'Idealism',        definition: 'Holding on to how good things could be, and letting that pull you toward making it real.', sort_order: 23 },
+    { id: 'integrity',       display_label_adult: 'Integrity',       definition: 'Being whole - the same person on the inside and the outside, your actions matching what you believe.', sort_order: 24 },
+    { id: 'joyfulness',      display_label_adult: 'Joyfulness',      definition: 'Letting delight rise in you and spill over, so others catch it too.', sort_order: 25 },
+    { id: 'loyalty',         display_label_adult: 'Loyalty',         definition: 'Standing with the people you love, especially when it costs you something.', sort_order: 26 },
+    { id: 'moderation',      display_label_adult: 'Moderation',      definition: 'Knowing how much is enough, so nothing good turns into too much.', sort_order: 27 },
+    { id: 'modesty',         display_label_adult: 'Modesty',         definition: 'Letting your work speak, and taking up only the room you truly need.', sort_order: 28 },
+    { id: 'orderliness',     display_label_adult: 'Orderliness',     definition: 'Bringing calm and clarity to what is scattered, so you can find your way through it.', sort_order: 29 },
+    { id: 'patience',        display_label_adult: 'Patience',        definition: 'Staying steady through the waiting, trusting that some things need time to become.', sort_order: 30 },
+    { id: 'peacefulness',    display_label_adult: 'Peacefulness',    definition: 'Carrying a quiet inside you that does not depend on everything around you being calm.', sort_order: 31 },
+    { id: 'purposefulness',  display_label_adult: 'Purposefulness',  definition: 'Carrying a reason through your days, so what you do adds up to something.', sort_order: 32 },
+    { id: 'reliability',     display_label_adult: 'Reliability',     definition: 'Being someone others can count on, whose word and presence hold.', sort_order: 33 },
+    { id: 'respect',         display_label_adult: 'Respect',         definition: 'Treating every person as someone who matters, simply because they do.', sort_order: 34 },
+    { id: 'responsibility',  display_label_adult: 'Responsibility',  definition: 'Owning what is yours to carry - your choices, your part, and your repair.', sort_order: 35 },
+    { id: 'service',         display_label_adult: 'Service',         definition: 'Using what you have to lift others, and finding meaning in the lifting.', sort_order: 36 },
+    { id: 'tact',            display_label_adult: 'Tact',            definition: 'Telling the truth in a way it can be heard, with care for the person hearing it.', sort_order: 37 },
+    { id: 'tolerance',       display_label_adult: 'Tolerance',       definition: 'Making room for people who differ from you, without needing them to be the same.', sort_order: 38 },
+    { id: 'trust',           display_label_adult: 'Trust',           definition: 'Letting yourself lean on another, believing they will hold what you give them.', sort_order: 39 },
+    { id: 'trustworthiness', display_label_adult: 'Trustworthiness', definition: 'Being worthy of what others place in you, and guarding it well.', sort_order: 40 },
+    { id: 'truth',           display_label_adult: 'Truth',           definition: 'Loving what is real more than what is comfortable, and staying with it.', sort_order: 41 },
+    { id: 'truthfulness',    display_label_adult: 'Truthfulness',    definition: 'Letting your words match what is real, so people can trust what you say.', sort_order: 42 },
+    { id: 'understanding',   display_label_adult: 'Understanding',   definition: 'Working to see through another’s eyes until their world makes sense to you.', sort_order: 43 },
+    { id: 'unity',           display_label_adult: 'Unity',           definition: 'Feeling the thread that ties you to others, so no one stands entirely apart.', sort_order: 44 },
   ];
 }
 export async function getViaCharacterStrengths() {

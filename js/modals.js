@@ -1259,7 +1259,7 @@ const CASCADE_SPARKS = ['breath', 'within_1yr'];
 // Steps whose progress is NOT tracked by the onboarding_step resume enum. Their
 // state lives elsewhere (pitch -> learner row; slice_plan -> year goals), so they
 // are safe to re-show on resume and must never be written as the resume pointer.
-const NON_RESUME_STEPS = new Set(['pitch', 'slice_plan', 'strengths_why']);
+const NON_RESUME_STEPS = new Set(['pitch', 'slice_plan', 'strengths_why', 'values_why']);
 
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
@@ -1335,6 +1335,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   {
     const atStrengths = steps.indexOf('strengths');
     if (atStrengths >= 0) steps.splice(atStrengths + 1, 0, 'strengths_why');
+  }
+  // A short "why your values matter + how to find them" intro page, shown right
+  // BEFORE the values selection to everyone who does the values step (captain
+  // 2026-07-19). Same one-time cascade ride + NON_RESUME_STEPS pattern as
+  // strengths_why - no schema change. Sparks has no values step, so it's excluded.
+  {
+    const atValues = steps.indexOf('values');
+    if (atValues >= 0) steps.splice(atValues, 0, 'values_why');
   }
   // 1-year plan, organized by wheel slice (captain 2026-07-14): the last step of the
   // cascade for learners. A learner who opted into the pitch plans by the wheel of the
@@ -1627,6 +1635,23 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     `;
   }
 
+  // Intro page shown right before the values selection: why values matter + how
+  // to find them (the discomfort / quick-to-defend cue). Read-only, no data
+  // entered. Copy is accessible to young learners and reads with dignity for
+  // teens/adults. (Captain 2026-07-19.)
+  function renderValuesWhy() {
+    return `
+      <div class="onb-strengths-why">
+        <h3 class="onb-why-heading">What you stand for</h3>
+        <p class="onb-why-body">Next, you'll choose your values - so first, what are they? Your values are the things that matter most to you. When you know them, choices get easier, and it is simpler to decide what to do when something is hard.</p>
+        <p class="onb-why-body">Here is a surprising way to find them: notice what bothers you. When something feels unfair, or you are quick to speak up and defend someone, that strong feeling is pointing at something you care about. Maybe you get upset when a friend is left out - that means you care about kindness and belonging.</p>
+        <p class="onb-why-body">You can also think of someone you look up to, and ask what you love about them - those things often live in you too. Or remember a time you felt really proud, and notice what was happening - that moment is showing you what matters.</p>
+        <p class="onb-why-body">On the next screen, you'll name a few of your own.</p>
+      </div>
+      ${navButtons({ skippable: false, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
+    `;
+  }
+
   // Values step for adults + older learners: type top 3 + optional archetype
   // (their values.institute results, which don't map to our curated list).
   function renderValuesType() {
@@ -1669,9 +1694,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         : `<p class="onb-linkout-note">Assessment link coming soon - for now, choose what fits you best below.</p>`;
     let grid;
     if (kind === 'value') {
-      grid = `<div class="onb-select-grid">${state.valuesLexicon.map((v) => {
+      grid = `<div class="onb-select-grid onb-value-grid">${state.valuesLexicon.map((v) => {
         const selected = state.values.includes(v.id);
-        return `<button type="button" class="onb-select-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}" data-kind="value">${escapeHtml(v.display_label_adult)}</button>`;
+        return `<button type="button" class="onb-select-card onb-value-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}" data-kind="value"><span class="onb-value-name">${escapeHtml(v.display_label_adult)}</span>${v.definition ? `<span class="onb-value-def">${escapeHtml(v.definition)}</span>` : ''}</button>`;
       }).join('')}</div>`;
     } else {
       const byCategory = new Map();
@@ -2353,6 +2378,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     if (step === 'breath') formFields.innerHTML = renderBreath();
     else if (step === 'strengths') formFields.innerHTML = renderStrengthsUpload();
     else if (step === 'strengths_why') formFields.innerHTML = renderStrengthsWhy();
+    else if (step === 'values_why') formFields.innerHTML = renderValuesWhy();
     else if (step === 'values') formFields.innerHTML = typeValues ? renderValuesType() : renderSelectStep({ kind: 'value', label: 'values' });
     else if (step === 'pitch') formFields.innerHTML = renderPitch();
     else if (step === 'slice_plan') formFields.innerHTML = renderSlicePlan();
@@ -2460,6 +2486,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         await advance(() => profileId ? setStrengthRanking(profileId, { top8: r.top8, bottom8: r.bottom8 }) : Promise.resolve());
       } else if (step === 'strengths_why') {
         await advance(null); // read-only page; nothing to persist
+      } else if (step === 'values_why') {
+        await advance(null); // read-only intro page; nothing to persist
       } else if (step === 'values') {
         if (typeValues) {
           captureValuesTyped();

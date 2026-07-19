@@ -3674,6 +3674,33 @@ body.landscape-mountain {
   font-weight: 500;
 }
 
+/* Values pick-list: one card per row so each value's definition has room. */
+.onb-value-grid {
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+}
+.onb-value-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.25rem;
+  padding: 0.75rem 0.9rem;
+}
+.onb-value-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.onb-value-def {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+.onb-value-card.selected .onb-value-def {
+  color: var(--warm-white);
+  opacity: 0.9;
+}
+
 .onb-virtue-group {
   margin-bottom: 1.25rem;
 }

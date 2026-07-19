@@ -265,7 +265,7 @@ export async function getValuesLexicon() {
   if (_valuesLexiconCache) return _valuesLexiconCache;
   const { data } = await getClient()
     .from('values_lexicon')
-    .select('id, display_label_adult, sort_order')
+    .select('id, display_label_adult, definition, sort_order')
     .order('sort_order', { ascending: true });
   _valuesLexiconCache = data || [];
   return _valuesLexiconCache;
