@@ -896,6 +896,32 @@ header h1 {
   color: var(--text-muted);
   font-style: italic;
 }
+.parent-anchor-label-strengths {
+  margin-top: 1.5rem;
+}
+.parent-anchor-strengths {
+  margin: 0 0 1.25rem;
+  padding: 1rem 1rem 1rem 2.2rem;
+  background: var(--warm-white);
+  border-left: 3px solid var(--sage);
+  border-radius: var(--radius);
+  font-weight: 600;
+  color: var(--sage);
+}
+.parent-anchor-why-heading {
+  margin: 0 0 0.6rem;
+  color: var(--text);
+  font-size: 1.1rem;
+}
+.parent-anchor-why-body {
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin: 0 0 0.8rem;
+}
+.parent-anchor-linkout {
+  margin: 0 0 0.9rem;
+}
 
 /* Confirmation modal action row */
 .confirm-actions {
@@ -3708,6 +3734,29 @@ body.landscape-mountain {
   line-height: 1.8;
   font-size: 1rem;
   margin: 0 0 1rem;
+}
+
+/* "Why your strengths matter" page (after the VIA import). Learner's top
+   strengths pinned on top, then generic kid-friendly copy. */
+.onb-why-strengths {
+  margin: 0 0 1.5rem;
+  padding: 1rem 1rem 1rem 2.2rem;
+  background: var(--warm-white);
+  border-left: 3px solid var(--sage);
+  border-radius: var(--radius);
+  font-weight: 600;
+  color: var(--sage);
+}
+.onb-why-heading {
+  margin: 0 0 0.75rem;
+  color: var(--text);
+  font-size: 1.25rem;
+}
+.onb-why-body {
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 1rem;
+  margin: 0 0 0.9rem;
 }
 
 /* Measured link-out (Decision 8): take the real assessment, then enter results. */

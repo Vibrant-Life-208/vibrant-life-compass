@@ -1259,7 +1259,7 @@ const CASCADE_SPARKS = ['breath', 'within_1yr'];
 // Steps whose progress is NOT tracked by the onboarding_step resume enum. Their
 // state lives elsewhere (pitch -> learner row; slice_plan -> year goals), so they
 // are safe to re-show on resume and must never be written as the resume pointer.
-const NON_RESUME_STEPS = new Set(['pitch', 'slice_plan']);
+const NON_RESUME_STEPS = new Set(['pitch', 'slice_plan', 'strengths_why']);
 
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
@@ -1325,6 +1325,17 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   const onbLearner = learnerId ? await getLearner(learnerId) : null;
   const currentWheel = isCurrentWheelBuild(onbLearner);
   const steps = [...(studio === 'sparks' ? CASCADE_SPARKS : CASCADE_FULL)];
+  // After the VIA strengths import, a short "why your strengths matter" page with
+  // the person's top strengths pinned on top (captain 2026-07-19). Shown to
+  // EVERYONE who does the strengths import (learners + guides; anyone whose
+  // cascade includes 'strengths'), once - it rides the one-time onboarding
+  // cascade, so it is never re-prompted after onboarding completes. Sparks has no
+  // strengths step, so it is naturally excluded. Not in the onboarding_step resume
+  // enum (see NON_RESUME_STEPS), so it needs no schema change and is safe on resume.
+  {
+    const atStrengths = steps.indexOf('strengths');
+    if (atStrengths >= 0) steps.splice(atStrengths + 1, 0, 'strengths_why');
+  }
   // 1-year plan, organized by wheel slice (captain 2026-07-14): the last step of the
   // cascade for learners. A learner who opted into the pitch plans by the wheel of the
   // studio they're growing INTO, thresholds pre-placed into their slice; everyone else
@@ -1587,6 +1598,32 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       ${preview}
       ${errored}
       ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: !r })}
+    `;
+  }
+
+  // After the strengths import: a short "why your strengths matter" page for
+  // learners, their top strengths pinned on top. Read-only, no data entered.
+  // (Captain 2026-07-19.) Copy is written for an 8-year-old and stays generic so
+  // it fits any learner's strengths.
+  function renderStrengthsWhy() {
+    const labels = {};
+    state.viaStrengths.forEach((s) => {
+      labels[s.id] = (childStrengths && s.display_label_child) ? s.display_label_child : s.display_label_adult;
+    });
+    // strengthResult holds the full top8 when they just uploaded; on a rare
+    // resume-then-back it may be absent, so fall back to the saved top strengths.
+    const ids = (state.strengthResult ? state.strengthResult.top8 : state.strengths).slice(0, 5);
+    const chips = ids.map((id) => `<li>${escapeHtml(labels[id] || id)}</li>`).join('');
+    return `
+      <div class="onb-strengths-why">
+        <ol class="via-preview-list onb-why-strengths">${chips}</ol>
+        <h3 class="onb-why-heading">Tools you already have</h3>
+        <p class="onb-why-body">Meet your strengths. These are some of the best parts of who you are. You use them every day, in your own way - maybe you help a friend, ask a great question, make someone laugh, or keep going when something gets tricky.</p>
+        <p class="onb-why-body">Your strengths are like tools you carry with you everywhere. When you want to learn something new or change something, you don't have to start from nothing. You get to use what you are already good at.</p>
+        <p class="onb-why-body">These make you, you. And when something feels hard, you can stop and ask: which of my strengths can help me right now?</p>
+        <p class="onb-why-body">The more you use them, the stronger they grow - and that is how they help you grow, a little more every day.</p>
+      </div>
+      ${navButtons({ skippable: false, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
     `;
   }
 
@@ -2315,6 +2352,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const step = curStep();
     if (step === 'breath') formFields.innerHTML = renderBreath();
     else if (step === 'strengths') formFields.innerHTML = renderStrengthsUpload();
+    else if (step === 'strengths_why') formFields.innerHTML = renderStrengthsWhy();
     else if (step === 'values') formFields.innerHTML = typeValues ? renderValuesType() : renderSelectStep({ kind: 'value', label: 'values' });
     else if (step === 'pitch') formFields.innerHTML = renderPitch();
     else if (step === 'slice_plan') formFields.innerHTML = renderSlicePlan();
@@ -2420,6 +2458,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         const r = state.strengthResult;
         if (!r) return; // need an uploaded VIA PDF first
         await advance(() => profileId ? setStrengthRanking(profileId, { top8: r.top8, bottom8: r.bottom8 }) : Promise.resolve());
+      } else if (step === 'strengths_why') {
+        await advance(null); // read-only page; nothing to persist
       } else if (step === 'values') {
         if (typeValues) {
           captureValuesTyped();
