@@ -1,6 +1,15 @@
-// Year Map - horizontal thread showing 7 sessions of the academic year.
+// Year Map - horizontal thread of the academic year's sessions.
 // Per Decision 2 of the 2026-05-11 fleet meeting: not a Google Calendar replica.
-// A learner-time visualization that reveals the whole and marks the learner's position.
+// A learner-time visualization that marks the learner's position.
+//
+// SESSION-WINDOW ZOOM (captain 2026-07-20; SSC working session): this map no longer
+// "reveals the whole" year at once. A learner standing in Session 1 was shown all 7-8
+// sessions (Kyra, a live learner, found the full strip overwhelming). The 2026-05-11
+// "reveal the whole" intent is a considered REVERSAL as of 2026-07-20. Now: show the near
+// window (sessions 1-3) and reveal each later session only when its calendar start date
+// arrives. TIME-gated, NEVER achievement-gated (SSC invariant) - a session opens because it
+// STARTS, never because the prior one was "completed"; an unfinished session must never read
+// as a locked door. The full ladder still lives in the structure, off the page.
 
 import { SESSIONS_PER_YEAR, YEAR_CALENDAR, DAYS_PER_WEEK, getStudio, getCalendarForStudio } from './studios.js';
 
@@ -118,8 +127,20 @@ export function renderYearMap(container, learner, opts = {}) {
 
   const totalWeeksInYear = calendar.sessionWeeks.reduce((a, b) => a + b, 0);
 
+  // The near window: sessions 1-3 always, growing to include the current session as the
+  // year is lived. position.sessionIndex is date-driven (computeYearPosition) - so this is
+  // TIME-gated, never achievement-gated. Sessions past the window stay in the structure,
+  // off the page, until their start date arrives. Past sessions remain visible as memory
+  // (is-past), never a progress meter ("behind you is memory, not score" - Jake Sisko).
+  // OPEN REFINEMENT: with the repeating Plan/Do/Close/Reflect cycle, per-cycle windowing
+  // (collapsing prior cycles) may be layered on later; this grows a single window and keeps
+  // prior sessions as memory, honoring both "just show 1-3" and "the past is memory."
+  const maxVisibleSession = Math.max(3, position.sessionIndex);
+
   calendar.sessionWeeks.forEach((weeksInSession, sIdx) => {
     const sessionNumber = sIdx + 1;
+    // Not yet started - stays in the structure, off the page (session-window zoom).
+    if (sessionNumber > maxVisibleSession) return;
     const isCurrent = sessionNumber === position.sessionIndex;
     const isPast = sessionNumber < position.sessionIndex || position.afterYearEnd;
     const isFuture = sessionNumber > position.sessionIndex && !position.afterYearEnd;
