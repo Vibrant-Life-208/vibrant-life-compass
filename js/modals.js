@@ -1317,7 +1317,7 @@ const TENYR_SPARKS = {
   young: "Let these spark you: Who's with you? What are you really good at? Where would you go? What pets, what adventures? What do you do that makes you lose track of time?",
 };
 
-export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, learnerId = null, onComplete }) {
+export async function openOnboardingModal({ profileId = null, role = 'learner', studio = null, learnerId = null, annualRefresh = false, onComplete }) {
   // Per-learner current-wheel gate (v0.23). Resolved once from the learner in scope and used
   // for every gate below (which pages the cascade shows, the slice walk vs the legacy grid).
   // Local dev: always true. Prod: this learner's current_wheel_test flag; null/absent learner
@@ -1343,6 +1343,18 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   {
     const atValues = steps.indexOf('values');
     if (atValues >= 0) steps.splice(atValues, 0, 'values_why');
+  }
+  // Annual vision refresh (captain 2026-07-20, SSC working session): on a new year-cycle
+  // re-walk, drop character strengths (+ its intro) - strengths are stable year to year and
+  // last year's are kept untouched. Everything else (values, the 10/5/1 telescope, the mirror,
+  // the slice/goal plan) re-walks PREFILLED with last year's answers (loaded below into state),
+  // so the learner sees what they said and can edit or change their mind. First-run is
+  // unaffected (annualRefresh is false).
+  if (annualRefresh) {
+    for (const s of ['strengths', 'strengths_why']) {
+      const at = steps.indexOf(s);
+      if (at >= 0) steps.splice(at, 1);
+    }
   }
   // 1-year plan, organized by wheel slice (captain 2026-07-14): the last step of the
   // cascade for learners. A learner who opted into the pitch plans by the wheel of the
@@ -1433,7 +1445,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     thresholdDetail: {},
   };
 
-  setModalTitle(role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass');
+  setModalTitle(annualRefresh
+    ? 'A new year - refresh your vision'
+    : (role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass'));
 
   // Hide the default form's modal-actions; each step renders its own buttons.
   const defaultActions = document.querySelector('#goal-form .modal-actions');

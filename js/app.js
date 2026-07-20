@@ -19,7 +19,7 @@ import { renderPractice } from './practice.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
-import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, saveLearner, addNotification } from './store.js';
+import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, getOnboardingState, saveLearner, addNotification } from './store.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -331,7 +331,20 @@ async function onSignedIn() {
     // The quote is the front-of-line anchor: missing, or stamped for a past cycle.
     const needsQuote = !quote.text || quote.cycle !== currentCycle;
     // The cascade (strengths/values/horizons) is gated separately.
-    const needsCascade = !(await hasCompletedOnboarding(ownIdentity));
+    // ANNUAL VISION REFRESH (captain 2026-07-20, SSC working session): the cascade is no
+    // longer one-time. Each new year-cycle (Session 1) re-opens it - values + the 10/5/1
+    // telescope + the mirror + goals - prefilled with last year's answers to edit or keep.
+    // Character strengths are NOT re-walked (stable year to year); refresh mode drops them
+    // (see openOnboardingModal). Staleness = onboarding completed in a PRIOR cycle: the
+    // existing onboarding_completed_at timestamp is before this cycle's yearStartISO. No
+    // schema change. Applies to learners + guides + owners (all reach this cascade); parents
+    // are excluded by the role gate above. A learner mid-draft THIS cycle (completedAt within
+    // the cycle) is untouched - the refresh only fires once the calendar rolls to a new year.
+    const onbState = await getOnboardingState(ownIdentity);
+    const completedThisCycle = Boolean(onbState.completedAt)
+      && String(onbState.completedAt).slice(0, 10) >= currentCycle;
+    const annualRefresh = Boolean(onbState.completedAt) && !completedThisCycle;
+    const needsCascade = !completedThisCycle;
     gatingPending = needsQuote || needsCascade;
 
     // Studio drives developmental gating of the long-horizon steps (captain
@@ -369,6 +382,7 @@ async function onSignedIn() {
         role: session.role,
         studio: onbStudio,
         learnerId, // the slice-plan step saves year goals against this learner
+        annualRefresh, // new year-cycle re-walk (drops strengths; prefills last year's answers)
         onComplete: finishGate,
       });
     };
