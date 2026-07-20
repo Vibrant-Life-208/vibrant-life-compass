@@ -9,13 +9,14 @@
 // available here. (Captain 2026-07-19: "parents too", mini North; strengths added
 // after verifying parents/owners had no VIA import path.)
 
-import { getQuoteState, getStrengthRanking, getViaCharacterStrengths } from './store.js';
-import { openQuoteFlow } from './modals.js';
+import { getQuoteState, getStrengthRanking, getViaCharacterStrengths, getProfileValues, getValuesLexicon } from './store.js';
+import { openQuoteFlow, openValuesPickerModal } from './modals.js';
 import { openViaImportModal } from './via-import.js';
 import { getYearCalendar } from './studios.js';
 
 // Adults take the standard VIA survey (same registration URL as the youth one).
 const VIA_SURVEY_URL = 'https://www.viacharacter.org/survey/account/register';
+const VALUES_ASSESSMENT_URL = 'https://values.institute/values-app/';
 
 function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
@@ -39,19 +40,25 @@ function whyStrengthsHtml() {
 export async function renderParentAnchor(host, parentId, { onChange } = {}) {
   if (!host || !parentId) return;
 
-  const [quote, ranking, viaList] = await Promise.all([
+  const [quote, ranking, viaList, valueIds, valuesLexicon] = await Promise.all([
     getQuoteState(parentId),
     getStrengthRanking(parentId),
     getViaCharacterStrengths(),
+    getProfileValues(parentId),
+    getValuesLexicon(),
   ]);
   const currentCycle = getYearCalendar().yearStartISO;
 
   const labels = {};
   viaList.forEach((s) => { labels[s.id] = s.display_label_adult; });
+  const valById = {};
+  valuesLexicon.forEach((v) => { valById[v.id] = v; });
 
   const hasQuote = !!quote.text;
   const top = Array.isArray(ranking?.top8) ? ranking.top8 : [];
   const hasStrengths = top.length > 0;
+  const picked = Array.isArray(valueIds) ? valueIds : [];
+  const hasValues = picked.length > 0;
 
   const quoteBlock = hasQuote ? `
     <blockquote class="north-quote">
@@ -79,12 +86,28 @@ export async function renderParentAnchor(host, parentId, { onChange } = {}) {
     </div>
   `;
 
+  const valuesBlock = hasValues ? `
+    <ul class="parent-anchor-values">${picked.map((id) => {
+      const v = valById[id];
+      return `<li><span class="parent-anchor-value-name">${escapeHtml(v ? v.display_label_adult : id)}</span>${v && v.definition ? `<span class="parent-anchor-value-def">${escapeHtml(v.definition)}</span>` : ''}</li>`;
+    }).join('')}</ul>
+    <button type="button" class="btn btn-text parent-anchor-edit" data-values-edit>Change your values</button>
+  ` : `
+    <div class="north-quote parent-anchor-empty">
+      <p class="parent-anchor-empty-text">The five values that matter most to you - your compass for the hard choices.</p>
+      <p class="parent-anchor-linkout"><a href="${VALUES_ASSESSMENT_URL}" target="_blank" rel="noopener noreferrer">Take the Values assessment &#8599;</a></p>
+      <button type="button" class="btn btn-primary" data-values-edit>Choose your values</button>
+    </div>
+  `;
+
   host.innerHTML = `
     <section class="parent-anchor">
       <h3 class="parent-anchor-label">Your North</h3>
       ${quoteBlock}
       <h3 class="parent-anchor-label parent-anchor-label-strengths">Your strengths</h3>
       ${strengthsBlock}
+      <h3 class="parent-anchor-label parent-anchor-label-strengths">Your values</h3>
+      ${valuesBlock}
     </section>`;
 
   const refresh = () => { renderParentAnchor(host, parentId, { onChange }); if (onChange) onChange(); };
@@ -103,5 +126,10 @@ export async function renderParentAnchor(host, parentId, { onChange } = {}) {
     // Reuses the standalone VIA importer. On save it re-renders here, which shows
     // the top strengths + the "why" copy right after the import (per spec).
     openViaImportModal({ profileId: parentId, onSaved: refresh });
+  });
+
+  host.querySelector('[data-values-edit]')?.addEventListener('click', () => {
+    // Standalone values picker (pick 5 from the 44-list + values.institute link).
+    openValuesPickerModal({ profileId: parentId, onSaved: refresh });
   });
 }

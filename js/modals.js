@@ -1382,10 +1382,11 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   }
   if (hasSlicePlan) steps.push('slice_plan');
   // Values (captain 2026-07-13): Launch Pad learners + all adults (guides,
-  // parents, owners) TYPE their values via the quiz (free text + archetype);
-  // Discovery + Adventure learners PICK from the curated list. (Sparks does no
-  // values step at all - see CASCADE_SPARKS.)
-  const typeValues = role !== 'learner' || studio === 'launchpad';
+  // parents TYPE their values via the quiz (free text + archetype); Discovery +
+  // Adventure learners AND guides PICK from the curated 44-value list (with the
+  // Evoked definitions). Launch Pad learners still type. (Captain 2026-07-13;
+  // guides moved to pick 2026-07-19.) Sparks does no values step - see CASCADE_SPARKS.
+  const typeValues = (role !== 'learner' && role !== 'guide') || studio === 'launchpad';
   // Character strengths (captain 2026-07-13): Discovery + Adventure learners take
   // the VIA YOUTH survey; Launch Pad learners and all adults take the adult VIA
   // survey. Same on-device PDF upload for both.
@@ -2653,6 +2654,60 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
   // Parents (gated:false): the quote is an offered personal anchor, skippable via
   // the X/backdrop, re-offered next cycle. (Captain 2026-07-19.)
   setModalGated(gated);
+}
+
+// Standalone values picker: pick 5 from the curated 44-value list (with the
+// Evoked definitions) + the values.institute link. Reusable outside the
+// onboarding cascade - used by the parent/owner mini North, where values are set
+// without walking the cascade. Saves to values_top_3. Skippable. (Captain 2026-07-19.)
+export async function openValuesPickerModal({ profileId = null, onSaved } = {}) {
+  const [lexicon, existing] = await Promise.all([
+    getValuesLexicon(),
+    profileId ? getProfileValues(profileId) : Promise.resolve([]),
+  ]);
+  const state = { picked: Array.isArray(existing) ? existing.slice(0, 5) : [] };
+
+  setModalTitle('Your values');
+  const defaultActions = document.querySelector('#goal-form .modal-actions');
+  if (defaultActions) defaultActions.style.display = 'none';
+
+  function render() {
+    const ff = document.getElementById('form-fields');
+    if (!ff) return;
+    const cards = lexicon.map((v) => {
+      const selected = state.picked.includes(v.id);
+      return `<button type="button" class="onb-select-card onb-value-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}"><span class="onb-value-name">${escapeHtml(v.display_label_adult)}</span>${v.definition ? `<span class="onb-value-def">${escapeHtml(v.definition)}</span>` : ''}</button>`;
+    }).join('');
+    ff.innerHTML = `
+      <p class="onb-step-instruction">Choose the five values that matter most to you. Each one's meaning is under it.</p>
+      <p class="onb-linkout"><a href="${escapeAttr(VALUES_ASSESSMENT_URL)}" target="_blank" rel="noopener noreferrer">Take the Values assessment ↗</a><span class="onb-linkout-note">Opens in a new tab - optional. Come back and choose your five.</span></p>
+      <div class="onb-select-grid onb-value-grid">${cards}</div>
+      <div class="onb-step-actions">
+        <span class="values-count">${state.picked.length} / 5 chosen</span>
+        <div class="onb-step-actions-right">
+          <button type="button" id="vp-save" class="btn btn-primary"${state.picked.length === 5 ? '' : ' disabled'}>Save my values</button>
+        </div>
+      </div>`;
+    ff.querySelectorAll('.onb-select-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.id;
+        const i = state.picked.indexOf(id);
+        if (i >= 0) state.picked.splice(i, 1);
+        else if (state.picked.length < 5) state.picked.push(id);
+        render();
+      });
+    });
+    document.getElementById('vp-save')?.addEventListener('click', async () => {
+      if (state.picked.length !== 5) return;
+      if (profileId) await setProfileValues(profileId, state.picked);
+      closeModal();
+      if (onSaved) onSaved(state.picked);
+    });
+  }
+
+  render();
+  openModal();
+  setModalGated(false); // skippable - close via X leaves values unset, re-offered later
 }
 
 // Standalone pitch opt-in: the same age self-report + opt-in as the onboarding
