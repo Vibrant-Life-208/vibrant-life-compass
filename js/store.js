@@ -66,6 +66,9 @@ export const {
   // v0.3 horizon cascade + onboarding resume pointer (2026-06-22 fleet meeting)
   getProfileHorizons,
   setProfileHorizon,
+  // v0.26 Session-1 foundational inventory (dormant until the movement screens are built)
+  getProfileFoundations,
+  setProfileFoundations,
   getOnboardingState,
   setOnboardingStep,
   markOnboardingStepSkipped,

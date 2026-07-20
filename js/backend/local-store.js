@@ -28,6 +28,7 @@ const KEYS = {
   notifications: 'hc_notifications',
   profileAnchor: 'hc_profile_anchor',     // {id: {values:[], strengths:[]}} (v0.2 anchor)
   profileHorizons: 'hc_profile_horizons', // {id: {beyond_5yr,...}} (v0.3 cascade)
+  profileFoundations: 'hc_profile_foundations', // {id: {reliable_space,...}} (v0.26 Session-1 inventory)
   onboarding: 'hc_onboarding',            // {id: {step, skipped, completedAt, updatedAt}}
   weeklyAnswers: 'hc_weekly_answers_v0',  // {learnerId|goalId|s{n}|w{n}: {text, kind, session, week}} — no timestamp (§5)
   thresholdAdditions: 'hc_threshold_additions_v0', // {learnerId: {thresholdId: {now, halfway}}} — child records, NEVER goal rows
@@ -934,6 +935,21 @@ export async function setProfileHorizon(id, stepKey, text) {
   const all = read(KEYS.profileHorizons) || {};
   all[id] = { ...(all[id] || {}), [stepKey]: text };
   write(KEYS.profileHorizons, all);
+}
+
+// v0.26 Session-1 foundational inventory (the Ground / Posture / Self answers beyond
+// strengths/values/vision). One object per profile; self-only by construction. DORMANT until
+// the movement screens are built. Mirrors the supabase-adapter accessors.
+export async function getProfileFoundations(id) {
+  const all = read(KEYS.profileFoundations) || {};
+  const f = all[id];
+  return (f && typeof f === 'object' && !Array.isArray(f)) ? f : {};
+}
+export async function setProfileFoundations(id, foundations) {
+  const obj = (foundations && typeof foundations === 'object' && !Array.isArray(foundations)) ? foundations : {};
+  const all = read(KEYS.profileFoundations) || {};
+  all[id] = obj;
+  write(KEYS.profileFoundations, all);
 }
 
 export async function getOnboardingState(id) {

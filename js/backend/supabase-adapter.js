@@ -378,6 +378,37 @@ export async function setProfileHorizon(profileId, stepKey, text) {
     .eq('id', profileId);
 }
 
+// v0.26 Session-1 foundational inventory (the Ground / Posture / Self answers beyond
+// strengths/values/vision). One jsonb blob on profiles, self-only via the profiles_self RLS
+// (never surveilled - spec invariant #7). The cascade accumulates the whole object in state
+// and persists it on each step advance (per-step atomicity like horizons, without a
+// read-modify-write race). Read-safe before the migration is applied (returns {} on error),
+// so this code ships ahead of the column. DORMANT until the Session-1 movement screens exist.
+// Spec: docs/design/2026-07-20-session1-plan-foundational-inventory-spec.md.
+export async function getProfileFoundations(profileId) {
+  try {
+    const { data } = await getClient()
+      .from('profiles')
+      .select('foundations')
+      .eq('id', profileId)
+      .single();
+    const f = data?.foundations;
+    return (f && typeof f === 'object' && !Array.isArray(f)) ? f : {};
+  } catch (e) {
+    return {}; // column may not exist yet (deploy-before-migration safety)
+  }
+}
+
+export async function setProfileFoundations(profileId, foundations) {
+  const obj = (foundations && typeof foundations === 'object' && !Array.isArray(foundations)) ? foundations : {};
+  try {
+    await getClient()
+      .from('profiles')
+      .update({ foundations: obj, onboarding_updated_at: new Date().toISOString() })
+      .eq('id', profileId);
+  } catch (e) { /* column may not exist yet; non-fatal (deploy-before-migration safety) */ }
+}
+
 // Read the whole resume pointer at once - used on sign-in to land the person on
 // their exact step.
 export async function getOnboardingState(profileId) {
