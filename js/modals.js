@@ -1643,9 +1643,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     return `
       <div class="onb-strengths-why">
         <h3 class="onb-why-heading">What you stand for</h3>
-        <p class="onb-why-body">Next, you'll choose your values - so first, what are they? Your values are the things that matter most to you. When you know them, choices get easier, and it is simpler to decide what to do when something is hard.</p>
-        <p class="onb-why-body">Here is a surprising way to find them: notice what bothers you. When something feels unfair, or you are quick to speak up and defend someone, that strong feeling is pointing at something you care about. Maybe you get upset when a friend is left out - that means you care about kindness and belonging.</p>
-        <p class="onb-why-body">You can also think of someone you look up to, and ask what you love about them - those things often live in you too. Or remember a time you felt really proud, and notice what was happening - that moment is showing you what matters.</p>
+        <p class="onb-why-body">Your values are the things that matter most to you, and knowing them makes the hard choices easier.</p>
+        <p class="onb-why-body">Here is a surprising way to find them: notice what bothers you. When something feels unfair, or you are quick to defend someone, that feeling is pointing at something you care about.</p>
         <p class="onb-why-body">On the next screen, you'll name a few of your own.</p>
       </div>
       ${navButtons({ skippable: false, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
