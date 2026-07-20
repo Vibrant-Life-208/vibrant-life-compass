@@ -1350,13 +1350,19 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // plans by their own current wheel, blank. Sparks stays screen-free (no slice step).
   // Not in the resume enum - its data lives as year goals, so re-showing is idempotent.
   const hasSlicePlan = role === 'learner' && studio && studio !== 'sparks';
-  // Current-wheel redesign (captain 2026-07-17, walk-as-user): when the per-slice walk
-  // runs, it asks year / now / halfway PER SLICE, so the generic whole-life 1-year / now
-  // / halfway single-text horizon pages are redundant. Drop them and go straight from the
-  // 5-year vision + pitch into the slices. The 10yr + 5yr vision pages stay. Scoped to
-  // `currentWheel`, so today's flag-off onboarding is unchanged (no live regression).
+  // Current-wheel redesign (captain 2026-07-17, walk-as-user): the per-slice walk asks
+  // year / now / halfway PER SLICE, so the per-goal HALFWAY decomposition is covered there.
+  // CORRECTION (captain 2026-07-20, SSC working session): the 2026-07-17 change ALSO dropped
+  // within_1yr + current_state, treating the whole-life 1-year vision as redundant with the
+  // per-slice year question. It is not. The per-slice "a year from now in <category>?" is a
+  // goal TARGET; the whole-life 1-year vision is the PIVOT - the learner surveys their whole
+  // life a year out, meets the honest mirror, and FROM THAT chooses which few goals matter
+  // ("the 1-year imagination hits the mirror reality"). Kyra (Adventure, currentWheel on,
+  // hasSlicePlan) never walked it because this branch deleted it - the missed-vision bug.
+  // Restore within_1yr + current_state as the load-bearing pivot before the slices; only the
+  // per-goal `halfway` stays dropped here (the slice walk asks it per slice). 10yr + 5yr stay.
   if (currentWheel && hasSlicePlan) {
-    for (const s of ['within_1yr', 'current_state', 'halfway']) {
+    for (const s of ['halfway']) {
       const at = steps.indexOf(s);
       if (at >= 0) steps.splice(at, 1);
     }
