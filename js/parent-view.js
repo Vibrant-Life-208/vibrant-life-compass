@@ -3,7 +3,7 @@
 import { getLearners, getGoals, getSession, getNotifications, markNotificationRead, getParents, getParentLearnerLinks } from './store.js';
 import { getCategoriesForStudio, PARENT_SUPPORT_HINTS } from './studios.js';
 import { computeYearPosition } from './year-map.js';
-import { renderParentBadgesJourney } from './parent-badges.js';
+import { renderSafeBaseDailyBlessing } from './parent-badges.js';
 
 // Which kid this parent is currently viewing (per-session, in-memory).
 // Reset on every renderParentView call if not set.
@@ -32,16 +32,14 @@ export async function renderParentView() {
   const { renderParentAnchor } = await import('./parent-anchor.js');
   renderParentAnchor(anchorHost, session.parentId);
 
-  // Parents & Tots recognition - the canonical gated four-badge journey from
-  // js/parent-badges.js (single source of truth). Rendered first so a P&T parent
-  // whose tot isn't on Compass still has a home here. This legacy per-parent path
-  // is being retired by the family-login migration (captain 2026-06-28); migrated
-  // parents get this same component in the family view. Previously this rendered a
-  // divergent local copy (renderParentsAndTots) that carried a "Session undefined"
-  // kicker and lacked the conversation-first gate - removed 2026-07-17.
+  // Parents & Tots - the daily Safe-Base blessing (captain 2026-07-20; reviewers Polaris +
+  // Kira + Salus). Replaces the interactive four-badge journey in parent accounts with a
+  // gentle daily blessing during the first session: a gift that asks nothing back, holds the
+  // ask-first ("your family's way leads") and the hard day co-equal, and never counts or
+  // schedules. Shows only in the first session; nothing (and nothing missed) otherwise.
   const ptHost = document.createElement('div');
   container.appendChild(ptHost);
-  renderParentBadgesJourney(ptHost, session.parentId);
+  renderSafeBaseDailyBlessing(ptHost);
 
   const [allLearners, allLinks] = await Promise.all([getLearners(), getParentLearnerLinks()]);
   const myLinks = allLinks.filter((l) => l.parentId === session.parentId);

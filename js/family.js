@@ -14,7 +14,7 @@ import {
   getValuesLexicon, getViaCharacterStrengths,
   getFamilyUpdates, addFamilyUpdate,
 } from './store.js';
-import { renderParentBadgesJourney } from './parent-badges.js';
+import { renderSafeBaseDailyBlessing } from './parent-badges.js';
 
 export function isFamilySession(session) {
   return !!(session && session.familyId);
@@ -180,12 +180,12 @@ export async function renderFamilyView(familyId, { onBack } = {}) {
     </div>`;
   screen.querySelector('[data-back]')?.addEventListener('click', () => onBack && onBack());
 
-  // Parent-side Parents & Tots journey - private to the active PARENT member only
-  // (self-disclosed, local; never a shared or guide-visible thing).
+  // Parent-side Parents & Tots - the daily Safe-Base blessing during the first session
+  // (captain 2026-07-20; replaces the four-badge journey). Shows nothing outside session 1.
   const session = await getSession();
   const activeMember = (family.members || []).find((m) => m.profileId === session?.activeProfileId);
   if (activeMember && activeMember.kind === 'parent') {
-    renderParentBadgesJourney(document.getElementById('pt-journey'), activeMember.profileId);
+    renderSafeBaseDailyBlessing(document.getElementById('pt-journey'));
     const { renderParentAnchor } = await import('./parent-anchor.js');
     renderParentAnchor(document.getElementById('parent-anchor-host'), activeMember.profileId);
   }

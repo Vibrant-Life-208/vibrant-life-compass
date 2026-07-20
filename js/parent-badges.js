@@ -1,5 +1,8 @@
 // Parents & Tots recognition badges - the parent's own Hero's Journey.
 //
+import { getYearCalendar } from './studios.js';
+import { computeYearPosition } from './year-map.js';
+//
 // CATEGORY WALL (Polaris standing condition, Compass Decision 5):
 // These recognize a PARENT posture already practiced - they are NOT learner
 // mastery badges. They are NEVER counted, scored, streaked, completion-tracked,
@@ -164,6 +167,14 @@ export function renderParentBadgesReference(show) {
 // is self-disclosed + local-only (isPtFamily / isHoldingBadge); it is never sent
 // to a server, never aggregated, never visible to a guide. Opt-in, so it appears
 // only for a parent who says they're a Parents & Tots family.
+//
+// RETIRED from parent accounts 2026-07-20 (captain, reviewers Polaris + Kira + Salus):
+// the interactive self-marking journey is replaced in parent accounts by the daily
+// Safe-Base blessing (renderSafeBaseDailyBlessing, below) - a received blessing that asks
+// nothing back, held to be truer to the Category Wall than a "I'm holding this" self-mark.
+// This function is kept (not deleted) for reference / possible restoration; it has no parent
+// callers. The PARENT_BADGE_ARC it renders is still used by the GUIDE reference view
+// (renderParentBadgesReference), which is unchanged. See the 2026-07-20 decision log.
 // ---------------------------------------------------------------------------
 export function renderParentBadgesJourney(host, parentId) {
   if (!host) return;
@@ -255,4 +266,53 @@ export function renderParentBadgesJourney(host, parentId) {
     setHoldingBadge(parentId, id, !isHoldingBadge(parentId, id));
     renderParentBadgesJourney(host, parentId);
   }));
+}
+
+// ---------------------------------------------------------------------------
+// THE DAILY SAFE-BASE BLESSING (captain 2026-07-20; reviewers Polaris + Kira + Salus).
+// Replaces the interactive four-badge journey in PARENT ACCOUNTS with a gentle daily
+// blessing during the first session - a document/blessing, not a self-marked badge.
+// Three ratified conditions, one per reviewer, are built in:
+//   POLARIS (gift, not program): NO "day N of 7", NO counter, NO checkbox, NO completion,
+//     NOTHING stored. Today's blessing is simply present when the parent comes. The day
+//     rotates through the seven and never ends - so there is no finish line to fall behind.
+//   KIRA (ask-first, whose-goodbye-leads): the blessing arrives ASKING, never prescribing
+//     one (Western) model of separation - "there is no one right way to say goodbye; your
+//     family's way leads, ours follows."
+//   SALUS (the hard day, co-equal): every single day holds the hard morning as also-love -
+//     a short honest goodbye is enough, and you have not failed anything.
+// Only during the FIRST session (the settling-in weeks); outside it, nothing, and nothing
+// missed. No per-parent state - the day is derived from the shared calendar, so it stores
+// and counts nothing. NOTE: the day->blessing mapping (rotate through 7 by day-of-session-1)
+// is a reasonable first pass; confirm the intended cadence with the captain. Copy adapts
+// Kira's ask-first + Salus's hard-day lines (PARENT_GATE) for the blessing context - the
+// reviewers who authored the originals should confirm the adaptation.
+export function renderSafeBaseDailyBlessing(host) {
+  if (!host) return;
+  const pos = computeYearPosition();
+  // First session only. Before the year, or in any later session, show nothing (and nothing
+  // is missed - the blessing is a settling-in gift, not a feature a parent can fall behind on).
+  if (pos.beforeYearStart || pos.sessionIndex !== 1) { host.innerHTML = ''; host.hidden = true; return; }
+  host.hidden = false;
+  const cal = getYearCalendar();
+  const s1 = new Date(cal.sessionStarts[0] + 'T00:00:00');
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  const dayIndex = Math.max(0, Math.floor((t - s1) / 86400000));
+  const n = SAFE_BASE_DAILY_GOALS.length;
+  const today = SAFE_BASE_DAILY_GOALS[dayIndex % n]; // rotates gently; no counter, no endpoint
+  // Copy carries the reviewers' two refinements (2026-07-20, Kira + Salus confirm):
+  //   KIRA: each day's line is framed "one way, if it fits" (invitation, not rule - the
+  //   badge's own language); "no one right way to DO THIS" (not just "say goodbye", since not
+  //   every day is the doorway); and the guide is kept in it (the blessing is never the first
+  //   place a family meets this).
+  //   SALUS: the reassurance is as WIDE as the posture - "whatever today held" - so it covers
+  //   the play day and the venture-out day, not only the goodbye.
+  host.innerHTML = `
+    <div class="parent-support-card pt-blessing">
+      <div class="parent-section-label">Parents &amp; Tots · a blessing for today</div>
+      <p class="pt-blessing-goal">${esc(today.goal)}</p>
+      <p class="pt-blessing-why"><strong>One way, if it fits:</strong> ${esc(today.why)}</p>
+      <p class="pt-blessing-askfirst">There is no one right way to do this - your family's way leads, and ours follows. Your guide can help you find yours.</p>
+      <p class="pt-blessing-hardday">Whatever today held - even a hard goodbye, even a morning that did not go to plan - that is also love. A short, honest goodbye is enough, and you have not failed anything.</p>
+    </div>`;
 }
