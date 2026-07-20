@@ -132,13 +132,16 @@ if (!/a small step, or rest/i.test(arcEmpty)) fail('a11y', 'empty today panel is
 // convergent). The refusal is scoped: a skill goal (Learning) still gets the forward spine.
 const heartArc = arc.renderGoalArcHtml({ id: 'gH', text: 'lead a Launch with courage', lifeArea: 'Heart' }, { lifeArea: 'Heart', position: { session: 3, week: 1 }, todayTasks: [] });
 const learningArc = arc.renderGoalArcHtml(goal, { lifeArea: 'Learning', position: { session: 3, week: 1 }, todayTasks: [] });
-for (const p of arc.ARC_PHASES) if (heartArc.includes(p.name)) fail('becoming', `Heart arc renders finish-line phase "${p.name}" (no finish-shaped sequence over a becoming)`);
+// Structural sentinel (2026-07-20): assert against the arc-phase-name span, not phase copy -
+// the spine only renders that span in the finish branch, so this is robust to phase renames
+// (Plan/Do/Close) and to short-substring false positives (e.g. "Do" inside "Done").
+if (/arc-phase-name/.test(heartArc)) fail('becoming', 'Heart arc renders a finish-line phase (arc-phase-name span) - no finish-shaped sequence over a becoming');
 if (/you are here/.test(heartArc)) fail('becoming', 'Heart arc renders a "you are here" phase marker (a becoming has no phase position)');
 if (/finish line/i.test(heartArc)) fail('becoming', 'Heart arc contains "finish line" language (a becoming is not finished)');
 if (!/notice|becoming/i.test(heartArc)) fail('becoming', 'Heart arc lost its presence/noticing framing');
 // Scoped, not a blanket removal: a skill goal still gets the forward spine + its "you are here".
 if (!heartArc.includes('goal-arc-becoming')) fail('becoming', 'Heart arc is not tagged goal-arc-becoming');
-if (!/Cross the finish line/.test(learningArc)) fail('becoming', 'Learning (skill) arc lost the forward phase spine - the fix must be scoped to becoming');
+if (!/arc-phase-name/.test(learningArc)) fail('becoming', 'Learning (skill) arc lost the forward phase spine - the fix must be scoped to becoming');
 if (!/you are here/.test(learningArc)) fail('becoming', 'Learning (skill) arc lost its "you are here" phase marker');
 
 // ── report ───────────────────────────────────────────────────────────────────

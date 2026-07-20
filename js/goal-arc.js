@@ -2,9 +2,9 @@
 //
 // "Clicking into a goal starts at the HALFWAY, not the year" (captain 2026-07-16).
 // The working view opens on the halfway goal (the Session-3 target the onboarding walk
-// produced) and shows the three-session spine that carries it: Set up -> The challenge
-// -> Cross the finish line (Sessions 1, 2, 3), FORWARD. Session 4 is grace - a catch-up
-// buffer that renders IDENTICALLY whether or not Session 3 landed on time (no behind, no
+// produced) and shows the spine that carries it: Plan -> Do -> Close (Sessions 1, 2, 3),
+// FORWARD, then Reflect (Session 4). Session 4 (Reflect) is held in grace - a look-back
+// that renders IDENTICALLY whether or not Session 3 landed on time (no behind, no
 // remediation). The surface only ever shows THIS week + today (the zoom); the full ladder
 // lives in the structure, never on the page. The weekly progressing question is cadence-
 // split by goal type (Learning finish-shaped, Heart presence) and PULLED (shown because
@@ -18,17 +18,21 @@
 // ladder/progress-strip); §9 "one step more" is an after-done gift, never a gate.
 // Nothing here ships before Stage V's watch-with-a-real-learner gate.
 
-// The three-session spine. FORWARD, lived order. Copy from the captain's decomposition
-// model (2026-07-16): each phase has a job, and Session 1's easy win is the mastery
-// experience that answers the overwhelm. Exported so the C1 render guard can assert the
-// spine's phases NEVER render over a becoming-goal (built-surface re-walk 2026-07-17, Dec. 2).
+// The Plan / Do / Close spine (Sessions 1-3), FORWARD, lived order; Session 4 is Reflect
+// (the grace look-back, rendered below). Reframed to the captain's Plan/Do/Close/Reflect
+// model (2026-07-20) with Kohn's "Punished by Rewards" through-line: S1 the Three C's
+// (Content / Collaboration / Choice - meaningful work, a buddy, your own steps), S2
+// problem-solving (talk a snag through, never push-through-alone or reward/punishment),
+// S3 feedback-not-praise (notice the effect and the process, not "good job"). Exported so
+// the C1 render guard can assert these phases NEVER render over a becoming-goal (finish-
+// shaped only; built-surface re-walk 2026-07-17, Dec. 2).
 export const ARC_PHASES = [
-  { session: 1, name: 'Set up', tag: 'clear the runway',
-    body: 'Make starting easy - clear the space, gather what you need, and tell someone you are beginning.' },
-  { session: 2, name: 'The challenge', tag: 'the hard middle',
-    body: 'Name the hardest part and take the smallest real step toward it - even on a day you do not feel like it.' },
-  { session: 3, name: 'Cross the finish line', tag: 'recognize and savor',
-    body: 'Bring it home. How will you know you got there - what would your buddy or guide see?' },
+  { session: 1, name: 'Plan', tag: 'set yourself up',
+    body: 'Plan the work: clear a reliable space, choose a buddy, and name your steps and the challenges ahead. This is where you set Session 2 up to go well.' },
+  { session: 2, name: 'Do', tag: 'work the plan',
+    body: 'Open your plan and do it, a bit at a time. Hit a snag? Talk it through and find the next real step - solve it together, do not push through alone or give up.' },
+  { session: 3, name: 'Close', tag: 'tie it off and celebrate',
+    body: 'Bring it home: tie up loose ends, check off the markers that mattered, and celebrate - or adjust and catch up. Notice the effect of what you did, not just that it is done.' },
 ];
 
 // Which session + week are we in right now, from the calendar. Clamps into range so a
@@ -126,7 +130,7 @@ export function renderGoalArcHtml(goal, { lifeArea = null, position = { session:
     // Session 4 grace - IDENTICAL regardless of on-time (§1 grace-not-remediation; §9 the
     // "one step more" gift is offered AFTER done, never as a gate).
     const grace = `
-      <p class="arc-grace">After the finish line, Session 4 is room to land it - no rush, and never "behind." If you get there in three, the fourth is yours: rest, or add one step more just because you can.</p>`;
+      <p class="arc-grace">Session 4 is Reflect - a look back over Plan, Do, and Close. No rush, and never "behind": rest with what you did, notice what you learned, and let it shape your next plan.</p>`;
     middle = `
       <ul class="arc-spine">${spine}</ul>
       ${grace}`;
