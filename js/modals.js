@@ -10,7 +10,7 @@ import {
   getThresholdAdditions, saveThresholdAdditions,
 } from './store.js';
 import { parseViaPdf } from './via-import.js';
-import { nextStudio, pitchCutoff, getStudioName, getYearCalendar } from './studios.js';
+import { nextStudio, pitchCutoff, getStudioName, getYearCalendar, lifeAreaForCategory } from './studios.js';
 import { lifeWheelSvgFor } from './wheel.js';
 import { renderThresholdsHtml, buildSlicePlan, isCurrentWheelBuild, getThresholds } from './thresholds.js';
 import { renderGoalArcHtml, currentArcPosition, weeklyKindFor } from './goal-arc.js';
@@ -1038,20 +1038,29 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     return a.length ? a : [''];
   };
 
+  // BECOMING CARVE-OUT (Accord + Comes, ratified 2026-07-17 Dec. 2): Heart/Spirit/Emotions
+  // goals are grown by noticing, not finished - so a becoming goal NEVER gets the finish-shaped
+  // milestones -> challenges -> setup sequence (that would be a finish sequence over a becoming,
+  // the exact refusal already enforced in goal-arc.js). It gets a single presence reflection
+  // instead: the destination, and how you'll tend it, with nothing sequence-shaped between them.
+  // Detection via the goal's life-area (weeklyKindFor === 'presence'). PROVISIONAL presence copy
+  // below is Comes' + Accord's to finalize before flip (mirrors the goal-arc.js becoming note).
+  const lifeArea = goal?.lifeArea || (category?.id ? lifeAreaForCategory(category.id) : null);
+  const becoming = weeklyKindFor(lifeArea) === 'presence';
+
   const s = {
-    // 'yeargoal' shows only when the year goal has no text yet; then now -> the three phases.
-    // The three phases hold up to three items each (captain 2026-07-18). Order is backward-
-    // planning from the goal: halfway markers -> challenges -> set-up-first actions, ending on
-    // set-up so the learner flows straight into the North page to break those into daily tasks.
-    // Weekly / daily breakdown is a LATER step (North page, after the accountability partner) -
-    // it is NOT captured here. Phase->session storage: setup=S1, challenges=S2, threshold=S3.
-    steps: (goal?.text ? [] : ['yeargoal']).concat(['now', 'threshold', 'challenges', 'setup']),
+    // FINISH goals walk: [yeargoal ->] now -> milestones -> challenges -> setup (backward-
+    // planning; ends on setup so the learner flows to the North page for daily steps).
+    // BECOMING goals walk: [yeargoal ->] now -> presence (no finish sequence). Weekly/daily
+    // breakdown is a LATER step (North page), not captured here.
+    steps: (goal?.text ? [] : ['yeargoal']).concat(becoming ? ['now', 'presence'] : ['now', 'threshold', 'challenges', 'setup']),
     idx: 0,
     yeargoal: goal?.text || '',
     now: goal?.baseline || '',
-    threshold: threeUp(goal?.threshold, goal?.halfwayPoint), // S3 halfway markers
-    challenges: threeUp(goal?.challenges),                   // S2 biggest challenges
-    setup: threeUp(goal?.setup),                             // S1 set-up-first actions
+    threshold: threeUp(goal?.threshold, goal?.halfwayPoint), // finish: milestones
+    challenges: threeUp(goal?.challenges),                   // finish: biggest challenges
+    setup: threeUp(goal?.setup),                             // finish: set-up-first actions
+    presence: goal?.presence || '',                          // becoming: how you'll tend it
   };
   const step = () => s.steps[s.idx];
 
@@ -1059,6 +1068,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     const st = step();
     if (st === 'yeargoal') s.yeargoal = document.getElementById('gs-yeargoal')?.value ?? s.yeargoal;
     else if (st === 'now') s.now = document.getElementById('gs-now')?.value ?? s.now;
+    else if (st === 'presence') s.presence = document.getElementById('gs-presence')?.value ?? s.presence;
     else if (st === 'threshold' || st === 'challenges' || st === 'setup') {
       const vals = [];
       document.querySelectorAll(`.gs-item[data-phase="${st}"]`).forEach((inp) => vals.push(inp.value));
@@ -1074,7 +1084,11 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     const st = step();
     let body = '';
     if (st === 'yeargoal') {
-      body = `
+      body = becoming ? `
+        <h3 class="onb-horizon-heading">${escapeHtml(catName)} - who you are becoming</h3>
+        <p class="onb-horizon-body">A year from now, who are you becoming in ${escapeHtml(catName)}? This is a direction to grow in, not a finish line to cross.</p>
+        <textarea id="gs-yeargoal" class="slice-box" rows="3" placeholder="This year, in ${escapeAttr(catName)}, I am growing into…">${escapeHtml(s.yeargoal)}</textarea>`
+      : `
         <h3 class="onb-horizon-heading">${escapeHtml(catName)} - your year goal</h3>
         <p class="onb-horizon-body">A year from now, what's different about you in ${escapeHtml(catName)}? How would your guide know you got there?</p>
         <textarea id="gs-yeargoal" class="slice-box" rows="3" placeholder="By next year, in ${escapeAttr(catName)}, I want to…">${escapeHtml(s.yeargoal)}</textarea>`;
@@ -1084,26 +1098,40 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         ${contextCard('Your year goal', s.yeargoal)}
         <p class="onb-horizon-body">Honestly - where are you starting from in ${escapeHtml(catName)}? This is the mirror, not the dream.</p>
         <textarea id="gs-now" class="slice-box" rows="3" placeholder="Starting out, in ${escapeAttr(catName)}, I am…">${escapeHtml(s.now)}</textarea>`;
+    } else if (st === 'presence') {
+      // Becoming: a single presence reflection - no milestones, no challenges, nothing
+      // sequence-shaped between the destination and the noticing. PROVISIONAL copy (Comes +
+      // Accord to finalize before flip; mirrors the goal-arc.js becoming note).
+      body = `
+        <h3 class="onb-horizon-heading">Tending this</h3>
+        ${contextCard('What you are growing toward', s.yeargoal)}
+        <p class="onb-horizon-body">This one is a becoming, not a finish - there is no line to cross. How will you tend it? What helps you notice it growing, and come back to it when you drift?</p>
+        <textarea id="gs-presence" class="slice-box" rows="3" placeholder="I will tend this by…">${escapeHtml(s.presence)}</textarea>`;
     } else {
       // The three phases, each up to three items. st is 'threshold' | 'challenges' | 'setup'.
       // Halfway language is retained on 'threshold' (captain 2026-07-18). The daily/weekly
       // breakdown of these items is deferred to the North page (not captured here).
+      // Planning your goal's arc (Session 1: Plan). The three parts map forward to the
+      // working sessions - milestones are how you'll know you're closing in (Close), the
+      // challenges are what you'll problem-solve as you Do it, and the setup is how you Plan
+      // to start. Kohn through-line: problem-solve together (not push through alone), and a
+      // reliable space + a buddy in the setup (the Three C's). Same fields/order/storage.
       const phase = {
         threshold: {
-          heading: 'A marker along the way',
-          body: 'About halfway there - what would you have reached? Name up to three markers you would love to hit between where you are starting and your year goal.',
-          placeholder: 'A halfway marker - be specific',
+          heading: 'Your milestones',
+          body: 'About halfway there - what markers would you love to reach? Name up to three. These are how you will know you are closing in on your goal.',
+          placeholder: 'A milestone - be specific',
           cards: contextCard('Your year goal', s.yeargoal) + contextCard('Where you are starting from', s.now),
         },
         challenges: {
-          heading: 'The biggest challenges',
-          body: 'What are the biggest challenges between you and this goal? Name up to three - naming them is how you plan for them.',
+          heading: 'Challenges you will work through',
+          body: 'What are the biggest challenges between you and this goal? Name up to three. Naming them now is how you plan to problem-solve them later - with your buddy or guide, not by pushing through alone.',
           placeholder: 'A challenge - be specific',
           cards: contextCard('Your year goal', s.yeargoal),
         },
         setup: {
           heading: 'Setting yourself up',
-          body: 'What do you need to set up to give yourself the best start? Up to three things that clear the runway. You will break these into day-to-day steps on your North page.',
+          body: 'What will help you start well? Up to three things that clear the runway - a reliable space, a buddy to check in with, the first steps. You will break these into day-to-day steps on your North page.',
           placeholder: 'One thing to set up - be specific',
           cards: contextCard('Your year goal', s.yeargoal),
         },
@@ -1153,6 +1181,27 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     if (!learnerId) return;
     let existingGoals = [];
     try { existingGoals = await getGoals(learnerId); } catch (e) { /* non-fatal */ }
+    const priorRow = goal?.id ? { id: goal.id, status: goal.status } : existingGoals.find((g) => g.scope === 'year' && g.categoryId === catId);
+
+    // BECOMING: save the destination + a presence reflection. NO finish arrays (setup /
+    // challenges / threshold), NO halfway marker, NO targetSession, NO Session-3 seed - a
+    // becoming has no finish sequence (Accord + Comes carve-out).
+    if (becoming) {
+      try {
+        await saveGoal({
+          id: priorRow?.id,
+          learnerId,
+          categoryId: catId,
+          scope: 'year',
+          text: (s.yeargoal || '').trim(),
+          baseline: (s.now || '').trim() || undefined,
+          presence: (s.presence || '').trim() || undefined,
+          status: priorRow?.status || 'active',
+        });
+      } catch (e) { /* non-fatal */ }
+      return;
+    }
+
     const clean = (arr) => (arr || []).map((x) => (x || '').trim()).filter(Boolean).slice(0, MAX_ITEMS);
     const threshold = clean(s.threshold); // S3 halfway markers
     const challenges = clean(s.challenges); // S2 biggest challenges

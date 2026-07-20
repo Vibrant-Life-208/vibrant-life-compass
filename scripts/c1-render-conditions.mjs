@@ -144,6 +144,22 @@ if (!heartArc.includes('goal-arc-becoming')) fail('becoming', 'Heart arc is not 
 if (!/arc-phase-name/.test(learningArc)) fail('becoming', 'Learning (skill) arc lost the forward phase spine - the fix must be scoped to becoming');
 if (!/you are here/.test(learningArc)) fail('becoming', 'Learning (skill) arc lost its "you are here" phase marker');
 
+// ── 4b. BECOMING CARVE-OUT IN THE PLANNING MODAL (openGoalSetupModal) ───────────
+// The per-goal PLANNING modal must also refuse the finish sequence (milestones -> challenges
+// -> setup) over a becoming goal - it gets a single presence reflection instead. The modal is
+// DOM-driven (not a pure render fn), so this is a SOURCE-level tripwire: assert the branch
+// exists so it cannot be silently removed. (2026-07-20, Accord + Comes carve-out.)
+{
+  const src = read('modals.js');
+  const start = src.indexOf('export async function openGoalSetupModal');
+  const rest = start >= 0 ? src.slice(start + 1) : '';
+  const nextExport = rest.indexOf('\nexport ');
+  const setupModal = nextExport >= 0 ? rest.slice(0, nextExport) : rest;
+  if (!/const becoming = weeklyKindFor\(/.test(setupModal)) fail('becoming', 'openGoalSetupModal lost its becoming detection (weeklyKindFor)');
+  if (!/becoming \? \['now', 'presence'\]/.test(setupModal)) fail('becoming', 'openGoalSetupModal becoming steps are not presence-only - a finish sequence leaked into a becoming');
+  if (!/if \(becoming\) \{/.test(setupModal)) fail('becoming', 'openGoalSetupModal persist() lost its becoming branch - finish arrays could save on a becoming goal');
+}
+
 // ── report ───────────────────────────────────────────────────────────────────
 if (failures.length) {
   console.error('C1 RENDER-CONDITIONS: FAIL\n' + failures.map((f) => '  ✗ ' + f).join('\n'));

@@ -516,7 +516,7 @@ function rowToGoal(row) {
 // setup/challenges/threshold: the 3-phase goal cadence arrays (up to 3 each) written by
 // openGoalSetupModal (captain 2026-07-18). Stored as arrays in the same jsonb; rowToGoal
 // spreads them back to the top level on read.
-const DECOMPOSITION_FIELDS = ['baseline', 'halfwayPoint', 'quarterPoint', 'eos1Point', 'weeklySteps', 'targetSession', 'setup', 'challenges', 'threshold'];
+const DECOMPOSITION_FIELDS = ['baseline', 'halfwayPoint', 'quarterPoint', 'eos1Point', 'weeklySteps', 'targetSession', 'setup', 'challenges', 'threshold', 'presence'];
 
 function goalToRow(goal) {
   const row = {
