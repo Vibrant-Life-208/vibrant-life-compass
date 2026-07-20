@@ -1693,13 +1693,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         : `<p class="onb-linkout-note">Assessment link coming soon - for now, choose what fits you best below.</p>`;
     let grid;
     if (kind === 'value') {
-      grid = `<div class="onb-select-grid">${state.valuesLexicon.map((v) => {
+      grid = `<div class="onb-select-grid onb-value-grid">${state.valuesLexicon.map((v) => {
         const selected = state.values.includes(v.id);
-        // Compact label grid (like before); the definition shows on hover as a
-        // tooltip. Native title is robust across the 44-item grid (no edge
-        // clipping) and is read by screen readers. Hover is desktop-only by
-        // design (captain 2026-07-19) - touch shows names only.
-        return `<button type="button" class="onb-select-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}" data-kind="value"${v.definition ? ` title="${escapeAttr(v.definition)}"` : ''}>${escapeHtml(v.display_label_adult)}</button>`;
+        return `<button type="button" class="onb-select-card onb-value-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}" data-kind="value"><span class="onb-value-name">${escapeHtml(v.display_label_adult)}</span>${v.definition ? `<span class="onb-value-def">${escapeHtml(v.definition)}</span>` : ''}</button>`;
       }).join('')}</div>`;
     } else {
       const byCategory = new Map();
