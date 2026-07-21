@@ -17,6 +17,7 @@ import { renderAnchorInsights } from './insights.js';
 import { renderSetupView } from './setup.js';
 import { renderCalendarView } from './calendar-view.js';
 import { renderTaskList } from './task-list.js';
+import { renderGoalBreakdown } from './goal-breakdown.js';
 import { renderPractice } from './practice.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
@@ -509,6 +510,14 @@ async function buildTabs(role) {
     if (at >= 0) tabs.splice(at + 1, 0, planTab);
     else tabs.push(planTab);
   }
+  // Breakdown tab (per-goal read-through) - each goal's full arc + its tasks. Same
+  // mature-tier learner gate; sits right after Plan.
+  if (role === 'learner' && matureTier && !tabs.some((t) => t.id === 'breakdown-view')) {
+    const at = tabs.findIndex((t) => t.id === 'tasklist-view');
+    const bTab = { id: 'breakdown-view', label: 'Breakdown' };
+    if (at >= 0) tabs.splice(at + 1, 0, bTab);
+    else tabs.push(bTab);
+  }
 
   // Compute notification count for the Partner tab (learners only).
   let partnerNotifCount = 0;
@@ -561,6 +570,7 @@ async function showTab(tabId, learnerId) {
   if (tabId === 'parent-view') await renderRoleView('parent', learnerId);
   if (tabId === 'calendar-view') await renderCalendarView(learnerId);
   if (tabId === 'tasklist-view') { try { await renderTaskList(learnerId); } catch (e) { console.warn('task list:', e); } }
+  if (tabId === 'breakdown-view') { try { await renderGoalBreakdown(learnerId); } catch (e) { console.warn('breakdown:', e); } }
 }
 
 async function renderRoleView(role, learnerId) {

@@ -4477,3 +4477,41 @@ body.landscape-mountain {
 .tasklist-when { font-size: 0.72rem; color: var(--text-muted); width: 2.4rem; flex: 0 0 auto; text-transform: lowercase; }
 .tasklist-text { flex: 1; font-size: 0.9rem; color: var(--text); }
 .tasklist-region { font-size: 0.7rem; color: var(--text-muted); flex: 0 0 auto; }
+
+/* ── Breakdown tab: per-goal read-through (goal-breakdown.js, captain 2026-07-21) ── */
+.breakdown-page { max-width: 680px; margin: 0 auto; padding: 0.5rem 0 2rem; }
+.breakdown-title { font-size: 1.4rem; color: var(--sage); margin: 0 0 0.25rem; }
+.breakdown-sub { color: var(--text-soft); margin: 0 0 1.25rem; }
+.breakdown-goal { background: #fff; border: 1px solid var(--earth-pale); border-left: 4px solid var(--earth-light); border-radius: 10px; padding: 1rem 1.1rem; margin-bottom: 1.25rem; }
+.breakdown-goal-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+.breakdown-goal-dot { width: 14px; height: 14px; border-radius: 50%; flex: 0 0 auto; }
+.breakdown-goal-title { font-size: 1.05rem; color: var(--text); margin: 0; flex: 1; }
+.breakdown-star { color: var(--earth); }
+.breakdown-goal-region { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.breakdown-block { margin-top: 0.75rem; }
+.breakdown-block-title { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin: 0 0 0.4rem; }
+.breakdown-count { text-transform: none; letter-spacing: 0; color: var(--sage); font-weight: 600; }
+.breakdown-empty { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+
+/* The climb (milestone ladder) */
+.breakdown-ladder { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--earth-pale); }
+.breakdown-rung { position: relative; padding: 0.3rem 0 0.3rem 0.9rem; }
+.breakdown-rung-dot { position: absolute; left: -7px; top: 0.5rem; width: 10px; height: 10px; border-radius: 50%; background: #fff; border: 2px solid var(--earth-light); }
+.breakdown-rung.is-top .breakdown-rung-dot { background: var(--sage); border-color: var(--sage); }
+.breakdown-rung-label { display: block; font-size: 0.72rem; color: var(--text-muted); }
+.breakdown-rung.is-locked .breakdown-rung-label { color: var(--earth); }
+.breakdown-rung-text { font-size: 0.9rem; color: var(--text); }
+
+/* Weekly steps */
+.breakdown-session { margin-bottom: 0.5rem; }
+.breakdown-session-label { font-size: 0.75rem; font-weight: 600; color: var(--sage); }
+.breakdown-steps { margin: 0.2rem 0 0; padding-left: 1.1rem; }
+.breakdown-steps li { font-size: 0.88rem; color: var(--text); margin-bottom: 0.15rem; }
+.breakdown-step-wk { font-size: 0.68rem; color: var(--text-muted); margin-right: 0.25rem; }
+
+/* Tasks */
+.breakdown-tasks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+.breakdown-task { display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; color: var(--text); }
+.breakdown-task.is-done { opacity: 0.55; text-decoration: line-through; }
+.breakdown-task-when { font-size: 0.72rem; color: var(--text-muted); width: 3.2rem; flex: 0 0 auto; }
+.breakdown-task-text { flex: 1; }
