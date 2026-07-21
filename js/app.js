@@ -20,6 +20,7 @@ import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
 import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, getOnboardingState, saveLearner, addNotification } from './store.js';
+import { isNewToTribe } from './tribe-roster.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -620,14 +621,28 @@ async function renderRoleView(role, learnerId) {
     learners.forEach((l) => {
       const card = document.createElement('div');
       card.className = 'category-card';
+      const studioNm = getStudioName(l.studio) || l.studio;
       card.innerHTML = `
         <div class="category-header">
           <span class="category-name">${escapeHtml(l.name)}</span>
           <span class="category-kind">${escapeHtml(l.studio)}</span>
         </div>
         <p class="category-goal">Open their compass to see year + session goals.</p>
+        <label class="learner-newtribe">
+          <input type="checkbox" data-newtribe="${escapeHtml(l.id)}" ${isNewToTribe(l) ? 'checked' : ''}>
+          New to ${escapeHtml(studioNm)} this year
+        </label>
+        <p class="learner-newtribe-hint">New learners get the hand-holding path - a guided first task and more scaffolding that fades as they settle in.</p>
       `;
       list.appendChild(card);
+    });
+
+    // New-to-tribe toggle (captain 2026-07-21): the guide marks who is new to their tribe this
+    // year -> the hand-holding path. The guide-set field replaces the hard-coded roster seed.
+    list.querySelectorAll('[data-newtribe]').forEach((cb) => {
+      cb.addEventListener('change', () => {
+        saveLearner({ id: cb.dataset.newtribe, newToTribe: cb.checked });
+      });
     });
 
     // Pending pitch approvals: learners who opted into a pitch and need the guide

@@ -23,5 +23,8 @@ export const NEW_TO_TRIBE = {
 // will replace this lookup; keep callers going through this helper so the swap is one file.
 export function isNewToTribe(learner) {
   if (!learner || !learner.id) return false;
+  // Guide-set field wins once set (true OR false); the hard-coded roster is only the seed
+  // default until a guide has toggled this learner. This is how the stopgap retires itself.
+  if (typeof learner.newToTribe === 'boolean') return learner.newToTribe;
   return Boolean(NEW_TO_TRIBE[learner.id]);
 }
