@@ -60,7 +60,12 @@ export function currentArcPosition(calendar, today = new Date()) {
 // for the confirmed becomings. Joy/Home/Family are the open which-areas call for the school
 // and keep the default register until ratified.
 // TODO: replace with a per-studio becoming map (tracker: "Generalize the Discovery-first data layer").
-const BECOMING_SLICES = new Set(['heart', 'spirit', 'emotions']);
+// Voice (the sovereign center) is entirely becoming - you never finish authoring
+// your own life - so it joins the presence register. Heart/Spirit/Emotions stay
+// for backward-compat so existing goals keep their presence spine (no regression).
+// Target (per the 2026-07-20 mapping): becoming attaches to the Grows/disposition
+// side of any region via a per-goal flag, not to a fixed area set.
+const BECOMING_SLICES = new Set(['heart', 'spirit', 'emotions', 'voice']);
 function isBecomingSlice(lifeArea) {
   return BECOMING_SLICES.has(String(lifeArea || '').trim().toLowerCase());
 }

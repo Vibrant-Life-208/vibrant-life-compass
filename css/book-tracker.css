@@ -1,0 +1,154 @@
+/* Book tracker + practice timer + make-a-task demo (captain 2026-07-21).
+   A separate stylesheet so it composes cleanly with style.css without editing that (heavily
+   co-edited) file. Uses the app's design tokens from style.css (:root). */
+
+/* ── Shared overlay shell (practice timer + first-task demo) ─────────────────── */
+.practice-timer-overlay,
+.first-task-demo-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(44, 44, 44, 0.45);
+}
+.practice-timer-panel,
+.first-task-demo-panel {
+  width: 100%;
+  max-width: 26rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 2rem 1.75rem;
+  background: var(--warm-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+.practice-timer-actions,
+.ftd-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* ── Practice timer ─────────────────────────────────────────────────────────── */
+.practice-timer-panel { text-align: center; }
+.practice-timer-book {
+  margin: 0 0 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.practice-timer-clock {
+  margin: 0.5rem 0 1rem;
+  font-size: 3.5rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  color: var(--sage);
+}
+.practice-timer-panel.is-up .practice-timer-clock {
+  color: var(--earth);
+  animation: pt-pulse 2s ease-in-out infinite;
+}
+@keyframes pt-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.practice-timer-up {
+  margin: 0.5rem 0 0;
+  color: var(--text-soft);
+}
+.practice-timer-chime {
+  display: block;
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.practice-timer-chime input { margin-right: 0.4rem; }
+.practice-timer-bookmark {
+  margin-top: 1.25rem;
+  text-align: left;
+}
+.practice-timer-bookmark label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+.practice-timer-bookmark .slice-box { width: 100%; }
+
+/* ── First-task demo ────────────────────────────────────────────────────────── */
+.first-task-demo-panel { text-align: left; }
+.ftd-title {
+  margin: 0 0 0.75rem;
+  color: var(--sage);
+}
+.ftd-body {
+  margin: 0 0 1rem;
+  line-height: 1.5;
+  color: var(--text-soft);
+}
+.first-task-demo-panel .slice-box,
+.first-task-demo-panel select {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+/* ── "Currently reading" shelf (North) ──────────────────────────────────────── */
+.north-reading-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.reading-book {
+  padding: 0.85rem 1rem;
+  background: var(--warm-white);
+  border: 1px solid var(--earth-pale);
+  border-radius: var(--radius-sm);
+}
+.reading-book-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.reading-book-title {
+  font-weight: 600;
+  color: var(--text);
+}
+.reading-book-head-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+.reading-book-mark-label {
+  display: block;
+  margin: 0.5rem 0 0.3rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.reading-book-mark { width: 100%; }
+.reading-add {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.reading-add input { flex: 1; }
+.reading-full-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* ── Rhythm task mark (Today) - a standing practice, no check-off ───────────── */
+.task-rhythm-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  color: var(--sage-light);
+}

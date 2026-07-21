@@ -104,16 +104,20 @@ function extract(name) {
   }
   throw new Error('unbalanced: ' + name);
 }
-const NAMES = ['walkSliceListFor', 'walkSliceList', 'sliceWalkChrome', 'sliceCarriedField', 'sliceInvitationCopy', 'sliceMaxAdd', 'carriedGoalCard', 'personalGoalCard', 'renderSliceYearPage', 'renderSliceReflectPage'];
+const NAMES = ['walkSliceListFor', 'walkSliceList', 'sliceWalkChrome', 'sliceCarriedField', 'sliceInvitationCopy', 'sliceMaxAdd', 'carriedGoalCard', 'personalGoalCard', 'terminalLabel', 'renderSliceYearPage', 'renderSliceReflectPage'];
 const body = NAMES.map(extract).join('\n');
 const escapeHtml = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const escapeAttr = (s) => escapeHtml(s).replace(/'/g, '&#39;');
 const getStudioName = (s) => ({ discovery: 'Discovery', adventure: 'Adventure' }[s] || s);
 const lifeWheelSvgFor = () => '<svg/>';
+// Refinement (2026-07-21): terminalLabel() is EXTRACTED from source (added to NAMES) so the guard
+// exercises the REAL helper, not an approximation that could drift. It depends on the ARRIVAL_LABEL
+// constant, which is not a function (so extract() can't grab it) - stub the constant here.
+const ARRIVAL_LABEL = 'Enter your Compass';
 const state = { sliceWalk: { pass: 'year', idx: 0 }, sliceText: {}, sliceLabels: {}, openByChoice: [], sliceNow: {}, sliceHalfway: {} };
-const mk = new Function('escapeHtml', 'escapeAttr', 'getStudioName', 'lifeWheelSvgFor', 'state',
+const mk = new Function('escapeHtml', 'escapeAttr', 'getStudioName', 'lifeWheelSvgFor', 'ARRIVAL_LABEL', 'state',
   `${body}\nreturn { renderSliceYearPage, renderSliceReflectPage, sliceInvitationCopy };`);
-const walk = mk(escapeHtml, escapeAttr, getStudioName, lifeWheelSvgFor, state);
+const walk = mk(escapeHtml, escapeAttr, getStudioName, lifeWheelSvgFor, ARRIVAL_LABEL, state);
 const carriedNames = (n) => Array.from({ length: n }, (_, i) => ({ name: `Threshold ${i + 1}` }));
 
 const pitchingPlan = {
@@ -135,6 +139,18 @@ const stayerPlan = {
     { label: 'Friends', sliceId: 'slice_friends', prefill: [] },
   ],
 };
+// COVERAGE SELF-CHECK (Option C, 2026-07-21): exercise the extracted render once up front and
+// classify a runtime throw as COVERAGE OFF - a sandbox/helper gap (e.g. a renamed modals.js helper
+// not stubbed here) - distinctly from a real violation. A silent helper-rename must never again
+// disable this wall and read as an ordinary red. On COVERAGE OFF: fix the sandbox, not the app.
+try {
+  state.sliceWalk = { pass: 'year', idx: 0 };
+  walk.renderSliceYearPage(pitchingPlan);
+  walk.sliceInvitationCopy('Movement');
+} catch (err) {
+  console.error(`C1 NO-SORTING: COVERAGE OFF - the slice-render sandbox could not execute (${err.name}: ${err.message}). This is a guard/stub gap, NOT a violation. Add the missing helper to the sandbox; do not change the app.`);
+  process.exit(2);
+}
 for (const [planLabel, plan] of [['pitching', pitchingPlan], ['stayer', stayerPlan]]) {
   for (let i = 0; i < plan.areas.length; i++) {
     state.sliceWalk = { pass: 'year', idx: i };

@@ -137,7 +137,7 @@ export const MAPPING_RATIFIED = false;
 // the guide/adult protagonist - gets the current-wheel cadence automatically, no per-learner
 // flag needed. 'launchpad' is the Launch Pad learner studio; 'guide-summer' is the synthetic
 // studio getLearner attaches to a guide test-driving as protagonist (see local-store getLearner
-// fallback + wheel.js ADULT_AREAS). The three young tiers stay gated per-learner on
+// fallback). The three young tiers stay gated per-learner on
 // current_wheel_test, byte-identical to the prior resolver: a young learner is NEVER auto-enabled
 // here - only Salus + PDC may flip their flag. Non-learner adults (parents/owners) on production
 // have no `learners` row, so getLearner returns null and every call site short-circuits before

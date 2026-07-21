@@ -54,40 +54,16 @@ export async function renderPartnerSection(learnerId) {
       </div>
     `;
   } else {
-    const self = await getLearner(learnerId);
-    const allLearners = await getLearners();
-    const filtered = [];
-    for (const l of allLearners) {
-      if (l.id === learnerId) continue;
-      if (l.studio !== self?.studio) continue;
-      const theirPartner = await getActivePartnerOf(l.id);
-      if (theirPartner) continue;
-      filtered.push(l);
-    }
-    if (filtered.length === 0) {
-      html += `
-        <div class="partner-empty-card">
-          <p class="partner-label">No accountability partner yet</p>
-          <p class="partner-empty-text">Nobody in your studio is available right now. Ask a guide if you'd like to be paired across studios.</p>
-        </div>
-      `;
-    } else {
-      html += `
-        <div class="partner-empty-card">
-          <p class="partner-label">Choose an accountability partner</p>
-          <p class="partner-empty-text">They'll approve your year-goal check-offs. You'll approve theirs.</p>
-          <div class="partner-candidate-list">
-      `;
-      filtered.forEach((c) => {
-        html += `
-          <button type="button" class="partner-candidate" data-id="${c.id}">
-            <span class="partner-candidate-name">${escapeHtml(c.name)}</span>
-            <span class="partner-candidate-studio">${escapeHtml(c.studio)}</span>
-          </button>
-        `;
-      });
-      html += `</div></div>`;
-    }
+    // Guide-assigned partners (captain 2026-07-21): learners no longer pick their own
+    // accountability partner. A guide pairs them - by randomizer or by hand - from the
+    // Tribe tab. This is the read-only "waiting" state; the approval + check-in machinery
+    // above stays intact once a guide assigns the pair.
+    html += `
+      <div class="partner-empty-card">
+        <p class="partner-label">No accountability partner yet</p>
+        <p class="partner-empty-text">Your guide will pair you with an accountability partner. Once you're paired, you'll approve each other's year-goal check-offs here.</p>
+      </div>
+    `;
   }
 
   container.innerHTML = html;
@@ -338,42 +314,15 @@ async function renderActivePartnership(learnerId, partner, linkId) {
 }
 
 async function renderProposalUI(learnerId) {
-  const self = await getLearner(learnerId);
-  const allLearners = await getLearners();
-  const candidates = [];
-  for (const l of allLearners) {
-    if (l.id === learnerId) continue;
-    if (l.studio !== self?.studio) continue;
-    const theirPartner = await getActivePartnerOf(l.id);
-    if (theirPartner) continue;
-    candidates.push(l);
-  }
-
-  if (candidates.length === 0) {
-    return `
-      <div class="partner-empty-card">
-        <p class="partner-label">No partner yet</p>
-        <p class="partner-empty-text">Nobody in your studio is available right now. Ask a guide if you'd like to be paired across studios.</p>
-      </div>
-    `;
-  }
-
-  let html = `
+  // Guide-assigned partners (captain 2026-07-21): the learner self-pick is retired.
+  // A guide pairs learners from the Tribe tab, by randomizer or by hand. This page
+  // shows the calm "waiting to be paired" state until a guide assigns a partner.
+  return `
     <div class="partner-empty-card">
-      <p class="partner-label">Choose your accountability partner</p>
-      <p class="partner-empty-text">They'll approve your year-goal check-offs. You'll approve theirs. It's a quiet commitment.</p>
-      <div class="partner-candidate-list">
+      <p class="partner-label">Waiting to be paired</p>
+      <p class="partner-empty-text">Your guide will pair you with an accountability partner - someone to walk alongside this year. Once you're paired, you'll approve each other's year plan and year-goal check-offs right here.</p>
+    </div>
   `;
-  candidates.forEach((c) => {
-    html += `
-      <button type="button" class="partner-candidate" data-id="${c.id}">
-        <span class="partner-candidate-name">${escapeHtml(c.name)}</span>
-        <span class="partner-candidate-studio">${escapeHtml(c.studio)}</span>
-      </button>
-    `;
-  });
-  html += `</div></div>`;
-  return html;
 }
 
 function wirePageActions(container, learnerId) {

@@ -1,4 +1,4 @@
-import { getWheelAreas } from './wheel.js';
+import { getWheelAreas, regionForLabel } from './wheel.js';
 
 // Per-studio category configuration.
 // PLACEHOLDER — confirm with guides before code-finalizing.
@@ -335,13 +335,26 @@ export const CATEGORY_LIFE_AREA = {
   guide_studio: null,
   guide_learners: null,
   guide_socratic: null,
+  // Learner academic categories -> World (learning / the outward, knowledge-facing
+  // region). So academic goals + their tasks colour blue like the rest of the compass
+  // instead of rendering neutral. (Captain 2026-07-21.)
+  khan: 'World',
+  reading: 'World',
+  noRedInk: 'World',
+  civ: 'World',
+  quest: 'World',
+  pathway: 'World',
+  characterTrait: 'World',
 };
 
 // The wheel slice a category belongs to, or null if unmapped ("not placed").
 // A caller-supplied override (e.g. a goal's own lifeArea) should win over this
 // default - this is only the category's declared home.
 export function lifeAreaForCategory(categoryId) {
-  return CATEGORY_LIFE_AREA[categoryId] ?? null;
+  const area = CATEGORY_LIFE_AREA[categoryId] ?? null;
+  // Under the fixed compass, an academic category's declared home resolves to
+  // its region (Movement -> Self, Mind -> World, ...). regionForLabel(null)=null.
+  return regionForLabel(area);
 }
 
 // Overflow prompt copy, tuned per studio voice. Praesens + Polaris design.
@@ -439,13 +452,14 @@ export function nextStudio(studio) {
 // store or compute against a learner's birthdate - the child self-reports yes/no
 // against this cutoff, and their guide approves/denies. This just supplies the
 // entry age + the cutoff date to show in the question: "will you have turned
-// [entryAge] by [cutoffLabel]?" Cutoff = 4 months after next school-year start.
+// [entryAge] by [cutoffLabel]?" Cutoff = the next school-year start itself
+// (captain 2026-07-21: learners must be at the age gate by AUGUST, not the prior
+// +4-months December). They must have turned entryAge by the time next year begins.
 export function pitchCutoff(targetStudio) {
   const entryAge = STUDIO_ENTRY_AGE[targetStudio];
   if (!entryAge) return null;
   const start = new Date(getYearCalendar().yearStartISO);
-  const nextYearStart = new Date(start.getFullYear() + 1, start.getMonth(), start.getDate());
-  const cutoff = new Date(nextYearStart.getFullYear(), nextYearStart.getMonth() + 4, nextYearStart.getDate());
+  const cutoff = new Date(start.getFullYear() + 1, start.getMonth(), start.getDate());
   return {
     entryAge,
     cutoffISO: cutoff.toISOString().slice(0, 10),
@@ -497,6 +511,39 @@ export function getYearCalendar(today = new Date()) {
     ],
     sessionWeeks: [4, 5, 3, 3, 6, 6, 7, 11],
   };
+}
+
+// The calendar a learner is PLANNING for. During the school year (Sessions 1-7) that is
+// the current cycle. In the summer window (Session 8, ~Jun 1 onward - "rest + plan next
+// year") they are planning the NEXT school year, so return the upcoming cycle. This keeps a
+// summer onboarder's Session-1 plan landing in the year AHEAD (they're early, not behind)
+// rather than on past weeks of the finishing cycle. (Captain 2026-07-21.)
+export function getPlanningCalendar(today = new Date()) {
+  const cal = getYearCalendar(today);
+  const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const summerStart = cal.sessionStarts[7]; // S8 start (cy+1 June 1)
+  if (iso >= summerStart) {
+    const nextCycleYear = new Date(summerStart + 'T00:00:00').getFullYear();
+    return getYearCalendar(new Date(`${nextCycleYear}-08-17T00:00:00`));
+  }
+  return cal;
+}
+
+// School calendar events shown on the Calendar view (captain 2026-07-21). Dates are within
+// the given calendar's cycle: cy = Aug-Dec, cy+1 = Jan-Aug. This is a starter set drawn
+// from the session plan - the captain owns the real school calendar, so edit dates/labels
+// freely. `type` drives the marker style: 'holiday' (no session), 'break', or 'event'.
+export function getSchoolEvents(cal) {
+  const cy = Number(cal.yearStartISO.slice(0, 4));
+  return [
+    { date: `${cy}-08-04`,     label: 'Orientation begins',      type: 'event' },
+    { date: `${cy}-10-12`,     label: 'Columbus Day (no session)', type: 'holiday' },
+    { date: `${cy}-11-25`,     label: 'Thanksgiving break',      type: 'break' },
+    { date: `${cy}-12-19`,     label: 'Winter break begins',     type: 'break' },
+    { date: `${cy + 1}-01-19`, label: 'MLK Day (no session)',    type: 'holiday' },
+    { date: `${cy + 1}-03-30`, label: 'Spring break',            type: 'break' },
+    { date: `${cy + 1}-05-27`, label: 'Last day before summer',  type: 'event' },
+  ];
 }
 
 // Current cycle's calendar (computed at module load - refreshed on page reload).

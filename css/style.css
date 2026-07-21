@@ -804,7 +804,7 @@ header h1 {
   gap: 0.75rem;
 }
 
-/* Wheel of Life - reflection-only, twelve areas held in view above the goals */
+/* Life Compass - reflection-only four-region frame held in view above the goals */
 .life-wheel {
   display: flex;
   flex-direction: column;
@@ -3670,6 +3670,19 @@ body.landscape-mountain {
   font-style: italic;
 }
 
+/* Values picker over-limit guidance: a gentle nudge, not an error. Announced to
+   screen readers via role="status" aria-live. Dark green on pale green for
+   contrast well above WCAG AA 4.5:1. (Captain 2026-07-21.) */
+.onb-count-warn {
+  margin: 0.6rem 0 0;
+  padding: 0.55rem 0.8rem;
+  background: #e8efe6;
+  color: #3f5233;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 .onb-select-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -4351,3 +4364,212 @@ body.landscape-mountain {
 .bloom-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
 .bloom-line { font-size: 0.9rem; color: var(--text); line-height: 1.45; }
 .bloom-line em { font-style: normal; font-weight: 600; color: var(--earth); }
+
+/* ── Guide Tribe tab (tribe.js): leader marking, group randomizer, partners ── */
+.tribe-page { max-width: 720px; margin: 0 auto; padding: 0.5rem 0 2rem; }
+.tribe-title { font-size: 1.4rem; color: var(--sage); margin: 0 0 0.25rem; }
+.tribe-sub { color: var(--text-soft); margin: 0 0 1.25rem; }
+.tribe-section { background: var(--warm-white, #fbf9f5); border: 1px solid var(--earth-pale); border-radius: var(--radius, 12px); padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+.tribe-section-title { font-size: 1.05rem; color: var(--text); margin: 0 0 0.35rem; }
+.tribe-section-hint, .tribe-note { font-size: 0.85rem; color: var(--text-muted); margin: 0 0 0.75rem; }
+
+/* roster */
+.tribe-roster { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.tribe-roster-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.6rem; border: 1px solid var(--earth-pale); border-radius: 8px; }
+.tribe-roster-row.is-leader { border-color: var(--sage-light); background: var(--sage-pale); }
+.tribe-roster-name { flex: 1; font-weight: 500; color: var(--text); }
+.tribe-roster-studio { font-size: 0.8rem; color: var(--text-muted); }
+.tribe-star { color: var(--earth); }
+.tribe-leader-toggle { white-space: nowrap; }
+
+/* controls */
+.tribe-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; margin-bottom: 0.75rem; }
+.tribe-control { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--text-soft); }
+.tribe-control select { padding: 0.4rem 0.5rem; border: 1px solid var(--earth-light); border-radius: 6px; background: #fff; }
+.tribe-check { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--text-soft); }
+.tribe-actions { display: flex; gap: 0.75rem; margin-bottom: 0.75rem; }
+
+/* results */
+.tribe-results { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.tribe-results-empty { color: var(--text-muted); font-size: 0.9rem; }
+.tribe-group { flex: 1 1 160px; min-width: 150px; border: 1px solid var(--earth-pale); border-radius: 8px; padding: 0.6rem 0.75rem; background: #fff; }
+.tribe-group-anchored { border-color: var(--sage-light); }
+.tribe-group-muted { opacity: 0.7; border-style: dashed; }
+.tribe-group-head { font-weight: 600; color: var(--sage); margin-bottom: 0.35rem; font-size: 0.9rem; }
+.tribe-group-count { color: var(--text-muted); font-weight: 400; }
+.tribe-group-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.tribe-group-list li { font-size: 0.9rem; color: var(--text); }
+.tribe-short { color: var(--earth); font-size: 0.8rem; }
+
+/* leader-anchored bar */
+.tribe-anchor-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; width: 100%; margin-bottom: 0.5rem; }
+.tribe-anchor-label { font-size: 0.85rem; color: var(--text-soft); }
+.tribe-anchor-remaining { font-size: 0.8rem; color: var(--text-muted); margin-left: auto; }
+.tribe-leader-chip { border: 1px solid var(--sage-light); background: var(--sage-pale); color: var(--sage); border-radius: 999px; padding: 0.3rem 0.7rem; font-size: 0.85rem; cursor: pointer; }
+.tribe-leader-chip.is-drawn { opacity: 0.45; cursor: default; }
+
+/* partners */
+.tribe-partner-random { margin-bottom: 1rem; }
+.tribe-pair-preview { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.5rem; }
+.tribe-pair { font-size: 0.9rem; color: var(--text); }
+.tribe-pair-odd { color: var(--text-muted); font-style: italic; }
+.tribe-partner-manual { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+.tribe-manual-label { font-size: 0.85rem; color: var(--text-soft); }
+.tribe-partner-manual select { padding: 0.4rem 0.5rem; border: 1px solid var(--earth-light); border-radius: 6px; background: #fff; }
+.tribe-manual-amp { color: var(--text-muted); }
+.tribe-current-title { font-size: 0.9rem; color: var(--text-soft); margin: 0.5rem 0 0.35rem; }
+.tribe-current-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.tribe-current-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.4rem 0.6rem; border: 1px solid var(--earth-pale); border-radius: 8px; font-size: 0.9rem; }
+
+/* ── Task wheel-colour system (captain 2026-07-21) ── */
+/* Band tag pill shown after a task's text (rhythm / weekly / milestone). */
+.task-band-tag { display: inline-block; margin-left: 0.5rem; padding: 0.05rem 0.45rem; border-radius: 999px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; vertical-align: middle; }
+
+/* Region picker in the task modal. */
+.task-region-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.task-region-swatch { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.6rem 0.3rem 0.4rem; border: 1px solid var(--earth-light); border-radius: 999px; background: #fff; cursor: pointer; font-size: 0.82rem; color: var(--text); }
+.task-region-swatch.selected { border-color: var(--sage); box-shadow: inset 0 0 0 1px var(--sage); }
+.task-region-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--swatch, #ccc); display: inline-block; }
+.task-region-dot-none { background: repeating-linear-gradient(45deg, #ddd, #ddd 2px, #fff 2px, #fff 4px); }
+
+/* Game Plan chips carry the shade as a filled pill. */
+.game-plan-task { border: 1px solid var(--earth-pale); border-radius: 6px; padding: 0.25rem 0.4rem; margin-bottom: 0.25rem; font-size: 0.8rem; cursor: pointer; }
+.game-plan-task.is-done { opacity: 0.55; text-decoration: line-through; }
+
+/* Colour legend (shown above the Game Plan grid). */
+.gp-legend { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin: 0 0 0.6rem; font-size: 0.75rem; color: var(--text-muted); }
+.gp-legend-item { display: inline-flex; align-items: center; gap: 0.3rem; }
+.gp-legend-swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.gp-legend-swatch.recurring { background: #cbb98a; }
+.gp-legend-swatch.weekly { background: #8f6f2e; }
+.gp-legend-swatch.milestone { background: #4a3a17; }
+
+/* Calendar coloured task dots. */
+.cal-task-dots { display: inline-flex; gap: 2px; align-items: center; justify-content: center; margin-top: 1px; }
+.cal-task-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sage, #4a6741); display: inline-block; }
+.cal-task-more { font-size: 0.6rem; color: var(--text-muted); line-height: 1; }
+
+/* ── Game Plan week pool -> days planner (captain 2026-07-21) ── */
+.game-plan-pool { margin-top: 1rem; border: 1px dashed var(--earth-light); border-radius: 10px; padding: 0.75rem 0.9rem; background: var(--earth-pale); }
+.game-plan-pool-head { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.game-plan-pool-title { font-weight: 600; color: var(--text); font-size: 0.95rem; }
+.game-plan-pool-hint { font-size: 0.75rem; color: var(--text-muted); }
+.game-plan-pool-list { display: flex; flex-wrap: wrap; gap: 0.4rem; min-height: 1.5rem; }
+.game-plan-pool-list .game-plan-task { flex: 0 1 auto; }
+.game-plan-pool-add { margin-top: 0.5rem; }
+
+/* Week-assign modal */
+.week-assign-days { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.week-assign-day { border: 1px solid var(--earth-light); border-radius: 8px; padding: 0.4rem 0.7rem; }
+.week-assign-day.is-current { border-color: var(--sage); background: var(--sage-pale); color: var(--sage); }
+.week-assign-pool.is-current { color: var(--sage); font-weight: 600; }
+
+/* Session-1 auto-scheduler: sync button on the pool header. */
+.game-plan-sync { margin-left: auto; font-size: 0.78rem; }
+
+/* Tribe roster: per-learner auto-scheduler placement selector (v0.29). */
+.tribe-roster-plan { display: inline-flex; align-items: center; gap: 0.3rem; }
+.tribe-roster-plan-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.tribe-mode-select { padding: 0.2rem 0.35rem; border: 1px solid var(--earth-light); border-radius: 6px; background: #fff; font-size: 0.78rem; }
+
+/* ── Plan tab: ordered task list (task-list.js, captain 2026-07-21) ── */
+.tasklist-page { max-width: 680px; margin: 0 auto; padding: 0.5rem 0 2rem; }
+.tasklist-title { font-size: 1.4rem; color: var(--sage); margin: 0 0 0.25rem; }
+.tasklist-sub { color: var(--text-soft); margin: 0 0 0.75rem; }
+.tasklist-legend { display: flex; gap: 0.75rem; margin-bottom: 1rem; font-size: 0.75rem; color: var(--text-muted); }
+.tasklist-legend-item { display: inline-flex; align-items: center; gap: 0.3rem; }
+.tasklist-week { margin-bottom: 1.25rem; }
+.tasklist-week.is-now { background: var(--sage-pale); border-radius: 10px; padding: 0.5rem 0.75rem; }
+.tasklist-week-head { font-size: 0.95rem; color: var(--text); margin: 0 0 0.5rem; }
+.tasklist-now-tag { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sage); background: #fff; border-radius: 999px; padding: 0.05rem 0.45rem; margin-left: 0.4rem; }
+.tasklist-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.tasklist-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.5rem; border: 1px solid var(--earth-pale); border-radius: 8px; background: #fff; }
+.tasklist-row.is-today { border-color: var(--sage-light); }
+.tasklist-row.is-done { opacity: 0.55; text-decoration: line-through; }
+.tasklist-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--earth-light); border: 1px solid var(--earth-light); flex: 0 0 auto; }
+.tasklist-when { font-size: 0.72rem; color: var(--text-muted); width: 2.4rem; flex: 0 0 auto; text-transform: lowercase; }
+.tasklist-text { flex: 1; font-size: 0.9rem; color: var(--text); }
+.tasklist-region { font-size: 0.7rem; color: var(--text-muted); flex: 0 0 auto; }
+
+/* ── Breakdown tab: per-goal read-through (goal-breakdown.js, captain 2026-07-21) ── */
+.breakdown-page { max-width: 680px; margin: 0 auto; padding: 0.5rem 0 2rem; }
+.breakdown-title { font-size: 1.4rem; color: var(--sage); margin: 0 0 0.25rem; }
+.breakdown-sub { color: var(--text-soft); margin: 0 0 1.25rem; }
+.breakdown-goal { background: #fff; border: 1px solid var(--earth-pale); border-left: 4px solid var(--earth-light); border-radius: 10px; padding: 1rem 1.1rem; margin-bottom: 1.25rem; }
+.breakdown-goal-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+.breakdown-goal-dot { width: 14px; height: 14px; border-radius: 50%; flex: 0 0 auto; }
+.breakdown-goal-title { font-size: 1.05rem; color: var(--text); margin: 0; flex: 1; }
+.breakdown-star { color: var(--earth); }
+.breakdown-goal-region { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.breakdown-block { margin-top: 0.75rem; }
+.breakdown-block-title { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin: 0 0 0.4rem; }
+.breakdown-count { text-transform: none; letter-spacing: 0; color: var(--sage); font-weight: 600; }
+.breakdown-empty { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+
+/* The climb (milestone ladder) */
+.breakdown-ladder { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--earth-pale); }
+.breakdown-rung { position: relative; padding: 0.3rem 0 0.3rem 0.9rem; }
+.breakdown-rung-dot { position: absolute; left: -7px; top: 0.5rem; width: 10px; height: 10px; border-radius: 50%; background: #fff; border: 2px solid var(--earth-light); }
+.breakdown-rung.is-top .breakdown-rung-dot { background: var(--sage); border-color: var(--sage); }
+.breakdown-rung-label { display: block; font-size: 0.72rem; color: var(--text-muted); }
+.breakdown-rung.is-locked .breakdown-rung-label { color: var(--earth); }
+.breakdown-rung-text { font-size: 0.9rem; color: var(--text); }
+
+/* Weekly steps */
+.breakdown-session { margin-bottom: 0.5rem; }
+.breakdown-session-label { font-size: 0.75rem; font-weight: 600; color: var(--sage); }
+.breakdown-steps { margin: 0.2rem 0 0; padding-left: 1.1rem; }
+.breakdown-steps li { font-size: 0.88rem; color: var(--text); margin-bottom: 0.15rem; }
+.breakdown-step-wk { font-size: 0.68rem; color: var(--text-muted); margin-right: 0.25rem; }
+
+/* Tasks */
+.breakdown-tasks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+.breakdown-task { display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; color: var(--text); }
+.breakdown-task.is-done { opacity: 0.55; text-decoration: line-through; }
+.breakdown-task-when { font-size: 0.72rem; color: var(--text-muted); width: 3.2rem; flex: 0 0 auto; }
+.breakdown-task-text { flex: 1; }
+
+/* Guide year-plan sign-off cards (captain 2026-07-21). */
+.guide-yearplan-approvals { margin-top: 1rem; }
+.yearplan-approval-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.yearplan-approval-card { border: 1px solid var(--earth-pale); border-radius: 10px; padding: 0.75rem 0.9rem; background: #fff; }
+.yearplan-approval-who { margin: 0 0 0.4rem; color: var(--text); }
+.yearplan-approval-goals { margin: 0 0 0.6rem; padding-left: 1.1rem; }
+.yearplan-approval-goals li { font-size: 0.9rem; color: var(--text); margin-bottom: 0.2rem; }
+.yearplan-approval-mile { color: var(--text-muted); font-size: 0.78rem; }
+.yearplan-approval-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+
+/* School calendar events on the Calendar view (captain 2026-07-21). */
+.cal-school-event { display: block; font-size: 0.6rem; line-height: 1.15; margin-top: 1px; padding: 0 2px; border-radius: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-school-event.is-holiday { background: #f0d9d3; color: #7a3b2c; }
+.cal-school-event.is-break { background: #e8efe5; color: #3f5a34; }
+.cal-school-event.is-event { background: #efe3c9; color: #6b5320; }
+.cal-cell.has-school-event { outline: 1px solid var(--earth-pale); }
+.cal-swatch-event { background: #efe3c9; }
+
+/* ── Growth Record scaffold/preview (growth-record.js, captain 2026-07-21) ── */
+.record-page { max-width: 720px; margin: 0 auto; padding: 0.5rem 0 2rem; }
+.record-scaffold-note { background: #efe3c9; color: #6b5320; font-size: 0.78rem; padding: 0.4rem 0.7rem; border-radius: 8px; margin-bottom: 1rem; }
+.record-head { margin-bottom: 1rem; }
+.record-title { font-size: 1.5rem; color: var(--sage); margin: 0 0 0.25rem; }
+.record-sub { color: var(--text-soft); margin: 0; font-size: 0.9rem; }
+.record-compass { text-align: center; margin: 1.25rem 0; }
+.record-wheel { max-width: 300px; margin: 0 auto; }
+.record-wheel svg { width: 100%; height: auto; }
+.record-compass-note { font-size: 0.8rem; color: var(--text-muted); margin: 0.5rem 0 0; }
+.record-block-title { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin: 0 0 0.5rem; }
+.record-placeholder { border: 1px dashed var(--earth-light); border-radius: 10px; padding: 0.9rem 1rem; margin: 1.25rem 0; background: var(--earth-pale); }
+.record-placeholder-body { font-size: 0.9rem; color: var(--text-soft); margin: 0; }
+.record-placeholder-body em { color: var(--text-muted); }
+.record-ribbons { margin: 1.25rem 0; }
+.record-ribbon { border-left: 4px solid var(--dir, var(--earth-light)); padding: 0.5rem 0 0.5rem 0.9rem; margin-bottom: 0.9rem; }
+.record-ribbon-head { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; font-size: 0.85rem; color: var(--text); letter-spacing: 0.03em; margin-bottom: 0.4rem; }
+.record-ribbon-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--dir); }
+.record-ribbon-line { display: flex; gap: 0.5rem; }
+.record-node { flex: 1; position: relative; padding-top: 0.9rem; border-top: 2px solid var(--earth-pale); }
+.record-node::before { content: ''; position: absolute; top: -6px; left: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--dir); }
+.record-node.is-growing::before { background: #fff; border: 2px solid var(--dir); }
+.record-node-label { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.record-node-detail { display: block; font-size: 0.82rem; color: var(--text); margin-top: 0.15rem; }
+.record-foot { border-top: 1px solid var(--earth-pale); padding-top: 0.9rem; margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-soft); line-height: 1.5; }
+.record-foot em { color: var(--sage); }

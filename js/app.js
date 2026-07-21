@@ -11,15 +11,20 @@ import { initStillness } from './stillness.js';
 import { getLandscapeForSession, getYearCalendar, getStudioName, pitchCutoff } from './studios.js';
 import { renderPatterns } from './patterns.js';
 import { renderPartnerPage } from './partner.js';
+import { renderTribeView } from './tribe.js';
 import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderAnchorInsights } from './insights.js';
 import { renderSetupView } from './setup.js';
 import { renderCalendarView } from './calendar-view.js';
+import { renderTaskList } from './task-list.js';
+import { renderGoalBreakdown } from './goal-breakdown.js';
+import { renderGrowthRecord } from './growth-record.js';
 import { renderPractice } from './practice.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
 import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, getOnboardingState, saveLearner, addNotification } from './store.js';
+import { isNewToTribe } from './tribe-roster.js';
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -42,6 +47,7 @@ const TABS_BY_ROLE = {
   // accountability model). No Partner tab here.
   guide: [
     { id: 'guide-view', label: 'My learners' },
+    { id: 'tribe-view', label: 'Tribe' },
     { id: 'school-view', label: 'School' },
     { id: 'north-view', label: 'North' },
     { id: 'year-view', label: 'Compass' },
@@ -474,24 +480,33 @@ async function buildTabs(role) {
   const session = await requireSession();
   const learnerId = await resolveLearnerId(session);
 
-  // Calendar tab (2026-07-18): a read-only year-at-a-glance for the mature tiers only -
-  // Launch Pad learners plus guides and owners. The vulnerable young tiers (Sparks /
-  // Discovery / Adventure) never see it. Parents are excluded too (captain call
-  // 2026-07-18): their surface stays session goals + recap only. Guides/owners are
-  // eligible by role; a learner qualifies only when their studio is Launch Pad. Injected
-  // dynamically (not in TABS_BY_ROLE) so the studio gate lives in one place and young
-  // learners get a byte-identical tab bar to before.
-  let calendarEligible = role === 'guide' || !!session.is_owner;
-  if (!calendarEligible && role === 'learner' && learnerId) {
+  // Plan (task list) + Calendar are viewable by EVERY learner (captain 2026-07-21): a
+  // learner needs to see their whole plan - including future-dated work that hasn't reached
+  // the daily view yet (e.g. a summer plan that lights on Aug 17). Guides + owners also get
+  // the Calendar (a year-at-a-glance of their own). Parents stay on their own surface.
+  // Breakdown (the dense per-goal read-through) stays a Launch Pad learner tool. Injected
+  // dynamically so the gate lives in one place; inserted right after the Compass, in order.
+  const isLearner = role === 'learner' && !!learnerId;
+  const isStaff = role === 'guide' || !!session.is_owner;
+  let matureLearner = false;
+  if (isLearner) {
     const { getLearner } = await import('./store.js');
     const l = await getLearner(learnerId);
-    calendarEligible = l?.studio === 'launchpad';
+    matureLearner = l?.studio === 'launchpad';
   }
-  if (calendarEligible && !tabs.some((t) => t.id === 'calendar-view')) {
-    const at = tabs.findIndex((t) => t.id === 'year-view');
-    const calTab = { id: 'calendar-view', label: 'Calendar' };
-    if (at >= 0) tabs.splice(at + 1, 0, calTab);
-    else tabs.push(calTab);
+  const inject = [];
+  if (isLearner) inject.push({ id: 'tasklist-view', label: 'Plan' });
+  if (isLearner && matureLearner) inject.push({ id: 'breakdown-view', label: 'Breakdown' });
+  if (isLearner || isStaff) inject.push({ id: 'calendar-view', label: 'Calendar' });
+  // Growth Record - preview/scaffold. Shown only to staff (the "grown-ups who review a
+  // record") while it is being built; not surfaced to learners yet. (Captain 2026-07-21.)
+  if (isStaff) inject.push({ id: 'record-view', label: 'Record' });
+  const yearAt = tabs.findIndex((t) => t.id === 'year-view');
+  let insertAt = yearAt >= 0 ? yearAt + 1 : tabs.length;
+  for (const t of inject) {
+    if (tabs.some((x) => x.id === t.id)) continue;
+    tabs.splice(insertAt, 0, t);
+    insertAt += 1;
   }
 
   // Compute notification count for the Partner tab (learners only).
@@ -541,8 +556,12 @@ async function showTab(tabId, learnerId) {
   if (tabId === 'passwords-view') await renderLogins(learnerId);
   if (tabId === 'partner-view') await renderPartnerPage(learnerId);
   if (tabId === 'guide-view') await renderRoleView('guide', learnerId);
+  if (tabId === 'tribe-view') { try { await renderTribeView(); } catch (e) { console.warn('tribe view:', e); } }
   if (tabId === 'parent-view') await renderRoleView('parent', learnerId);
   if (tabId === 'calendar-view') await renderCalendarView(learnerId);
+  if (tabId === 'tasklist-view') { try { await renderTaskList(learnerId); } catch (e) { console.warn('task list:', e); } }
+  if (tabId === 'breakdown-view') { try { await renderGoalBreakdown(learnerId); } catch (e) { console.warn('breakdown:', e); } }
+  if (tabId === 'record-view') { try { await renderGrowthRecord(learnerId); } catch (e) { console.warn('growth record:', e); } }
 }
 
 async function renderRoleView(role, learnerId) {
@@ -620,14 +639,28 @@ async function renderRoleView(role, learnerId) {
     learners.forEach((l) => {
       const card = document.createElement('div');
       card.className = 'category-card';
+      const studioNm = getStudioName(l.studio) || l.studio;
       card.innerHTML = `
         <div class="category-header">
           <span class="category-name">${escapeHtml(l.name)}</span>
           <span class="category-kind">${escapeHtml(l.studio)}</span>
         </div>
         <p class="category-goal">Open their compass to see year + session goals.</p>
+        <label class="learner-newtribe">
+          <input type="checkbox" data-newtribe="${escapeHtml(l.id)}" ${isNewToTribe(l) ? 'checked' : ''}>
+          New to ${escapeHtml(studioNm)} this year
+        </label>
+        <p class="learner-newtribe-hint">New learners get the hand-holding path - a guided first task and more scaffolding that fades as they settle in.</p>
       `;
       list.appendChild(card);
+    });
+
+    // New-to-tribe toggle (captain 2026-07-21): the guide marks who is new to their tribe this
+    // year -> the hand-holding path. The guide-set field replaces the hard-coded roster seed.
+    list.querySelectorAll('[data-newtribe]').forEach((cb) => {
+      cb.addEventListener('change', () => {
+        saveLearner({ id: cb.dataset.newtribe, newToTribe: cb.checked });
+      });
     });
 
     // Pending pitch approvals: learners who opted into a pitch and need the guide
@@ -636,10 +669,59 @@ async function renderRoleView(role, learnerId) {
     // Guarded so a backend hiccup can't break the rest of the guide dashboard.
     try { await renderPitchApprovals(learners, session, () => renderRoleView('guide', learnerId)); }
     catch (e) { console.warn('pitch approvals:', e); }
+    // Year-plan sign-off: learners who finished setup submit their plan to their guide.
+    try { await renderGuideYearPlanApprovals(learners, session, () => renderRoleView('guide', learnerId)); }
+    catch (e) { console.warn('yearplan approvals:', e); }
   }
   if (role === 'parent') {
     import('./parent-view.js').then(m => m.renderParentView());
   }
+}
+
+// Year-plan sign-off surface for the guide (captain 2026-07-21). A learner submits their
+// plan to their guide at the end of setup (not to a peer partner); the guide reads it here
+// and signs off, or sends it back with a note. Guide id = session.guideId; owners (flat
+// staff power) fall back to session.id so the reviewer is always recorded.
+async function renderGuideYearPlanApprovals(learners, session, onChange) {
+  const section = document.getElementById('guide-yearplan-approvals');
+  const list = document.getElementById('guide-yearplan-list');
+  if (!section || !list) return;
+  const reviewerId = session?.guideId || session?.id || null;
+  const { getPendingYearPlansForGuide, getGoals, approveYearPlan, returnYearPlan } = await import('./store.js');
+  const pending = await getPendingYearPlansForGuide(reviewerId);
+  if (!pending.length) { section.hidden = true; list.innerHTML = ''; return; }
+  section.hidden = false;
+  list.innerHTML = '';
+  for (const plan of pending) {
+    const learner = (learners || []).find((l) => l.id === plan.learnerId);
+    const goals = (await getGoals(plan.learnerId)).filter((g) => g.scope === 'year' && g.text && g.text.trim());
+    const priorityIds = Array.isArray(learner?.priorityGoalIds) ? learner.priorityGoalIds : [];
+    const card = document.createElement('div');
+    card.className = 'yearplan-approval-card';
+    card.innerHTML = `
+      <p class="yearplan-approval-who"><strong>${escapeHtml(learner?.name || 'A learner')}</strong> finished setup - ${goals.length} year goal${goals.length === 1 ? '' : 's'}.</p>
+      <ul class="yearplan-approval-goals">
+        ${goals.map((g) => `<li>${priorityIds.includes(g.id) ? '★ ' : ''}${escapeHtml(g.text)}${g.halfwayPoint ? ` <span class="yearplan-approval-mile">Session-3 goal: ${escapeHtml(g.halfwayPoint)}</span>` : ''}</li>`).join('')}
+      </ul>
+      <div class="yearplan-approval-actions">
+        <button type="button" class="btn btn-text" data-yp-return="${escapeHtml(plan.id)}">Send back</button>
+        <button type="button" class="btn btn-primary" data-yp-approve="${escapeHtml(plan.id)}">Sign off ✓</button>
+      </div>`;
+    list.appendChild(card);
+  }
+  list.querySelectorAll('[data-yp-approve]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await approveYearPlan(btn.dataset.ypApprove, reviewerId, '');
+      if (onChange) await onChange();
+    });
+  });
+  list.querySelectorAll('[data-yp-return]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const note = prompt('What would you like the learner to reconsider? (optional)') || '';
+      await returnYearPlan(btn.dataset.ypReturn, reviewerId, note);
+      if (onChange) await onChange();
+    });
+  });
 }
 
 // Pending pitch approvals surface for the guide (captain 2026-07-10 age-gate loop).
@@ -660,7 +742,7 @@ async function renderPitchApprovals(learners, session, onChange) {
     card.className = 'pitch-approval-card';
     card.innerHTML = `
       <div class="pitch-approval-body">
-        <p class="pitch-approval-who"><strong>${escapeHtml(l.name)}</strong> wants to pitch up to <strong>${escapeHtml(getStudioName(l.pitchTargetStudio))}</strong>.</p>
+        <p class="pitch-approval-who"><strong>${escapeHtml(l.name)}</strong> wants to move up to <strong>${escapeHtml(getStudioName(l.pitchTargetStudio))}</strong>.</p>
         <p class="pitch-approval-gate">They said yes to: turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Your call - a "yes, they'll be old enough," not a birthday check.</p>
       </div>
       <div class="pitch-approval-actions">
@@ -694,16 +776,16 @@ async function decidePitch(learnerId, decision, learners, session, onChange) {
     await addNotification({
       recipientId: learnerId,
       type: 'pitch-approved',
-      title: 'Your pitch is confirmed',
-      body: `Your guide confirmed you're set to pitch up to ${target}. Keep working your thresholds!`,
+      title: 'Your move up is confirmed',
+      body: `Your guide confirmed you're set to move up to ${target}. Keep working your thresholds!`,
       fromId: reviewerId,
     });
   } else {
     await addNotification({
       recipientId: learnerId,
       type: 'pitch-denied',
-      title: 'About your pitch',
-      body: `Your guide feels this isn't the year to pitch to ${target} - and that's okay. Let's make this year count where you are.`,
+      title: 'About moving up',
+      body: `Your guide feels this isn't the year to move up to ${target} - and that's okay. Let's make this year count where you are.`,
       fromId: reviewerId,
     });
   }

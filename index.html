@@ -16,6 +16,7 @@
   <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
   <link rel="apple-touch-icon" href="icons/icon-192.svg">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/book-tracker.css">
 </head>
 <body>
 
@@ -185,6 +186,12 @@
         <button type="button" id="today-add" class="today-add-btn">+ Add a task for today</button>
       </section>
 
+      <section id="north-reading" class="north-section north-reading-section" hidden>
+        <h3 class="north-section-title">Currently reading</h3>
+        <p class="north-section-sub">Up to three books. Jot where you are whenever you like - there's no finish line and nothing to keep up with.</p>
+        <div id="north-reading-list" class="north-reading-list"></div>
+      </section>
+
       <section class="north-section">
         <h3 class="north-section-title">Game Plan - this week</h3>
         <p class="north-section-sub">Tap any task to move it to a different day. No auto-rescheduling.</p>
@@ -281,6 +288,18 @@
       </section>
     </main>
 
+    <!-- Guide Tribe tab - leader marking, group randomizer, partner assignment (tribe.js) -->
+    <main id="tribe-view" class="tab-content"></main>
+
+    <!-- Plan tab - ordered task list (task-list.js), mature-tier learners -->
+    <main id="tasklist-view" class="tab-content"></main>
+
+    <!-- Breakdown tab - per-goal read-through (goal-breakdown.js), mature-tier learners -->
+    <main id="breakdown-view" class="tab-content"></main>
+
+    <!-- Record tab - Growth Record scaffold/preview (growth-record.js), staff only -->
+    <main id="record-view" class="tab-content"></main>
+
     <!-- Calendar View (Launch Pad learners + guides/owners only) -->
     <main id="calendar-view" class="tab-content">
       <div id="calendar-view-content"></div>
@@ -298,6 +317,11 @@
       <div id="guide-learners" class="learner-list">
         <p class="learners-empty">No learners assigned yet.</p>
       </div>
+      <section id="guide-yearplan-approvals" class="guide-yearplan-approvals" hidden>
+        <h3 class="guide-section-title">Year plans to sign off</h3>
+        <p class="guide-section-sub">Learners who've finished setup. Read their year plan and sign off, or send it back with a note.</p>
+        <div id="guide-yearplan-list" class="yearplan-approval-list"></div>
+      </section>
       <section id="guide-pitch-approvals" class="guide-pitch-approvals" hidden>
         <h3 class="guide-section-title">Pitch approvals</h3>
         <p class="guide-section-sub">Learners who've asked to pitch up. Confirm the age gate - not a birthday check, a "yes, they'll be old enough" from you.</p>

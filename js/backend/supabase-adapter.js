@@ -32,6 +32,37 @@ async function currentUserId() {
   return data?.user?.id || null;
 }
 
+// Write hardening (captain 2026-07-21): retry a write on a TRANSIENT failure (network
+// blip, 5xx, 429 rate-limit) so a lost write during a simultaneous-onboarding burst (~55
+// learners finishing Setup at once) self-heals instead of silently dropping. Supabase
+// returns { error } rather than throwing, so we inspect both. Permanent errors (4xx other
+// than 429) return immediately - no hammering. Reads are NOT retried (a stale read is
+// harmless; a lost write is not). fn must return the Supabase result ({ data, error }).
+function isTransientErr(err) {
+  if (!err) return false;
+  const status = err.status ?? err.code;
+  if (status === 429) return true;
+  if (typeof status === 'number' && status >= 500) return true;
+  const m = String(err.message || '').toLowerCase();
+  return m.includes('network') || m.includes('fetch') || m.includes('timeout') || m.includes('failed to');
+}
+async function withWriteRetry(fn, attempts = 3) {
+  let last = null;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fn();
+      if (!res || !res.error) return res;      // success
+      if (!isTransientErr(res.error)) return res; // permanent - return as-is
+      last = res.error;
+    } catch (e) {
+      if (!isTransientErr(e)) throw e;
+      last = e;
+    }
+    await new Promise((r) => setTimeout(r, 150 * (i + 1) * (i + 1))); // 150ms, 600ms
+  }
+  return { data: null, error: last };
+}
+
 // ============================================================================
 // Session / auth
 // ============================================================================
@@ -87,13 +118,23 @@ export async function signOut() {
 // Learners
 // ============================================================================
 export async function getLearners() {
-  const { data, error } = await getClient().from('learners').select('id, studio, profiles!learners_id_fkey(name, email)');
+  const c = getClient();
+  // Deploy-before-migration safety (v0.27 is_leader): try with the leader flag, fall
+  // back to base columns if the column isn't present yet, so the guide dashboard never
+  // breaks on a deploy that lands ahead of the migration.
+  let { data, error } = await c.from('learners').select('id, studio, is_leader, scheduling_mode, new_to_tribe, profiles!learners_id_fkey(name, email)');
+  if (error) {
+    ({ data, error } = await c.from('learners').select('id, studio, profiles!learners_id_fkey(name, email)'));
+  }
   if (error) throw error;
   return (data || []).map((row) => ({
     id: row.id,
     name: row.profiles?.name,
     email: row.profiles?.email,
     studio: row.studio,
+    isLeader: Boolean(row.is_leader),
+    schedulingMode: row.scheduling_mode ?? null,
+    newToTribe: Boolean(row.new_to_tribe),
   }));
 }
 
@@ -101,7 +142,7 @@ export async function getLearner(id) {
   const c = getClient();
   let { data, error } = await c
     .from('learners')
-    .select('id, studio, setup_completed_at, open_by_choice, current_wheel_test, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, profiles!learners_id_fkey(name, email)')
+    .select('id, studio, setup_completed_at, open_by_choice, current_wheel_test, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, scheduling_mode, dismissed_plan_keys, books, new_to_tribe, first_task_demo_seen, profiles!learners_id_fkey(name, email)')
     .eq('id', id)
     .single();
   if (error) {
@@ -134,6 +175,14 @@ export async function getLearner(id) {
     pitchAgeStatus: data.pitch_age_status ?? null,
     pitchAgeReviewedBy: data.pitch_age_reviewed_by ?? null,
     pitchAgeReviewedAt: data.pitch_age_reviewed_at ?? null,
+    // v0.29 auto-scheduler placement override; null = use the studio-tier default.
+    schedulingMode: data.scheduling_mode ?? null,
+    // v0.30 book tracker + new-to-tribe + first-task-demo.
+    books: Array.isArray(data.books) ? data.books : [],
+    newToTribe: Boolean(data.new_to_tribe),
+    firstTaskDemoSeen: Boolean(data.first_task_demo_seen),
+    // v0.31 auto-scheduler tombstones: planKeys the learner deleted, never re-planted.
+    dismissedPlanKeys: Array.isArray(data.dismissed_plan_keys) ? data.dismissed_plan_keys : [],
   };
 }
 
@@ -488,9 +537,9 @@ export async function getGoals(learnerId) {
 export async function saveGoal(goal) {
   const row = goalToRow(goal);
   if (goal.id) {
-    await getClient().from('goals').update(row).eq('id', goal.id);
+    await withWriteRetry(() => getClient().from('goals').update(row).eq('id', goal.id));
   } else {
-    const { data } = await getClient().from('goals').insert(row).select().single();
+    const { data } = await withWriteRetry(() => getClient().from('goals').insert(row).select().single());
     return data ? rowToGoal(data) : null;
   }
 }
@@ -516,7 +565,7 @@ function rowToGoal(row) {
 // setup/challenges/threshold: the 3-phase goal cadence arrays (up to 3 each) written by
 // openGoalSetupModal (captain 2026-07-18). Stored as arrays in the same jsonb; rowToGoal
 // spreads them back to the top level on read.
-const DECOMPOSITION_FIELDS = ['baseline', 'halfwayPoint', 'quarterPoint', 'eos1Point', 'weeklySteps', 'targetSession', 'setup', 'challenges', 'threshold', 'presence'];
+const DECOMPOSITION_FIELDS = ['baseline', 'halfwayPoint', 'quarterPoint', 'eos1Point', 'weeklySteps', 'targetSession', 'setup', 'challenges', 'threshold', 'presence', 'detail'];
 
 function goalToRow(goal) {
   const row = {
@@ -607,25 +656,58 @@ export async function getTasksForRange(learnerId, startISO, endISO) {
   return (data || []).map(rowToTask);
 }
 
+// Extended task fields packed into the v0.28 meta jsonb (mirrors goals.decomposition).
+const TASK_META_FIELDS = ['band', 'region', 'shape', 'timerMinutes', 'weekOf', 'source', 'planKey', 'bookId'];
+
 export async function saveTask(learnerId, task) {
   const row = {
     learner_id: learnerId,
     text: task.text,
-    planned_for: task.plannedFor,
+    // v0.28: planned_for is nullable - a "pool" task belongs to a week (weekOf) but
+    // no day yet. An empty string coerces to null.
+    planned_for: task.plannedFor || null,
     goal_id: task.goalId || null,
     category_id: task.categoryId || null,
     life_area: task.lifeArea || null,  // wheel slice; NULL = not placed (v0.18)
     status: task.status || 'open',
   };
+  const meta = {};
+  for (const k of TASK_META_FIELDS) if (task[k] !== undefined) meta[k] = task[k];
+  if (Object.keys(meta).length) row.meta = meta;
   if (task.id && !task.id.startsWith('hc_')) {
-    await getClient().from('tasks').update(row).eq('id', task.id);
+    await withWriteRetry(() => getClient().from('tasks').update(row).eq('id', task.id));
   } else {
-    await getClient().from('tasks').insert(row);
+    await withWriteRetry(() => getClient().from('tasks').insert(row));
   }
 }
 
+// Bulk-create tasks in ONE request (captain 2026-07-21 hardening). Used by the Session-1
+// auto-scheduler to plant a learner's whole milestone skeleton in a single insert instead
+// of one request per task - so a simultaneous-onboarding burst (~55 learners) sends far
+// fewer writes. New rows only. Retried on transient failure.
+export async function saveTasks(learnerId, tasks) {
+  if (!Array.isArray(tasks) || !tasks.length) return [];
+  const rows = tasks.map((task) => {
+    const row = {
+      learner_id: learnerId,
+      text: task.text,
+      planned_for: task.plannedFor || null,
+      goal_id: task.goalId || null,
+      category_id: task.categoryId || null,
+      life_area: task.lifeArea || null,
+      status: task.status || 'open',
+    };
+    const meta = {};
+    for (const k of TASK_META_FIELDS) if (task[k] !== undefined) meta[k] = task[k];
+    if (Object.keys(meta).length) row.meta = meta;
+    return row;
+  });
+  await withWriteRetry(() => getClient().from('tasks').insert(rows));
+  return rows;
+}
+
 export async function moveTask(learnerId, id, newPlannedFor) {
-  await getClient().from('tasks').update({ planned_for: newPlannedFor }).eq('id', id);
+  await withWriteRetry(() => getClient().from('tasks').update({ planned_for: newPlannedFor }).eq('id', id));
 }
 
 export async function toggleTaskDone(learnerId, id) {
@@ -647,13 +729,14 @@ function rowToTask(row) {
     id: row.id,
     learnerId: row.learner_id,
     text: row.text,
-    plannedFor: row.planned_for,
+    plannedFor: row.planned_for || '',  // v0.28: null (pool task) -> '' for the app
     goalId: row.goal_id,
     categoryId: row.category_id,
     lifeArea: row.life_area || null,  // wheel slice; NULL = not placed (v0.18)
     status: row.status,
     completedAt: row.completed_at,
     createdAt: row.created_at,
+    ...(row.meta || {}),  // v0.28 extended fields back to top level (band, region, shape, weekOf, timerMinutes)
   };
 }
 
@@ -917,13 +1000,24 @@ export async function saveLearner(data) {
   if (data.pitchAgeStatus !== undefined) learnerRow.pitch_age_status = data.pitchAgeStatus;
   if (data.pitchAgeReviewedBy !== undefined) learnerRow.pitch_age_reviewed_by = data.pitchAgeReviewedBy;
   if (data.pitchAgeReviewedAt !== undefined) learnerRow.pitch_age_reviewed_at = data.pitchAgeReviewedAt;
+  // Guide-set leader flag (v0.27): marks a learner as a tribe leader for the roster
+  // indicator + the randomizer's leader options.
+  if (data.isLeader !== undefined) learnerRow.is_leader = data.isLeader;
+  // Guide-set auto-scheduler placement override (v0.29); null clears back to the tier default.
+  if (data.schedulingMode !== undefined) learnerRow.scheduling_mode = data.schedulingMode;
+  // v0.31 auto-scheduler tombstones (planKeys the learner deleted).
+  if (data.dismissedPlanKeys !== undefined) learnerRow.dismissed_plan_keys = data.dismissedPlanKeys;
+  // v0.30 book tracker shelf + new-to-tribe (guide-set) + first-task-demo-seen.
+  if (data.books !== undefined) learnerRow.books = data.books;
+  if (data.newToTribe !== undefined) learnerRow.new_to_tribe = data.newToTribe;
+  if (data.firstTaskDemoSeen !== undefined) learnerRow.first_task_demo_seen = data.firstTaskDemoSeen;
   if (Object.keys(learnerRow).length > 0) {
-    await getClient().from('learners').update(learnerRow).eq('id', data.id);
+    await withWriteRetry(() => getClient().from('learners').update(learnerRow).eq('id', data.id));
   }
   const profileRow = {};
   if (data.name !== undefined) profileRow.name = data.name;
   if (Object.keys(profileRow).length > 0) {
-    await getClient().from('profiles').update(profileRow).eq('id', data.id);
+    await withWriteRetry(() => getClient().from('profiles').update(profileRow).eq('id', data.id));
   }
 }
 
@@ -1076,6 +1170,32 @@ export async function dissolvePartnership(linkId) {
   return data ? rowToLink(data) : null;
 }
 
+// Guide-assigned partnership (captain 2026-07-21): a guide pairs two learners
+// directly, status 'accepted', no handshake. Any existing active partner for
+// either learner is dissolved first. RLS: the guide-insert policy on partner_links
+// (migration v0.27) permits a guide to write an accepted link for two learners on
+// their roster. Returns the new link.
+export async function assignPartner(aId, bId) {
+  if (!aId || !bId || aId === bId) return null;
+  for (const id of [aId, bId]) {
+    const active = await getActivePartnerOf(id);
+    if (active) await dissolvePartnership(active.linkId);
+  }
+  // Guard: a guide can only dissolve links where BOTH parties are on their roster
+  // (v0.27 RLS). If a learner's existing partner is off-roster, the dissolve UPDATE
+  // matches zero rows and silently no-ops - inserting here would create a SECOND
+  // 'accepted' link and getActivePartnerOf would return a nondeterministic partner.
+  // Re-check and bail rather than double-pair.
+  for (const id of [aId, bId]) {
+    if (await getActivePartnerOf(id)) return null;
+  }
+  const { data } = await getClient().from('partner_links').insert({
+    proposer_id: aId, partner_id: bId, status: 'accepted',
+    assigned_by_guide: true, responded_at: new Date().toISOString(),
+  }).select().single();
+  return data ? rowToLink(data) : null;
+}
+
 export async function getPartnerNotificationCount(learnerId) {
   const [pendingProposals, pendingPlans] = await Promise.all([
     getPendingProposalsFor(learnerId),
@@ -1154,6 +1274,14 @@ export async function getPendingYearPlanFor(partnerId) {
     if (partner?.partnerId === partnerId) result.push(rowToPlan(plan));
   }
   return result;
+}
+
+export async function getPendingYearPlansForGuide(guideId) {
+  // The guide signs off their roster's plans (captain 2026-07-21). year_plans RLS makes a
+  // learner's guide a reader, so a plain pending query returns exactly the guide's roster's
+  // pending plans (the guide only sees their own learners' rows).
+  const { data } = await getClient().from('year_plans').select('*').eq('status', 'pending');
+  return (data || []).map(rowToPlan);
 }
 
 export async function approveYearPlan(planId, approverId, note = '') {

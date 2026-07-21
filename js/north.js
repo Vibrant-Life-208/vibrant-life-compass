@@ -5,6 +5,10 @@ import { openViaImportModal } from './via-import.js';
 import { getCategoriesForStudio } from './studios.js';
 import { renderToday, initTodayFab } from './tasks.js';
 import { renderGamePlan } from './game-plan.js';
+import { getBooks, addBook, setBookmark, removeBook, MAX_BOOKS } from './books.js';
+import { openPracticeTimer } from './practice-timer.js';
+import { isNewToTribe } from './tribe-roster.js';
+import { openFirstTaskDemo } from './first-task-demo.js';
 
 // Year-map click handler is still needed (Compass page sets it).
 let yearMapClickHandler = null;
@@ -41,14 +45,14 @@ export async function renderNorth(learnerId) {
         // Pending (guide not yet confirmed) still works the thresholds; approved is the
         // confirmed state. Only the label changes.
         const suffix = status === 'pending' ? ' - waiting for your guide to confirm' : ' - see your thresholds';
-        pitchBtn.textContent = `Your pitch to ${targetName}${suffix}`;
+        pitchBtn.textContent = `Your move up to ${targetName}${suffix}`;
         pitchBtn.onclick = async () => {
           const { openThresholdsModal } = await import('./modals.js');
           openThresholdsModal(learner.pitchTargetStudio, learner);
         };
       }
     } else if (up) {
-      pitchBtn.textContent = `Thinking about ${getStudioName(up)}? Explore pitching up`;
+      pitchBtn.textContent = `Thinking about ${getStudioName(up)}? Explore moving up`;
       pitchSection.hidden = false;
       pitchBtn.onclick = async () => {
         const { openPitchOptInModal } = await import('./modals.js');
@@ -66,9 +70,16 @@ export async function renderNorth(learnerId) {
     renderToday(learnerId),
     renderGamePlan(learnerId),
     renderVision(learnerId, learner),
+    renderReading(learnerId, learner),
   ]);
 
   initTodayFab(learnerId);
+
+  // Hand-holding path: offer the make-a-task demo once to a learner new to their tribe. It makes a
+  // real, kept reading task and then fades (firstTaskDemoSeen). Returning learners never see it.
+  if (learner && isNewToTribe(learner) && !learner.firstTaskDemoSeen) {
+    openFirstTaskDemo(learner, learnerId, () => renderNorth(learnerId));
+  }
 
   const importBtn = document.getElementById('north-import-strengths');
   if (importBtn && !importBtn._wired) {
@@ -115,6 +126,70 @@ async function renderQuoteSection(learnerId) {
       noteEl.textContent = '';
       noteEl.hidden = true;
     }
+  }
+}
+
+// "Currently reading" shelf (captain 2026-07-21). Up to 3 books, free-text bookmark.
+// No streak, no pace, no count - just the evolving "where are you now?". Always visible so
+// it invites the first book even on an empty shelf.
+async function renderReading(learnerId, learner) {
+  const section = document.getElementById('north-reading');
+  const list = document.getElementById('north-reading-list');
+  if (!section || !list) return;
+  if (!learner) { section.hidden = true; return; }
+  section.hidden = false;
+  const books = getBooks(learner);
+  const cards = books.map((b) => `
+    <div class="reading-book" data-book="${escapeHtml(b.id)}">
+      <div class="reading-book-head">
+        <span class="reading-book-title">${escapeHtml(b.title)}</span>
+        <span class="reading-book-head-actions">
+          <button type="button" class="btn btn-text reading-book-timer" data-book-timer="${escapeHtml(b.id)}">Read</button>
+          <button type="button" class="btn btn-text reading-book-remove" data-book-remove="${escapeHtml(b.id)}">Remove</button>
+        </span>
+      </div>
+      <label class="reading-book-mark-label">Where are you now?</label>
+      <input type="text" class="reading-book-mark slice-box" data-book-mark="${escapeHtml(b.id)}" value="${escapeHtml(b.bookmark || '')}" placeholder="A page, a chapter, a moment - wherever you are">
+    </div>
+  `).join('');
+  const adder = books.length < MAX_BOOKS
+    ? `<div class="reading-add">
+         <input type="text" id="reading-add-title" class="slice-box" placeholder="Add a book you're reading">
+         <button type="button" id="reading-add-btn" class="btn btn-text">Add to my shelf</button>
+       </div>`
+    : `<p class="reading-full-hint">Your shelf is full at three. Finish or remove one to add another.</p>`;
+  list.innerHTML = cards + adder;
+
+  list.querySelectorAll('[data-book-remove]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      learner.books = await removeBook(learner, btn.dataset.bookRemove);
+      await renderReading(learnerId, learner);
+    });
+  });
+  list.querySelectorAll('[data-book-mark]').forEach((inp) => {
+    inp.addEventListener('change', async () => {
+      learner.books = await setBookmark(learner, inp.dataset.bookMark, inp.value);
+    });
+  });
+  list.querySelectorAll('[data-book-timer]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const book = getBooks(learner).find((x) => x.id === btn.dataset.bookTimer);
+      if (!book) return;
+      // Learner-started timer -> soft/optional end -> skippable "where are you now?" -> bookmark.
+      openPracticeTimer(book, async (mark) => {
+        learner.books = await setBookmark(learner, book.id, mark);
+        await renderReading(learnerId, learner);
+      });
+    });
+  });
+  const addBtn = document.getElementById('reading-add-btn');
+  if (addBtn) {
+    addBtn.addEventListener('click', async () => {
+      const title = document.getElementById('reading-add-title')?.value || '';
+      if (!title.trim()) return;
+      learner.books = await addBook(learner, title);
+      await renderReading(learnerId, learner);
+    });
   }
 }
 

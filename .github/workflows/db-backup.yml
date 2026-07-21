@@ -1,0 +1,72 @@
+# Automated, encrypted database backup for the free Supabase tier (captain 2026-07-21).
+#
+# The free tier has no managed backups / PITR. This runs pg_dump on a schedule in the
+# cloud (no laptop needed), encrypts the dump so GitHub only ever holds ciphertext, and
+# keeps it as a downloadable workflow artifact. It NEVER commits data to the repo.
+#
+# ── One-time setup (you do this once) ─────────────────────────────────────────
+# GitHub repo -> Settings -> Secrets and variables -> Actions -> New repository secret:
+#   VLC_DB_URL             the Supabase "Session pooler" connection string
+#                          (Dashboard -> Project Settings -> Database -> Connection string),
+#                          with the real password in place of [YOUR-PASSWORD].
+#   VLC_BACKUP_PASSPHRASE  a long secret phrase you keep somewhere safe. The backup is
+#                          AES-256 encrypted with it; if you lose the phrase the backup
+#                          is unrecoverable, so store it in your password manager.
+#
+# NOTE: scheduled runs only start once this file is on the DEFAULT branch (main) - so it
+# activates when you merge/deploy. Until then you can still run it by hand from the Actions
+# tab ("Run workflow"). It refuses to run without the passphrase, so a plaintext backup is
+# never uploaded.
+#
+# ── To restore a backup ───────────────────────────────────────────────────────
+# Actions -> pick a run -> download the artifact -> then locally:
+#   openssl enc -d -aes-256-cbc -pbkdf2 -pass pass:'<your passphrase>' \
+#     -in vlc-YYYY-MM-DD-HHMM.sql.gz.enc | gunzip -c | psql "<TEST-project-connection-string>"
+# (restore into a throwaway project first to verify, never straight over prod.)
+
+name: DB backup (encrypted)
+
+on:
+  schedule:
+    - cron: '17 8 * * *'   # daily 08:17 UTC (off the :00 mark so it doesn't pile onto the API)
+  workflow_dispatch: {}     # manual "Run workflow" button
+
+permissions:
+  contents: read            # least privilege - the job reads nothing from the repo it writes
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump + encrypt
+        env:
+          VLC_DB_URL: ${{ secrets.VLC_DB_URL }}
+          VLC_BACKUP_PASSPHRASE: ${{ secrets.VLC_BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          if [ -z "${VLC_DB_URL:-}" ]; then
+            echo "::error::VLC_DB_URL secret is not set."; exit 1
+          fi
+          if [ -z "${VLC_BACKUP_PASSPHRASE:-}" ]; then
+            echo "::error::VLC_BACKUP_PASSPHRASE secret is not set - refusing to write an unencrypted backup."; exit 1
+          fi
+          STAMP=$(date -u +%Y-%m-%d-%H%M)
+          # pg_dump via the postgres:17 image so the client version matches modern Supabase
+          # servers (an older client refuses to dump a newer server). Runs inside the
+          # container (sh -c) so $PGURL expands there, not on the host.
+          docker run --rm -e PGURL="$VLC_DB_URL" postgres:17 \
+            sh -c 'pg_dump "$PGURL" --no-owner --no-privileges' | gzip > "vlc-$STAMP.sql.gz"
+          # Encrypt at rest - the uploaded artifact is ciphertext only.
+          openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:VLC_BACKUP_PASSPHRASE \
+            -in "vlc-$STAMP.sql.gz" -out "vlc-$STAMP.sql.gz.enc"
+          rm -f "vlc-$STAMP.sql.gz"
+          echo "STAMP=$STAMP" >> "$GITHUB_ENV"
+          ls -lh vlc-*.enc
+
+      - name: Upload encrypted backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: vlc-db-backup-${{ env.STAMP }}
+          path: vlc-*.sql.gz.enc
+          retention-days: 90   # free-tier max; you always have the last ~90 days of nightly dumps
+          if-no-files-found: error

@@ -1,9 +1,14 @@
 // Today's tasks - per-day learner journal.
 // Per Decision 8 of the 2026-05-11 fleet meeting (Lux + Praesens + Troi).
 
-import { getTasksForDate, saveTask, toggleTaskDone, deleteTask, moveTask, getLearner } from './store.js';
+import { getTasksForDate, saveTask, toggleTaskDone, deleteTask, moveTask, getLearner, saveLearner } from './store.js';
 import { getStudio, OVERFLOW_COPY } from './studios.js';
 import { openTaskModal, openMoveTaskModal } from './modals.js';
+import { taskColorStyle, taskBand } from './wheel.js';
+import { getBooks, setBookmark } from './books.js';
+import { openPracticeTimer } from './practice-timer.js';
+
+const BAND_LABEL = { recurring: 'rhythm', weekly: 'weekly', milestone: 'milestone' };
 
 export function todayISO() {
   const d = new Date();
@@ -51,20 +56,36 @@ export async function renderToday(learnerId) {
   }
 
   container.innerHTML = '';
-  tasks.forEach((task) => container.appendChild(renderTaskCard(learnerId, task)));
+  tasks.forEach((task) => container.appendChild(renderTaskCard(learnerId, task, learner)));
 }
 
-function renderTaskCard(learnerId, task) {
+function renderTaskCard(learnerId, task, learner) {
   const card = document.createElement('div');
+  const isRhythm = task.shape === 'rhythm';
+  // A recurring reading task linked to a book on the shelf can start that book's timer here.
+  const linkedBook = (isRhythm && task.bookId && learner) ? getBooks(learner).find((b) => b.id === task.bookId) : null;
   const done = task.status === 'done';
-  card.className = 'task-card' + (done ? ' task-done' : '');
+  // A rhythm (standing practice) has NO completion - no check, no miss. Resting is a real
+  // choice beside it, never a failure. A one-off keeps the check-it-off toggle.
+  card.className = 'task-card' + (done && !isRhythm ? ' task-done' : '') + (isRhythm ? ' task-rhythm' : '');
   card.dataset.taskId = task.id;
+  // Wheel-colour rail: hue = region, shade = band (recurring light / weekly colour /
+  // milestone dark). Tasks without a region render neutral (no rail).
+  const style = taskColorStyle(task);
+  const band = taskBand(task);
+  if (style) {
+    card.style.borderLeft = `4px solid ${style.bg}`;
+    card.dataset.band = band || '';
+  }
+  const bandTag = (style && band) ? `<span class="task-band-tag" style="background:${style.bg};color:${style.fg}">${BAND_LABEL[band] || ''}</span>` : '';
+  const lead = isRhythm
+    ? `<span class="task-rhythm-mark" title="A rhythm you come back to" aria-label="A rhythm you come back to">↻</span>`
+    : `<button type="button" class="task-check" data-action="toggle" aria-label="${done ? 'Mark open' : 'Mark done'}">${done ? '●' : '○'}</button>`;
   card.innerHTML = `
-    <button type="button" class="task-check" data-action="toggle" aria-label="${done ? 'Mark open' : 'Mark done'}">
-      ${done ? '●' : '○'}
-    </button>
-    <p class="task-text">${escapeHtml(task.text)}</p>
+    ${lead}
+    <p class="task-text">${escapeHtml(task.text)}${bandTag}</p>
     <div class="task-actions">
+      ${linkedBook ? `<button type="button" class="btn-text task-action-btn" data-action="read">Read</button>` : ''}
       <button type="button" class="btn-text task-action-btn" data-action="move">Move</button>
       <button type="button" class="btn-text task-action-btn" data-action="delete">Delete</button>
     </div>
@@ -74,6 +95,8 @@ function renderTaskCard(learnerId, task) {
     if (action === 'toggle') {
       await toggleTaskDone(learnerId, task.id);
       await renderToday(learnerId);
+    } else if (action === 'read') {
+      if (linkedBook) openPracticeTimer(linkedBook, (mark) => setBookmark(learner, linkedBook.id, mark));
     } else if (action === 'move') {
       openMoveTaskModal(task, async (newDate) => {
         await moveTask(learnerId, task.id, newDate);
@@ -82,6 +105,12 @@ function renderTaskCard(learnerId, task) {
       });
     } else if (action === 'delete') {
       if (confirm('Delete this task?')) {
+        // Tombstone an auto-scheduled task so a later "sync from goals" won't resurrect it.
+        if (task.source === 'auto' && task.planKey) {
+          const l = await getLearner(learnerId);
+          const dk = Array.isArray(l?.dismissedPlanKeys) ? l.dismissedPlanKeys : [];
+          if (!dk.includes(task.planKey)) await saveLearner({ id: learnerId, dismissedPlanKeys: [...dk, task.planKey] });
+        }
         await deleteTask(learnerId, task.id);
         await renderToday(learnerId);
         document.dispatchEvent(new CustomEvent('hc:tasks-changed'));
@@ -96,9 +125,11 @@ export function initTodayFab(learnerId) {
   if (!fab) return;
   const fresh = fab.cloneNode(true);
   fab.parentNode.replaceChild(fresh, fab);
-  fresh.addEventListener('click', () => {
+  fresh.addEventListener('click', async () => {
+    const learner = await getLearner(learnerId);
     openTaskModal({
       defaultDate: todayISO(),
+      books: getBooks(learner),
       onSave: async (taskData) => {
         await saveTask(learnerId, taskData);
         await renderToday(learnerId);

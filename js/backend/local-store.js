@@ -559,6 +559,36 @@ export async function dissolvePartnership(linkId) {
   return link;
 }
 
+// Guide-assigned partnership (captain 2026-07-21): a guide pairs two learners
+// directly - no propose/accept handshake, since the guide is the one deciding.
+// Any existing active partner for either learner is dissolved first so a
+// reassignment is clean. Returns the new accepted link.
+export async function assignPartner(aId, bId) {
+  if (!aId || !bId || aId === bId) return null;
+  for (const id of [aId, bId]) {
+    const active = await getActivePartnerOf(id);
+    if (active) await dissolvePartnership(active.linkId);
+  }
+  // Guard: if a dissolve did not take (on the synced backend an off-roster link can be
+  // RLS-blocked and no-op), do NOT stack a second 'accepted' link on a surviving one.
+  for (const id of [aId, bId]) {
+    if (await getActivePartnerOf(id)) return null;
+  }
+  const links = await getPartnerLinks();
+  const link = {
+    id: generateId(),
+    proposerId: aId,
+    partnerId: bId,
+    status: 'accepted',
+    assignedByGuide: true,
+    proposedAt: new Date().toISOString(),
+    respondedAt: new Date().toISOString(),
+  };
+  links.push(link);
+  write(KEYS.partnerLinks, links);
+  return link;
+}
+
 // Count items that need a learner's attention on the Partner page.
 // Returns total of: pending proposals for them + year goals waiting for
 // their approval. Used to drive the Partner tab's notification bell.
@@ -669,6 +699,14 @@ export async function getPendingYearPlanFor(partnerId) {
   return result;
 }
 
+export async function getPendingYearPlansForGuide(guideId) {
+  // The guide signs off their roster's year plans (captain 2026-07-21). In the skeleton
+  // there is no per-guide assignment table, so a guide sees every learner - return all
+  // pending plans. On the synced backend the year_plans RLS scopes this to the guide's
+  // own learners.
+  return (await getYearPlans()).filter((p) => p.status === 'pending');
+}
+
 export async function approveYearPlan(planId, approverId, note = '') {
   const plans = await getYearPlans();
   const plan = plans.find((p) => p.id === planId);
@@ -768,6 +806,23 @@ export async function saveTask(learnerId, task) {
       createdAt: new Date().toISOString(),
       ...rest,
     });
+  }
+  all[learnerId] = list;
+  write(KEYS.tasks, all);
+  return list;
+}
+
+// Bulk-create tasks in ONE write (captain 2026-07-21 hardening). The Session-1
+// auto-scheduler plants many tasks at once; inserting them together (vs a call per task)
+// keeps a simultaneous-onboarding burst light. New rows only - no id in the input.
+export async function saveTasks(learnerId, tasks) {
+  if (!Array.isArray(tasks) || !tasks.length) return [];
+  const all = read(KEYS.tasks) || {};
+  const list = all[learnerId] || [];
+  const now = new Date().toISOString();
+  for (const t of tasks) {
+    const { id, ...rest } = t;
+    list.push({ id: generateId(), status: 'open', createdAt: now, ...rest });
   }
   all[learnerId] = list;
   write(KEYS.tasks, all);

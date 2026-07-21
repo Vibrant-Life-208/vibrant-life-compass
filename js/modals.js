@@ -11,7 +11,7 @@ import {
 } from './store.js';
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar, lifeAreaForCategory } from './studios.js';
-import { lifeWheelSvgFor } from './wheel.js';
+import { lifeWheelSvgFor, COMPASS_REGIONS, REGION_COLORS, taskBand, taskRegion } from './wheel.js';
 import { renderThresholdsHtml, buildSlicePlan, isCurrentWheelBuild, getThresholds } from './thresholds.js';
 import { renderGoalArcHtml, currentArcPosition, weeklyKindFor } from './goal-arc.js';
 import { getWeeklyAnswer, saveWeeklyAnswer } from './weekly-answers.js';
@@ -601,26 +601,91 @@ export function openLoginModal({ existing, onSave }) {
   setTimeout(() => document.getElementById('login-service')?.focus(), 50);
 }
 
-export function openTaskModal({ existing, defaultDate, onSave }) {
+export function openTaskModal({ existing, defaultDate, onSave, books = [] }) {
   setModalTitle(existing ? 'Edit task' : 'Add a task');
+  // Band = how load-bearing this task is; it drives the wheel-colour shade
+  // (recurring -> light, weekly -> the colour, milestone -> dark) AND the completion
+  // shape (a recurring rhythm has no check-off; weekly + milestone finish). Legacy
+  // rhythm tasks read as recurring. (Captain 2026-07-21.)
+  const band = existing ? (taskBand(existing) || 'weekly') : 'weekly';
+  const region = existing ? (taskRegion(existing) || '') : '';
+  const timerMinutes = existing?.timerMinutes || '';
+  const bandOpts = [
+    { v: 'recurring', label: 'A rhythm - something I come back to (no finishing; resting is fine)' },
+    { v: 'weekly', label: "A weekly milestone - a step I'll finish this week" },
+    { v: 'milestone', label: 'A milestone marker - a bigger point I am reaching for' },
+  ];
+  const regionSwatches = COMPASS_REGIONS.map((r) => `
+    <button type="button" class="task-region-swatch${region === r ? ' selected' : ''}" data-region="${r}" style="--swatch:${REGION_COLORS[r]}" aria-pressed="${region === r}" title="${r}">
+      <span class="task-region-dot"></span><span class="task-region-name">${r}</span>
+    </button>`).join('');
   document.getElementById('form-fields').innerHTML = `
     <div class="form-field">
       <label for="task-text">What needs doing?</label>
       <input type="text" id="task-text" placeholder="A small, specific thing" value="${existing ? escapeAttr(existing.text || '') : ''}" required>
     </div>
     <div class="form-field">
+      <label>What kind?</label>
+      ${bandOpts.map((o) => `<label class="task-shape-opt"><input type="radio" name="task-band" value="${o.v}" ${band === o.v ? 'checked' : ''}> ${o.label}</label>`).join('')}
+    </div>
+    <div class="form-field">
+      <label>Which part of life? <span class="onb-optional">(sets the colour)</span></label>
+      <div class="task-region-grid">${regionSwatches}
+        <button type="button" class="task-region-swatch${region === '' ? ' selected' : ''}" data-region="" aria-pressed="${region === ''}" title="None"><span class="task-region-dot task-region-dot-none"></span><span class="task-region-name">None</span></button>
+      </div>
+    </div>
+    <div class="form-field" id="task-timer-field" style="${band === 'recurring' ? '' : 'display:none'}">
+      <label for="task-timer">A timer, if you'd like one (minutes) - optional</label>
+      <input type="number" id="task-timer" min="1" max="120" placeholder="e.g. 20" value="${escapeAttr(String(timerMinutes))}">
+    </div>
+    ${books.length ? `
+    <div class="form-field" id="task-book-field" style="${band === 'recurring' ? '' : 'display:none'}">
+      <label for="task-book">A book from your shelf? <span class="onb-optional">(optional)</span></label>
+      <select id="task-book" class="slice-box">
+        <option value="">(not a book)</option>
+        ${books.map((bk) => `<option value="${escapeAttr(bk.id)}" ${existing?.bookId === bk.id ? 'selected' : ''}>${escapeHtml(bk.title)}</option>`).join('')}
+      </select>
+    </div>` : ''}
+    <div class="form-field">
       <label for="task-date">When?</label>
       <input type="date" id="task-date" value="${existing?.plannedFor || defaultDate || ''}">
     </div>
   `;
+  // Reveal the optional timer only for a recurring rhythm.
+  document.querySelectorAll('input[name="task-band"]').forEach((r) => {
+    r.addEventListener('change', () => {
+      const recurring = document.querySelector('input[name="task-band"]:checked')?.value === 'recurring';
+      const f = document.getElementById('task-timer-field');
+      if (f) f.style.display = recurring ? '' : 'none';
+      const bf = document.getElementById('task-book-field');
+      if (bf) bf.style.display = recurring ? '' : 'none';
+    });
+  });
+  // Region swatch single-select.
+  let pickedRegion = region;
+  document.querySelectorAll('.task-region-swatch').forEach((b) => {
+    b.addEventListener('click', () => {
+      pickedRegion = b.dataset.region;
+      document.querySelectorAll('.task-region-swatch').forEach((x) => { x.classList.toggle('selected', x === b); x.setAttribute('aria-pressed', x === b); });
+    });
+  });
   activeSubmit = () => {
     const text = document.getElementById('task-text').value.trim();
     if (!text) return;
     const plannedFor = document.getElementById('task-date').value;
+    const bandVal = document.querySelector('input[name="task-band"]:checked')?.value || 'weekly';
+    const tMin = parseInt(document.getElementById('task-timer')?.value, 10);
     onSave({
       id: existing?.id,
       text,
       plannedFor: plannedFor || defaultDate || new Date().toISOString().slice(0, 10),
+      band: bandVal,
+      // A recurring band keeps the legacy "rhythm" completion semantics (no check-off);
+      // weekly + milestone finish and check off.
+      shape: bandVal === 'recurring' ? 'rhythm' : 'once',
+      region: pickedRegion || undefined,
+      timerMinutes: bandVal === 'recurring' && tMin > 0 ? tMin : undefined,
+      bookId: bandVal === 'recurring' ? (document.getElementById('task-book')?.value || undefined) : undefined,
     });
     closeModal();
   };
@@ -661,6 +726,39 @@ export function openMoveTaskModal(task, onMove) {
       onMove(newDate);
       closeModal();
     }
+  };
+  openModal();
+}
+
+// Assign a task to a day of THIS week, or keep it in the week's pool (no day yet).
+// ctx = { dates: [5 ISO strings], labels: [5 short labels] }. onAssign(plannedFor)
+// is called with a day ISO, or '' to mean "back to the pool". A custom cross-week
+// date is also offered. (Captain 2026-07-21 - week pool -> days planner.)
+export function openWeekAssignModal(task, ctx, onAssign) {
+  setModalTitle('Plan this task');
+  const dayBtns = ctx.dates.map((iso, i) => {
+    const d = new Date(iso + 'T00:00:00');
+    const isCur = task.plannedFor === iso;
+    return `<button type="button" class="btn btn-text week-assign-day${isCur ? ' is-current' : ''}" data-date="${iso}">${escapeHtml(ctx.labels[i])} ${d.getDate()}</button>`;
+  }).join('');
+  const inPool = !task.plannedFor;
+  document.getElementById('form-fields').innerHTML = `
+    <p style="color: var(--text-soft); margin: 0 0 0.75rem;">Put <em>"${escapeHtml(task.text)}"</em> on a day this week:</p>
+    <div class="week-assign-days">${dayBtns}</div>
+    <button type="button" class="btn btn-text week-assign-pool${inPool ? ' is-current' : ''}" data-pool="1" style="margin-top:0.5rem;">${inPool ? '✓ In this week’s pool (no day yet)' : 'Keep in this week’s pool (no day yet)'}</button>
+    <div class="form-field" style="margin-top: 1rem;">
+      <label for="week-assign-custom">Or another date</label>
+      <input type="date" id="week-assign-custom" value="${task.plannedFor || ''}">
+    </div>
+  `;
+  document.querySelectorAll('.week-assign-day').forEach((btn) => {
+    btn.addEventListener('click', () => { onAssign(btn.dataset.date); closeModal(); });
+  });
+  const poolBtn = document.querySelector('.week-assign-pool');
+  if (poolBtn) poolBtn.addEventListener('click', () => { onAssign(''); closeModal(); });
+  activeSubmit = () => {
+    const d = document.getElementById('week-assign-custom').value;
+    if (d) { onAssign(d); closeModal(); }
   };
   openModal();
 }
@@ -1053,9 +1151,10 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     // planning; ends on setup so the learner flows to the North page for daily steps).
     // BECOMING goals walk: [yeargoal ->] now -> presence (no finish sequence). Weekly/daily
     // breakdown is a LATER step (North page), not captured here.
-    steps: (goal?.text ? [] : ['yeargoal']).concat(becoming ? ['now', 'presence'] : ['now', 'threshold', 'challenges', 'setup']),
+    steps: (goal?.text ? [] : ['yeargoal']).concat(becoming ? ['now', 'presence'] : ['detail', 'now', 'threshold', 'challenges', 'setup']),
     idx: 0,
     yeargoal: goal?.text || '',
+    detail: goal?.detail || '',        // doing-only: wide "what will it take" brainstorm before the mirror (captain 2026-07-21)
     now: goal?.baseline || '',
     threshold: threeUp(goal?.threshold, goal?.halfwayPoint), // finish: milestones
     challenges: threeUp(goal?.challenges),                   // finish: biggest challenges
@@ -1067,6 +1166,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
   function capture() {
     const st = step();
     if (st === 'yeargoal') s.yeargoal = document.getElementById('gs-yeargoal')?.value ?? s.yeargoal;
+    else if (st === 'detail') s.detail = document.getElementById('gs-detail')?.value ?? s.detail;
     else if (st === 'now') s.now = document.getElementById('gs-now')?.value ?? s.now;
     else if (st === 'presence') s.presence = document.getElementById('gs-presence')?.value ?? s.presence;
     else if (st === 'threshold' || st === 'challenges' || st === 'setup') {
@@ -1092,6 +1192,15 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         <h3 class="onb-horizon-heading">${escapeHtml(catName)} - your year goal</h3>
         <p class="onb-horizon-body">A year from now, what's different about you in ${escapeHtml(catName)}? How would your guide know you got there?</p>
         <textarea id="gs-yeargoal" class="slice-box" rows="3" placeholder="By next year, in ${escapeAttr(catName)}, I want to…">${escapeHtml(s.yeargoal)}</textarea>`;
+    } else if (st === 'detail') {
+      // Doing-only wide brainstorm before the mirror (option a, captain 2026-07-21). The skip is the
+      // LOUD default so a young learner isn't cornered (Jake/Bareil). Seeds the structured
+      // threshold/challenges/setup phases that follow; funnel-parse into those is a later refinement.
+      body = `
+        <h3 class="onb-horizon-heading">What will it take?</h3>
+        ${contextCard('Your year goal', s.yeargoal)}
+        <p class="onb-horizon-body">Before we look at where you are - dream it wide. What do you think it will take to get there? Jot down anything that comes to mind; you'll sort it into steps next. No wrong answers - and it's completely okay to skip this and go straight to planning.</p>
+        <textarea id="gs-detail" class="slice-box" rows="4" placeholder="Everything I think it'll take…">${escapeHtml(s.detail)}</textarea>`;
     } else if (st === 'now') {
       body = `
         <h3 class="onb-horizon-heading">Where are you starting from?</h3>
@@ -1130,20 +1239,40 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
           cards: contextCard('Your year goal', s.yeargoal),
         },
         setup: {
-          heading: 'Setting yourself up',
-          body: 'What will help you start well? Up to three things that clear the runway - a reliable space, a buddy to check in with, the first steps. You will break these into day-to-day steps on your North page.',
+          heading: 'What makes this one stick',
+          body: 'Three things make a goal stick: it is yours, you have people, and it is worth it.',
           placeholder: 'One thing to set up - be specific',
           cards: contextCard('Your year goal', s.yeargoal),
         },
       }[st];
-      const items = s[st].length ? s[st] : [''];
-      const inputs = items.map((v, i) => `<input type="text" class="gs-item slice-box" data-phase="${st}" data-idx="${i}" value="${escapeAttr(v)}" placeholder="${escapeAttr(phase.placeholder)}">`).join('');
-      body = `
-        <h3 class="onb-horizon-heading">${escapeHtml(phase.heading)}</h3>
-        ${phase.cards}
-        <p class="onb-horizon-body">${escapeHtml(phase.body)}</p>
-        <div class="gs-item-list">${inputs}</div>
-        ${items.length < MAX_ITEMS ? `<button type="button" class="btn btn-text" id="gs-item-add" data-phase="${st}">+ add another</button>` : ''}`;
+      if (st === 'setup') {
+        // The Three C's (Kohn), one fixed labeled prompt each - reworded for the young register
+        // (captain 2026-07-21). Choice / Community / Content, named and load-bearing instead of a
+        // generic runway list. Same storage: three gs-item[data-phase="setup"] inputs, captured as-is.
+        const cThree = [
+          { label: 'Yours', q: 'Why did you pick this goal?', ph: 'I picked it because…' },
+          { label: 'Your crew', q: 'Who will help you and cheer you on?', ph: 'A buddy, my guide, someone at home…' },
+          { label: 'The good part', q: 'What will be better when you get there?', ph: 'When I do this, …' },
+        ];
+        const rows = cThree.map((c, i) => `
+          <label class="gs-c-label">${escapeHtml(c.label)} - ${escapeHtml(c.q)}</label>
+          <input type="text" class="gs-item slice-box" data-phase="setup" data-idx="${i}" value="${escapeAttr(s.setup[i] || '')}" placeholder="${escapeAttr(c.ph)}">
+        `).join('');
+        body = `
+          <h3 class="onb-horizon-heading">${escapeHtml(phase.heading)}</h3>
+          ${phase.cards}
+          <p class="onb-horizon-body">${escapeHtml(phase.body)}</p>
+          <div class="gs-item-list gs-c-list">${rows}</div>`;
+      } else {
+        const items = s[st].length ? s[st] : [''];
+        const inputs = items.map((v, i) => `<input type="text" class="gs-item slice-box" data-phase="${st}" data-idx="${i}" value="${escapeAttr(v)}" placeholder="${escapeAttr(phase.placeholder)}">`).join('');
+        body = `
+          <h3 class="onb-horizon-heading">${escapeHtml(phase.heading)}</h3>
+          ${phase.cards}
+          <p class="onb-horizon-body">${escapeHtml(phase.body)}</p>
+          <div class="gs-item-list">${inputs}</div>
+          ${items.length < MAX_ITEMS ? `<button type="button" class="btn btn-text" id="gs-item-add" data-phase="${st}">+ add another</button>` : ''}`;
+      }
     }
     const isFirst = s.idx === 0;
     const isLast = s.idx === s.steps.length - 1;
@@ -1152,6 +1281,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
       <div class="onb-step-actions">
         <button type="button" class="btn btn-text" id="gs-back">${isFirst ? 'Cancel' : 'Back'}</button>
         <div class="onb-step-actions-right">
+          ${st === 'detail' ? '<button type="button" class="btn btn-text" id="gs-skip">Skip - keep it simple</button>' : ''}
           <button type="button" class="btn btn-primary" id="gs-next">${isLast ? 'Save this goal' : 'Next'}</button>
         </div>
       </div>`;
@@ -1167,6 +1297,10 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     document.getElementById('gs-back')?.addEventListener('click', () => {
       if (isFirst) { closeModal(); return; }
       capture(); s.idx -= 1; renderStep();
+    });
+    document.getElementById('gs-skip')?.addEventListener('click', () => {
+      // Loud skip on the detail step - clears the brainstorm and moves straight to the mirror.
+      s.detail = ''; s.idx += 1; renderStep();
     });
     document.getElementById('gs-next')?.addEventListener('click', async () => {
       capture();
@@ -1205,7 +1339,10 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     const clean = (arr) => (arr || []).map((x) => (x || '').trim()).filter(Boolean).slice(0, MAX_ITEMS);
     const threshold = clean(s.threshold); // S3 halfway markers
     const challenges = clean(s.challenges); // S2 biggest challenges
-    const setup = clean(s.setup);           // S1 set-up-first actions
+    // Three C's are POSITIONAL (Yours / Your crew / The good part). Preserve all three slots so a
+    // blank middle answer can't compact and shift the others under the wrong label on re-open.
+    // No reader of goal.setup exists outside this modal, so empty slots are safe. (Review fix 2026-07-21.)
+    const setup = (s.setup || []).slice(0, MAX_ITEMS).map((x) => (x || '').trim());
     // 1. The year goal row. baseline = now; halfwayPoint = the primary (first) halfway marker,
     //    so the arc/timeline surface keeps working. The three phase arrays ride along as named
     //    fields so rowToGoal spreads them back to the top level on read.
@@ -1227,9 +1364,10 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         halfwayPoint: threshold[0] || undefined,
         targetSession: 6,
         status: prior?.status || 'active',
-        setup: setup.length ? setup : undefined,
+        setup: setup.some(Boolean) ? setup : undefined,
         challenges: challenges.length ? challenges : undefined,
         threshold: threshold.length ? threshold : undefined,
+        detail: (s.detail || '').trim() || undefined, // wide brainstorm - needs adapter field-add before sync, like the phase arrays
       });
     } catch (e) { /* non-fatal */ }
     // 2. The primary halfway marker seeds the Session-3 goal (reuse the seed pattern; Decision 4).
@@ -1437,7 +1575,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   const pitchTarget = role === 'learner' ? nextStudio(studio) : null;
   // Only insert the pitch step when the target studio has authored thresholds. For
   // Adventure -> Launch Pad, getThresholds('launchpad') is null: showing the pitch there
-  // fires an age-gate self-report ("15 by December, will you have?") AND opts the learner
+  // fires an age-gate self-report ("15 by August, will you have?") AND opts the learner
   // into a confirmed-but-empty ceremony (a "working toward your pitch" banner over blank
   // slices). Launch Pad requirements are first-year priorities, not pre-entry gates, so no
   // pitch belongs here yet. Suppressing the step also keeps pitchOptedIn false, so no
@@ -1494,6 +1632,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     thresholdDetail: {},
   };
 
+  // PROTECTED STRING (meeting 2026-07-21, Decisions 1 & 4). This modal title is the SINGLE,
+  // load-bearing place the app names itself at the user ("your compass"). Everything downstream
+  // trusts it, so the horizon/slice-intro line no longer repeats it. If the frame ever needs
+  // trimming, cut downstream - never this welcome. Guides + annual-refresh keep their own titles.
   setModalTitle(annualRefresh
     ? 'A new year - refresh your vision'
     : (role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass'));
@@ -1562,6 +1704,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   function curStep() { return steps[state.idx]; }
   function isLast() { return state.idx === steps.length - 1; }
+  // Single source of truth for the onboarding arrival label (meeting 2026-07-21, Decision 3).
+  // "Enter your Compass" is the arrival word - authored ONCE, here, and it fires only when
+  // `final` is the genuine last action before entering the app. Every non-final step keeps its
+  // own mid-flow label. Centralizing prevents the arrival word leaking onto a mid-flow surface
+  // if the cascade changes (e.g. a step added after slice_plan). The modal title (~line 1536)
+  // "Welcome to your compass" remains the single self-naming welcome - do not add another.
+  const ARRIVAL_LABEL = 'Enter your Compass';
+  function terminalLabel(final, midFlowLabel = 'Continue') { return final ? ARRIVAL_LABEL : midFlowLabel; }
 
   function finish() {
     restoreDefaultActions();
@@ -1675,7 +1825,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       </label>
       ${preview}
       ${errored}
-      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: !r })}
+      ${navButtons({ skippable: true, continueLabel: terminalLabel(isLast()), continueDisabled: !r })}
     `;
   }
 
@@ -1701,7 +1851,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <p class="onb-why-body">These make you, you. And when something feels hard, you can stop and ask: which of my strengths can help me right now?</p>
         <p class="onb-why-body">The more you use them, the stronger they grow - and that is how they help you grow, a little more every day.</p>
       </div>
-      ${navButtons({ skippable: false, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
+      ${navButtons({ skippable: false, continueLabel: terminalLabel(isLast()) })}
     `;
   }
 
@@ -1717,7 +1867,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <p class="onb-why-body">Here is a surprising way to find them: notice what bothers you. When something feels unfair, or you are quick to defend someone, that feeling is pointing at something you care about.</p>
         <p class="onb-why-body">On the next screen, you'll name a few of your own.</p>
       </div>
-      ${navButtons({ skippable: false, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
+      ${navButtons({ skippable: false, continueLabel: terminalLabel(isLast()) })}
     `;
   }
 
@@ -1734,7 +1884,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="form-field"><label for="val-4">Value 4</label><input type="text" id="val-4" value="${escapeAttr(v.values[3] || '')}" placeholder="e.g. Awe"></div>
       <div class="form-field"><label for="val-5">Value 5</label><input type="text" id="val-5" value="${escapeAttr(v.values[4] || '')}" placeholder="e.g. Vitality"></div>
       <div class="form-field"><label for="val-arch">Archetype <span class="onb-optional">(optional)</span></label><input type="text" id="val-arch" value="${escapeAttr(v.archetype || '')}" placeholder="e.g. The Seeker"></div>
-      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
+      ${navButtons({ skippable: true, continueLabel: terminalLabel(isLast()) })}
     `;
   }
 
@@ -1763,8 +1913,15 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         : `<p class="onb-linkout-note">Assessment link coming soon - for now, choose what fits you best below.</p>`;
     let grid;
     if (kind === 'value') {
-      grid = `<div class="onb-select-grid onb-value-grid">${state.valuesLexicon.map((v) => {
-        const selected = state.values.includes(v.id);
+      // Selected values float to the top (in pick order), then the rest in lexicon
+      // order. Captain 2026-07-21: pick freely, gather your choices up top.
+      const selectedSet = new Set(state.values);
+      const orderedValues = [
+        ...state.values.map((id) => state.valuesLexicon.find((v) => v.id === id)).filter(Boolean),
+        ...state.valuesLexicon.filter((v) => !selectedSet.has(v.id)),
+      ];
+      grid = `<div class="onb-select-grid onb-value-grid">${orderedValues.map((v) => {
+        const selected = selectedSet.has(v.id);
         return `<button type="button" class="onb-select-card onb-value-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}" data-kind="value"><span class="onb-value-name">${escapeHtml(v.display_label_adult)}</span>${v.definition ? `<span class="onb-value-def">${escapeHtml(v.definition)}</span>` : ''}</button>`;
       }).join('')}</div>`;
     } else {
@@ -1781,11 +1938,23 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         return `<div class="onb-virtue-group"><h3 class="onb-virtue-heading">${escapeHtml(category)}</h3><div class="onb-select-grid">${cards}</div></div>`;
       }).join('')}</div>`;
     }
+    // Values: pick as many as you like, but keep 5 or fewer to continue. Strengths
+    // keep the exact-5 rule. (Captain 2026-07-21.)
+    const isValueStep = kind === 'value';
+    const overLimit = isValueStep && list.length > 5;
+    const instruction = isValueStep
+      ? `Choose the values that matter most - pick as many as speak to you, then keep your top five. <span class="onb-count">(${list.length} selected)</span>`
+      : `Choose your top five ${escapeHtml(label)}. <span class="onb-count">(${list.length} of 5 selected)</span>`;
+    const warnBlock = overLimit
+      ? `<p class="onb-count-warn" role="status" aria-live="polite">You've chosen ${list.length}. Keep five or fewer to continue - which five matter most right now?</p>`
+      : '';
+    const continueDisabled = isValueStep ? (list.length === 0 || list.length > 5) : (list.length !== 5);
     return `
-      <p class="onb-step-instruction">Choose your top five ${escapeHtml(label)}. <span class="onb-count">(${list.length} of 5 selected)</span></p>
+      <p class="onb-step-instruction">${instruction}</p>
       ${linkBlock}
       ${grid}
-      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: list.length !== 5 })}
+      ${warnBlock}
+      ${navButtons({ skippable: true, continueLabel: terminalLabel(isLast()), continueDisabled })}
     `;
   }
 
@@ -1801,7 +1970,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       return `
         <div class="onb-horizon-prompt">
           <h3 class="onb-horizon-heading">Want to start getting ready?</h3>
-          <p class="onb-horizon-body">You could spend this year working toward your pitch to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
+          <p class="onb-horizon-body">You could spend this year working toward moving up to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
         </div>
         <div class="onb-pitch-choices">
           <button type="button" class="btn btn-primary" data-pitch="optin-yes">Yes, let's go</button>
@@ -1832,7 +2001,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     return `
       <div class="onb-horizon-prompt">
         <h3 class="onb-horizon-heading">Thinking about ${escapeHtml(targetName)}?</h3>
-        <p class="onb-horizon-body">To pitch up to <strong>${escapeHtml(targetName)}</strong> next year, you'll need to have turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Will you have?</p>
+        <p class="onb-horizon-body">To move up to <strong>${escapeHtml(targetName)}</strong> next year, you'll need to have turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Will you have?</p>
       </div>
       <div class="onb-pitch-choices">
         <button type="button" class="btn btn-primary" data-pitch="age-yes">Yes, I will</button>
@@ -1885,7 +2054,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="form-field">
         <textarea id="onb-horizon" rows="4" placeholder="${escapeAttr(p.placeholder)}">${escapeHtml(state.horizons[step] || '')}</textarea>
       </div>
-      ${navButtons({ skippable: !required, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: required && !(state.horizons[step] || '').trim() })}
+      ${navButtons({ skippable: !required, continueLabel: terminalLabel(isLast()), continueDisabled: required && !(state.horizons[step] || '').trim() })}
     `;
   }
 
@@ -2167,7 +2336,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       ? ' Some of your thresholds are already placed where they belong - refine them, or leave them as they are.'
       : '';
     const lead = plan.pitching
-      ? `You said yes to your pitch to <strong>${escapeHtml(getStudioName(plan.wheelStudio))}</strong>. Here is your year, held across the parts of your life.${placedLine}`
+      ? `You said yes to moving up to <strong>${escapeHtml(getStudioName(plan.wheelStudio))}</strong>. Here is your year, held across the parts of your life.${placedLine}`
       : `Here is your year, held across the parts of your life.`;
     const intro = `
       <div class="onb-horizon-prompt">
@@ -2193,7 +2362,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       ${wheel}
       ${intro}
       <div class="slice-grid">${cards}</div>
-      ${navButtons({ skippable: true, continueLabel: 'Enter your Compass' })}
+      ${navButtons({ skippable: true, continueLabel: terminalLabel(isLast()) })}
     `;
   }
 
@@ -2236,7 +2405,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       ${banner}
       <div class="onb-horizon-prompt onb-slice-intro">
         <h3 class="onb-horizon-heading">Setting your year</h3>
-        <p class="onb-horizon-body">This is your compass - the parts of your life this year.</p>
+        <p class="onb-horizon-body">These are the parts of your life this year.</p>
         <p class="onb-horizon-body">You'll go through them one at a time. For each one, picture yourself next year - what do you want to be true? Fill the ones that are calling you. Leaving one open is a real choice, not a gap.</p>
         <p class="onb-horizon-body">Then we'll come back to the ones you filled and look closer - where you are now, and a halfway point on the way there.</p>
         <p class="onb-horizon-body">Nothing to finish today. There are no wrong answers. Take your time.</p>
@@ -2266,7 +2435,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const wheelName = getStudioName(plan.wheelStudio);
     const targetName = plan.pitchTargetStudio ? getStudioName(plan.pitchTargetStudio) : null;
     const banner = plan.pitching && targetName
-      ? `<p class="onb-slice-context">Working toward your pitch to <strong>${escapeHtml(targetName)}</strong>, planned across your <strong>${escapeHtml(wheelName)}</strong> year.</p>`
+      ? `<p class="onb-slice-context">Working toward moving up to <strong>${escapeHtml(targetName)}</strong>, planned across your <strong>${escapeHtml(wheelName)}</strong> year.</p>`
       : '';
     return { wheelName, targetName, banner, wheel: `<div class="onb-wheel-pin">${lifeWheelSvgFor(plan.wheelStudio)}</div>` };
   }
@@ -2353,7 +2522,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const leaveOpen = isEmpty
       ? `<button type="button" id="onb-slice-open" class="btn btn-text slice-open-btn${isOpen ? ' is-open' : ''}">${isOpen ? 'Left open for now ✓ (tap to add a goal instead)' : 'Leave this open for now'}</button>`
       : '';
-    const continueLabel = isLastSlice ? 'Enter your Compass' : 'Next part of life';
+    const continueLabel = terminalLabel(isLastSlice, 'Next part of life');
     return `
       ${wheel}
       ${banner}
@@ -2406,7 +2575,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <label class="slice-box-label" for="onb-slice-halfway">Halfway there in ${escapeHtml(slice.label)} - what does it look like?</label>
         <textarea id="onb-slice-halfway" class="slice-box" data-slice-id="${escapeAttr(slice.sliceId)}" data-slice-label="${escapeAttr(slice.label)}" rows="2" placeholder="Halfway, in ${escapeAttr(slice.label)}, I will…">${escapeHtml(hwVal)}</textarea>
       </div>`;
-    const continueLabel = isLastSlice ? 'Enter your Compass' : 'Next part of life';
+    const continueLabel = terminalLabel(isLastSlice, 'Next part of life');
     return `
       ${wheel}
       ${banner}
@@ -2590,7 +2759,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         if (at >= 0) {
           list.splice(at, 1);
         } else {
-          if (list.length >= 5) return; // soft cap - can't pick a 6th
+          // Strengths keep the top-5 cap; values are unlimited here and gated at
+          // Continue (captain 2026-07-21).
+          if (card.dataset.kind !== 'value' && list.length >= 5) return;
           list.push(id);
         }
         render();
@@ -2734,7 +2905,7 @@ export async function openValuesPickerModal({ profileId = null, onSaved } = {}) 
     getValuesLexicon(),
     profileId ? getProfileValues(profileId) : Promise.resolve([]),
   ]);
-  const state = { picked: Array.isArray(existing) ? existing.slice(0, 5) : [] };
+  const state = { picked: Array.isArray(existing) ? existing.slice() : [] };
 
   setModalTitle('Your values');
   const defaultActions = document.querySelector('#goal-form .modal-actions');
@@ -2743,18 +2914,28 @@ export async function openValuesPickerModal({ profileId = null, onSaved } = {}) 
   function render() {
     const ff = document.getElementById('form-fields');
     if (!ff) return;
-    const cards = lexicon.map((v) => {
-      const selected = state.picked.includes(v.id);
+    // Selected values float to the top (pick order), then the rest in lexicon order.
+    const selectedSet = new Set(state.picked);
+    const ordered = [
+      ...state.picked.map((id) => lexicon.find((v) => v.id === id)).filter(Boolean),
+      ...lexicon.filter((v) => !selectedSet.has(v.id)),
+    ];
+    const cards = ordered.map((v) => {
+      const selected = selectedSet.has(v.id);
       return `<button type="button" class="onb-select-card onb-value-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}"><span class="onb-value-name">${escapeHtml(v.display_label_adult)}</span>${v.definition ? `<span class="onb-value-def">${escapeHtml(v.definition)}</span>` : ''}</button>`;
     }).join('');
+    // Pick freely; keep 5 or fewer to save. (Captain 2026-07-21.)
+    const overLimit = state.picked.length > 5;
+    const saveDisabled = state.picked.length === 0 || state.picked.length > 5;
     ff.innerHTML = `
-      <p class="onb-step-instruction">Choose the five values that matter most to you. Each one's meaning is under it.</p>
+      <p class="onb-step-instruction">Choose the values that matter most - pick as many as speak to you, then keep your top five. Each one's meaning is under it.</p>
       <p class="onb-linkout"><a href="${escapeAttr(VALUES_ASSESSMENT_URL)}" target="_blank" rel="noopener noreferrer">Take the Values assessment ↗</a><span class="onb-linkout-note">Opens in a new tab - optional. Come back and choose your five.</span></p>
       <div class="onb-select-grid onb-value-grid">${cards}</div>
+      ${overLimit ? `<p class="onb-count-warn" role="status" aria-live="polite">You've chosen ${state.picked.length}. Keep five or fewer to save - which five matter most right now?</p>` : ''}
       <div class="onb-step-actions">
-        <span class="values-count">${state.picked.length} / 5 chosen</span>
+        <span class="values-count">${state.picked.length} chosen${overLimit ? ' - keep 5 or fewer' : ''}</span>
         <div class="onb-step-actions-right">
-          <button type="button" id="vp-save" class="btn btn-primary"${state.picked.length === 5 ? '' : ' disabled'}>Save my values</button>
+          <button type="button" id="vp-save" class="btn btn-primary"${saveDisabled ? ' disabled' : ''}>Save my values</button>
         </div>
       </div>`;
     ff.querySelectorAll('.onb-select-card').forEach((card) => {
@@ -2762,12 +2943,12 @@ export async function openValuesPickerModal({ profileId = null, onSaved } = {}) 
         const id = card.dataset.id;
         const i = state.picked.indexOf(id);
         if (i >= 0) state.picked.splice(i, 1);
-        else if (state.picked.length < 5) state.picked.push(id);
+        else state.picked.push(id); // unlimited; gated at save (captain 2026-07-21)
         render();
       });
     });
     document.getElementById('vp-save')?.addEventListener('click', async () => {
-      if (state.picked.length !== 5) return;
+      if (state.picked.length === 0 || state.picked.length > 5) return;
       if (profileId) await setProfileValues(profileId, state.picked);
       closeModal();
       if (onSaved) onSaved(state.picked);
@@ -2787,7 +2968,7 @@ export function openPitchOptInModal(learner, onDone) {
   if (!target) return;
   const targetName = getStudioName(target);
   const cut = pitchCutoff(target) || { entryAge: '', cutoffLabel: 'next year' };
-  setModalTitle('Pitch readiness');
+  setModalTitle(`Moving up to ${targetName}?`);
   const fields = document.getElementById('form-fields');
   if (!fields) return;
   let stage = 'ask-age';
@@ -2796,7 +2977,7 @@ export function openPitchOptInModal(learner, onDone) {
       fields.innerHTML = `
         <div class="onb-horizon-prompt">
           <h3 class="onb-horizon-heading">Want to start getting ready?</h3>
-          <p class="onb-horizon-body">You could spend this year working toward your pitch to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
+          <p class="onb-horizon-body">You could spend this year working toward moving up to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
         </div>
         <div class="onb-pitch-choices">
           <button type="button" class="btn btn-primary" data-pitch="optin-yes">Yes, let's go</button>
@@ -2813,7 +2994,7 @@ export function openPitchOptInModal(learner, onDone) {
       fields.innerHTML = `
         <div class="onb-horizon-prompt">
           <h3 class="onb-horizon-heading">Thinking about ${escapeHtml(targetName)}?</h3>
-          <p class="onb-horizon-body">To pitch up to <strong>${escapeHtml(targetName)}</strong> next year, you'll need to have turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Will you have?</p>
+          <p class="onb-horizon-body">To move up to <strong>${escapeHtml(targetName)}</strong> next year, you'll need to have turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Will you have?</p>
         </div>
         <div class="onb-pitch-choices">
           <button type="button" class="btn btn-primary" data-pitch="age-yes">Yes, I will</button>
@@ -2846,7 +3027,9 @@ export function openPitchOptInModal(learner, onDone) {
 // the learner can plan and self-track. Guide/committee/signatures happen in
 // person - this page never adjudicates. (Captain 2026-07-11.)
 export function openThresholdsModal(targetStudio, learner) {
-  setModalTitle('Pitch readiness');
+  // Not "Pitch readiness" - no jargon, no readiness-meter language (the meeting dissolved the gate).
+  // It's the map of growing into the next chapter; the title names the destination + the movement.
+  setModalTitle(`Moving up to ${getStudioName(targetStudio)}`);
   const fields = document.getElementById('form-fields');
   if (!fields) return;
   fields.innerHTML = renderThresholdsHtml(targetStudio, {});

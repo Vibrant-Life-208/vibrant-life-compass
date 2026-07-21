@@ -1,18 +1,22 @@
 // First-run setup view.
-// Per captain decision 2026-05-12: gates new learners until they have
-// set age + studio, filled at least 5 year goals, and starred top 3
-// priorities. Then partner approval (Phase 5) ships everything off.
+// Per captain decision 2026-05-12, revised 2026-07-21: the full set is 5 year goals
+// (one per region) + top-3 priorities, but the gates are staged so a learner isn't
+// blocked from starting: they can move into North once 2 goals are filled, and the
+// top-priorities prompt unlocks at 3. Then partner approval (Phase 5) ships it off.
 
 import {
   getLearner, saveLearner, getGoals, submitYearPlan,
   getActivePartnerOf, getPendingProposalsFor, getLearners, getPartnerLinks,
   proposePartner, respondToPartnerProposal, saveTask,
 } from './store.js';
-import { STUDIOS, getCategoriesForStudio, getCalendarForStudio } from './studios.js';
-import { openYearGoalModal, openConfirmModal, openGoalSetupModal } from './modals.js';
+import { STUDIOS, getCategoriesForStudio, getCalendarForStudio, getStudioName, lifeAreaForCategory } from './studios.js';
+import { openYearGoalModal, openConfirmModal, openGoalSetupModal, openThresholdsModal } from './modals.js';
 import { isCurrentWheelBuild } from './thresholds.js';
+import { autoScheduleYearPlan } from './auto-schedule.js';
 
-const MIN_GOALS = 5;
+const MIN_GOALS = 5;          // the full set - one goal per compass region (the target)
+const NORTH_MIN = 2;          // can move into North once this many goals are filled (captain 2026-07-21)
+const PRIORITY_MIN = 3;       // the top-priorities prompt unlocks at this many goals (captain 2026-07-21)
 const TOP_PRIORITIES = 3;
 
 // Turn a goal's weekly steps into dated tasks in North (learner-initiated via the
@@ -54,7 +58,11 @@ async function sendWeeklyStepsToNorth(learner, categoryId, weeklySteps, mode) {
       d.setDate(d.getDate() + (weekIdx - 1) * 7);
       plannedFor = toISO(d);
     }
-    await saveTask(learner.id, { text, plannedFor, categoryId });
+    // Steps from the plan are weekly milestones -> the base region colour. Region is
+    // resolved from the category's declared home (slice_ life-area OR academic ->
+    // its region, e.g. reading -> World). (Captain 2026-07-21.)
+    const region = lifeAreaForCategory(categoryId) || undefined;
+    await saveTask(learner.id, { text, plannedFor, categoryId, band: 'weekly', region });
   }
 }
 
@@ -116,6 +124,15 @@ export async function renderSetupView(learnerId) {
   // the only age moment is the pitch gate. About You is complete once studio is set.
   const aboutComplete = Boolean(learner.studio);
 
+  // Entry fork (captain 2026-07-21): leveling-up = age-eligible AND self-declared. The pitch
+  // system already encodes both - pitchTargetStudio is set when the learner opts in (self-
+  // declared), and pitchAgeStatus is the guide's yes/no on the age self-report (not a birthday).
+  // A denied pitch means "returning," not leveling-up. Leveling-up learners lead their year with
+  // the crossing (threshold goals); everyone else leads with their own goals. The crossing says
+  // nothing about readiness - the learner's story speaks; a guide names the crossing (gate dissolved).
+  const levelingUp = Boolean(learner.pitchTargetStudio) && learner.pitchAgeStatus !== 'denied';
+  const crossingTargetName = levelingUp ? getStudioName(learner.pitchTargetStudio) : '';
+
   container.innerHTML = `
     ${inboundProposerName ? `
       <div class="setup-partner-banner">
@@ -149,29 +166,36 @@ export async function renderSetupView(learnerId) {
     </section>
 
     ${aboutComplete ? `
+    ${levelingUp ? `
+    <section class="setup-section setup-crossing-lead">
+      <h3 class="setup-section-title">This year: moving up to ${escapeHtml(crossingTargetName)}</h3>
+      <p class="setup-hint">A crossing - a new studio, new guides, a new chapter. You start by breaking down what it takes to get ready, across your whole compass. Your other goals still matter; this one leads.</p>
+      <button type="button" class="btn btn-primary" id="setup-crossing-open">Break down your move-up goal</button>
+    </section>
+    ` : ''}
     <section class="setup-section">
       <div class="setup-progress">
         <h3 class="setup-section-title">2. Your year goals</h3>
         <span class="setup-count ${filledGoals.length >= MIN_GOALS ? 'is-met' : ''}">${currentWheel
-          ? (filledGoals.length >= MIN_GOALS ? 'Ready when you are' : '')
-          : `${filledGoals.length} of ${MIN_GOALS} minimum`}</span>
+          ? (filledGoals.length >= NORTH_MIN ? 'Ready when you are' : '')
+          : `${filledGoals.length} of ${MIN_GOALS}`}</span>
       </div>
       <p class="setup-hint">${currentWheel
         ? `Tap a goal to plan it - where you are now, your halfway milestone, and a few first steps.`
-        : `Set at least ${MIN_GOALS} year goals. Tap a category to walk through the 9-stage plan (End of Session 6 → baseline → End of Session 3 → End of Session 2 → End of Session 1 → weekly steps for Sessions 1, 2, 3).`}</p>
+        : `Set up to ${MIN_GOALS} year goals - one per region. You can move into your Compass once you have ${NORTH_MIN}, and star your priorities at ${PRIORITY_MIN}. Tap a category to walk through the 9-stage plan (End of Session 6 → baseline → End of Session 3 → End of Session 2 → End of Session 1 → weekly steps for Sessions 1, 2, 3).`}</p>
       <div id="setup-goals-grid" class="setup-goals-grid"></div>
     </section>
 
-    <section class="setup-section ${filledGoals.length >= MIN_GOALS ? '' : 'is-disabled'}">
+    <section class="setup-section ${filledGoals.length >= PRIORITY_MIN ? '' : 'is-disabled'}">
       <div class="setup-progress">
         <h3 class="setup-section-title">3. Your top ${TOP_PRIORITIES} priorities</h3>
         <span class="setup-count ${priorityIds.length === TOP_PRIORITIES ? 'is-met' : ''}">${currentWheel
           ? (priorityIds.length === TOP_PRIORITIES ? 'Ready when you are' : '')
           : `${priorityIds.length} of ${TOP_PRIORITIES} starred`}</span>
       </div>
-      <p class="setup-hint">${filledGoals.length >= MIN_GOALS
+      <p class="setup-hint">${filledGoals.length >= PRIORITY_MIN
         ? (currentWheel ? 'Which few matter most right now? Tap to star.' : `Of your ${filledGoals.length} goals, which ${TOP_PRIORITIES} matter most? Tap to star.`)
-        : (currentWheel ? 'Available once you have set a few goals.' : `Available once you've set ${MIN_GOALS} goals.`)}</p>
+        : (currentWheel ? 'Available once you have set a few goals.' : `Available once you've set ${PRIORITY_MIN} goals.`)}</p>
       <div id="setup-priority-list" class="setup-priority-list"></div>
     </section>
 
@@ -185,14 +209,16 @@ export async function renderSetupView(learnerId) {
     ${aboutComplete ? `
     <div class="setup-footer">
       <button type="button" id="setup-continue" class="btn btn-primary setup-continue-btn"
-        ${filledGoals.length >= MIN_GOALS ? '' : 'disabled'}>
+        ${filledGoals.length >= NORTH_MIN ? '' : 'disabled'}>
         Continue — send to my partner for approval
       </button>
       <p class="setup-footer-hint">${
-        filledGoals.length < MIN_GOALS
-          ? (currentWheel ? 'Set a few more goals to continue.' : `Fill at least ${MIN_GOALS - filledGoals.length} more goal${MIN_GOALS - filledGoals.length === 1 ? '' : 's'} to continue.`)
+        filledGoals.length < NORTH_MIN
+          ? (currentWheel ? 'Set a couple of goals to continue.' : `Fill at least ${NORTH_MIN - filledGoals.length} more goal${NORTH_MIN - filledGoals.length === 1 ? '' : 's'} to continue.`)
+          : filledGoals.length < MIN_GOALS
+          ? `You can move into your Compass now - or set the rest of your ${MIN_GOALS} and star your top ${TOP_PRIORITIES} first. Your plan goes to your partner for sign-off.`
           : priorityIds.length === 0
-          ? 'Top 3 priorities are optional — you can star them any time. Ready to send your plan to your partner for sign-off.'
+          ? `Top ${TOP_PRIORITIES} priorities are optional — you can star them any time. Ready to send your plan to your partner for sign-off.`
           : 'Ready to send to your partner for sign-off.'
       }</p>
     </div>
@@ -223,29 +249,26 @@ export async function renderSetupView(learnerId) {
     });
   });
 
+  // Crossing lead (leveling-up learners only): the move-up goal leads their year. Opens the
+  // thresholds breakdown - the crossing's task-list, region-grouped. No readiness meter.
+  document.getElementById('setup-crossing-open')?.addEventListener('click', () => {
+    openThresholdsModal(learner.pitchTargetStudio, learner);
+  });
+
   // Studio is now read-only in Setup (assigned by the guide at account
   // creation). The old reactive dirty-check + about-you save handler were
   // removed with the studio dropdown so a learner can't reassign their studio.
 
-  // Wire the continue button - submit year plan to partner for approval
+  // Wire the continue button - submit the year plan to the GUIDE for sign-off (captain
+  // 2026-07-21: sign-off is the guide's, not a peer partner's - Rose for Discovery, Ben for
+  // Adventure - so it is never gated on having an accountability partner, which every
+  // learner may not yet have). The partner is a separate peer relationship, assigned by the
+  // guide from the Tribe tab. The learner submits, auto-schedules, and moves into the app;
+  // the guide signs off from their dashboard.
   document.getElementById('setup-continue')?.addEventListener('click', async () => {
-    const partner = await getActivePartnerOf(learner.id);
-    if (!partner) {
-      openConfirmModal({
-        title: 'You need a partner first',
-        body: 'Year plans get signed off by your accountability partner. Set one up before submitting your plan. (Look for the Partner tab once you finish setup.)',
-        confirmLabel: 'Continue anyway',
-        cancelLabel: 'Set up partner first',
-        onConfirm: async () => {
-          await saveLearner({ id: learner.id, setupCompletedAt: new Date().toISOString() });
-          location.reload();
-        },
-      });
-      return;
-    }
-    // Submit the plan to the partner; learner moves into the main app
-    // while waiting for approval.
     await submitYearPlan(learner.id);
+    // Session-1 flow: auto-schedule the year plan onto the weeks (see auto-schedule.js).
+    try { await autoScheduleYearPlan(learner.id); } catch (e) { console.warn('auto-schedule:', e); }
     await saveLearner({ id: learner.id, setupCompletedAt: new Date().toISOString() });
     document.dispatchEvent(new CustomEvent('hc:partner-changed'));
     location.reload();
@@ -375,7 +398,7 @@ function renderPriorityList(learner, filledGoals, priorityIds) {
     const item = document.createElement('button');
     item.type = 'button';
     item.className = 'setup-priority-item' + (starred ? ' is-starred' : '');
-    item.disabled = filledGoals.length < MIN_GOALS;
+    item.disabled = filledGoals.length < PRIORITY_MIN;
     item.innerHTML = `
       <span class="setup-priority-star">${starred ? '★' : '☆'}</span>
       <span class="setup-priority-cat">${escapeHtml(cat?.name || goal.categoryId)}</span>
@@ -443,50 +466,11 @@ async function renderPartnerZoneInSetup(learner, ctx) {
     return;
   }
 
-  // Pick a partner. Same filter as the main partner page: same studio, no active partner.
-  const allLearners = await getLearners();
-  const candidates = [];
-  for (const l of allLearners) {
-    if (l.id === learner.id) continue;
-    if (l.studio !== learner.studio) continue;
-    const theirPartner = await getActivePartnerOf(l.id);
-    if (theirPartner) continue;
-    candidates.push(l);
-  }
-
-  if (candidates.length === 0) {
-    zone.innerHTML = `
-      <p class="learners-empty">Nobody in your studio is available to pair with yet. You can come back to this anytime from the Partner tab.</p>
-    `;
-    return;
-  }
-
+  // Guide-assigned partners (captain 2026-07-21): the learner self-pick is retired here
+  // too, so Setup agrees with the Partner tab. A guide pairs learners from the Tribe tab -
+  // this zone just shows the calm waiting state until then. (The active / pending branches
+  // above still render if a guide has already paired the learner.)
   zone.innerHTML = `
-    <div class="setup-partner-candidates">
-      ${candidates.map((c) => `
-        <button type="button" class="setup-partner-candidate" data-candidate-id="${escapeAttr(c.id)}">
-          <span class="setup-partner-candidate-name">${escapeHtml(c.name || c.heroName)}</span>
-          <span class="setup-partner-candidate-studio">${escapeHtml(c.studio)}</span>
-        </button>
-      `).join('')}
-    </div>
+    <p class="learners-empty">Your guide will pair you with an accountability partner - by hand or by shuffle - so this one is off your plate. Once you are paired, they will sign off on your year plan.</p>
   `;
-
-  zone.querySelectorAll('[data-candidate-id]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const targetId = btn.dataset.candidateId;
-      const target = candidates.find((c) => c.id === targetId);
-      openConfirmModal({
-        title: `Propose ${target?.name || target?.heroName || 'them'} as your partner?`,
-        body: `They'll get a request to accept. Until they accept, you don't have an accountability partner yet.`,
-        confirmLabel: 'Send proposal',
-        cancelLabel: 'Not yet',
-        onConfirm: async () => {
-          await proposePartner(learner.id, targetId);
-          document.dispatchEvent(new CustomEvent('hc:partner-changed'));
-          await renderSetupView(learner.id);
-        },
-      });
-    });
-  });
 }
