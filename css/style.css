@@ -4458,3 +4458,22 @@ body.landscape-mountain {
 .tribe-roster-plan { display: inline-flex; align-items: center; gap: 0.3rem; }
 .tribe-roster-plan-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
 .tribe-mode-select { padding: 0.2rem 0.35rem; border: 1px solid var(--earth-light); border-radius: 6px; background: #fff; font-size: 0.78rem; }
+
+/* ── Plan tab: ordered task list (task-list.js, captain 2026-07-21) ── */
+.tasklist-page { max-width: 680px; margin: 0 auto; padding: 0.5rem 0 2rem; }
+.tasklist-title { font-size: 1.4rem; color: var(--sage); margin: 0 0 0.25rem; }
+.tasklist-sub { color: var(--text-soft); margin: 0 0 0.75rem; }
+.tasklist-legend { display: flex; gap: 0.75rem; margin-bottom: 1rem; font-size: 0.75rem; color: var(--text-muted); }
+.tasklist-legend-item { display: inline-flex; align-items: center; gap: 0.3rem; }
+.tasklist-week { margin-bottom: 1.25rem; }
+.tasklist-week.is-now { background: var(--sage-pale); border-radius: 10px; padding: 0.5rem 0.75rem; }
+.tasklist-week-head { font-size: 0.95rem; color: var(--text); margin: 0 0 0.5rem; }
+.tasklist-now-tag { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--sage); background: #fff; border-radius: 999px; padding: 0.05rem 0.45rem; margin-left: 0.4rem; }
+.tasklist-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.tasklist-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0.5rem; border: 1px solid var(--earth-pale); border-radius: 8px; background: #fff; }
+.tasklist-row.is-today { border-color: var(--sage-light); }
+.tasklist-row.is-done { opacity: 0.55; text-decoration: line-through; }
+.tasklist-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--earth-light); border: 1px solid var(--earth-light); flex: 0 0 auto; }
+.tasklist-when { font-size: 0.72rem; color: var(--text-muted); width: 2.4rem; flex: 0 0 auto; text-transform: lowercase; }
+.tasklist-text { flex: 1; font-size: 0.9rem; color: var(--text); }
+.tasklist-region { font-size: 0.7rem; color: var(--text-muted); flex: 0 0 auto; }

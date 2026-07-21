@@ -16,6 +16,7 @@ import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderAnchorInsights } from './insights.js';
 import { renderSetupView } from './setup.js';
 import { renderCalendarView } from './calendar-view.js';
+import { renderTaskList } from './task-list.js';
 import { renderPractice } from './practice.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
@@ -484,17 +485,29 @@ async function buildTabs(role) {
   // eligible by role; a learner qualifies only when their studio is Launch Pad. Injected
   // dynamically (not in TABS_BY_ROLE) so the studio gate lives in one place and young
   // learners get a byte-identical tab bar to before.
-  let calendarEligible = role === 'guide' || !!session.is_owner;
-  if (!calendarEligible && role === 'learner' && learnerId) {
+  // Mature-tier gate, shared by the Calendar and the Plan (ordered task list): Launch Pad
+  // learners plus guides and owners. Younger tiers (Sparks/Discovery/Adventure) and parents
+  // never see these dense whole-year surfaces (age-tiered surfacing, research-grounded).
+  let matureTier = role === 'guide' || !!session.is_owner;
+  if (!matureTier && role === 'learner' && learnerId) {
     const { getLearner } = await import('./store.js');
     const l = await getLearner(learnerId);
-    calendarEligible = l?.studio === 'launchpad';
+    matureTier = l?.studio === 'launchpad';
   }
-  if (calendarEligible && !tabs.some((t) => t.id === 'calendar-view')) {
+  if (matureTier && !tabs.some((t) => t.id === 'calendar-view')) {
     const at = tabs.findIndex((t) => t.id === 'year-view');
     const calTab = { id: 'calendar-view', label: 'Calendar' };
     if (at >= 0) tabs.splice(at + 1, 0, calTab);
     else tabs.push(calTab);
+  }
+  // Plan tab (ordered task list) - the learner's own whole-year task order. Launch Pad
+  // learners only; guides/owners review learner plans through their dashboard, not a
+  // personal Plan tab. Sits right after the Compass.
+  if (role === 'learner' && matureTier && !tabs.some((t) => t.id === 'tasklist-view')) {
+    const at = tabs.findIndex((t) => t.id === 'year-view');
+    const planTab = { id: 'tasklist-view', label: 'Plan' };
+    if (at >= 0) tabs.splice(at + 1, 0, planTab);
+    else tabs.push(planTab);
   }
 
   // Compute notification count for the Partner tab (learners only).
@@ -547,6 +560,7 @@ async function showTab(tabId, learnerId) {
   if (tabId === 'tribe-view') { try { await renderTribeView(); } catch (e) { console.warn('tribe view:', e); } }
   if (tabId === 'parent-view') await renderRoleView('parent', learnerId);
   if (tabId === 'calendar-view') await renderCalendarView(learnerId);
+  if (tabId === 'tasklist-view') { try { await renderTaskList(learnerId); } catch (e) { console.warn('task list:', e); } }
 }
 
 async function renderRoleView(role, learnerId) {
