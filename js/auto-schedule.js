@@ -125,10 +125,16 @@ export function buildYearPlanSpecs(goals, cal) {
   return specs;
 }
 
-// Assign each spec a day within its week, per placement mode. Milestones sit on their
-// preferred day; weekly steps round-robin across the weekdays so a busy week spreads out
-// rather than stacking. In 'pool-steps' the weekly steps are left dayless (plannedFor '')
-// so they wait in the week's pool for the learner to place - milestones still anchor.
+// Weekday offsets a milestone can land on, mid-to-late-week first (Wed, Thu, Fri, Tue,
+// Mon). Multiple milestones landing in the same week (one per goal, at a session's end)
+// spread across these days instead of all stacking on one date. (Captain 2026-07-21.)
+const MILESTONE_DAYS = [2, 3, 4, 1, 0];
+
+// Assign each spec a day within its week, per placement mode. Weekly steps round-robin
+// across the weekdays; milestones round-robin across MILESTONE_DAYS so a session-end week
+// with several goals' markers reads spread out, not stacked on a single day. In
+// 'pool-steps' the weekly steps are left dayless (plannedFor '') to wait in the week's pool
+// - milestones still anchor onto days.
 export function assignDaysToSpecs(specs, mode = 'draft') {
   const byWeek = new Map();
   for (const s of specs) {
@@ -137,13 +143,16 @@ export function assignDaysToSpecs(specs, mode = 'draft') {
   }
   const out = [];
   for (const [monday, list] of byWeek) {
-    let rr = 0;
+    let rr = 0;   // weekly-step day cursor
+    let mrr = 0;  // milestone day cursor
     for (const s of list) {
       if (mode === 'pool-steps' && s.band === 'weekly') {
         out.push({ ...s, plannedFor: '' }); // waits in this week's pool
         continue;
       }
-      const offset = s.band === 'milestone' ? (s.dayPref ?? 3) : (rr++ % WEEKDAYS);
+      const offset = s.band === 'milestone'
+        ? MILESTONE_DAYS[mrr++ % MILESTONE_DAYS.length]
+        : (rr++ % WEEKDAYS);
       out.push({ ...s, plannedFor: isoAddDays(monday, offset) });
     }
   }
