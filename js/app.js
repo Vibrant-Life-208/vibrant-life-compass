@@ -18,6 +18,7 @@ import { renderSetupView } from './setup.js';
 import { renderCalendarView } from './calendar-view.js';
 import { renderTaskList } from './task-list.js';
 import { renderGoalBreakdown } from './goal-breakdown.js';
+import { renderGrowthRecord } from './growth-record.js';
 import { renderPractice } from './practice.js';
 import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
@@ -497,6 +498,9 @@ async function buildTabs(role) {
   if (isLearner) inject.push({ id: 'tasklist-view', label: 'Plan' });
   if (isLearner && matureLearner) inject.push({ id: 'breakdown-view', label: 'Breakdown' });
   if (isLearner || isStaff) inject.push({ id: 'calendar-view', label: 'Calendar' });
+  // Growth Record - preview/scaffold. Shown only to staff (the "grown-ups who review a
+  // record") while it is being built; not surfaced to learners yet. (Captain 2026-07-21.)
+  if (isStaff) inject.push({ id: 'record-view', label: 'Record' });
   const yearAt = tabs.findIndex((t) => t.id === 'year-view');
   let insertAt = yearAt >= 0 ? yearAt + 1 : tabs.length;
   for (const t of inject) {
@@ -557,6 +561,7 @@ async function showTab(tabId, learnerId) {
   if (tabId === 'calendar-view') await renderCalendarView(learnerId);
   if (tabId === 'tasklist-view') { try { await renderTaskList(learnerId); } catch (e) { console.warn('task list:', e); } }
   if (tabId === 'breakdown-view') { try { await renderGoalBreakdown(learnerId); } catch (e) { console.warn('breakdown:', e); } }
+  if (tabId === 'record-view') { try { await renderGrowthRecord(learnerId); } catch (e) { console.warn('growth record:', e); } }
 }
 
 async function renderRoleView(role, learnerId) {

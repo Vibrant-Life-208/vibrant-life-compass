@@ -4533,3 +4533,30 @@ body.landscape-mountain {
 .cal-school-event.is-event { background: #efe3c9; color: #6b5320; }
 .cal-cell.has-school-event { outline: 1px solid var(--earth-pale); }
 .cal-swatch-event { background: #efe3c9; }
+
+/* ── Growth Record scaffold/preview (growth-record.js, captain 2026-07-21) ── */
+.record-page { max-width: 720px; margin: 0 auto; padding: 0.5rem 0 2rem; }
+.record-scaffold-note { background: #efe3c9; color: #6b5320; font-size: 0.78rem; padding: 0.4rem 0.7rem; border-radius: 8px; margin-bottom: 1rem; }
+.record-head { margin-bottom: 1rem; }
+.record-title { font-size: 1.5rem; color: var(--sage); margin: 0 0 0.25rem; }
+.record-sub { color: var(--text-soft); margin: 0; font-size: 0.9rem; }
+.record-compass { text-align: center; margin: 1.25rem 0; }
+.record-wheel { max-width: 300px; margin: 0 auto; }
+.record-wheel svg { width: 100%; height: auto; }
+.record-compass-note { font-size: 0.8rem; color: var(--text-muted); margin: 0.5rem 0 0; }
+.record-block-title { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin: 0 0 0.5rem; }
+.record-placeholder { border: 1px dashed var(--earth-light); border-radius: 10px; padding: 0.9rem 1rem; margin: 1.25rem 0; background: var(--earth-pale); }
+.record-placeholder-body { font-size: 0.9rem; color: var(--text-soft); margin: 0; }
+.record-placeholder-body em { color: var(--text-muted); }
+.record-ribbons { margin: 1.25rem 0; }
+.record-ribbon { border-left: 4px solid var(--dir, var(--earth-light)); padding: 0.5rem 0 0.5rem 0.9rem; margin-bottom: 0.9rem; }
+.record-ribbon-head { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; font-size: 0.85rem; color: var(--text); letter-spacing: 0.03em; margin-bottom: 0.4rem; }
+.record-ribbon-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--dir); }
+.record-ribbon-line { display: flex; gap: 0.5rem; }
+.record-node { flex: 1; position: relative; padding-top: 0.9rem; border-top: 2px solid var(--earth-pale); }
+.record-node::before { content: ''; position: absolute; top: -6px; left: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--dir); }
+.record-node.is-growing::before { background: #fff; border: 2px solid var(--dir); }
+.record-node-label { display: block; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.record-node-detail { display: block; font-size: 0.82rem; color: var(--text); margin-top: 0.15rem; }
+.record-foot { border-top: 1px solid var(--earth-pale); padding-top: 0.9rem; margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-soft); line-height: 1.5; }
+.record-foot em { color: var(--sage); }
