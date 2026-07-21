@@ -1,7 +1,8 @@
 // First-run setup view.
-// Per captain decision 2026-05-12: gates new learners until they have
-// set age + studio, filled at least 5 year goals, and starred top 3
-// priorities. Then partner approval (Phase 5) ships everything off.
+// Per captain decision 2026-05-12, revised 2026-07-21: the full set is 5 year goals
+// (one per region) + top-3 priorities, but the gates are staged so a learner isn't
+// blocked from starting: they can move into North once 2 goals are filled, and the
+// top-priorities prompt unlocks at 3. Then partner approval (Phase 5) ships it off.
 
 import {
   getLearner, saveLearner, getGoals, submitYearPlan,
@@ -13,7 +14,9 @@ import { openYearGoalModal, openConfirmModal, openGoalSetupModal, openThresholds
 import { isCurrentWheelBuild } from './thresholds.js';
 import { autoScheduleYearPlan } from './auto-schedule.js';
 
-const MIN_GOALS = 5;
+const MIN_GOALS = 5;          // the full set - one goal per compass region (the target)
+const NORTH_MIN = 2;          // can move into North once this many goals are filled (captain 2026-07-21)
+const PRIORITY_MIN = 3;       // the top-priorities prompt unlocks at this many goals (captain 2026-07-21)
 const TOP_PRIORITIES = 3;
 
 // Turn a goal's weekly steps into dated tasks in North (learner-initiated via the
@@ -172,25 +175,25 @@ export async function renderSetupView(learnerId) {
       <div class="setup-progress">
         <h3 class="setup-section-title">2. Your year goals</h3>
         <span class="setup-count ${filledGoals.length >= MIN_GOALS ? 'is-met' : ''}">${currentWheel
-          ? (filledGoals.length >= MIN_GOALS ? 'Ready when you are' : '')
-          : `${filledGoals.length} of ${MIN_GOALS} minimum`}</span>
+          ? (filledGoals.length >= NORTH_MIN ? 'Ready when you are' : '')
+          : `${filledGoals.length} of ${MIN_GOALS}`}</span>
       </div>
       <p class="setup-hint">${currentWheel
         ? `Tap a goal to plan it - where you are now, your halfway milestone, and a few first steps.`
-        : `Set at least ${MIN_GOALS} year goals. Tap a category to walk through the 9-stage plan (End of Session 6 → baseline → End of Session 3 → End of Session 2 → End of Session 1 → weekly steps for Sessions 1, 2, 3).`}</p>
+        : `Set up to ${MIN_GOALS} year goals - one per region. You can move into your Compass once you have ${NORTH_MIN}, and star your priorities at ${PRIORITY_MIN}. Tap a category to walk through the 9-stage plan (End of Session 6 → baseline → End of Session 3 → End of Session 2 → End of Session 1 → weekly steps for Sessions 1, 2, 3).`}</p>
       <div id="setup-goals-grid" class="setup-goals-grid"></div>
     </section>
 
-    <section class="setup-section ${filledGoals.length >= MIN_GOALS ? '' : 'is-disabled'}">
+    <section class="setup-section ${filledGoals.length >= PRIORITY_MIN ? '' : 'is-disabled'}">
       <div class="setup-progress">
         <h3 class="setup-section-title">3. Your top ${TOP_PRIORITIES} priorities</h3>
         <span class="setup-count ${priorityIds.length === TOP_PRIORITIES ? 'is-met' : ''}">${currentWheel
           ? (priorityIds.length === TOP_PRIORITIES ? 'Ready when you are' : '')
           : `${priorityIds.length} of ${TOP_PRIORITIES} starred`}</span>
       </div>
-      <p class="setup-hint">${filledGoals.length >= MIN_GOALS
+      <p class="setup-hint">${filledGoals.length >= PRIORITY_MIN
         ? (currentWheel ? 'Which few matter most right now? Tap to star.' : `Of your ${filledGoals.length} goals, which ${TOP_PRIORITIES} matter most? Tap to star.`)
-        : (currentWheel ? 'Available once you have set a few goals.' : `Available once you've set ${MIN_GOALS} goals.`)}</p>
+        : (currentWheel ? 'Available once you have set a few goals.' : `Available once you've set ${PRIORITY_MIN} goals.`)}</p>
       <div id="setup-priority-list" class="setup-priority-list"></div>
     </section>
 
@@ -204,14 +207,16 @@ export async function renderSetupView(learnerId) {
     ${aboutComplete ? `
     <div class="setup-footer">
       <button type="button" id="setup-continue" class="btn btn-primary setup-continue-btn"
-        ${filledGoals.length >= MIN_GOALS ? '' : 'disabled'}>
+        ${filledGoals.length >= NORTH_MIN ? '' : 'disabled'}>
         Continue — send to my partner for approval
       </button>
       <p class="setup-footer-hint">${
-        filledGoals.length < MIN_GOALS
-          ? (currentWheel ? 'Set a few more goals to continue.' : `Fill at least ${MIN_GOALS - filledGoals.length} more goal${MIN_GOALS - filledGoals.length === 1 ? '' : 's'} to continue.`)
+        filledGoals.length < NORTH_MIN
+          ? (currentWheel ? 'Set a couple of goals to continue.' : `Fill at least ${NORTH_MIN - filledGoals.length} more goal${NORTH_MIN - filledGoals.length === 1 ? '' : 's'} to continue.`)
+          : filledGoals.length < MIN_GOALS
+          ? `You can move into your Compass now - or set the rest of your ${MIN_GOALS} and star your top ${TOP_PRIORITIES} first. Your plan goes to your partner for sign-off.`
           : priorityIds.length === 0
-          ? 'Top 3 priorities are optional — you can star them any time. Ready to send your plan to your partner for sign-off.'
+          ? `Top ${TOP_PRIORITIES} priorities are optional — you can star them any time. Ready to send your plan to your partner for sign-off.`
           : 'Ready to send to your partner for sign-off.'
       }</p>
     </div>
@@ -405,7 +410,7 @@ function renderPriorityList(learner, filledGoals, priorityIds) {
     const item = document.createElement('button');
     item.type = 'button';
     item.className = 'setup-priority-item' + (starred ? ' is-starred' : '');
-    item.disabled = filledGoals.length < MIN_GOALS;
+    item.disabled = filledGoals.length < PRIORITY_MIN;
     item.innerHTML = `
       <span class="setup-priority-star">${starred ? '★' : '☆'}</span>
       <span class="setup-priority-cat">${escapeHtml(cat?.name || goal.categoryId)}</span>
