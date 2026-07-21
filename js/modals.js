@@ -1572,7 +1572,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   const pitchTarget = role === 'learner' ? nextStudio(studio) : null;
   // Only insert the pitch step when the target studio has authored thresholds. For
   // Adventure -> Launch Pad, getThresholds('launchpad') is null: showing the pitch there
-  // fires an age-gate self-report ("15 by December, will you have?") AND opts the learner
+  // fires an age-gate self-report ("15 by August, will you have?") AND opts the learner
   // into a confirmed-but-empty ceremony (a "working toward your pitch" banner over blank
   // slices). Launch Pad requirements are first-year priorities, not pre-entry gates, so no
   // pitch belongs here yet. Suppressing the step also keeps pitchOptedIn false, so no

@@ -442,13 +442,14 @@ export function nextStudio(studio) {
 // store or compute against a learner's birthdate - the child self-reports yes/no
 // against this cutoff, and their guide approves/denies. This just supplies the
 // entry age + the cutoff date to show in the question: "will you have turned
-// [entryAge] by [cutoffLabel]?" Cutoff = 4 months after next school-year start.
+// [entryAge] by [cutoffLabel]?" Cutoff = the next school-year start itself
+// (captain 2026-07-21: learners must be at the age gate by AUGUST, not the prior
+// +4-months December). They must have turned entryAge by the time next year begins.
 export function pitchCutoff(targetStudio) {
   const entryAge = STUDIO_ENTRY_AGE[targetStudio];
   if (!entryAge) return null;
   const start = new Date(getYearCalendar().yearStartISO);
-  const nextYearStart = new Date(start.getFullYear() + 1, start.getMonth(), start.getDate());
-  const cutoff = new Date(nextYearStart.getFullYear(), nextYearStart.getMonth() + 4, nextYearStart.getDate());
+  const cutoff = new Date(start.getFullYear() + 1, start.getMonth(), start.getDate());
   return {
     entryAge,
     cutoffISO: cutoff.toISOString().slice(0, 10),
