@@ -5,6 +5,8 @@ import { getTasksForDate, saveTask, toggleTaskDone, deleteTask, moveTask, getLea
 import { getStudio, OVERFLOW_COPY } from './studios.js';
 import { openTaskModal, openMoveTaskModal } from './modals.js';
 import { taskColorStyle, taskBand } from './wheel.js';
+import { getBooks, setBookmark } from './books.js';
+import { openPracticeTimer } from './practice-timer.js';
 
 const BAND_LABEL = { recurring: 'rhythm', weekly: 'weekly', milestone: 'milestone' };
 
@@ -54,12 +56,14 @@ export async function renderToday(learnerId) {
   }
 
   container.innerHTML = '';
-  tasks.forEach((task) => container.appendChild(renderTaskCard(learnerId, task)));
+  tasks.forEach((task) => container.appendChild(renderTaskCard(learnerId, task, learner)));
 }
 
-function renderTaskCard(learnerId, task) {
+function renderTaskCard(learnerId, task, learner) {
   const card = document.createElement('div');
   const isRhythm = task.shape === 'rhythm';
+  // A recurring reading task linked to a book on the shelf can start that book's timer here.
+  const linkedBook = (isRhythm && task.bookId && learner) ? getBooks(learner).find((b) => b.id === task.bookId) : null;
   const done = task.status === 'done';
   // A rhythm (standing practice) has NO completion - no check, no miss. Resting is a real
   // choice beside it, never a failure. A one-off keeps the check-it-off toggle.
@@ -81,6 +85,7 @@ function renderTaskCard(learnerId, task) {
     ${lead}
     <p class="task-text">${escapeHtml(task.text)}${bandTag}</p>
     <div class="task-actions">
+      ${linkedBook ? `<button type="button" class="btn-text task-action-btn" data-action="read">Read</button>` : ''}
       <button type="button" class="btn-text task-action-btn" data-action="move">Move</button>
       <button type="button" class="btn-text task-action-btn" data-action="delete">Delete</button>
     </div>
@@ -90,6 +95,8 @@ function renderTaskCard(learnerId, task) {
     if (action === 'toggle') {
       await toggleTaskDone(learnerId, task.id);
       await renderToday(learnerId);
+    } else if (action === 'read') {
+      if (linkedBook) openPracticeTimer(linkedBook, (mark) => setBookmark(learner, linkedBook.id, mark));
     } else if (action === 'move') {
       openMoveTaskModal(task, async (newDate) => {
         await moveTask(learnerId, task.id, newDate);
@@ -112,9 +119,11 @@ export function initTodayFab(learnerId) {
   if (!fab) return;
   const fresh = fab.cloneNode(true);
   fab.parentNode.replaceChild(fresh, fab);
-  fresh.addEventListener('click', () => {
+  fresh.addEventListener('click', async () => {
+    const learner = await getLearner(learnerId);
     openTaskModal({
       defaultDate: todayISO(),
+      books: getBooks(learner),
       onSave: async (taskData) => {
         await saveTask(learnerId, taskData);
         await renderToday(learnerId);

@@ -601,7 +601,7 @@ export function openLoginModal({ existing, onSave }) {
   setTimeout(() => document.getElementById('login-service')?.focus(), 50);
 }
 
-export function openTaskModal({ existing, defaultDate, onSave }) {
+export function openTaskModal({ existing, defaultDate, onSave, books = [] }) {
   setModalTitle(existing ? 'Edit task' : 'Add a task');
   // Band = how load-bearing this task is; it drives the wheel-colour shade
   // (recurring -> light, weekly -> the colour, milestone -> dark) AND the completion
@@ -638,6 +638,14 @@ export function openTaskModal({ existing, defaultDate, onSave }) {
       <label for="task-timer">A timer, if you'd like one (minutes) - optional</label>
       <input type="number" id="task-timer" min="1" max="120" placeholder="e.g. 20" value="${escapeAttr(String(timerMinutes))}">
     </div>
+    ${books.length ? `
+    <div class="form-field" id="task-book-field" style="${band === 'recurring' ? '' : 'display:none'}">
+      <label for="task-book">A book from your shelf? <span class="onb-optional">(optional)</span></label>
+      <select id="task-book" class="slice-box">
+        <option value="">(not a book)</option>
+        ${books.map((bk) => `<option value="${escapeAttr(bk.id)}" ${existing?.bookId === bk.id ? 'selected' : ''}>${escapeHtml(bk.title)}</option>`).join('')}
+      </select>
+    </div>` : ''}
     <div class="form-field">
       <label for="task-date">When?</label>
       <input type="date" id="task-date" value="${existing?.plannedFor || defaultDate || ''}">
@@ -646,8 +654,11 @@ export function openTaskModal({ existing, defaultDate, onSave }) {
   // Reveal the optional timer only for a recurring rhythm.
   document.querySelectorAll('input[name="task-band"]').forEach((r) => {
     r.addEventListener('change', () => {
+      const recurring = document.querySelector('input[name="task-band"]:checked')?.value === 'recurring';
       const f = document.getElementById('task-timer-field');
-      if (f) f.style.display = document.querySelector('input[name="task-band"]:checked')?.value === 'recurring' ? '' : 'none';
+      if (f) f.style.display = recurring ? '' : 'none';
+      const bf = document.getElementById('task-book-field');
+      if (bf) bf.style.display = recurring ? '' : 'none';
     });
   });
   // Region swatch single-select.
@@ -674,6 +685,7 @@ export function openTaskModal({ existing, defaultDate, onSave }) {
       shape: bandVal === 'recurring' ? 'rhythm' : 'once',
       region: pickedRegion || undefined,
       timerMinutes: bandVal === 'recurring' && tMin > 0 ? tMin : undefined,
+      bookId: bandVal === 'recurring' ? (document.getElementById('task-book')?.value || undefined) : undefined,
     });
     closeModal();
   };
