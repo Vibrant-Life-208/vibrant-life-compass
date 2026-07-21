@@ -93,6 +93,7 @@ export const {
   getYearPlans,
   submitYearPlan,
   getPendingYearPlanFor,
+  getPendingYearPlansForGuide,
   approveYearPlan,
   returnYearPlan,
   getNotifications,

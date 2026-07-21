@@ -22,7 +22,7 @@
 // weekly step that a manual task with the same text already covers that week.
 
 import { getGoals, getTasks, saveTask, deleteTask, getLearner } from './store.js';
-import { getCalendarForStudio, lifeAreaForCategory } from './studios.js';
+import { getPlanningCalendar, lifeAreaForCategory } from './studios.js';
 
 const WEEKDAYS = 5; // Mon..Fri offsets 0..4 from a week's Monday
 
@@ -78,12 +78,26 @@ export function buildYearPlanSpecs(goals, cal) {
   for (const g of goals) {
     if (g.scope !== 'year') continue;
     const region = goalRegion(g);
-    // Milestone markers at the end of Session 1 / 2 / 3.
-    const anchors = [
-      { key: 'eos1', text: g.eos1Point, session: 1 },
-      { key: 'quarter', text: g.quarterPoint, session: 2 },
-      { key: 'halfway', text: g.halfwayPoint, session: 3 },
-    ];
+    // Milestone markers. The live goal model (3-phase openGoalSetupModal) writes threshold[]
+    // - up to three milestones, threshold[0] being the locked halfway - and NO weekly steps
+    // (weekly planning is the learner's to do on North, the ratified pedagogy). So plant the
+    // threshold[] as the year's MILESTONE SKELETON: [0] -> the Session-3 halfway, and the
+    // earlier-authored ones step back to Sessions 2 and 1, building up to it. Fall back to the
+    // legacy 9-stage fields (eos1/quarter/halfway) when a goal has no threshold[]. (Captain
+    // 2026-07-21: Session 1 lays the milestone scaffold + opens the planner; it does NOT
+    // auto-write the weeks.)
+    const thresholds = Array.isArray(g.threshold) ? g.threshold.map((x) => (x || '').trim()).filter(Boolean) : [];
+    const anchors = thresholds.length
+      ? [
+          { key: 'm0', text: thresholds[0], session: 3 },
+          { key: 'm1', text: thresholds[1], session: 2 },
+          { key: 'm2', text: thresholds[2], session: 1 },
+        ]
+      : [
+          { key: 'eos1', text: g.eos1Point, session: 1 },
+          { key: 'quarter', text: g.quarterPoint, session: 2 },
+          { key: 'halfway', text: g.halfwayPoint, session: 3 },
+        ];
     for (const a of anchors) {
       const text = (a.text || '').trim();
       if (!text) continue;
@@ -142,7 +156,7 @@ export async function autoScheduleYearPlan(learnerId) {
   const [goals, existing, learner] = await Promise.all([
     getGoals(learnerId), getTasks(learnerId), getLearner(learnerId),
   ]);
-  const cal = getCalendarForStudio(learner?.studio);
+  const cal = getPlanningCalendar(); // current cycle in-year; the upcoming cycle if onboarding in summer
   const mode = schedulingModeFor(learner);
   const specs = assignDaysToSpecs(buildYearPlanSpecs(goals, cal), mode);
 

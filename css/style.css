@@ -4515,3 +4515,13 @@ body.landscape-mountain {
 .breakdown-task.is-done { opacity: 0.55; text-decoration: line-through; }
 .breakdown-task-when { font-size: 0.72rem; color: var(--text-muted); width: 3.2rem; flex: 0 0 auto; }
 .breakdown-task-text { flex: 1; }
+
+/* Guide year-plan sign-off cards (captain 2026-07-21). */
+.guide-yearplan-approvals { margin-top: 1rem; }
+.yearplan-approval-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.yearplan-approval-card { border: 1px solid var(--earth-pale); border-radius: 10px; padding: 0.75rem 0.9rem; background: #fff; }
+.yearplan-approval-who { margin: 0 0 0.4rem; color: var(--text); }
+.yearplan-approval-goals { margin: 0 0 0.6rem; padding-left: 1.1rem; }
+.yearplan-approval-goals li { font-size: 0.9rem; color: var(--text); margin-bottom: 0.2rem; }
+.yearplan-approval-mile { color: var(--text-muted); font-size: 0.78rem; }
+.yearplan-approval-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }

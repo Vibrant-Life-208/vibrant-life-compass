@@ -678,10 +678,59 @@ async function renderRoleView(role, learnerId) {
     // Guarded so a backend hiccup can't break the rest of the guide dashboard.
     try { await renderPitchApprovals(learners, session, () => renderRoleView('guide', learnerId)); }
     catch (e) { console.warn('pitch approvals:', e); }
+    // Year-plan sign-off: learners who finished setup submit their plan to their guide.
+    try { await renderGuideYearPlanApprovals(learners, session, () => renderRoleView('guide', learnerId)); }
+    catch (e) { console.warn('yearplan approvals:', e); }
   }
   if (role === 'parent') {
     import('./parent-view.js').then(m => m.renderParentView());
   }
+}
+
+// Year-plan sign-off surface for the guide (captain 2026-07-21). A learner submits their
+// plan to their guide at the end of setup (not to a peer partner); the guide reads it here
+// and signs off, or sends it back with a note. Guide id = session.guideId; owners (flat
+// staff power) fall back to session.id so the reviewer is always recorded.
+async function renderGuideYearPlanApprovals(learners, session, onChange) {
+  const section = document.getElementById('guide-yearplan-approvals');
+  const list = document.getElementById('guide-yearplan-list');
+  if (!section || !list) return;
+  const reviewerId = session?.guideId || session?.id || null;
+  const { getPendingYearPlansForGuide, getGoals, approveYearPlan, returnYearPlan } = await import('./store.js');
+  const pending = await getPendingYearPlansForGuide(reviewerId);
+  if (!pending.length) { section.hidden = true; list.innerHTML = ''; return; }
+  section.hidden = false;
+  list.innerHTML = '';
+  for (const plan of pending) {
+    const learner = (learners || []).find((l) => l.id === plan.learnerId);
+    const goals = (await getGoals(plan.learnerId)).filter((g) => g.scope === 'year' && g.text && g.text.trim());
+    const priorityIds = Array.isArray(learner?.priorityGoalIds) ? learner.priorityGoalIds : [];
+    const card = document.createElement('div');
+    card.className = 'yearplan-approval-card';
+    card.innerHTML = `
+      <p class="yearplan-approval-who"><strong>${escapeHtml(learner?.name || 'A learner')}</strong> finished setup - ${goals.length} year goal${goals.length === 1 ? '' : 's'}.</p>
+      <ul class="yearplan-approval-goals">
+        ${goals.map((g) => `<li>${priorityIds.includes(g.id) ? '★ ' : ''}${escapeHtml(g.text)}${g.halfwayPoint ? ` <span class="yearplan-approval-mile">Session-3 goal: ${escapeHtml(g.halfwayPoint)}</span>` : ''}</li>`).join('')}
+      </ul>
+      <div class="yearplan-approval-actions">
+        <button type="button" class="btn btn-text" data-yp-return="${escapeHtml(plan.id)}">Send back</button>
+        <button type="button" class="btn btn-primary" data-yp-approve="${escapeHtml(plan.id)}">Sign off ✓</button>
+      </div>`;
+    list.appendChild(card);
+  }
+  list.querySelectorAll('[data-yp-approve]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await approveYearPlan(btn.dataset.ypApprove, reviewerId, '');
+      if (onChange) await onChange();
+    });
+  });
+  list.querySelectorAll('[data-yp-return]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const note = prompt('What would you like the learner to reconsider? (optional)') || '';
+      await returnYearPlan(btn.dataset.ypReturn, reviewerId, note);
+      if (onChange) await onChange();
+    });
+  });
 }
 
 // Pending pitch approvals surface for the guide (captain 2026-07-10 age-gate loop).

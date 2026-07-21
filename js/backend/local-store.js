@@ -699,6 +699,14 @@ export async function getPendingYearPlanFor(partnerId) {
   return result;
 }
 
+export async function getPendingYearPlansForGuide(guideId) {
+  // The guide signs off their roster's year plans (captain 2026-07-21). In the skeleton
+  // there is no per-guide assignment table, so a guide sees every learner - return all
+  // pending plans. On the synced backend the year_plans RLS scopes this to the guide's
+  // own learners.
+  return (await getYearPlans()).filter((p) => p.status === 'pending');
+}
+
 export async function approveYearPlan(planId, approverId, note = '') {
   const plans = await getYearPlans();
   const plan = plans.find((p) => p.id === planId);

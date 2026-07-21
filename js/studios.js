@@ -513,6 +513,22 @@ export function getYearCalendar(today = new Date()) {
   };
 }
 
+// The calendar a learner is PLANNING for. During the school year (Sessions 1-7) that is
+// the current cycle. In the summer window (Session 8, ~Jun 1 onward - "rest + plan next
+// year") they are planning the NEXT school year, so return the upcoming cycle. This keeps a
+// summer onboarder's Session-1 plan landing in the year AHEAD (they're early, not behind)
+// rather than on past weeks of the finishing cycle. (Captain 2026-07-21.)
+export function getPlanningCalendar(today = new Date()) {
+  const cal = getYearCalendar(today);
+  const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const summerStart = cal.sessionStarts[7]; // S8 start (cy+1 June 1)
+  if (iso >= summerStart) {
+    const nextCycleYear = new Date(summerStart + 'T00:00:00').getFullYear();
+    return getYearCalendar(new Date(`${nextCycleYear}-08-17T00:00:00`));
+  }
+  return cal;
+}
+
 // Current cycle's calendar (computed at module load - refreshed on page reload).
 export const YEAR_CALENDAR = getYearCalendar();
 

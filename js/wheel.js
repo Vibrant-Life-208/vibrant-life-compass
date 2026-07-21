@@ -110,6 +110,13 @@ export function taskColorStyle(task) {
   if (!region) return null;
   const base = REGION_COLORS[region];
   const band = taskBand(task);
+  // Voice/Spirit reads WHITE (the sovereign centre is cream, not a solid hue). A white
+  // chip can't hue-shade and would clash with Self's gold, so Voice keeps a cream fill and
+  // shows the band on a gold-family accent border + text instead. (Captain 2026-07-21.)
+  if (region === 'Voice') {
+    const accent = band === 'recurring' ? '#d9c48f' : band === 'milestone' ? '#9c7a2e' : '#c99a3b';
+    return { bg: '#f6f1e7', border: accent, fg: '#6b5320' };
+  }
   if (band === 'recurring') return { bg: mix(base, '#ffffff', 0.78), border: base, fg: mix(base, '#000000', 0.25) };
   if (band === 'milestone') { const dark = mix(base, '#000000', 0.34); return { bg: dark, border: dark, fg: '#ffffff' }; }
   // weekly (or plain-with-region) = the region colour itself.

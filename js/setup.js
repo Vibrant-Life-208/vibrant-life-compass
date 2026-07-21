@@ -259,27 +259,13 @@ export async function renderSetupView(learnerId) {
   // creation). The old reactive dirty-check + about-you save handler were
   // removed with the studio dropdown so a learner can't reassign their studio.
 
-  // Wire the continue button - submit year plan to partner for approval
+  // Wire the continue button - submit the year plan to the GUIDE for sign-off (captain
+  // 2026-07-21: sign-off is the guide's, not a peer partner's - Rose for Discovery, Ben for
+  // Adventure - so it is never gated on having an accountability partner, which every
+  // learner may not yet have). The partner is a separate peer relationship, assigned by the
+  // guide from the Tribe tab. The learner submits, auto-schedules, and moves into the app;
+  // the guide signs off from their dashboard.
   document.getElementById('setup-continue')?.addEventListener('click', async () => {
-    const partner = await getActivePartnerOf(learner.id);
-    if (!partner) {
-      openConfirmModal({
-        title: 'You need a partner first',
-        body: 'Year plans get signed off by your accountability partner. Set one up before submitting your plan. (Look for the Partner tab once you finish setup.)',
-        confirmLabel: 'Continue anyway',
-        cancelLabel: 'Set up partner first',
-        onConfirm: async () => {
-          // Session-1 flow: spread the year plan across the calendar as dated, coloured
-          // tasks the learner can then rearrange. Guarded so a hiccup never blocks entry.
-          try { await autoScheduleYearPlan(learner.id); } catch (e) { console.warn('auto-schedule:', e); }
-          await saveLearner({ id: learner.id, setupCompletedAt: new Date().toISOString() });
-          location.reload();
-        },
-      });
-      return;
-    }
-    // Submit the plan to the partner; learner moves into the main app
-    // while waiting for approval.
     await submitYearPlan(learner.id);
     // Session-1 flow: auto-schedule the year plan onto the weeks (see auto-schedule.js).
     try { await autoScheduleYearPlan(learner.id); } catch (e) { console.warn('auto-schedule:', e); }
