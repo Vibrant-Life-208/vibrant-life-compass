@@ -742,7 +742,7 @@ async function renderPitchApprovals(learners, session, onChange) {
     card.className = 'pitch-approval-card';
     card.innerHTML = `
       <div class="pitch-approval-body">
-        <p class="pitch-approval-who"><strong>${escapeHtml(l.name)}</strong> wants to pitch up to <strong>${escapeHtml(getStudioName(l.pitchTargetStudio))}</strong>.</p>
+        <p class="pitch-approval-who"><strong>${escapeHtml(l.name)}</strong> wants to move up to <strong>${escapeHtml(getStudioName(l.pitchTargetStudio))}</strong>.</p>
         <p class="pitch-approval-gate">They said yes to: turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Your call - a "yes, they'll be old enough," not a birthday check.</p>
       </div>
       <div class="pitch-approval-actions">
@@ -776,16 +776,16 @@ async function decidePitch(learnerId, decision, learners, session, onChange) {
     await addNotification({
       recipientId: learnerId,
       type: 'pitch-approved',
-      title: 'Your pitch is confirmed',
-      body: `Your guide confirmed you're set to pitch up to ${target}. Keep working your thresholds!`,
+      title: 'Your move up is confirmed',
+      body: `Your guide confirmed you're set to move up to ${target}. Keep working your thresholds!`,
       fromId: reviewerId,
     });
   } else {
     await addNotification({
       recipientId: learnerId,
       type: 'pitch-denied',
-      title: 'About your pitch',
-      body: `Your guide feels this isn't the year to pitch to ${target} - and that's okay. Let's make this year count where you are.`,
+      title: 'About moving up',
+      body: `Your guide feels this isn't the year to move up to ${target} - and that's okay. Let's make this year count where you are.`,
       fromId: reviewerId,
     });
   }
