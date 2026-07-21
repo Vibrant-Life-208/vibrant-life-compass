@@ -91,7 +91,7 @@ export async function getLearners() {
   // Deploy-before-migration safety (v0.27 is_leader): try with the leader flag, fall
   // back to base columns if the column isn't present yet, so the guide dashboard never
   // breaks on a deploy that lands ahead of the migration.
-  let { data, error } = await c.from('learners').select('id, studio, is_leader, scheduling_mode, profiles!learners_id_fkey(name, email)');
+  let { data, error } = await c.from('learners').select('id, studio, is_leader, scheduling_mode, new_to_tribe, profiles!learners_id_fkey(name, email)');
   if (error) {
     ({ data, error } = await c.from('learners').select('id, studio, profiles!learners_id_fkey(name, email)'));
   }
@@ -103,6 +103,7 @@ export async function getLearners() {
     studio: row.studio,
     isLeader: Boolean(row.is_leader),
     schedulingMode: row.scheduling_mode ?? null,
+    newToTribe: Boolean(row.new_to_tribe),
   }));
 }
 
@@ -110,7 +111,7 @@ export async function getLearner(id) {
   const c = getClient();
   let { data, error } = await c
     .from('learners')
-    .select('id, studio, setup_completed_at, open_by_choice, current_wheel_test, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, scheduling_mode, profiles!learners_id_fkey(name, email)')
+    .select('id, studio, setup_completed_at, open_by_choice, current_wheel_test, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, scheduling_mode, dismissed_plan_keys, books, new_to_tribe, first_task_demo_seen, profiles!learners_id_fkey(name, email)')
     .eq('id', id)
     .single();
   if (error) {
@@ -145,6 +146,12 @@ export async function getLearner(id) {
     pitchAgeReviewedAt: data.pitch_age_reviewed_at ?? null,
     // v0.29 auto-scheduler placement override; null = use the studio-tier default.
     schedulingMode: data.scheduling_mode ?? null,
+    // v0.30 book tracker + new-to-tribe + first-task-demo.
+    books: Array.isArray(data.books) ? data.books : [],
+    newToTribe: Boolean(data.new_to_tribe),
+    firstTaskDemoSeen: Boolean(data.first_task_demo_seen),
+    // v0.31 auto-scheduler tombstones: planKeys the learner deleted, never re-planted.
+    dismissedPlanKeys: Array.isArray(data.dismissed_plan_keys) ? data.dismissed_plan_keys : [],
   };
 }
 
@@ -527,7 +534,7 @@ function rowToGoal(row) {
 // setup/challenges/threshold: the 3-phase goal cadence arrays (up to 3 each) written by
 // openGoalSetupModal (captain 2026-07-18). Stored as arrays in the same jsonb; rowToGoal
 // spreads them back to the top level on read.
-const DECOMPOSITION_FIELDS = ['baseline', 'halfwayPoint', 'quarterPoint', 'eos1Point', 'weeklySteps', 'targetSession', 'setup', 'challenges', 'threshold', 'presence'];
+const DECOMPOSITION_FIELDS = ['baseline', 'halfwayPoint', 'quarterPoint', 'eos1Point', 'weeklySteps', 'targetSession', 'setup', 'challenges', 'threshold', 'presence', 'detail'];
 
 function goalToRow(goal) {
   const row = {
@@ -619,7 +626,7 @@ export async function getTasksForRange(learnerId, startISO, endISO) {
 }
 
 // Extended task fields packed into the v0.28 meta jsonb (mirrors goals.decomposition).
-const TASK_META_FIELDS = ['band', 'region', 'shape', 'timerMinutes', 'weekOf', 'source', 'planKey'];
+const TASK_META_FIELDS = ['band', 'region', 'shape', 'timerMinutes', 'weekOf', 'source', 'planKey', 'bookId'];
 
 export async function saveTask(learnerId, task) {
   const row = {
@@ -942,6 +949,12 @@ export async function saveLearner(data) {
   if (data.isLeader !== undefined) learnerRow.is_leader = data.isLeader;
   // Guide-set auto-scheduler placement override (v0.29); null clears back to the tier default.
   if (data.schedulingMode !== undefined) learnerRow.scheduling_mode = data.schedulingMode;
+  // v0.31 auto-scheduler tombstones (planKeys the learner deleted).
+  if (data.dismissedPlanKeys !== undefined) learnerRow.dismissed_plan_keys = data.dismissedPlanKeys;
+  // v0.30 book tracker shelf + new-to-tribe (guide-set) + first-task-demo-seen.
+  if (data.books !== undefined) learnerRow.books = data.books;
+  if (data.newToTribe !== undefined) learnerRow.new_to_tribe = data.newToTribe;
+  if (data.firstTaskDemoSeen !== undefined) learnerRow.first_task_demo_seen = data.firstTaskDemoSeen;
   if (Object.keys(learnerRow).length > 0) {
     await getClient().from('learners').update(learnerRow).eq('id', data.id);
   }
@@ -1112,6 +1125,14 @@ export async function assignPartner(aId, bId) {
     const active = await getActivePartnerOf(id);
     if (active) await dissolvePartnership(active.linkId);
   }
+  // Guard: a guide can only dissolve links where BOTH parties are on their roster
+  // (v0.27 RLS). If a learner's existing partner is off-roster, the dissolve UPDATE
+  // matches zero rows and silently no-ops - inserting here would create a SECOND
+  // 'accepted' link and getActivePartnerOf would return a nondeterministic partner.
+  // Re-check and bail rather than double-pair.
+  for (const id of [aId, bId]) {
+    if (await getActivePartnerOf(id)) return null;
+  }
   const { data } = await getClient().from('partner_links').insert({
     proposer_id: aId, partner_id: bId, status: 'accepted',
     assigned_by_guide: true, responded_at: new Date().toISOString(),
@@ -1197,6 +1218,14 @@ export async function getPendingYearPlanFor(partnerId) {
     if (partner?.partnerId === partnerId) result.push(rowToPlan(plan));
   }
   return result;
+}
+
+export async function getPendingYearPlansForGuide(guideId) {
+  // The guide signs off their roster's plans (captain 2026-07-21). year_plans RLS makes a
+  // learner's guide a reader, so a plain pending query returns exactly the guide's roster's
+  // pending plans (the guide only sees their own learners' rows).
+  const { data } = await getClient().from('year_plans').select('*').eq('status', 'pending');
+  return (data || []).map(rowToPlan);
 }
 
 export async function approveYearPlan(planId, approverId, note = '') {
