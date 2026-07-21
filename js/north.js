@@ -5,6 +5,7 @@ import { openViaImportModal } from './via-import.js';
 import { getCategoriesForStudio } from './studios.js';
 import { renderToday, initTodayFab } from './tasks.js';
 import { renderGamePlan } from './game-plan.js';
+import { getBooks, addBook, setBookmark, removeBook, MAX_BOOKS } from './books.js';
 
 // Year-map click handler is still needed (Compass page sets it).
 let yearMapClickHandler = null;
@@ -66,6 +67,7 @@ export async function renderNorth(learnerId) {
     renderToday(learnerId),
     renderGamePlan(learnerId),
     renderVision(learnerId, learner),
+    renderReading(learnerId, learner),
   ]);
 
   initTodayFab(learnerId);
@@ -115,6 +117,56 @@ async function renderQuoteSection(learnerId) {
       noteEl.textContent = '';
       noteEl.hidden = true;
     }
+  }
+}
+
+// "Currently reading" shelf (captain 2026-07-21). Up to 3 books, free-text bookmark.
+// No streak, no pace, no count - just the evolving "where are you now?". Always visible so
+// it invites the first book even on an empty shelf.
+async function renderReading(learnerId, learner) {
+  const section = document.getElementById('north-reading');
+  const list = document.getElementById('north-reading-list');
+  if (!section || !list) return;
+  if (!learner) { section.hidden = true; return; }
+  section.hidden = false;
+  const books = getBooks(learner);
+  const cards = books.map((b) => `
+    <div class="reading-book" data-book="${escapeHtml(b.id)}">
+      <div class="reading-book-head">
+        <span class="reading-book-title">${escapeHtml(b.title)}</span>
+        <button type="button" class="btn btn-text reading-book-remove" data-book-remove="${escapeHtml(b.id)}">Remove</button>
+      </div>
+      <label class="reading-book-mark-label">Where are you now?</label>
+      <input type="text" class="reading-book-mark slice-box" data-book-mark="${escapeHtml(b.id)}" value="${escapeHtml(b.bookmark || '')}" placeholder="A page, a chapter, a moment - wherever you are">
+    </div>
+  `).join('');
+  const adder = books.length < MAX_BOOKS
+    ? `<div class="reading-add">
+         <input type="text" id="reading-add-title" class="slice-box" placeholder="Add a book you're reading">
+         <button type="button" id="reading-add-btn" class="btn btn-text">Add to my shelf</button>
+       </div>`
+    : `<p class="reading-full-hint">Your shelf is full at three. Finish or remove one to add another.</p>`;
+  list.innerHTML = cards + adder;
+
+  list.querySelectorAll('[data-book-remove]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      learner.books = await removeBook(learner, btn.dataset.bookRemove);
+      await renderReading(learnerId, learner);
+    });
+  });
+  list.querySelectorAll('[data-book-mark]').forEach((inp) => {
+    inp.addEventListener('change', async () => {
+      learner.books = await setBookmark(learner, inp.dataset.bookMark, inp.value);
+    });
+  });
+  const addBtn = document.getElementById('reading-add-btn');
+  if (addBtn) {
+    addBtn.addEventListener('click', async () => {
+      const title = document.getElementById('reading-add-title')?.value || '';
+      if (!title.trim()) return;
+      learner.books = await addBook(learner, title);
+      await renderReading(learnerId, learner);
+    });
   }
 }
 
