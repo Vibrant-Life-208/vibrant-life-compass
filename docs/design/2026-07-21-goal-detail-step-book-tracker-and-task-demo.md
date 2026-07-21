@@ -65,7 +65,16 @@ A guided first-run walkthrough that teaches the task-creation mechanic by making
 
 ## Build sequence *(behind the wheel session)*
 
-**Status (2026-07-21, local commits, unpushed):** ✅ #1 detail step (`220c0a8`) · ✅ #2 entry fork via pitch state (leveling-up leads with the crossing; else leads with own goals). Remaining: Three C's setup step · crossing region-grouped four-cluster render · book tracker + task-shapes (`openTaskModal`) · the demo · cohort matrix wiring (Discovery new/returning · Adventure new/returning · Parents · Owners).
+**Status (2026-07-21, local commits, unpushed):**
+- ✅ #1 detail step (`220c0a8`)
+- ✅ #2 entry fork via pitch state (`7e15236`) - leveling-up leads with the crossing; else leads with own goals
+- ✅ #3 Three C's setup step, age-reworded (option b) + new-to-tribe roster (`4884431`)
+- ✅ Guide new-to-tribe toggle - retires the roster stopgap (`33bce2a`)
+- ✅ Book tracker **sub-step 1** - "Currently reading" shelf on North, free-text bookmark (`d61423c`)
+- ⏸️ **HELD** - book tracker sub-steps **2-3** (task-shapes in `openTaskModal`/`modals.js`, the timer, the task-link) + the **make-a-task demo**. Reason: a parallel session has uncommitted work in `modals.js`/`store.js`/`local-store.js`/`supabase-adapter.js`/`partner.js` (+ `v0.27-leaders-and-guide-assigned-partners` migration). Resume once that lands and the tree clears - sub-step 2 edits `openTaskModal` in the same `modals.js`.
+- 🔀 **#4 crossing region-grouped render** - deferred to the wheel session's `thresholds.js` step 3 (`THRESHOLD_LIFE_AREA` → four-region remap + retire `CURRENT_WHEEL_GLOBAL_FLIP`) plus the meeting's Q1/Q2 re-mappings (`adv_lead_launches`→Making, `adv_courage_book`→Voice). Not buildable here until then.
+- ⚠️ **c1 is RED from the other session**, not this work: their in-progress `renderSliceYearPage` references `terminalLabel` outside the guard's eval scope. Flag to that session before any push. This work's files are not read by that guard; parse-checks pass.
+- Cohort matrix wiring (Discovery new/returning · Adventure new/returning · Parents · Owners) still to come.
 
 
 1. *(wheel session lands four-region + thresholds first)*
