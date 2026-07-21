@@ -1053,9 +1053,10 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     // planning; ends on setup so the learner flows to the North page for daily steps).
     // BECOMING goals walk: [yeargoal ->] now -> presence (no finish sequence). Weekly/daily
     // breakdown is a LATER step (North page), not captured here.
-    steps: (goal?.text ? [] : ['yeargoal']).concat(becoming ? ['now', 'presence'] : ['now', 'threshold', 'challenges', 'setup']),
+    steps: (goal?.text ? [] : ['yeargoal']).concat(becoming ? ['now', 'presence'] : ['detail', 'now', 'threshold', 'challenges', 'setup']),
     idx: 0,
     yeargoal: goal?.text || '',
+    detail: goal?.detail || '',        // doing-only: wide "what will it take" brainstorm before the mirror (captain 2026-07-21)
     now: goal?.baseline || '',
     threshold: threeUp(goal?.threshold, goal?.halfwayPoint), // finish: milestones
     challenges: threeUp(goal?.challenges),                   // finish: biggest challenges
@@ -1067,6 +1068,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
   function capture() {
     const st = step();
     if (st === 'yeargoal') s.yeargoal = document.getElementById('gs-yeargoal')?.value ?? s.yeargoal;
+    else if (st === 'detail') s.detail = document.getElementById('gs-detail')?.value ?? s.detail;
     else if (st === 'now') s.now = document.getElementById('gs-now')?.value ?? s.now;
     else if (st === 'presence') s.presence = document.getElementById('gs-presence')?.value ?? s.presence;
     else if (st === 'threshold' || st === 'challenges' || st === 'setup') {
@@ -1092,6 +1094,15 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         <h3 class="onb-horizon-heading">${escapeHtml(catName)} - your year goal</h3>
         <p class="onb-horizon-body">A year from now, what's different about you in ${escapeHtml(catName)}? How would your guide know you got there?</p>
         <textarea id="gs-yeargoal" class="slice-box" rows="3" placeholder="By next year, in ${escapeAttr(catName)}, I want to…">${escapeHtml(s.yeargoal)}</textarea>`;
+    } else if (st === 'detail') {
+      // Doing-only wide brainstorm before the mirror (option a, captain 2026-07-21). The skip is the
+      // LOUD default so a young learner isn't cornered (Jake/Bareil). Seeds the structured
+      // threshold/challenges/setup phases that follow; funnel-parse into those is a later refinement.
+      body = `
+        <h3 class="onb-horizon-heading">What will it take?</h3>
+        ${contextCard('Your year goal', s.yeargoal)}
+        <p class="onb-horizon-body">Before we look at where you are - dream it wide. What do you think it will take to get there? Jot down anything that comes to mind; you'll sort it into steps next. No wrong answers - and it's completely okay to skip this and go straight to planning.</p>
+        <textarea id="gs-detail" class="slice-box" rows="4" placeholder="Everything I think it'll take…">${escapeHtml(s.detail)}</textarea>`;
     } else if (st === 'now') {
       body = `
         <h3 class="onb-horizon-heading">Where are you starting from?</h3>
@@ -1152,6 +1163,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
       <div class="onb-step-actions">
         <button type="button" class="btn btn-text" id="gs-back">${isFirst ? 'Cancel' : 'Back'}</button>
         <div class="onb-step-actions-right">
+          ${st === 'detail' ? '<button type="button" class="btn btn-text" id="gs-skip">Skip - keep it simple</button>' : ''}
           <button type="button" class="btn btn-primary" id="gs-next">${isLast ? 'Save this goal' : 'Next'}</button>
         </div>
       </div>`;
@@ -1167,6 +1179,10 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     document.getElementById('gs-back')?.addEventListener('click', () => {
       if (isFirst) { closeModal(); return; }
       capture(); s.idx -= 1; renderStep();
+    });
+    document.getElementById('gs-skip')?.addEventListener('click', () => {
+      // Loud skip on the detail step - clears the brainstorm and moves straight to the mirror.
+      s.detail = ''; s.idx += 1; renderStep();
     });
     document.getElementById('gs-next')?.addEventListener('click', async () => {
       capture();
@@ -1230,6 +1246,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         setup: setup.length ? setup : undefined,
         challenges: challenges.length ? challenges : undefined,
         threshold: threshold.length ? threshold : undefined,
+        detail: (s.detail || '').trim() || undefined, // wide brainstorm - needs adapter field-add before sync, like the phase arrays
       });
     } catch (e) { /* non-fatal */ }
     // 2. The primary halfway marker seeds the Session-3 goal (reuse the seed pattern; Decision 4).
