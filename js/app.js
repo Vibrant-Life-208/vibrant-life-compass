@@ -479,44 +479,30 @@ async function buildTabs(role) {
   const session = await requireSession();
   const learnerId = await resolveLearnerId(session);
 
-  // Calendar tab (2026-07-18): a read-only year-at-a-glance for the mature tiers only -
-  // Launch Pad learners plus guides and owners. The vulnerable young tiers (Sparks /
-  // Discovery / Adventure) never see it. Parents are excluded too (captain call
-  // 2026-07-18): their surface stays session goals + recap only. Guides/owners are
-  // eligible by role; a learner qualifies only when their studio is Launch Pad. Injected
-  // dynamically (not in TABS_BY_ROLE) so the studio gate lives in one place and young
-  // learners get a byte-identical tab bar to before.
-  // Mature-tier gate, shared by the Calendar and the Plan (ordered task list): Launch Pad
-  // learners plus guides and owners. Younger tiers (Sparks/Discovery/Adventure) and parents
-  // never see these dense whole-year surfaces (age-tiered surfacing, research-grounded).
-  let matureTier = role === 'guide' || !!session.is_owner;
-  if (!matureTier && role === 'learner' && learnerId) {
+  // Plan (task list) + Calendar are viewable by EVERY learner (captain 2026-07-21): a
+  // learner needs to see their whole plan - including future-dated work that hasn't reached
+  // the daily view yet (e.g. a summer plan that lights on Aug 17). Guides + owners also get
+  // the Calendar (a year-at-a-glance of their own). Parents stay on their own surface.
+  // Breakdown (the dense per-goal read-through) stays a Launch Pad learner tool. Injected
+  // dynamically so the gate lives in one place; inserted right after the Compass, in order.
+  const isLearner = role === 'learner' && !!learnerId;
+  const isStaff = role === 'guide' || !!session.is_owner;
+  let matureLearner = false;
+  if (isLearner) {
     const { getLearner } = await import('./store.js');
     const l = await getLearner(learnerId);
-    matureTier = l?.studio === 'launchpad';
+    matureLearner = l?.studio === 'launchpad';
   }
-  if (matureTier && !tabs.some((t) => t.id === 'calendar-view')) {
-    const at = tabs.findIndex((t) => t.id === 'year-view');
-    const calTab = { id: 'calendar-view', label: 'Calendar' };
-    if (at >= 0) tabs.splice(at + 1, 0, calTab);
-    else tabs.push(calTab);
-  }
-  // Plan tab (ordered task list) - the learner's own whole-year task order. Launch Pad
-  // learners only; guides/owners review learner plans through their dashboard, not a
-  // personal Plan tab. Sits right after the Compass.
-  if (role === 'learner' && matureTier && !tabs.some((t) => t.id === 'tasklist-view')) {
-    const at = tabs.findIndex((t) => t.id === 'year-view');
-    const planTab = { id: 'tasklist-view', label: 'Plan' };
-    if (at >= 0) tabs.splice(at + 1, 0, planTab);
-    else tabs.push(planTab);
-  }
-  // Breakdown tab (per-goal read-through) - each goal's full arc + its tasks. Same
-  // mature-tier learner gate; sits right after Plan.
-  if (role === 'learner' && matureTier && !tabs.some((t) => t.id === 'breakdown-view')) {
-    const at = tabs.findIndex((t) => t.id === 'tasklist-view');
-    const bTab = { id: 'breakdown-view', label: 'Breakdown' };
-    if (at >= 0) tabs.splice(at + 1, 0, bTab);
-    else tabs.push(bTab);
+  const inject = [];
+  if (isLearner) inject.push({ id: 'tasklist-view', label: 'Plan' });
+  if (isLearner && matureLearner) inject.push({ id: 'breakdown-view', label: 'Breakdown' });
+  if (isLearner || isStaff) inject.push({ id: 'calendar-view', label: 'Calendar' });
+  const yearAt = tabs.findIndex((t) => t.id === 'year-view');
+  let insertAt = yearAt >= 0 ? yearAt + 1 : tabs.length;
+  for (const t of inject) {
+    if (tabs.some((x) => x.id === t.id)) continue;
+    tabs.splice(insertAt, 0, t);
+    insertAt += 1;
   }
 
   // Compute notification count for the Partner tab (learners only).
