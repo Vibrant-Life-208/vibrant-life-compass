@@ -2996,7 +2996,9 @@ export function openPitchOptInModal(learner, onDone) {
 // the learner can plan and self-track. Guide/committee/signatures happen in
 // person - this page never adjudicates. (Captain 2026-07-11.)
 export function openThresholdsModal(targetStudio, learner) {
-  setModalTitle('Pitch readiness');
+  // Not "Pitch readiness" - no jargon, no readiness-meter language (the meeting dissolved the gate).
+  // It's the map of growing into the next chapter; the title names the destination + the movement.
+  setModalTitle(`Moving up to ${getStudioName(targetStudio)}`);
   const fields = document.getElementById('form-fields');
   if (!fields) return;
   fields.innerHTML = renderThresholdsHtml(targetStudio, {});
