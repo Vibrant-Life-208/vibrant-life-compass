@@ -1913,8 +1913,15 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         : `<p class="onb-linkout-note">Assessment link coming soon - for now, choose what fits you best below.</p>`;
     let grid;
     if (kind === 'value') {
-      grid = `<div class="onb-select-grid onb-value-grid">${state.valuesLexicon.map((v) => {
-        const selected = state.values.includes(v.id);
+      // Selected values float to the top (in pick order), then the rest in lexicon
+      // order. Captain 2026-07-21: pick freely, gather your choices up top.
+      const selectedSet = new Set(state.values);
+      const orderedValues = [
+        ...state.values.map((id) => state.valuesLexicon.find((v) => v.id === id)).filter(Boolean),
+        ...state.valuesLexicon.filter((v) => !selectedSet.has(v.id)),
+      ];
+      grid = `<div class="onb-select-grid onb-value-grid">${orderedValues.map((v) => {
+        const selected = selectedSet.has(v.id);
         return `<button type="button" class="onb-select-card onb-value-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}" data-kind="value"><span class="onb-value-name">${escapeHtml(v.display_label_adult)}</span>${v.definition ? `<span class="onb-value-def">${escapeHtml(v.definition)}</span>` : ''}</button>`;
       }).join('')}</div>`;
     } else {
@@ -1931,11 +1938,23 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         return `<div class="onb-virtue-group"><h3 class="onb-virtue-heading">${escapeHtml(category)}</h3><div class="onb-select-grid">${cards}</div></div>`;
       }).join('')}</div>`;
     }
+    // Values: pick as many as you like, but keep 5 or fewer to continue. Strengths
+    // keep the exact-5 rule. (Captain 2026-07-21.)
+    const isValueStep = kind === 'value';
+    const overLimit = isValueStep && list.length > 5;
+    const instruction = isValueStep
+      ? `Choose the values that matter most - pick as many as speak to you, then keep your top five. <span class="onb-count">(${list.length} selected)</span>`
+      : `Choose your top five ${escapeHtml(label)}. <span class="onb-count">(${list.length} of 5 selected)</span>`;
+    const warnBlock = overLimit
+      ? `<p class="onb-count-warn" role="status" aria-live="polite">You've chosen ${list.length}. Keep five or fewer to continue - which five matter most right now?</p>`
+      : '';
+    const continueDisabled = isValueStep ? (list.length === 0 || list.length > 5) : (list.length !== 5);
     return `
-      <p class="onb-step-instruction">Choose your top five ${escapeHtml(label)}. <span class="onb-count">(${list.length} of 5 selected)</span></p>
+      <p class="onb-step-instruction">${instruction}</p>
       ${linkBlock}
       ${grid}
-      ${navButtons({ skippable: true, continueLabel: terminalLabel(isLast()), continueDisabled: list.length !== 5 })}
+      ${warnBlock}
+      ${navButtons({ skippable: true, continueLabel: terminalLabel(isLast()), continueDisabled })}
     `;
   }
 
@@ -2740,7 +2759,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         if (at >= 0) {
           list.splice(at, 1);
         } else {
-          if (list.length >= 5) return; // soft cap - can't pick a 6th
+          // Strengths keep the top-5 cap; values are unlimited here and gated at
+          // Continue (captain 2026-07-21).
+          if (card.dataset.kind !== 'value' && list.length >= 5) return;
           list.push(id);
         }
         render();
@@ -2884,7 +2905,7 @@ export async function openValuesPickerModal({ profileId = null, onSaved } = {}) 
     getValuesLexicon(),
     profileId ? getProfileValues(profileId) : Promise.resolve([]),
   ]);
-  const state = { picked: Array.isArray(existing) ? existing.slice(0, 5) : [] };
+  const state = { picked: Array.isArray(existing) ? existing.slice() : [] };
 
   setModalTitle('Your values');
   const defaultActions = document.querySelector('#goal-form .modal-actions');
@@ -2893,18 +2914,28 @@ export async function openValuesPickerModal({ profileId = null, onSaved } = {}) 
   function render() {
     const ff = document.getElementById('form-fields');
     if (!ff) return;
-    const cards = lexicon.map((v) => {
-      const selected = state.picked.includes(v.id);
+    // Selected values float to the top (pick order), then the rest in lexicon order.
+    const selectedSet = new Set(state.picked);
+    const ordered = [
+      ...state.picked.map((id) => lexicon.find((v) => v.id === id)).filter(Boolean),
+      ...lexicon.filter((v) => !selectedSet.has(v.id)),
+    ];
+    const cards = ordered.map((v) => {
+      const selected = selectedSet.has(v.id);
       return `<button type="button" class="onb-select-card onb-value-card${selected ? ' selected' : ''}" data-id="${escapeAttr(v.id)}"><span class="onb-value-name">${escapeHtml(v.display_label_adult)}</span>${v.definition ? `<span class="onb-value-def">${escapeHtml(v.definition)}</span>` : ''}</button>`;
     }).join('');
+    // Pick freely; keep 5 or fewer to save. (Captain 2026-07-21.)
+    const overLimit = state.picked.length > 5;
+    const saveDisabled = state.picked.length === 0 || state.picked.length > 5;
     ff.innerHTML = `
-      <p class="onb-step-instruction">Choose the five values that matter most to you. Each one's meaning is under it.</p>
+      <p class="onb-step-instruction">Choose the values that matter most - pick as many as speak to you, then keep your top five. Each one's meaning is under it.</p>
       <p class="onb-linkout"><a href="${escapeAttr(VALUES_ASSESSMENT_URL)}" target="_blank" rel="noopener noreferrer">Take the Values assessment ↗</a><span class="onb-linkout-note">Opens in a new tab - optional. Come back and choose your five.</span></p>
       <div class="onb-select-grid onb-value-grid">${cards}</div>
+      ${overLimit ? `<p class="onb-count-warn" role="status" aria-live="polite">You've chosen ${state.picked.length}. Keep five or fewer to save - which five matter most right now?</p>` : ''}
       <div class="onb-step-actions">
-        <span class="values-count">${state.picked.length} / 5 chosen</span>
+        <span class="values-count">${state.picked.length} chosen${overLimit ? ' - keep 5 or fewer' : ''}</span>
         <div class="onb-step-actions-right">
-          <button type="button" id="vp-save" class="btn btn-primary"${state.picked.length === 5 ? '' : ' disabled'}>Save my values</button>
+          <button type="button" id="vp-save" class="btn btn-primary"${saveDisabled ? ' disabled' : ''}>Save my values</button>
         </div>
       </div>`;
     ff.querySelectorAll('.onb-select-card').forEach((card) => {
@@ -2912,12 +2943,12 @@ export async function openValuesPickerModal({ profileId = null, onSaved } = {}) 
         const id = card.dataset.id;
         const i = state.picked.indexOf(id);
         if (i >= 0) state.picked.splice(i, 1);
-        else if (state.picked.length < 5) state.picked.push(id);
+        else state.picked.push(id); // unlimited; gated at save (captain 2026-07-21)
         render();
       });
     });
     document.getElementById('vp-save')?.addEventListener('click', async () => {
-      if (state.picked.length !== 5) return;
+      if (state.picked.length === 0 || state.picked.length > 5) return;
       if (profileId) await setProfileValues(profileId, state.picked);
       closeModal();
       if (onSaved) onSaved(state.picked);
