@@ -2937,7 +2937,7 @@ export function openPitchOptInModal(learner, onDone) {
   if (!target) return;
   const targetName = getStudioName(target);
   const cut = pitchCutoff(target) || { entryAge: '', cutoffLabel: 'next year' };
-  setModalTitle('Pitch readiness');
+  setModalTitle(`Moving up to ${targetName}?`);
   const fields = document.getElementById('form-fields');
   if (!fields) return;
   let stage = 'ask-age';
