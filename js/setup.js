@@ -9,7 +9,7 @@ import {
   getActivePartnerOf, getPendingProposalsFor, getLearners, getPartnerLinks,
   proposePartner, respondToPartnerProposal, saveTask,
 } from './store.js';
-import { STUDIOS, getCategoriesForStudio, getCalendarForStudio, getStudioName } from './studios.js';
+import { STUDIOS, getCategoriesForStudio, getCalendarForStudio, getStudioName, lifeAreaForCategory } from './studios.js';
 import { openYearGoalModal, openConfirmModal, openGoalSetupModal, openThresholdsModal } from './modals.js';
 import { isCurrentWheelBuild } from './thresholds.js';
 import { autoScheduleYearPlan } from './auto-schedule.js';
@@ -58,9 +58,11 @@ async function sendWeeklyStepsToNorth(learner, categoryId, weeklySteps, mode) {
       d.setDate(d.getDate() + (weekIdx - 1) * 7);
       plannedFor = toISO(d);
     }
-    // Steps from the plan are weekly milestones -> the base region colour (region
-    // resolves from categoryId when it is a slice_ life-area). (Captain 2026-07-21.)
-    await saveTask(learner.id, { text, plannedFor, categoryId, band: 'weekly' });
+    // Steps from the plan are weekly milestones -> the base region colour. Region is
+    // resolved from the category's declared home (slice_ life-area OR academic ->
+    // its region, e.g. reading -> World). (Captain 2026-07-21.)
+    const region = lifeAreaForCategory(categoryId) || undefined;
+    await saveTask(learner.id, { text, plannedFor, categoryId, band: 'weekly', region });
   }
 }
 

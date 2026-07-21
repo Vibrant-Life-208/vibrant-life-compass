@@ -22,7 +22,7 @@
 // weekly step that a manual task with the same text already covers that week.
 
 import { getGoals, getTasks, saveTask, deleteTask, getLearner } from './store.js';
-import { getCalendarForStudio } from './studios.js';
+import { getCalendarForStudio, lifeAreaForCategory } from './studios.js';
 
 const WEEKDAYS = 5; // Mon..Fri offsets 0..4 from a week's Monday
 
@@ -67,7 +67,9 @@ function mondayOf(iso) {
 function goalRegion(g) {
   if (g.lifeArea) return g.lifeArea;
   if (typeof g.categoryId === 'string' && g.categoryId.startsWith('slice_')) return g.categoryId.slice(6);
-  return undefined;
+  // Academic categories (khan/reading/quest/civ/...) resolve to their declared region
+  // (learning -> World, etc.), so their tasks colour instead of rendering neutral. (2026-07-21.)
+  return lifeAreaForCategory(g.categoryId) || undefined;
 }
 
 // Flatten every year goal's decomposition into task specs, each bound to a week.
@@ -156,8 +158,13 @@ export async function autoScheduleYearPlan(learnerId) {
     manualByWeek.set(k, true);
   }
 
+  // Tombstones: planKeys the learner deleted by hand. Never re-plant them, so a
+  // "sync from goals" respects a deletion instead of resurrecting it. (Captain 2026-07-21.)
+  const dismissed = new Set(Array.isArray(learner?.dismissedPlanKeys) ? learner.dismissedPlanKeys : []);
+
   const usedKeys = new Set();
   for (const s of specs) {
+    if (dismissed.has(s.planKey)) continue; // learner deleted this - leave it gone
     usedKeys.add(s.planKey);
     const prior = priorByKey.get(s.planKey);
     if (prior) {

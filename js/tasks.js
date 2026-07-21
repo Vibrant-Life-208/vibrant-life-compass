@@ -1,7 +1,7 @@
 // Today's tasks - per-day learner journal.
 // Per Decision 8 of the 2026-05-11 fleet meeting (Lux + Praesens + Troi).
 
-import { getTasksForDate, saveTask, toggleTaskDone, deleteTask, moveTask, getLearner } from './store.js';
+import { getTasksForDate, saveTask, toggleTaskDone, deleteTask, moveTask, getLearner, saveLearner } from './store.js';
 import { getStudio, OVERFLOW_COPY } from './studios.js';
 import { openTaskModal, openMoveTaskModal } from './modals.js';
 import { taskColorStyle, taskBand } from './wheel.js';
@@ -105,6 +105,12 @@ function renderTaskCard(learnerId, task, learner) {
       });
     } else if (action === 'delete') {
       if (confirm('Delete this task?')) {
+        // Tombstone an auto-scheduled task so a later "sync from goals" won't resurrect it.
+        if (task.source === 'auto' && task.planKey) {
+          const l = await getLearner(learnerId);
+          const dk = Array.isArray(l?.dismissedPlanKeys) ? l.dismissedPlanKeys : [];
+          if (!dk.includes(task.planKey)) await saveLearner({ id: learnerId, dismissedPlanKeys: [...dk, task.planKey] });
+        }
         await deleteTask(learnerId, task.id);
         await renderToday(learnerId);
         document.dispatchEvent(new CustomEvent('hc:tasks-changed'));

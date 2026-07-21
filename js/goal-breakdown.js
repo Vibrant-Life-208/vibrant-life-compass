@@ -12,6 +12,7 @@
 
 import { getGoals, getTasks, getLearner } from './store.js';
 import { REGION_COLORS, regionForLabel, taskColorStyle, taskBand } from './wheel.js';
+import { lifeAreaForCategory } from './studios.js';
 
 const BAND_LABEL = { recurring: 'rhythm', weekly: 'weekly', milestone: 'milestone' };
 
@@ -21,6 +22,9 @@ function goalRegion(g) {
     const r = regionForLabel(g.categoryId.slice(6));
     if (REGION_COLORS[r]) return r;
   }
+  // Academic categories resolve to their declared region (learning -> World, etc.).
+  const r = regionForLabel(lifeAreaForCategory(g.categoryId));
+  if (REGION_COLORS[r]) return r;
   return null;
 }
 function fmtWhen(iso) {

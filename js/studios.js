@@ -335,6 +335,16 @@ export const CATEGORY_LIFE_AREA = {
   guide_studio: null,
   guide_learners: null,
   guide_socratic: null,
+  // Learner academic categories -> World (learning / the outward, knowledge-facing
+  // region). So academic goals + their tasks colour blue like the rest of the compass
+  // instead of rendering neutral. (Captain 2026-07-21.)
+  khan: 'World',
+  reading: 'World',
+  noRedInk: 'World',
+  civ: 'World',
+  quest: 'World',
+  pathway: 'World',
+  characterTrait: 'World',
 };
 
 // The wheel slice a category belongs to, or null if unmapped ("not placed").
