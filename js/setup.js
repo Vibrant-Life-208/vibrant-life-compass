@@ -11,6 +11,7 @@ import {
 import { STUDIOS, getCategoriesForStudio, getCalendarForStudio, getStudioName } from './studios.js';
 import { openYearGoalModal, openConfirmModal, openGoalSetupModal, openThresholdsModal } from './modals.js';
 import { isCurrentWheelBuild } from './thresholds.js';
+import { autoScheduleYearPlan } from './auto-schedule.js';
 
 const MIN_GOALS = 5;
 const TOP_PRIORITIES = 3;
@@ -261,6 +262,9 @@ export async function renderSetupView(learnerId) {
         confirmLabel: 'Continue anyway',
         cancelLabel: 'Set up partner first',
         onConfirm: async () => {
+          // Session-1 flow: spread the year plan across the calendar as dated, coloured
+          // tasks the learner can then rearrange. Guarded so a hiccup never blocks entry.
+          try { await autoScheduleYearPlan(learner.id); } catch (e) { console.warn('auto-schedule:', e); }
           await saveLearner({ id: learner.id, setupCompletedAt: new Date().toISOString() });
           location.reload();
         },
@@ -270,6 +274,8 @@ export async function renderSetupView(learnerId) {
     // Submit the plan to the partner; learner moves into the main app
     // while waiting for approval.
     await submitYearPlan(learner.id);
+    // Session-1 flow: auto-schedule the year plan onto the weeks (see auto-schedule.js).
+    try { await autoScheduleYearPlan(learner.id); } catch (e) { console.warn('auto-schedule:', e); }
     await saveLearner({ id: learner.id, setupCompletedAt: new Date().toISOString() });
     document.dispatchEvent(new CustomEvent('hc:partner-changed'));
     location.reload();

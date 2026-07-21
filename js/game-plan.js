@@ -4,6 +4,7 @@ import { getTasks, moveTask, saveTask } from './store.js';
 import { openTaskModal, openWeekAssignModal } from './modals.js';
 import { todayISO } from './tasks.js';
 import { taskColorStyle } from './wheel.js';
+import { autoScheduleYearPlan } from './auto-schedule.js';
 
 const DAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -130,8 +131,15 @@ export async function renderGamePlan(learnerId) {
   pool.className = 'game-plan-pool';
   const poolHead = document.createElement('div');
   poolHead.className = 'game-plan-pool-head';
-  poolHead.innerHTML = `<span class="game-plan-pool-title">This week’s pool</span><span class="game-plan-pool-hint">tasks waiting for a day - tap one to place it</span>`;
+  poolHead.innerHTML = `<span class="game-plan-pool-title">This week’s pool</span><span class="game-plan-pool-hint">tasks waiting for a day - tap one to place it</span>
+    <button type="button" class="btn btn-text game-plan-sync" title="Lay your goals' steps + milestones across the year">↻ sync from goals</button>`;
   pool.appendChild(poolHead);
+  poolHead.querySelector('.game-plan-sync')?.addEventListener('click', async () => {
+    // Re-run the Session-1 auto-scheduler on demand: refreshes wording without moving
+    // what the learner already placed, and plants any new goal steps. (Captain 2026-07-21.)
+    try { await autoScheduleYearPlan(learnerId); } catch (e) { console.warn('auto-schedule:', e); }
+    await reload();
+  });
 
   const poolList = document.createElement('div');
   poolList.className = 'game-plan-pool-list';

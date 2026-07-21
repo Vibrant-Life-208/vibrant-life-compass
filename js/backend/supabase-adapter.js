@@ -616,7 +616,7 @@ export async function getTasksForRange(learnerId, startISO, endISO) {
 }
 
 // Extended task fields packed into the v0.28 meta jsonb (mirrors goals.decomposition).
-const TASK_META_FIELDS = ['band', 'region', 'shape', 'timerMinutes', 'weekOf'];
+const TASK_META_FIELDS = ['band', 'region', 'shape', 'timerMinutes', 'weekOf', 'source', 'planKey'];
 
 export async function saveTask(learnerId, task) {
   const row = {

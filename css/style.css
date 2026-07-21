@@ -4450,3 +4450,6 @@ body.landscape-mountain {
 .week-assign-day { border: 1px solid var(--earth-light); border-radius: 8px; padding: 0.4rem 0.7rem; }
 .week-assign-day.is-current { border-color: var(--sage); background: var(--sage-pale); color: var(--sage); }
 .week-assign-pool.is-current { color: var(--sage); font-weight: 600; }
+
+/* Session-1 auto-scheduler: sync button on the pool header. */
+.game-plan-sync { margin-left: auto; font-size: 0.78rem; }
