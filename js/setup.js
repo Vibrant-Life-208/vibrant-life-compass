@@ -8,8 +8,8 @@ import {
   getActivePartnerOf, getPendingProposalsFor, getLearners, getPartnerLinks,
   proposePartner, respondToPartnerProposal, saveTask,
 } from './store.js';
-import { STUDIOS, getCategoriesForStudio, getCalendarForStudio } from './studios.js';
-import { openYearGoalModal, openConfirmModal, openGoalSetupModal } from './modals.js';
+import { STUDIOS, getCategoriesForStudio, getCalendarForStudio, getStudioName } from './studios.js';
+import { openYearGoalModal, openConfirmModal, openGoalSetupModal, openThresholdsModal } from './modals.js';
 import { isCurrentWheelBuild } from './thresholds.js';
 
 const MIN_GOALS = 5;
@@ -116,6 +116,15 @@ export async function renderSetupView(learnerId) {
   // the only age moment is the pitch gate. About You is complete once studio is set.
   const aboutComplete = Boolean(learner.studio);
 
+  // Entry fork (captain 2026-07-21): leveling-up = age-eligible AND self-declared. The pitch
+  // system already encodes both - pitchTargetStudio is set when the learner opts in (self-
+  // declared), and pitchAgeStatus is the guide's yes/no on the age self-report (not a birthday).
+  // A denied pitch means "returning," not leveling-up. Leveling-up learners lead their year with
+  // the crossing (threshold goals); everyone else leads with their own goals. The crossing says
+  // nothing about readiness - the learner's story speaks; a guide names the crossing (gate dissolved).
+  const levelingUp = Boolean(learner.pitchTargetStudio) && learner.pitchAgeStatus !== 'denied';
+  const crossingTargetName = levelingUp ? getStudioName(learner.pitchTargetStudio) : '';
+
   container.innerHTML = `
     ${inboundProposerName ? `
       <div class="setup-partner-banner">
@@ -149,6 +158,13 @@ export async function renderSetupView(learnerId) {
     </section>
 
     ${aboutComplete ? `
+    ${levelingUp ? `
+    <section class="setup-section setup-crossing-lead">
+      <h3 class="setup-section-title">This year: moving up to ${escapeHtml(crossingTargetName)}</h3>
+      <p class="setup-hint">A crossing - a new studio, new guides, a new chapter. You start by breaking down what it takes to get ready, across your whole compass. Your other goals still matter; this one leads.</p>
+      <button type="button" class="btn btn-primary" id="setup-crossing-open">Break down your move-up goal</button>
+    </section>
+    ` : ''}
     <section class="setup-section">
       <div class="setup-progress">
         <h3 class="setup-section-title">2. Your year goals</h3>
@@ -221,6 +237,12 @@ export async function renderSetupView(learnerId) {
       document.dispatchEvent(new CustomEvent('hc:partner-changed'));
       await renderSetupView(learnerId);
     });
+  });
+
+  // Crossing lead (leveling-up learners only): the move-up goal leads their year. Opens the
+  // thresholds breakdown - the crossing's task-list, region-grouped. No readiness meter.
+  document.getElementById('setup-crossing-open')?.addEventListener('click', () => {
+    openThresholdsModal(learner.pitchTargetStudio, learner);
   });
 
   // Studio is now read-only in Setup (assigned by the guide at account

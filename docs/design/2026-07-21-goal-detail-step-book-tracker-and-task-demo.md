@@ -23,10 +23,10 @@
 > **Move up into Adventure** - *what it takes, across your whole compass:*
 > World: Lexia · Khan · spelling · handwriting · JT · typing · | Making: lead 2 Launches · | Others: build culture · | Self: heroic mindset · | Voice: read *Courage to Grow*
 
-- **Slice home - cohort-graded** *(captain 2026-07-21)*:
-  - **Discovery: (a) World slice** *[locked]* - advancement reads as academic-structure; `goal.lifeArea = World`, tasks tagged by region for the grouped view. A concrete slice-goal the young learner can see and climb.
-  - **Adventure & Launch Pad: (b) center crossing** *[leaning - captain "perhaps"]* - by these tribes "moving up" spans the whole compass fairly evenly and is about *who you're becoming*, so it sits at the **sovereign center**, not in one slice. Rhymes with the Voice progression (Adventure reads the frame / Launch Pad authors within it).
-  - **Object note (load-bearing):** a *crossing* is NOT a becoming goal. Becoming **refuses** tasks (no ladder); a crossing **keeps** its doing-tasks (the region-grouped threshold breakdown) and is witnessed/human-named at the end. Distinct third object type: center-placed, spans the compass, carries tasks, *about* becoming. Building it as "becoming" would strip the task-list that makes it work.
+- **Slice home - SUPERSEDED by the one-crossing-object model** *(2026-07-21 meeting, Decision 1)*: the earlier "Discovery = World slice / Adventure+LP = center crossing" cohort fork is **retired**. "Moving up" is **one crossing object** in all cohorts - a threshold between two whole-compass states. What shifts by cohort is the **center-of-gravity of its breakdown** (World-heavy at Discovery -> whole-compass by Adventure), not the object's identity or home. Age-gated (hard floor) but not age-dependent; readiness witnessed, never computed.
+  - **The gate dissolved** *(Decision 2)*: the system says **nothing** about readiness. The learner's story speaks; a guide names the crossing. The schema is **incapable** of representing "behind."
+  - **Object note (load-bearing):** a *crossing* is NOT a becoming goal. Becoming **refuses** tasks (no ladder); a crossing **keeps** its doing-tasks (the region-grouped threshold breakdown) and is witnessed/human-named at the end. Distinct third object type. Building it as "becoming" would strip the task-list that makes it work.
+  - **Build wiring (2026-07-21):** leveling-up state = the existing **pitch** system - `pitchTargetStudio` set (self-declared) AND `pitchAgeStatus !== 'denied'` (guide's age yes/no, not a birthday). The crossing surface is `openThresholdsModal`. A denied pitch = "returning," not leveling-up.
 - **Guardrails:** suggested-not-locked (learner adapts/adds; protects authorship / inclusive autonomy); milestones-not-a-gate-score (no "4 of 6", no readiness meter); the Voice *task* stays becoming (no completion apparatus); the crossing is **human-named**, never auto-minted.
 
 ## 2. The "what will it take" detail step *(decided: add; open: sequencing)*
@@ -64,6 +64,9 @@ A guided first-run walkthrough that teaches the task-creation mechanic by making
 ---
 
 ## Build sequence *(behind the wheel session)*
+
+**Status (2026-07-21, local commits, unpushed):** ✅ #1 detail step (`220c0a8`) · ✅ #2 entry fork via pitch state (leveling-up leads with the crossing; else leads with own goals). Remaining: Three C's setup step · crossing region-grouped four-cluster render · book tracker + task-shapes (`openTaskModal`) · the demo · cohort matrix wiring (Discovery new/returning · Adventure new/returning · Parents · Owners).
+
 
 1. *(wheel session lands four-region + thresholds first)*
 2. Extend `openTaskModal` - task shapes + timer + book link.
