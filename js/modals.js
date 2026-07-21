@@ -1659,8 +1659,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       getOnboardingState(profileId),
     ]);
     if (savedTyped) state.valuesTyped = { values: savedTyped.values || [], archetype: savedTyped.archetype || '' };
-    state.values = Array.isArray(savedValues) ? savedValues.slice(0, 3) : [];
-    state.strengths = Array.isArray(savedStrengths) ? savedStrengths.slice(0, 3) : [];
+    state.values = Array.isArray(savedValues) ? savedValues.slice(0, 5) : [];
+    state.strengths = Array.isArray(savedStrengths) ? savedStrengths.slice(0, 5) : [];
     if (savedHorizons) state.horizons = { ...state.horizons, ...savedHorizons };
     const resumeIdx = steps.indexOf(onb.step);
     state.idx = resumeIdx >= 0 ? resumeIdx : 0;
@@ -2731,7 +2731,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
           captureValuesTyped();
           await advance(() => profileId ? setValuesFreetext(profileId, state.valuesTyped) : Promise.resolve());
         } else {
-          if (state.values.length !== 5) return;
+          // Values: pick as many as speak to you, keep 5 or fewer (captain 2026-07-21).
+          // Must match the Continue-disabled gate (list.length === 0 || > 5).
+          if (state.values.length === 0 || state.values.length > 5) return;
           await advance(() => profileId ? setProfileValues(profileId, state.values) : Promise.resolve());
         }
       } else if (step === 'pitch') {
