@@ -26,6 +26,33 @@ import { getCalendarForStudio } from './studios.js';
 
 const WEEKDAYS = 5; // Mon..Fri offsets 0..4 from a week's Monday
 
+// Placement mode by developmental tier (research-grounded, captain 2026-07-21). The
+// same scheduler, three ways of laying the plan down - scaffolding that fades with age:
+//   auto       - everything onto days. Youngest (concrete-operational): the system
+//                plans FOR them; distributing a pool is a demand they aren't ready for.
+//   pool-steps - milestones onto days, weekly steps land in the week's POOL. Middle
+//                tier (the planner-owning pivot): distributing the week yourself IS the
+//                lesson, with milestones anchored so an empty week never overwhelms.
+//   draft      - everything onto days as a rearrangeable draft. Oldest/adults: they
+//                hold the whole arc and want a smart draft to tweak.
+export const SCHEDULING_MODES = ['auto', 'pool-steps', 'draft'];
+const STUDIO_SCHEDULING_MODE = {
+  sparks: 'auto',
+  discovery: 'auto',
+  adventure: 'pool-steps',
+  launchpad: 'draft',
+  'guide-summer': 'draft',
+};
+
+// The tier sets the default; a guide can bump an individual up or down via
+// learner.schedulingMode (the band is a default, not a cage). Unknown studios (adults/
+// guides) fall to 'draft'.
+export function schedulingModeFor(learner) {
+  const override = learner && learner.schedulingMode;
+  if (SCHEDULING_MODES.includes(override)) return override;
+  return STUDIO_SCHEDULING_MODE[learner && learner.studio] || 'draft';
+}
+
 function isoAddDays(iso, days) {
   const d = new Date(iso + 'T00:00:00');
   d.setDate(d.getDate() + days);
@@ -82,9 +109,11 @@ export function buildYearPlanSpecs(goals, cal) {
   return specs;
 }
 
-// Assign each spec a day within its week. Milestones sit on their preferred day; weekly
-// steps round-robin across the weekdays so a busy week spreads out rather than stacking.
-export function assignDaysToSpecs(specs) {
+// Assign each spec a day within its week, per placement mode. Milestones sit on their
+// preferred day; weekly steps round-robin across the weekdays so a busy week spreads out
+// rather than stacking. In 'pool-steps' the weekly steps are left dayless (plannedFor '')
+// so they wait in the week's pool for the learner to place - milestones still anchor.
+export function assignDaysToSpecs(specs, mode = 'draft') {
   const byWeek = new Map();
   for (const s of specs) {
     if (!byWeek.has(s.weekMonday)) byWeek.set(s.weekMonday, []);
@@ -94,6 +123,10 @@ export function assignDaysToSpecs(specs) {
   for (const [monday, list] of byWeek) {
     let rr = 0;
     for (const s of list) {
+      if (mode === 'pool-steps' && s.band === 'weekly') {
+        out.push({ ...s, plannedFor: '' }); // waits in this week's pool
+        continue;
+      }
       const offset = s.band === 'milestone' ? (s.dayPref ?? 3) : (rr++ % WEEKDAYS);
       out.push({ ...s, plannedFor: isoAddDays(monday, offset) });
     }
@@ -108,7 +141,8 @@ export async function autoScheduleYearPlan(learnerId) {
     getGoals(learnerId), getTasks(learnerId), getLearner(learnerId),
   ]);
   const cal = getCalendarForStudio(learner?.studio);
-  const specs = assignDaysToSpecs(buildYearPlanSpecs(goals, cal));
+  const mode = schedulingModeFor(learner);
+  const specs = assignDaysToSpecs(buildYearPlanSpecs(goals, cal), mode);
 
   const priorAuto = existing.filter((t) => t.source === 'auto');
   const priorByKey = new Map(priorAuto.map((t) => [t.planKey, t]));

@@ -27,6 +27,10 @@ import {
   getActivePartnerOf, dissolvePartnership, assignPartner,
 } from './store.js';
 import { getStudioName } from './studios.js';
+import { schedulingModeFor } from './auto-schedule.js';
+
+// Guide-facing labels for the auto-scheduler placement modes.
+const MODE_LABEL = { auto: 'Full schedule', 'pool-steps': 'Pool steps', draft: 'Draft' };
 
 // Ephemeral UI state for the randomizer. Never persisted - re-rolls freely.
 const ui = {
@@ -77,10 +81,20 @@ function rosterSection(learners) {
   const rows = learners.map((l) => {
     const leader = !!l.isLeader;
     const studioNm = getStudioName(l.studio) || l.studio;
+    // The tier default (what an un-overridden learner gets) + the current effective mode.
+    const tierDefault = schedulingModeFor({ studio: l.studio });
+    const override = l.schedulingMode || '';
+    const opts = [`<option value=""${override === '' ? ' selected' : ''}>Default (${MODE_LABEL[tierDefault]})</option>`]
+      .concat(['auto', 'pool-steps', 'draft'].map((m) => `<option value="${m}"${override === m ? ' selected' : ''}>${MODE_LABEL[m]}</option>`))
+      .join('');
     return `
       <li class="tribe-roster-row${leader ? ' is-leader' : ''}">
         <span class="tribe-roster-name">${leader ? '<span class="tribe-star" aria-hidden="true">★</span> ' : ''}${escapeHtml(l.name)}</span>
         <span class="tribe-roster-studio">${escapeHtml(studioNm)}</span>
+        <label class="tribe-roster-plan" title="How Session-1 lays this learner's plan onto the calendar">
+          <span class="tribe-roster-plan-label">Plan</span>
+          <select class="tribe-mode-select" data-mode-id="${escapeHtml(l.id)}">${opts}</select>
+        </label>
         <button type="button" class="btn btn-text tribe-leader-toggle" data-leader-id="${escapeHtml(l.id)}" aria-pressed="${leader}">
           ${leader ? '★ Leader' : '☆ Make leader'}
         </button>
@@ -89,7 +103,7 @@ function rosterSection(learners) {
   return `
     <section class="tribe-section">
       <h3 class="tribe-section-title">Roster</h3>
-      <p class="tribe-section-hint">Leaders get a ★ and can be spread, excluded, or used to anchor groups below.</p>
+      <p class="tribe-section-hint">Leaders get a ★. "Plan" sets how Session-1 places a learner's tasks - the studio default fits their age; bump an individual up or down if they're ready for more or need more scaffolding.</p>
       <ul class="tribe-roster">${rows}</ul>
     </section>`;
 }
@@ -105,6 +119,15 @@ function wireRoster(container) {
       ui.result = null;
       ui.anchored = null;
       await renderTribeView();
+    });
+  });
+  // Per-learner auto-scheduler placement override. Empty value clears back to the
+  // studio-tier default. Takes effect on the learner's next Session-1 run / plan sync.
+  container.querySelectorAll('.tribe-mode-select').forEach((sel) => {
+    sel.addEventListener('change', async () => {
+      await saveLearner({ id: sel.dataset.modeId, schedulingMode: sel.value || null });
+      const cur = rosterCache.find((l) => l.id === sel.dataset.modeId);
+      if (cur) cur.schedulingMode = sel.value || null;
     });
   });
 }

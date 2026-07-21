@@ -91,7 +91,7 @@ export async function getLearners() {
   // Deploy-before-migration safety (v0.27 is_leader): try with the leader flag, fall
   // back to base columns if the column isn't present yet, so the guide dashboard never
   // breaks on a deploy that lands ahead of the migration.
-  let { data, error } = await c.from('learners').select('id, studio, is_leader, profiles!learners_id_fkey(name, email)');
+  let { data, error } = await c.from('learners').select('id, studio, is_leader, scheduling_mode, profiles!learners_id_fkey(name, email)');
   if (error) {
     ({ data, error } = await c.from('learners').select('id, studio, profiles!learners_id_fkey(name, email)'));
   }
@@ -102,6 +102,7 @@ export async function getLearners() {
     email: row.profiles?.email,
     studio: row.studio,
     isLeader: Boolean(row.is_leader),
+    schedulingMode: row.scheduling_mode ?? null,
   }));
 }
 
@@ -109,7 +110,7 @@ export async function getLearner(id) {
   const c = getClient();
   let { data, error } = await c
     .from('learners')
-    .select('id, studio, setup_completed_at, open_by_choice, current_wheel_test, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, profiles!learners_id_fkey(name, email)')
+    .select('id, studio, setup_completed_at, open_by_choice, current_wheel_test, pitch_target_studio, pitch_intent_at, pitch_age_self_report, pitch_age_status, pitch_age_reviewed_by, pitch_age_reviewed_at, scheduling_mode, profiles!learners_id_fkey(name, email)')
     .eq('id', id)
     .single();
   if (error) {
@@ -142,6 +143,8 @@ export async function getLearner(id) {
     pitchAgeStatus: data.pitch_age_status ?? null,
     pitchAgeReviewedBy: data.pitch_age_reviewed_by ?? null,
     pitchAgeReviewedAt: data.pitch_age_reviewed_at ?? null,
+    // v0.29 auto-scheduler placement override; null = use the studio-tier default.
+    schedulingMode: data.scheduling_mode ?? null,
   };
 }
 
@@ -937,6 +940,8 @@ export async function saveLearner(data) {
   // Guide-set leader flag (v0.27): marks a learner as a tribe leader for the roster
   // indicator + the randomizer's leader options.
   if (data.isLeader !== undefined) learnerRow.is_leader = data.isLeader;
+  // Guide-set auto-scheduler placement override (v0.29); null clears back to the tier default.
+  if (data.schedulingMode !== undefined) learnerRow.scheduling_mode = data.schedulingMode;
   if (Object.keys(learnerRow).length > 0) {
     await getClient().from('learners').update(learnerRow).eq('id', data.id);
   }

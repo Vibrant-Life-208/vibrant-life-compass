@@ -4453,3 +4453,8 @@ body.landscape-mountain {
 
 /* Session-1 auto-scheduler: sync button on the pool header. */
 .game-plan-sync { margin-left: auto; font-size: 0.78rem; }
+
+/* Tribe roster: per-learner auto-scheduler placement selector (v0.29). */
+.tribe-roster-plan { display: inline-flex; align-items: center; gap: 0.3rem; }
+.tribe-roster-plan-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.tribe-mode-select { padding: 0.2rem 0.35rem; border: 1px solid var(--earth-light); border-radius: 6px; background: #fff; font-size: 0.78rem; }
