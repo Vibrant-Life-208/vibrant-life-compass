@@ -1951,7 +1951,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       return `
         <div class="onb-horizon-prompt">
           <h3 class="onb-horizon-heading">Want to start getting ready?</h3>
-          <p class="onb-horizon-body">You could spend this year working toward your pitch to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
+          <p class="onb-horizon-body">You could spend this year working toward moving up to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
         </div>
         <div class="onb-pitch-choices">
           <button type="button" class="btn btn-primary" data-pitch="optin-yes">Yes, let's go</button>
@@ -1982,7 +1982,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     return `
       <div class="onb-horizon-prompt">
         <h3 class="onb-horizon-heading">Thinking about ${escapeHtml(targetName)}?</h3>
-        <p class="onb-horizon-body">To pitch up to <strong>${escapeHtml(targetName)}</strong> next year, you'll need to have turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Will you have?</p>
+        <p class="onb-horizon-body">To move up to <strong>${escapeHtml(targetName)}</strong> next year, you'll need to have turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Will you have?</p>
       </div>
       <div class="onb-pitch-choices">
         <button type="button" class="btn btn-primary" data-pitch="age-yes">Yes, I will</button>
@@ -2317,7 +2317,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       ? ' Some of your thresholds are already placed where they belong - refine them, or leave them as they are.'
       : '';
     const lead = plan.pitching
-      ? `You said yes to your pitch to <strong>${escapeHtml(getStudioName(plan.wheelStudio))}</strong>. Here is your year, held across the parts of your life.${placedLine}`
+      ? `You said yes to moving up to <strong>${escapeHtml(getStudioName(plan.wheelStudio))}</strong>. Here is your year, held across the parts of your life.${placedLine}`
       : `Here is your year, held across the parts of your life.`;
     const intro = `
       <div class="onb-horizon-prompt">
@@ -2416,7 +2416,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const wheelName = getStudioName(plan.wheelStudio);
     const targetName = plan.pitchTargetStudio ? getStudioName(plan.pitchTargetStudio) : null;
     const banner = plan.pitching && targetName
-      ? `<p class="onb-slice-context">Working toward your pitch to <strong>${escapeHtml(targetName)}</strong>, planned across your <strong>${escapeHtml(wheelName)}</strong> year.</p>`
+      ? `<p class="onb-slice-context">Working toward moving up to <strong>${escapeHtml(targetName)}</strong>, planned across your <strong>${escapeHtml(wheelName)}</strong> year.</p>`
       : '';
     return { wheelName, targetName, banner, wheel: `<div class="onb-wheel-pin">${lifeWheelSvgFor(plan.wheelStudio)}</div>` };
   }
@@ -2946,7 +2946,7 @@ export function openPitchOptInModal(learner, onDone) {
       fields.innerHTML = `
         <div class="onb-horizon-prompt">
           <h3 class="onb-horizon-heading">Want to start getting ready?</h3>
-          <p class="onb-horizon-body">You could spend this year working toward your pitch to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
+          <p class="onb-horizon-body">You could spend this year working toward moving up to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
         </div>
         <div class="onb-pitch-choices">
           <button type="button" class="btn btn-primary" data-pitch="optin-yes">Yes, let's go</button>
@@ -2963,7 +2963,7 @@ export function openPitchOptInModal(learner, onDone) {
       fields.innerHTML = `
         <div class="onb-horizon-prompt">
           <h3 class="onb-horizon-heading">Thinking about ${escapeHtml(targetName)}?</h3>
-          <p class="onb-horizon-body">To pitch up to <strong>${escapeHtml(targetName)}</strong> next year, you'll need to have turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Will you have?</p>
+          <p class="onb-horizon-body">To move up to <strong>${escapeHtml(targetName)}</strong> next year, you'll need to have turned <strong>${escapeHtml(String(cut.entryAge))}</strong> by <strong>${escapeHtml(cut.cutoffLabel)}</strong>. Will you have?</p>
         </div>
         <div class="onb-pitch-choices">
           <button type="button" class="btn btn-primary" data-pitch="age-yes">Yes, I will</button>
