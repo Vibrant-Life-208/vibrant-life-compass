@@ -87,13 +87,21 @@ export async function signOut() {
 // Learners
 // ============================================================================
 export async function getLearners() {
-  const { data, error } = await getClient().from('learners').select('id, studio, profiles!learners_id_fkey(name, email)');
+  const c = getClient();
+  // Deploy-before-migration safety (v0.27 is_leader): try with the leader flag, fall
+  // back to base columns if the column isn't present yet, so the guide dashboard never
+  // breaks on a deploy that lands ahead of the migration.
+  let { data, error } = await c.from('learners').select('id, studio, is_leader, profiles!learners_id_fkey(name, email)');
+  if (error) {
+    ({ data, error } = await c.from('learners').select('id, studio, profiles!learners_id_fkey(name, email)'));
+  }
   if (error) throw error;
   return (data || []).map((row) => ({
     id: row.id,
     name: row.profiles?.name,
     email: row.profiles?.email,
     studio: row.studio,
+    isLeader: Boolean(row.is_leader),
   }));
 }
 
@@ -917,6 +925,9 @@ export async function saveLearner(data) {
   if (data.pitchAgeStatus !== undefined) learnerRow.pitch_age_status = data.pitchAgeStatus;
   if (data.pitchAgeReviewedBy !== undefined) learnerRow.pitch_age_reviewed_by = data.pitchAgeReviewedBy;
   if (data.pitchAgeReviewedAt !== undefined) learnerRow.pitch_age_reviewed_at = data.pitchAgeReviewedAt;
+  // Guide-set leader flag (v0.27): marks a learner as a tribe leader for the roster
+  // indicator + the randomizer's leader options.
+  if (data.isLeader !== undefined) learnerRow.is_leader = data.isLeader;
   if (Object.keys(learnerRow).length > 0) {
     await getClient().from('learners').update(learnerRow).eq('id', data.id);
   }
@@ -1073,6 +1084,24 @@ export async function dissolvePartnership(linkId) {
   const { data } = await getClient().from('partner_links').update({
     status: 'dissolved', dissolved_at: new Date().toISOString(),
   }).eq('id', linkId).select().single();
+  return data ? rowToLink(data) : null;
+}
+
+// Guide-assigned partnership (captain 2026-07-21): a guide pairs two learners
+// directly, status 'accepted', no handshake. Any existing active partner for
+// either learner is dissolved first. RLS: the guide-insert policy on partner_links
+// (migration v0.27) permits a guide to write an accepted link for two learners on
+// their roster. Returns the new link.
+export async function assignPartner(aId, bId) {
+  if (!aId || !bId || aId === bId) return null;
+  for (const id of [aId, bId]) {
+    const active = await getActivePartnerOf(id);
+    if (active) await dissolvePartnership(active.linkId);
+  }
+  const { data } = await getClient().from('partner_links').insert({
+    proposer_id: aId, partner_id: bId, status: 'accepted',
+    assigned_by_guide: true, responded_at: new Date().toISOString(),
+  }).select().single();
   return data ? rowToLink(data) : null;
 }
 

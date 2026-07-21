@@ -11,6 +11,7 @@ import { initStillness } from './stillness.js';
 import { getLandscapeForSession, getYearCalendar, getStudioName, pitchCutoff } from './studios.js';
 import { renderPatterns } from './patterns.js';
 import { renderPartnerPage } from './partner.js';
+import { renderTribeView } from './tribe.js';
 import { renderAdminAccounts, initAdmin } from './admin.js';
 import { renderAnchorInsights } from './insights.js';
 import { renderSetupView } from './setup.js';
@@ -43,6 +44,7 @@ const TABS_BY_ROLE = {
   // accountability model). No Partner tab here.
   guide: [
     { id: 'guide-view', label: 'My learners' },
+    { id: 'tribe-view', label: 'Tribe' },
     { id: 'school-view', label: 'School' },
     { id: 'north-view', label: 'North' },
     { id: 'year-view', label: 'Compass' },
@@ -542,6 +544,7 @@ async function showTab(tabId, learnerId) {
   if (tabId === 'passwords-view') await renderLogins(learnerId);
   if (tabId === 'partner-view') await renderPartnerPage(learnerId);
   if (tabId === 'guide-view') await renderRoleView('guide', learnerId);
+  if (tabId === 'tribe-view') { try { await renderTribeView(); } catch (e) { console.warn('tribe view:', e); } }
   if (tabId === 'parent-view') await renderRoleView('parent', learnerId);
   if (tabId === 'calendar-view') await renderCalendarView(learnerId);
 }

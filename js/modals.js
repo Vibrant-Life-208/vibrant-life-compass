@@ -1531,6 +1531,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     thresholdDetail: {},
   };
 
+  // PROTECTED STRING (meeting 2026-07-21, Decisions 1 & 4). This modal title is the SINGLE,
+  // load-bearing place the app names itself at the user ("your compass"). Everything downstream
+  // trusts it, so the horizon/slice-intro line no longer repeats it. If the frame ever needs
+  // trimming, cut downstream - never this welcome. Guides + annual-refresh keep their own titles.
   setModalTitle(annualRefresh
     ? 'A new year - refresh your vision'
     : (role === 'guide' ? 'Welcome, guide' : 'Welcome to your compass'));
@@ -1599,6 +1603,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   function curStep() { return steps[state.idx]; }
   function isLast() { return state.idx === steps.length - 1; }
+  // Single source of truth for the onboarding arrival label (meeting 2026-07-21, Decision 3).
+  // "Enter your Compass" is the arrival word - authored ONCE, here, and it fires only when
+  // `final` is the genuine last action before entering the app. Every non-final step keeps its
+  // own mid-flow label. Centralizing prevents the arrival word leaking onto a mid-flow surface
+  // if the cascade changes (e.g. a step added after slice_plan). The modal title (~line 1536)
+  // "Welcome to your compass" remains the single self-naming welcome - do not add another.
+  const ARRIVAL_LABEL = 'Enter your Compass';
+  function terminalLabel(final, midFlowLabel = 'Continue') { return final ? ARRIVAL_LABEL : midFlowLabel; }
 
   function finish() {
     restoreDefaultActions();
@@ -1712,7 +1724,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       </label>
       ${preview}
       ${errored}
-      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: !r })}
+      ${navButtons({ skippable: true, continueLabel: terminalLabel(isLast()), continueDisabled: !r })}
     `;
   }
 
@@ -1738,7 +1750,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <p class="onb-why-body">These make you, you. And when something feels hard, you can stop and ask: which of my strengths can help me right now?</p>
         <p class="onb-why-body">The more you use them, the stronger they grow - and that is how they help you grow, a little more every day.</p>
       </div>
-      ${navButtons({ skippable: false, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
+      ${navButtons({ skippable: false, continueLabel: terminalLabel(isLast()) })}
     `;
   }
 
@@ -1754,7 +1766,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <p class="onb-why-body">Here is a surprising way to find them: notice what bothers you. When something feels unfair, or you are quick to defend someone, that feeling is pointing at something you care about.</p>
         <p class="onb-why-body">On the next screen, you'll name a few of your own.</p>
       </div>
-      ${navButtons({ skippable: false, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
+      ${navButtons({ skippable: false, continueLabel: terminalLabel(isLast()) })}
     `;
   }
 
@@ -1771,7 +1783,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="form-field"><label for="val-4">Value 4</label><input type="text" id="val-4" value="${escapeAttr(v.values[3] || '')}" placeholder="e.g. Awe"></div>
       <div class="form-field"><label for="val-5">Value 5</label><input type="text" id="val-5" value="${escapeAttr(v.values[4] || '')}" placeholder="e.g. Vitality"></div>
       <div class="form-field"><label for="val-arch">Archetype <span class="onb-optional">(optional)</span></label><input type="text" id="val-arch" value="${escapeAttr(v.archetype || '')}" placeholder="e.g. The Seeker"></div>
-      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue' })}
+      ${navButtons({ skippable: true, continueLabel: terminalLabel(isLast()) })}
     `;
   }
 
@@ -1822,7 +1834,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <p class="onb-step-instruction">Choose your top five ${escapeHtml(label)}. <span class="onb-count">(${list.length} of 5 selected)</span></p>
       ${linkBlock}
       ${grid}
-      ${navButtons({ skippable: true, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: list.length !== 5 })}
+      ${navButtons({ skippable: true, continueLabel: terminalLabel(isLast()), continueDisabled: list.length !== 5 })}
     `;
   }
 
@@ -1922,7 +1934,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="form-field">
         <textarea id="onb-horizon" rows="4" placeholder="${escapeAttr(p.placeholder)}">${escapeHtml(state.horizons[step] || '')}</textarea>
       </div>
-      ${navButtons({ skippable: !required, continueLabel: isLast() ? 'Enter your Compass' : 'Continue', continueDisabled: required && !(state.horizons[step] || '').trim() })}
+      ${navButtons({ skippable: !required, continueLabel: terminalLabel(isLast()), continueDisabled: required && !(state.horizons[step] || '').trim() })}
     `;
   }
 
@@ -2230,7 +2242,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       ${wheel}
       ${intro}
       <div class="slice-grid">${cards}</div>
-      ${navButtons({ skippable: true, continueLabel: 'Enter your Compass' })}
+      ${navButtons({ skippable: true, continueLabel: terminalLabel(isLast()) })}
     `;
   }
 
@@ -2273,7 +2285,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       ${banner}
       <div class="onb-horizon-prompt onb-slice-intro">
         <h3 class="onb-horizon-heading">Setting your year</h3>
-        <p class="onb-horizon-body">This is your compass - the parts of your life this year.</p>
+        <p class="onb-horizon-body">These are the parts of your life this year.</p>
         <p class="onb-horizon-body">You'll go through them one at a time. For each one, picture yourself next year - what do you want to be true? Fill the ones that are calling you. Leaving one open is a real choice, not a gap.</p>
         <p class="onb-horizon-body">Then we'll come back to the ones you filled and look closer - where you are now, and a halfway point on the way there.</p>
         <p class="onb-horizon-body">Nothing to finish today. There are no wrong answers. Take your time.</p>
@@ -2390,7 +2402,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const leaveOpen = isEmpty
       ? `<button type="button" id="onb-slice-open" class="btn btn-text slice-open-btn${isOpen ? ' is-open' : ''}">${isOpen ? 'Left open for now ✓ (tap to add a goal instead)' : 'Leave this open for now'}</button>`
       : '';
-    const continueLabel = isLastSlice ? 'Enter your Compass' : 'Next part of life';
+    const continueLabel = terminalLabel(isLastSlice, 'Next part of life');
     return `
       ${wheel}
       ${banner}
@@ -2443,7 +2455,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <label class="slice-box-label" for="onb-slice-halfway">Halfway there in ${escapeHtml(slice.label)} - what does it look like?</label>
         <textarea id="onb-slice-halfway" class="slice-box" data-slice-id="${escapeAttr(slice.sliceId)}" data-slice-label="${escapeAttr(slice.label)}" rows="2" placeholder="Halfway, in ${escapeAttr(slice.label)}, I will…">${escapeHtml(hwVal)}</textarea>
       </div>`;
-    const continueLabel = isLastSlice ? 'Enter your Compass' : 'Next part of life';
+    const continueLabel = terminalLabel(isLastSlice, 'Next part of life');
     return `
       ${wheel}
       ${banner}

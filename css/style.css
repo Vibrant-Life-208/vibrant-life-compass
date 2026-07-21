@@ -4351,3 +4351,59 @@ body.landscape-mountain {
 .bloom-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
 .bloom-line { font-size: 0.9rem; color: var(--text); line-height: 1.45; }
 .bloom-line em { font-style: normal; font-weight: 600; color: var(--earth); }
+
+/* ── Guide Tribe tab (tribe.js): leader marking, group randomizer, partners ── */
+.tribe-page { max-width: 720px; margin: 0 auto; padding: 0.5rem 0 2rem; }
+.tribe-title { font-size: 1.4rem; color: var(--sage); margin: 0 0 0.25rem; }
+.tribe-sub { color: var(--text-soft); margin: 0 0 1.25rem; }
+.tribe-section { background: var(--warm-white, #fbf9f5); border: 1px solid var(--earth-pale); border-radius: var(--radius, 12px); padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+.tribe-section-title { font-size: 1.05rem; color: var(--text); margin: 0 0 0.35rem; }
+.tribe-section-hint, .tribe-note { font-size: 0.85rem; color: var(--text-muted); margin: 0 0 0.75rem; }
+
+/* roster */
+.tribe-roster { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.tribe-roster-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.6rem; border: 1px solid var(--earth-pale); border-radius: 8px; }
+.tribe-roster-row.is-leader { border-color: var(--sage-light); background: var(--sage-pale); }
+.tribe-roster-name { flex: 1; font-weight: 500; color: var(--text); }
+.tribe-roster-studio { font-size: 0.8rem; color: var(--text-muted); }
+.tribe-star { color: var(--earth); }
+.tribe-leader-toggle { white-space: nowrap; }
+
+/* controls */
+.tribe-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; margin-bottom: 0.75rem; }
+.tribe-control { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--text-soft); }
+.tribe-control select { padding: 0.4rem 0.5rem; border: 1px solid var(--earth-light); border-radius: 6px; background: #fff; }
+.tribe-check { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--text-soft); }
+.tribe-actions { display: flex; gap: 0.75rem; margin-bottom: 0.75rem; }
+
+/* results */
+.tribe-results { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.tribe-results-empty { color: var(--text-muted); font-size: 0.9rem; }
+.tribe-group { flex: 1 1 160px; min-width: 150px; border: 1px solid var(--earth-pale); border-radius: 8px; padding: 0.6rem 0.75rem; background: #fff; }
+.tribe-group-anchored { border-color: var(--sage-light); }
+.tribe-group-muted { opacity: 0.7; border-style: dashed; }
+.tribe-group-head { font-weight: 600; color: var(--sage); margin-bottom: 0.35rem; font-size: 0.9rem; }
+.tribe-group-count { color: var(--text-muted); font-weight: 400; }
+.tribe-group-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.tribe-group-list li { font-size: 0.9rem; color: var(--text); }
+.tribe-short { color: var(--earth); font-size: 0.8rem; }
+
+/* leader-anchored bar */
+.tribe-anchor-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; width: 100%; margin-bottom: 0.5rem; }
+.tribe-anchor-label { font-size: 0.85rem; color: var(--text-soft); }
+.tribe-anchor-remaining { font-size: 0.8rem; color: var(--text-muted); margin-left: auto; }
+.tribe-leader-chip { border: 1px solid var(--sage-light); background: var(--sage-pale); color: var(--sage); border-radius: 999px; padding: 0.3rem 0.7rem; font-size: 0.85rem; cursor: pointer; }
+.tribe-leader-chip.is-drawn { opacity: 0.45; cursor: default; }
+
+/* partners */
+.tribe-partner-random { margin-bottom: 1rem; }
+.tribe-pair-preview { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.5rem; }
+.tribe-pair { font-size: 0.9rem; color: var(--text); }
+.tribe-pair-odd { color: var(--text-muted); font-style: italic; }
+.tribe-partner-manual { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+.tribe-manual-label { font-size: 0.85rem; color: var(--text-soft); }
+.tribe-partner-manual select { padding: 0.4rem 0.5rem; border: 1px solid var(--earth-light); border-radius: 6px; background: #fff; }
+.tribe-manual-amp { color: var(--text-muted); }
+.tribe-current-title { font-size: 0.9rem; color: var(--text-soft); margin: 0.5rem 0 0.35rem; }
+.tribe-current-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.tribe-current-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.4rem 0.6rem; border: 1px solid var(--earth-pale); border-radius: 8px; font-size: 0.9rem; }

@@ -559,6 +559,31 @@ export async function dissolvePartnership(linkId) {
   return link;
 }
 
+// Guide-assigned partnership (captain 2026-07-21): a guide pairs two learners
+// directly - no propose/accept handshake, since the guide is the one deciding.
+// Any existing active partner for either learner is dissolved first so a
+// reassignment is clean. Returns the new accepted link.
+export async function assignPartner(aId, bId) {
+  if (!aId || !bId || aId === bId) return null;
+  for (const id of [aId, bId]) {
+    const active = await getActivePartnerOf(id);
+    if (active) await dissolvePartnership(active.linkId);
+  }
+  const links = await getPartnerLinks();
+  const link = {
+    id: generateId(),
+    proposerId: aId,
+    partnerId: bId,
+    status: 'accepted',
+    assignedByGuide: true,
+    proposedAt: new Date().toISOString(),
+    respondedAt: new Date().toISOString(),
+  };
+  links.push(link);
+  write(KEYS.partnerLinks, links);
+  return link;
+}
+
 // Count items that need a learner's attention on the Partner page.
 // Returns total of: pending proposals for them + year goals waiting for
 // their approval. Used to drive the Partner tab's notification bell.

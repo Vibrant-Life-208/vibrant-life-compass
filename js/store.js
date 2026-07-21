@@ -84,6 +84,7 @@ export const {
   proposePartner,
   respondToPartnerProposal,
   dissolvePartnership,
+  assignPartner,
   getPartnerNotificationCount,
   getYearGoalPendingApprovals,
   markYearGoalPendingApproval,
