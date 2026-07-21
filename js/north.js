@@ -7,6 +7,8 @@ import { renderToday, initTodayFab } from './tasks.js';
 import { renderGamePlan } from './game-plan.js';
 import { getBooks, addBook, setBookmark, removeBook, MAX_BOOKS } from './books.js';
 import { openPracticeTimer } from './practice-timer.js';
+import { isNewToTribe } from './tribe-roster.js';
+import { openFirstTaskDemo } from './first-task-demo.js';
 
 // Year-map click handler is still needed (Compass page sets it).
 let yearMapClickHandler = null;
@@ -72,6 +74,12 @@ export async function renderNorth(learnerId) {
   ]);
 
   initTodayFab(learnerId);
+
+  // Hand-holding path: offer the make-a-task demo once to a learner new to their tribe. It makes a
+  // real, kept reading task and then fades (firstTaskDemoSeen). Returning learners never see it.
+  if (learner && isNewToTribe(learner) && !learner.firstTaskDemoSeen) {
+    openFirstTaskDemo(learner, learnerId, () => renderNorth(learnerId));
+  }
 
   const importBtn = document.getElementById('north-import-strengths');
   if (importBtn && !importBtn._wired) {
