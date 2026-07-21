@@ -6,6 +6,7 @@ import { getCategoriesForStudio } from './studios.js';
 import { renderToday, initTodayFab } from './tasks.js';
 import { renderGamePlan } from './game-plan.js';
 import { getBooks, addBook, setBookmark, removeBook, MAX_BOOKS } from './books.js';
+import { openPracticeTimer } from './practice-timer.js';
 
 // Year-map click handler is still needed (Compass page sets it).
 let yearMapClickHandler = null;
@@ -134,7 +135,10 @@ async function renderReading(learnerId, learner) {
     <div class="reading-book" data-book="${escapeHtml(b.id)}">
       <div class="reading-book-head">
         <span class="reading-book-title">${escapeHtml(b.title)}</span>
-        <button type="button" class="btn btn-text reading-book-remove" data-book-remove="${escapeHtml(b.id)}">Remove</button>
+        <span class="reading-book-head-actions">
+          <button type="button" class="btn btn-text reading-book-timer" data-book-timer="${escapeHtml(b.id)}">Read</button>
+          <button type="button" class="btn btn-text reading-book-remove" data-book-remove="${escapeHtml(b.id)}">Remove</button>
+        </span>
       </div>
       <label class="reading-book-mark-label">Where are you now?</label>
       <input type="text" class="reading-book-mark slice-box" data-book-mark="${escapeHtml(b.id)}" value="${escapeHtml(b.bookmark || '')}" placeholder="A page, a chapter, a moment - wherever you are">
@@ -157,6 +161,17 @@ async function renderReading(learnerId, learner) {
   list.querySelectorAll('[data-book-mark]').forEach((inp) => {
     inp.addEventListener('change', async () => {
       learner.books = await setBookmark(learner, inp.dataset.bookMark, inp.value);
+    });
+  });
+  list.querySelectorAll('[data-book-timer]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const book = getBooks(learner).find((x) => x.id === btn.dataset.bookTimer);
+      if (!book) return;
+      // Learner-started timer -> soft/optional end -> skippable "where are you now?" -> bookmark.
+      openPracticeTimer(book, async (mark) => {
+        learner.books = await setBookmark(learner, book.id, mark);
+        await renderReading(learnerId, learner);
+      });
     });
   });
   const addBtn = document.getElementById('reading-add-btn');
