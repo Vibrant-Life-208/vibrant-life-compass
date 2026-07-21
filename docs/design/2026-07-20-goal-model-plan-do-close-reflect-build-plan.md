@@ -15,6 +15,7 @@
   - **S4 = REFLECT** (opens time-gated; reflection on S1-3)
 - **View:** sessions 1-3 always visible; later sessions revealed **when their calendar start date arrives** (time-gated only). Year-end goal stays a soft reminder, not a ladder.
 - **HARD INVARIANT:** the SMART/weekly/badge apparatus is **finish-shaped goals only**; becoming goals (Heart/Spirit/Emotions) keep presence — no SMART, no weekly cadence, no finish sequence, no check-off.
+- **CADENCE UNIFICATION (LOCKED 2026-07-20):** the **S4 / S7 / S8 Reflect** session IS the **Growth Record's Season Close** witnessing — one ritual, not two features on the same date. When the Reflect surface is built here, it must be built *as* the record's Season-Close hook (the goal reflections roll up into the record's per-direction GrowthMarkers + "becoming" narrative). 3 cycles = 3 terms (S1-4 / S5-7 / S8) — one calendar for both tracks. Full lock: `evoke-agents-backup/agents/projects/vibrant-life-growth-record/CADENCE-UNIFICATION.md`.
 
 ---
 
