@@ -1141,20 +1141,40 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
           cards: contextCard('Your year goal', s.yeargoal),
         },
         setup: {
-          heading: 'Setting yourself up',
-          body: 'What will help you start well? Up to three things that clear the runway - a reliable space, a buddy to check in with, the first steps. You will break these into day-to-day steps on your North page.',
+          heading: 'What makes this one stick',
+          body: 'Three things make a goal stick: it is yours, you have people, and it is worth it.',
           placeholder: 'One thing to set up - be specific',
           cards: contextCard('Your year goal', s.yeargoal),
         },
       }[st];
-      const items = s[st].length ? s[st] : [''];
-      const inputs = items.map((v, i) => `<input type="text" class="gs-item slice-box" data-phase="${st}" data-idx="${i}" value="${escapeAttr(v)}" placeholder="${escapeAttr(phase.placeholder)}">`).join('');
-      body = `
-        <h3 class="onb-horizon-heading">${escapeHtml(phase.heading)}</h3>
-        ${phase.cards}
-        <p class="onb-horizon-body">${escapeHtml(phase.body)}</p>
-        <div class="gs-item-list">${inputs}</div>
-        ${items.length < MAX_ITEMS ? `<button type="button" class="btn btn-text" id="gs-item-add" data-phase="${st}">+ add another</button>` : ''}`;
+      if (st === 'setup') {
+        // The Three C's (Kohn), one fixed labeled prompt each - reworded for the young register
+        // (captain 2026-07-21). Choice / Community / Content, named and load-bearing instead of a
+        // generic runway list. Same storage: three gs-item[data-phase="setup"] inputs, captured as-is.
+        const cThree = [
+          { label: 'Yours', q: 'Why did you pick this goal?', ph: 'I picked it because…' },
+          { label: 'Your crew', q: 'Who will help you and cheer you on?', ph: 'A buddy, my guide, someone at home…' },
+          { label: 'The good part', q: 'What will be better when you get there?', ph: 'When I do this, …' },
+        ];
+        const rows = cThree.map((c, i) => `
+          <label class="gs-c-label">${escapeHtml(c.label)} - ${escapeHtml(c.q)}</label>
+          <input type="text" class="gs-item slice-box" data-phase="setup" data-idx="${i}" value="${escapeAttr(s.setup[i] || '')}" placeholder="${escapeAttr(c.ph)}">
+        `).join('');
+        body = `
+          <h3 class="onb-horizon-heading">${escapeHtml(phase.heading)}</h3>
+          ${phase.cards}
+          <p class="onb-horizon-body">${escapeHtml(phase.body)}</p>
+          <div class="gs-item-list gs-c-list">${rows}</div>`;
+      } else {
+        const items = s[st].length ? s[st] : [''];
+        const inputs = items.map((v, i) => `<input type="text" class="gs-item slice-box" data-phase="${st}" data-idx="${i}" value="${escapeAttr(v)}" placeholder="${escapeAttr(phase.placeholder)}">`).join('');
+        body = `
+          <h3 class="onb-horizon-heading">${escapeHtml(phase.heading)}</h3>
+          ${phase.cards}
+          <p class="onb-horizon-body">${escapeHtml(phase.body)}</p>
+          <div class="gs-item-list">${inputs}</div>
+          ${items.length < MAX_ITEMS ? `<button type="button" class="btn btn-text" id="gs-item-add" data-phase="${st}">+ add another</button>` : ''}`;
+      }
     }
     const isFirst = s.idx === 0;
     const isLast = s.idx === s.steps.length - 1;
