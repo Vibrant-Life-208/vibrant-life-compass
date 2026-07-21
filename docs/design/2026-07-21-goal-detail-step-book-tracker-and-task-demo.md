@@ -1,7 +1,10 @@
 # Goal detail-step, book tracker, and the "make a task" demo - build note
 
-**Date:** 2026-07-21. **Status:** design/build note. Builds on `2026-07-20-how-to-break-down-a-goal-guidance-v1.md` + the tribe-readiness discussion. **NOT built.**
-**Coordination:** do NOT touch the wheel session's in-flight `COMPASS_V2` files. Commit local, don't push (parallel-commit hazard).
+**Date:** 2026-07-21. **Status:** CORE BUILT (local, unpushed). Detail step, entry fork, Three C's, guide toggle, and the full book tracker (shelf → shapes → timer → book-link → make-a-task demo) are all built and c1-green. Still pending: **#4 crossing render** (wheel session's thresholds step 3 + Q1/Q2), **CSS styling** for the new components (`css/style.css` - parallel-session territory), and **sync-column migrations** for the new fields (`books`, `newToTribe`, `firstTaskDemoSeen`, task `bookId`/`shape`/`timerMinutes` - local-store keeps them; a Postgres column each is needed before sync).
+**Coordination:** built ON the wheel session's `feat/compass-4slice-migration` branch; a second session shipped v0.28 (task bands, guide-assigned partners) alongside - all my commits used explicit/partial-path staging. Commit local, don't push.
+
+### Commits (2026-07-21, local)
+detail step `220c0a8` · entry fork `7e15236` · Three C's + roster `4884431` · guide toggle `33bce2a` · book shelf `d61423c` · design-note status `c72b52c` · c1 stub `85c4880` · task shapes `b751e3f` · c1 harden+refine `fa3ef34` · practice timer `5b73a95` · book-link `ffc4cec` · make-a-task demo `4f063df`
 
 ---
 
