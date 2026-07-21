@@ -92,13 +92,17 @@ const escapeHtml = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '
 const escapeAttr = (s) => escapeHtml(s).replace(/'/g, '&#39;');
 const getStudioName = (s) => ({ discovery: 'Discovery', adventure: 'Adventure' }[s] || s);
 const lifeWheelSvgFor = () => '<svg/>';
+// Stub for the terminalLabel() helper added in the 2026-07-21 name-once refactor (commit 3649220).
+// It only authors a button's arrival word - orthogonal to the render-condition checks - so a dummy
+// label suffices. Without it the sandbox throws before the assertions run (coverage was OFF).
+const terminalLabel = (final, mid = 'Continue') => (final ? 'Enter your Compass' : mid);
 const state = {
   sliceWalk: { pass: 'year', idx: 0 }, sliceText: { slice_movement: 'run a 5k' }, sliceLabels: {},
   openByChoice: ['slice_family'], sliceNow: {}, sliceHalfway: {},
 };
-const mk = new Function('escapeHtml', 'escapeAttr', 'getStudioName', 'lifeWheelSvgFor', 'state',
+const mk = new Function('escapeHtml', 'escapeAttr', 'getStudioName', 'lifeWheelSvgFor', 'terminalLabel', 'state',
   `${body}\nreturn { renderSliceYearPage, renderSliceReflectPage };`);
-const walk = mk(escapeHtml, escapeAttr, getStudioName, lifeWheelSvgFor, state);
+const walk = mk(escapeHtml, escapeAttr, getStudioName, lifeWheelSvgFor, terminalLabel, state);
 const carriedNames = (n) => Array.from({ length: n }, (_, i) => ({ name: `Threshold ${i + 1}` }));
 const plan = {
   wheelStudio: 'discovery', pitching: true, pitchTargetStudio: 'adventure', ratified: true,
