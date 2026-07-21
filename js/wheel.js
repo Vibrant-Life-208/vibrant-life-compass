@@ -121,38 +121,103 @@ export function getWheelAreas() {
   return COMPASS_REGIONS;
 }
 
-// The fixed four-region compass (Self / Others / Making / World + Voice). ONE
-// shared map for everyone - not per-studio. Cardinal-centered slices (Self=N,
-// Making=E, World=S, Others=W) with the sovereign Voice center. Rendered in the
-// standard 340 box so it drops straight into the #life-wheel container.
+// The Vibrant Life Compass (Self / Others / Making / World around a sovereign
+// Voice center). ONE shared map for everyone - not per-studio. Cardinal-centered
+// 90-degree slices (Self=N, Making=E, World=S, Others=W), a tick bezel, the
+// learner's needle, per-region icon + question + LIFE/GROWS pair, and the
+// "author your own life" center. Scalable via viewBox so it drops into the
+// #life-wheel container at any size. Matches design v5 (2026-07-21).
 function lifeCompassSvg() {
-  const cx = 170, cy = 170, R = 132, hub = 44;
+  const cx = 360, cy = 408, R = 272, hub = 92;
   const d = R * 0.7071;
   const NW = [cx - d, cy - d], NE = [cx + d, cy - d], SE = [cx + d, cy + d], SW = [cx - d, cy + d];
   const seg = (a, b, fill) =>
     `<path d="M ${cx} ${cy} L ${a[0].toFixed(1)} ${a[1].toFixed(1)} A ${R} ${R} 0 0 1 ${b[0].toFixed(1)} ${b[1].toFixed(1)} Z" fill="${fill}"/>`;
   const segs =
-    seg(NW, NE, '#8f5e14') + // Self  (North)
+    seg(NW, NE, '#8f5e14') + // Self   (North)
     seg(NE, SE, '#3f8a5f') + // Making (East)
-    seg(SE, SW, '#35608f') + // World (South)
+    seg(SE, SW, '#35608f') + // World  (South)
     seg(SW, NW, '#c4634a');  // Others (West)
-  const div = (p) => `<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="#fbf9f4" stroke-width="2"/>`;
-  const dividers = div(NW) + div(NE) + div(SE) + div(SW);
-  const name = (x, y, t) => `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="15" font-weight="700" fill="#fff">${t}</text>`;
-  const motion = (x, y, t) => `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="6.5" font-weight="700" letter-spacing="1.5" fill="#fff" fill-opacity="0.78">${t}</text>`;
-  const labels =
-    name(170, 86, 'SELF')    + motion(170, 99, 'INWARD') +
-    name(256, 164, 'MAKING') + motion(256, 177, 'ONWARD') +
-    name(170, 250, 'WORLD')  + motion(170, 263, 'OUTWARD') +
-    name(84, 164, 'OTHERS')  + motion(84, 177, 'TOGETHER');
-  return `<svg viewBox="0 0 340 340" class="life-wheel-svg" role="img" aria-label="Your life compass: Self, Others, Making, World, and Voice at the center">
+
+  // Tick bezel around the colored circle (major tick at each cardinal).
+  let ticks = '';
+  for (let i = 0; i < 72; i++) {
+    const ang = i * 5 * Math.PI / 180;
+    const major = i % 18 === 0;
+    const r1 = R + 8, r2 = R + (major ? 26 : 17);
+    const sx = Math.sin(ang), cyv = Math.cos(ang);
+    ticks += `<line x1="${(cx + r1 * sx).toFixed(1)}" y1="${(cy - r1 * cyv).toFixed(1)}" x2="${(cx + r2 * sx).toFixed(1)}" y2="${(cy - r2 * cyv).toFixed(1)}" stroke="#b8ac93" stroke-width="${major ? 2.4 : 1}"/>`;
+  }
+
+  const divLine = (p) => `<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="#fbf9f4" stroke-width="3"/>`;
+  const dividers = divLine(NW) + divLine(NE) + divLine(SE) + divLine(SW);
+
+  // Text helper.
+  const t = (x, y, s, o = {}) => {
+    const { size = 15, weight = 400, fill = '#ffffff', ls = 0, italic = false, op = 1 } = o;
+    return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="${size}" font-weight="${weight}" fill="${fill}" fill-opacity="${op}" letter-spacing="${ls}"${italic ? ' font-style="italic"' : ''}>${s}</text>`;
+  };
+  // LIFE·/GROWS· two-tone line (bold key, regular value).
+  const lg = (x, y, key, val) =>
+    `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="13" fill="#ffffff"><tspan font-weight="700">${key}</tspan> · ${val}</text>`;
+
+  // Simple white region glyphs.
+  const personIcon = (x, y) => `<g stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"><circle cx="${x}" cy="${y - 6}" r="6"/><path d="M ${x - 10} ${y + 10} a 10 10 0 0 1 20 0"/></g>`;
+  const twoPeopleIcon = (x, y) => `<g stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"><circle cx="${x - 8}" cy="${y - 5}" r="5"/><path d="M ${x - 17} ${y + 9} a 9 9 0 0 1 18 0"/><circle cx="${x + 8}" cy="${y - 5}" r="5"/><path d="M ${x - 1} ${y + 9} a 9 9 0 0 1 18 0"/></g>`;
+  const bulbIcon = (x, y) => `<g stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"><circle cx="${x}" cy="${y - 3}" r="7"/><line x1="${x - 4}" y1="${y + 7}" x2="${x + 4}" y2="${y + 7}"/><line x1="${x - 3}" y1="${y + 11}" x2="${x + 3}" y2="${y + 11}"/></g>`;
+  const globeIcon = (x, y) => `<g stroke="#fff" stroke-width="2.2" fill="none"><circle cx="${x}" cy="${y}" r="9"/><ellipse cx="${x}" cy="${y}" rx="4" ry="9"/><line x1="${x - 9}" y1="${y}" x2="${x + 9}" y2="${y}"/></g>`;
+
+  // The learner's needle: red toward Self, grey toward World, emerging from the hub.
+  const needle =
+    `<polygon points="${cx},${cy - 150} ${cx - 5},${cy - hub} ${cx + 5},${cy - hub}" fill="#b0472e"/>` +
+    `<polygon points="${cx},${cy + 150} ${cx - 5},${cy + hub} ${cx + 5},${cy + hub}" fill="#b9b2a3"/>`;
+  const northArrow = `<polygon points="${cx},${cy - R - 48} ${cx - 9},${cy - R - 24} ${cx + 9},${cy - R - 24}" fill="#2a2a24"/>`;
+
+  const self =
+    personIcon(cx, 178) +
+    t(cx, 214, 'SELF', { size: 34, weight: 800 }) +
+    t(cx, 238, 'INWARD', { size: 13, ls: 3, op: 0.85 }) +
+    t(cx, 264, 'How do I know and steady myself?', { size: 15, italic: true }) +
+    lg(cx, 290, 'LIFE', 'Health') + lg(cx, 309, 'GROWS', 'Mindset');
+  const making =
+    bulbIcon(cx + 182, 350) +
+    t(cx + 182, 390, 'MAKING', { size: 32, weight: 800 }) +
+    t(cx + 182, 414, 'ONWARD', { size: 13, ls: 3, op: 0.85 }) +
+    t(cx + 182, 440, 'What do I make and provide?', { size: 12, italic: true }) +
+    lg(cx + 182, 466, 'LIFE', 'Provision') + lg(cx + 182, 485, 'GROWS', 'Craft');
+  const world =
+    lg(cx, 508, 'LIFE', 'Learning') + lg(cx, 527, 'GROWS', 'Knowledge') +
+    t(cx, 552, 'How do I understand the world?', { size: 14, italic: true }) +
+    t(cx, 578, 'OUTWARD', { size: 13, ls: 3, op: 0.85 }) +
+    t(cx, 612, 'WORLD', { size: 34, weight: 800 }) +
+    globeIcon(cx, 648);
+  const others =
+    twoPeopleIcon(cx - 182, 350) +
+    t(cx - 182, 390, 'OTHERS', { size: 32, weight: 800 }) +
+    t(cx - 182, 414, 'TOGETHER', { size: 13, ls: 3, op: 0.85 }) +
+    t(cx - 182, 440, 'How do I love and work with others?', { size: 12, italic: true }) +
+    lg(cx - 182, 466, 'LIFE', 'Relationships') + lg(cx - 182, 485, 'GROWS', 'Empathy');
+
+  const center =
+    `<circle cx="${cx}" cy="${cy}" r="${hub}" fill="#f6f1e7" stroke="#c99a3b" stroke-width="3"/>` +
+    t(cx, cy - 16, 'VOICE', { size: 28, weight: 800, fill: '#3a342a' }) +
+    t(cx, cy + 8, 'SOVEREIGNTY', { size: 12, weight: 700, ls: 2, fill: '#b8892f' }) +
+    t(cx, cy + 30, 'author your own life', { size: 12, italic: true, fill: '#8a7a5f' });
+
+  return `<svg viewBox="0 0 720 792" class="life-wheel-svg" role="img" aria-label="The Vibrant Life Compass: Self inward, Making onward, World outward, Others together, with Voice and sovereignty at the center">
+    <rect x="0" y="0" width="720" height="792" fill="#fbf9f4"/>
+    ${t(cx, 42, 'The Vibrant Life Compass', { size: 30, weight: 800, fill: '#2f2a20' })}
+    ${t(cx, 70, 'four ways of growing - one sovereign center', { size: 15, italic: true, fill: '#7a7060' })}
+    ${northArrow}
+    <circle cx="${cx}" cy="${cy}" r="${R + 34}" fill="none" stroke="#ded3bd" stroke-width="1.5"/>
+    ${ticks}
     ${segs}
     ${dividers}
-    <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#fbf9f4" stroke-width="2.5"/>
-    ${labels}
-    <circle cx="${cx}" cy="${cy}" r="${hub}" fill="#f6f1e7" stroke="#c99a3b" stroke-width="2"/>
-    <text x="${cx}" y="${cy - 6}" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="700" fill="#3a342a">VOICE</text>
-    <text x="${cx}" y="${cy + 8}" text-anchor="middle" dominant-baseline="middle" font-size="6.5" font-weight="700" letter-spacing="1" fill="#8a6d2e">SOVEREIGNTY</text>
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#fbf9f4" stroke-width="3"/>
+    ${needle}
+    ${self}${making}${world}${others}
+    ${center}
+    ${t(cx, 776, "Working draft - the needle is the learner's. We evoke, we never extract.", { size: 12, italic: true, fill: '#9a8f7c' })}
   </svg>`;
 }
 
