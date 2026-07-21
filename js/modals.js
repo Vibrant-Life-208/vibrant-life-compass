@@ -603,24 +603,46 @@ export function openLoginModal({ existing, onSave }) {
 
 export function openTaskModal({ existing, defaultDate, onSave }) {
   setModalTitle(existing ? 'Edit task' : 'Add a task');
+  const shape = existing?.shape === 'rhythm' ? 'rhythm' : 'once';
+  const timerMinutes = existing?.timerMinutes || '';
   document.getElementById('form-fields').innerHTML = `
     <div class="form-field">
       <label for="task-text">What needs doing?</label>
       <input type="text" id="task-text" placeholder="A small, specific thing" value="${existing ? escapeAttr(existing.text || '') : ''}" required>
     </div>
     <div class="form-field">
+      <label>What kind?</label>
+      <label class="task-shape-opt"><input type="radio" name="task-shape" value="once" ${shape === 'once' ? 'checked' : ''}> Once - I'll finish it and check it off</label>
+      <label class="task-shape-opt"><input type="radio" name="task-shape" value="rhythm" ${shape === 'rhythm' ? 'checked' : ''}> A rhythm - something I come back to (no finishing; resting is fine)</label>
+    </div>
+    <div class="form-field" id="task-timer-field" style="${shape === 'rhythm' ? '' : 'display:none'}">
+      <label for="task-timer">A timer, if you'd like one (minutes) - optional</label>
+      <input type="number" id="task-timer" min="1" max="120" placeholder="e.g. 20" value="${escapeAttr(String(timerMinutes))}">
+    </div>
+    <div class="form-field">
       <label for="task-date">When?</label>
       <input type="date" id="task-date" value="${existing?.plannedFor || defaultDate || ''}">
     </div>
   `;
+  // Reveal the optional timer only for a rhythm.
+  document.querySelectorAll('input[name="task-shape"]').forEach((r) => {
+    r.addEventListener('change', () => {
+      const f = document.getElementById('task-timer-field');
+      if (f) f.style.display = document.querySelector('input[name="task-shape"]:checked')?.value === 'rhythm' ? '' : 'none';
+    });
+  });
   activeSubmit = () => {
     const text = document.getElementById('task-text').value.trim();
     if (!text) return;
     const plannedFor = document.getElementById('task-date').value;
+    const shapeVal = document.querySelector('input[name="task-shape"]:checked')?.value || 'once';
+    const tMin = parseInt(document.getElementById('task-timer')?.value, 10);
     onSave({
       id: existing?.id,
       text,
       plannedFor: plannedFor || defaultDate || new Date().toISOString().slice(0, 10),
+      shape: shapeVal,
+      timerMinutes: shapeVal === 'rhythm' && tMin > 0 ? tMin : undefined,
     });
     closeModal();
   };

@@ -56,13 +56,17 @@ export async function renderToday(learnerId) {
 
 function renderTaskCard(learnerId, task) {
   const card = document.createElement('div');
+  const isRhythm = task.shape === 'rhythm';
   const done = task.status === 'done';
-  card.className = 'task-card' + (done ? ' task-done' : '');
+  // A rhythm (standing practice) has NO completion - no check, no miss. Resting is a real
+  // choice beside it, never a failure. A one-off keeps the check-it-off toggle.
+  card.className = 'task-card' + (done && !isRhythm ? ' task-done' : '') + (isRhythm ? ' task-rhythm' : '');
   card.dataset.taskId = task.id;
+  const lead = isRhythm
+    ? `<span class="task-rhythm-mark" title="A rhythm you come back to" aria-label="A rhythm you come back to">↻</span>`
+    : `<button type="button" class="task-check" data-action="toggle" aria-label="${done ? 'Mark open' : 'Mark done'}">${done ? '●' : '○'}</button>`;
   card.innerHTML = `
-    <button type="button" class="task-check" data-action="toggle" aria-label="${done ? 'Mark open' : 'Mark done'}">
-      ${done ? '●' : '○'}
-    </button>
+    ${lead}
     <p class="task-text">${escapeHtml(task.text)}</p>
     <div class="task-actions">
       <button type="button" class="btn-text task-action-btn" data-action="move">Move</button>
