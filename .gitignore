@@ -11,3 +11,7 @@ js/backend/config.local.js
 config.runtime.js
 _viatest.pdf
 .playwright-mcp/
+
+# DB backups (pg_dump output - learner data; never commit)
+backups/
+scripts/loadtest-creds.json
