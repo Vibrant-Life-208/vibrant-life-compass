@@ -32,6 +32,37 @@ async function currentUserId() {
   return data?.user?.id || null;
 }
 
+// Write hardening (captain 2026-07-21): retry a write on a TRANSIENT failure (network
+// blip, 5xx, 429 rate-limit) so a lost write during a simultaneous-onboarding burst (~55
+// learners finishing Setup at once) self-heals instead of silently dropping. Supabase
+// returns { error } rather than throwing, so we inspect both. Permanent errors (4xx other
+// than 429) return immediately - no hammering. Reads are NOT retried (a stale read is
+// harmless; a lost write is not). fn must return the Supabase result ({ data, error }).
+function isTransientErr(err) {
+  if (!err) return false;
+  const status = err.status ?? err.code;
+  if (status === 429) return true;
+  if (typeof status === 'number' && status >= 500) return true;
+  const m = String(err.message || '').toLowerCase();
+  return m.includes('network') || m.includes('fetch') || m.includes('timeout') || m.includes('failed to');
+}
+async function withWriteRetry(fn, attempts = 3) {
+  let last = null;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fn();
+      if (!res || !res.error) return res;      // success
+      if (!isTransientErr(res.error)) return res; // permanent - return as-is
+      last = res.error;
+    } catch (e) {
+      if (!isTransientErr(e)) throw e;
+      last = e;
+    }
+    await new Promise((r) => setTimeout(r, 150 * (i + 1) * (i + 1))); // 150ms, 600ms
+  }
+  return { data: null, error: last };
+}
+
 // ============================================================================
 // Session / auth
 // ============================================================================
@@ -506,9 +537,9 @@ export async function getGoals(learnerId) {
 export async function saveGoal(goal) {
   const row = goalToRow(goal);
   if (goal.id) {
-    await getClient().from('goals').update(row).eq('id', goal.id);
+    await withWriteRetry(() => getClient().from('goals').update(row).eq('id', goal.id));
   } else {
-    const { data } = await getClient().from('goals').insert(row).select().single();
+    const { data } = await withWriteRetry(() => getClient().from('goals').insert(row).select().single());
     return data ? rowToGoal(data) : null;
   }
 }
@@ -644,14 +675,39 @@ export async function saveTask(learnerId, task) {
   for (const k of TASK_META_FIELDS) if (task[k] !== undefined) meta[k] = task[k];
   if (Object.keys(meta).length) row.meta = meta;
   if (task.id && !task.id.startsWith('hc_')) {
-    await getClient().from('tasks').update(row).eq('id', task.id);
+    await withWriteRetry(() => getClient().from('tasks').update(row).eq('id', task.id));
   } else {
-    await getClient().from('tasks').insert(row);
+    await withWriteRetry(() => getClient().from('tasks').insert(row));
   }
 }
 
+// Bulk-create tasks in ONE request (captain 2026-07-21 hardening). Used by the Session-1
+// auto-scheduler to plant a learner's whole milestone skeleton in a single insert instead
+// of one request per task - so a simultaneous-onboarding burst (~55 learners) sends far
+// fewer writes. New rows only. Retried on transient failure.
+export async function saveTasks(learnerId, tasks) {
+  if (!Array.isArray(tasks) || !tasks.length) return [];
+  const rows = tasks.map((task) => {
+    const row = {
+      learner_id: learnerId,
+      text: task.text,
+      planned_for: task.plannedFor || null,
+      goal_id: task.goalId || null,
+      category_id: task.categoryId || null,
+      life_area: task.lifeArea || null,
+      status: task.status || 'open',
+    };
+    const meta = {};
+    for (const k of TASK_META_FIELDS) if (task[k] !== undefined) meta[k] = task[k];
+    if (Object.keys(meta).length) row.meta = meta;
+    return row;
+  });
+  await withWriteRetry(() => getClient().from('tasks').insert(rows));
+  return rows;
+}
+
 export async function moveTask(learnerId, id, newPlannedFor) {
-  await getClient().from('tasks').update({ planned_for: newPlannedFor }).eq('id', id);
+  await withWriteRetry(() => getClient().from('tasks').update({ planned_for: newPlannedFor }).eq('id', id));
 }
 
 export async function toggleTaskDone(learnerId, id) {
@@ -956,12 +1012,12 @@ export async function saveLearner(data) {
   if (data.newToTribe !== undefined) learnerRow.new_to_tribe = data.newToTribe;
   if (data.firstTaskDemoSeen !== undefined) learnerRow.first_task_demo_seen = data.firstTaskDemoSeen;
   if (Object.keys(learnerRow).length > 0) {
-    await getClient().from('learners').update(learnerRow).eq('id', data.id);
+    await withWriteRetry(() => getClient().from('learners').update(learnerRow).eq('id', data.id));
   }
   const profileRow = {};
   if (data.name !== undefined) profileRow.name = data.name;
   if (Object.keys(profileRow).length > 0) {
-    await getClient().from('profiles').update(profileRow).eq('id', data.id);
+    await withWriteRetry(() => getClient().from('profiles').update(profileRow).eq('id', data.id));
   }
 }
 

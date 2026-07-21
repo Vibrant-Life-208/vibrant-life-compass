@@ -812,6 +812,23 @@ export async function saveTask(learnerId, task) {
   return list;
 }
 
+// Bulk-create tasks in ONE write (captain 2026-07-21 hardening). The Session-1
+// auto-scheduler plants many tasks at once; inserting them together (vs a call per task)
+// keeps a simultaneous-onboarding burst light. New rows only - no id in the input.
+export async function saveTasks(learnerId, tasks) {
+  if (!Array.isArray(tasks) || !tasks.length) return [];
+  const all = read(KEYS.tasks) || {};
+  const list = all[learnerId] || [];
+  const now = new Date().toISOString();
+  for (const t of tasks) {
+    const { id, ...rest } = t;
+    list.push({ id: generateId(), status: 'open', createdAt: now, ...rest });
+  }
+  all[learnerId] = list;
+  write(KEYS.tasks, all);
+  return list;
+}
+
 export async function moveTask(learnerId, id, newPlannedFor) {
   const all = read(KEYS.tasks) || {};
   const list = all[learnerId] || [];

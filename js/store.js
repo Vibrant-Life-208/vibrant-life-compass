@@ -104,6 +104,7 @@ export const {
   getTasksForDate,
   getTasksForRange,
   saveTask,
+  saveTasks,
   moveTask,
   toggleTaskDone,
   deleteTask,

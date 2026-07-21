@@ -21,7 +21,7 @@
 // is gone. It never touches a learner's own (non-auto) tasks, and skips planting a
 // weekly step that a manual task with the same text already covers that week.
 
-import { getGoals, getTasks, saveTask, deleteTask, getLearner } from './store.js';
+import { getGoals, getTasks, saveTask, saveTasks, deleteTask, getLearner } from './store.js';
 import { getPlanningCalendar, lifeAreaForCategory } from './studios.js';
 
 const WEEKDAYS = 5; // Mon..Fri offsets 0..4 from a week's Monday
@@ -186,6 +186,7 @@ export async function autoScheduleYearPlan(learnerId) {
   const dismissed = new Set(Array.isArray(learner?.dismissedPlanKeys) ? learner.dismissedPlanKeys : []);
 
   const usedKeys = new Set();
+  const toCreate = []; // new tasks batched into ONE write (the common first-run case)
   for (const s of specs) {
     if (dismissed.has(s.planKey)) continue; // learner deleted this - leave it gone
     usedKeys.add(s.planKey);
@@ -197,7 +198,7 @@ export async function autoScheduleYearPlan(learnerId) {
     }
     // Skip a weekly step already covered by a manual task in the same week.
     if (s.band === 'weekly' && manualByWeek.has(`${s.weekMonday}::${s.text.toLowerCase()}`)) continue;
-    await saveTask(learnerId, {
+    toCreate.push({
       text: s.text,
       plannedFor: s.plannedFor,
       weekOf: s.weekMonday,
@@ -208,6 +209,9 @@ export async function autoScheduleYearPlan(learnerId) {
       planKey: s.planKey,
     });
   }
+  // One bulk insert for all new tasks (hardening: ~9-30 requests -> 1 during an onboarding
+  // burst). Updates above stay individual, but there are far fewer of those on a re-run.
+  if (toCreate.length) await saveTasks(learnerId, toCreate);
   // Remove still-open auto tasks whose plan entry is gone (a goal step was deleted). Keep
   // done ones as a record.
   for (const t of priorAuto) {
