@@ -11,7 +11,7 @@
 
 import { getTasks, getLearner } from './store.js';
 import { taskColorStyle, taskBand, taskRegion } from './wheel.js';
-import { getYearCalendar } from './studios.js';
+import { getPlanningCalendar } from './studios.js';
 import { todayISO } from './tasks.js';
 
 const BAND_RANK = { milestone: 0, weekly: 1, recurring: 2 };
@@ -47,7 +47,7 @@ export async function renderTaskList(learnerId) {
     return;
   }
   const [tasks, learner] = await Promise.all([getTasks(learnerId), getLearner(learnerId)]);
-  const cal = getYearCalendar();
+  const cal = getPlanningCalendar(); // the cycle the plan lives in (next year for a summer planner)
   const priorityGoalIds = Array.isArray(learner?.priorityGoalIds) ? learner.priorityGoalIds : [];
 
   if (!tasks.length) {

@@ -9,7 +9,7 @@
 // Visual conventions follow the Year Map (year-map.js) and the sage/earth palette.
 
 import { getLearner, getGoals, getTasksForRange } from './store.js';
-import { getYearCalendar, getStudioName } from './studios.js';
+import { getPlanningCalendar, getStudioName, getSchoolEvents } from './studios.js';
 import { taskColorStyle } from './wheel.js';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -50,7 +50,12 @@ export async function renderCalendarView(learnerId) {
   }
 
   const learner = await getLearner(learnerId);
-  const cal = getYearCalendar();
+  // The cycle the plan lives in - the upcoming year for a summer planner, so their
+  // future-dated tasks + school events actually land on this calendar. (Captain 2026-07-21.)
+  const cal = getPlanningCalendar();
+  const schoolEvents = getSchoolEvents(cal);
+  const eventsByDay = {};
+  for (const e of schoolEvents) (eventsByDay[e.date] ||= []).push(e);
   const [goals, tasks] = await Promise.all([
     getGoals(learnerId),
     getTasksForRange(learnerId, cal.yearStartISO, cal.yearEndISO),
@@ -98,7 +103,8 @@ export async function renderCalendarView(learnerId) {
     <span class="cal-legend-item"><span class="cal-swatch cal-swatch-session"></span>In session</span>
     <span class="cal-legend-item"><span class="cal-swatch cal-swatch-start"></span>Session begins</span>
     <span class="cal-legend-item"><span class="cal-swatch cal-swatch-today"></span>Today</span>
-    <span class="cal-legend-item"><span class="cal-task-dot"></span>Planned task</span>`;
+    <span class="cal-legend-item"><span class="cal-task-dot"></span>Planned task</span>
+    <span class="cal-legend-item"><span class="cal-swatch cal-swatch-event"></span>School event</span>`;
   host.appendChild(legend);
 
   // Month grids from the cycle's first month through its last.
@@ -110,7 +116,7 @@ export async function renderCalendarView(learnerId) {
   while (cursor <= lastMonth) {
     monthsWrap.appendChild(
       buildMonth(cursor.getFullYear(), cursor.getMonth(), {
-        ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay,
+        ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay,
       }),
     );
     cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
@@ -154,7 +160,7 @@ export async function renderCalendarView(learnerId) {
 }
 
 function buildMonth(year, month, ctx) {
-  const { ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay } = ctx;
+  const { ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay } = ctx;
   const wrap = document.createElement('div');
   wrap.className = 'cal-month';
 
@@ -209,6 +215,17 @@ function buildMonth(year, month, ctx) {
       tag.className = 'cal-session-tag';
       tag.textContent = `S${sIdx}`;
       cell.appendChild(tag);
+    }
+
+    // School calendar events (holidays / breaks / orientation).
+    const dayEvents = eventsByDay && eventsByDay[dISO];
+    if (dayEvents && dayEvents.length) {
+      cell.classList.add('has-school-event');
+      const ev = document.createElement('span');
+      ev.className = `cal-school-event is-${dayEvents[0].type}`;
+      ev.textContent = dayEvents[0].label;
+      cell.appendChild(ev);
+      cell.title = `${cell.title ? cell.title + ' · ' : ''}${dayEvents.map((e) => e.label).join(' · ')}`;
     }
 
     const dayTasks = tasksByDay[dISO];

@@ -529,6 +529,23 @@ export function getPlanningCalendar(today = new Date()) {
   return cal;
 }
 
+// School calendar events shown on the Calendar view (captain 2026-07-21). Dates are within
+// the given calendar's cycle: cy = Aug-Dec, cy+1 = Jan-Aug. This is a starter set drawn
+// from the session plan - the captain owns the real school calendar, so edit dates/labels
+// freely. `type` drives the marker style: 'holiday' (no session), 'break', or 'event'.
+export function getSchoolEvents(cal) {
+  const cy = Number(cal.yearStartISO.slice(0, 4));
+  return [
+    { date: `${cy}-08-04`,     label: 'Orientation begins',      type: 'event' },
+    { date: `${cy}-10-12`,     label: 'Columbus Day (no session)', type: 'holiday' },
+    { date: `${cy}-11-25`,     label: 'Thanksgiving break',      type: 'break' },
+    { date: `${cy}-12-19`,     label: 'Winter break begins',     type: 'break' },
+    { date: `${cy + 1}-01-19`, label: 'MLK Day (no session)',    type: 'holiday' },
+    { date: `${cy + 1}-03-30`, label: 'Spring break',            type: 'break' },
+    { date: `${cy + 1}-05-27`, label: 'Last day before summer',  type: 'event' },
+  ];
+}
+
 // Current cycle's calendar (computed at module load - refreshed on page reload).
 export const YEAR_CALENDAR = getYearCalendar();
 

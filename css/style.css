@@ -4525,3 +4525,11 @@ body.landscape-mountain {
 .yearplan-approval-goals li { font-size: 0.9rem; color: var(--text); margin-bottom: 0.2rem; }
 .yearplan-approval-mile { color: var(--text-muted); font-size: 0.78rem; }
 .yearplan-approval-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+
+/* School calendar events on the Calendar view (captain 2026-07-21). */
+.cal-school-event { display: block; font-size: 0.6rem; line-height: 1.15; margin-top: 1px; padding: 0 2px; border-radius: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-school-event.is-holiday { background: #f0d9d3; color: #7a3b2c; }
+.cal-school-event.is-break { background: #e8efe5; color: #3f5a34; }
+.cal-school-event.is-event { background: #efe3c9; color: #6b5320; }
+.cal-cell.has-school-event { outline: 1px solid var(--earth-pale); }
+.cal-swatch-event { background: #efe3c9; }
