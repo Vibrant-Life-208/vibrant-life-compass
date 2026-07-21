@@ -80,9 +80,9 @@ function goalCard(g, goalTasks, isPriority) {
   // The milestone ladder, bottom (now) to top (year). Only rungs that exist render.
   const rungs = [
     { label: 'By end of year', text: g.text, top: true },
-    { label: 'End of Session 3 · locked', text: g.halfwayPoint, locked: true },
-    { label: 'End of Session 2', text: g.quarterPoint },
-    { label: 'End of Session 1', text: g.eos1Point },
+    { label: 'End of Session 3 · your Session-3 goal · locked', text: g.halfwayPoint, locked: true },
+    { label: 'End of Session 2 · your Session-2 goal', text: g.quarterPoint },
+    { label: 'End of Session 1 · your Session-1 goal', text: g.eos1Point },
     { label: 'Starting line', text: g.baseline, base: true },
   ].filter((r) => r.text && String(r.text).trim());
   const ladder = rungs.map((r) => `

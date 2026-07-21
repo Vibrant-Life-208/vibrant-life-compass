@@ -569,6 +569,11 @@ export async function assignPartner(aId, bId) {
     const active = await getActivePartnerOf(id);
     if (active) await dissolvePartnership(active.linkId);
   }
+  // Guard: if a dissolve did not take (on the synced backend an off-roster link can be
+  // RLS-blocked and no-op), do NOT stack a second 'accepted' link on a surviving one.
+  for (const id of [aId, bId]) {
+    if (await getActivePartnerOf(id)) return null;
+  }
   const links = await getPartnerLinks();
   const link = {
     id: generateId(),

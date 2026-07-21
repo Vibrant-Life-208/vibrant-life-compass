@@ -478,50 +478,11 @@ async function renderPartnerZoneInSetup(learner, ctx) {
     return;
   }
 
-  // Pick a partner. Same filter as the main partner page: same studio, no active partner.
-  const allLearners = await getLearners();
-  const candidates = [];
-  for (const l of allLearners) {
-    if (l.id === learner.id) continue;
-    if (l.studio !== learner.studio) continue;
-    const theirPartner = await getActivePartnerOf(l.id);
-    if (theirPartner) continue;
-    candidates.push(l);
-  }
-
-  if (candidates.length === 0) {
-    zone.innerHTML = `
-      <p class="learners-empty">Nobody in your studio is available to pair with yet. You can come back to this anytime from the Partner tab.</p>
-    `;
-    return;
-  }
-
+  // Guide-assigned partners (captain 2026-07-21): the learner self-pick is retired here
+  // too, so Setup agrees with the Partner tab. A guide pairs learners from the Tribe tab -
+  // this zone just shows the calm waiting state until then. (The active / pending branches
+  // above still render if a guide has already paired the learner.)
   zone.innerHTML = `
-    <div class="setup-partner-candidates">
-      ${candidates.map((c) => `
-        <button type="button" class="setup-partner-candidate" data-candidate-id="${escapeAttr(c.id)}">
-          <span class="setup-partner-candidate-name">${escapeHtml(c.name || c.heroName)}</span>
-          <span class="setup-partner-candidate-studio">${escapeHtml(c.studio)}</span>
-        </button>
-      `).join('')}
-    </div>
+    <p class="learners-empty">Your guide will pair you with an accountability partner - by hand or by shuffle - so this one is off your plate. Once you are paired, they will sign off on your year plan.</p>
   `;
-
-  zone.querySelectorAll('[data-candidate-id]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const targetId = btn.dataset.candidateId;
-      const target = candidates.find((c) => c.id === targetId);
-      openConfirmModal({
-        title: `Propose ${target?.name || target?.heroName || 'them'} as your partner?`,
-        body: `They'll get a request to accept. Until they accept, you don't have an accountability partner yet.`,
-        confirmLabel: 'Send proposal',
-        cancelLabel: 'Not yet',
-        onConfirm: async () => {
-          await proposePartner(learner.id, targetId);
-          document.dispatchEvent(new CustomEvent('hc:partner-changed'));
-          await renderSetupView(learner.id);
-        },
-      });
-    });
-  });
 }
