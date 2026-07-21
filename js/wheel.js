@@ -8,6 +8,12 @@
 // (Play->Fun->Joy, Heart->Emotions, Learning->Mind, Calling->Career). Abstract
 // areas appear only when a person can hold them (Spirit/Mind mid-childhood;
 // Time/Money/Calling adolescence; Partner/Finances/Career adulthood).
+// FLAG (2026-07-20): the fixed four-region compass draw. Set false to restore
+// the tiered Wheel of Life below. DRAW-ONLY - does not change goal categories
+// (getWheelAreas still returns the tiered areas until the taxonomy migration).
+// Ref: docs/design/2026-07-20-four-region-compass-mapping-v1.md
+const COMPASS_V2 = true;
+
 const WHEEL_TIERS = {
   sparks:         ['Movement', 'Heart', 'Family', 'Play'],
   discovery:      ['Movement', 'Learning', 'Heart', 'Family', 'Friends', 'Fun'],
@@ -112,10 +118,45 @@ function lifeWheelSvg(areas) {
   </svg>`;
 }
 
+// The fixed four-region compass (Self / Others / Making / World + Voice). ONE
+// shared map for everyone - not per-studio. Cardinal-centered slices (Self=N,
+// Making=E, World=S, Others=W) with the sovereign Voice center. Rendered in the
+// same 340 box as the old wheel so it drops into the same container.
+function lifeCompassSvg() {
+  const cx = 170, cy = 170, R = 132, hub = 44;
+  const d = R * 0.7071;
+  const NW = [cx - d, cy - d], NE = [cx + d, cy - d], SE = [cx + d, cy + d], SW = [cx - d, cy + d];
+  const seg = (a, b, fill) =>
+    `<path d="M ${cx} ${cy} L ${a[0].toFixed(1)} ${a[1].toFixed(1)} A ${R} ${R} 0 0 1 ${b[0].toFixed(1)} ${b[1].toFixed(1)} Z" fill="${fill}"/>`;
+  const segs =
+    seg(NW, NE, '#8f5e14') + // Self  (North)
+    seg(NE, SE, '#3f8a5f') + // Making (East)
+    seg(SE, SW, '#35608f') + // World (South)
+    seg(SW, NW, '#c4634a');  // Others (West)
+  const div = (p) => `<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="#fbf9f4" stroke-width="2"/>`;
+  const dividers = div(NW) + div(NE) + div(SE) + div(SW);
+  const name = (x, y, t) => `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="15" font-weight="700" fill="#fff">${t}</text>`;
+  const motion = (x, y, t) => `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="6.5" font-weight="700" letter-spacing="1.5" fill="#fff" fill-opacity="0.78">${t}</text>`;
+  const labels =
+    name(170, 86, 'SELF')    + motion(170, 99, 'INWARD') +
+    name(256, 164, 'MAKING') + motion(256, 177, 'ONWARD') +
+    name(170, 250, 'WORLD')  + motion(170, 263, 'OUTWARD') +
+    name(84, 164, 'OTHERS')  + motion(84, 177, 'TOGETHER');
+  return `<svg viewBox="0 0 340 340" class="life-wheel-svg" role="img" aria-label="Your life compass: Self, Others, Making, World, and Voice at the center">
+    ${segs}
+    ${dividers}
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#fbf9f4" stroke-width="2.5"/>
+    ${labels}
+    <circle cx="${cx}" cy="${cy}" r="${hub}" fill="#f6f1e7" stroke="#c99a3b" stroke-width="2"/>
+    <text x="${cx}" y="${cy - 6}" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="700" fill="#3a342a">VOICE</text>
+    <text x="${cx}" y="${cy + 8}" text-anchor="middle" dominant-baseline="middle" font-size="6.5" font-weight="700" letter-spacing="1" fill="#8a6d2e">SOVEREIGNTY</text>
+  </svg>`;
+}
+
 // The wheel SVG for a studio as a string, for inlining elsewhere (e.g. pinned
-// atop the onboarding telescope). Same age-appropriate ring as renderLifeWheel.
+// atop the onboarding telescope). Under COMPASS_V2 this is the fixed compass.
 export function lifeWheelSvgFor(studio) {
-  return lifeWheelSvg(getWheelAreas(studio));
+  return COMPASS_V2 ? lifeCompassSvg() : lifeWheelSvg(getWheelAreas(studio));
 }
 
 // Render the wheel for the given studio into #life-wheel. Every tier gets its own
@@ -123,8 +164,15 @@ export function lifeWheelSvgFor(studio) {
 export function renderLifeWheel(studio) {
   const el = document.getElementById('life-wheel');
   if (!el) return;
-  const areas = getWheelAreas(studio);
   el.hidden = false;
+  if (COMPASS_V2) {
+    el.innerHTML = `
+    <p class="life-wheel-prompt">Four directions, one voice at the center. Point your needle where you're growing - every direction is yours, none a box to fill.</p>
+    ${lifeCompassSvg()}
+  `;
+    return;
+  }
+  const areas = getWheelAreas(studio);
   el.innerHTML = `
     <p class="life-wheel-prompt">Hold your whole life in view. All of these matter - as you set your goals, tend them together.</p>
     ${lifeWheelSvg(areas)}
