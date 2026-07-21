@@ -8,6 +8,7 @@ import { saveTask, saveLearner } from './store.js';
 import { addBook, getBooks } from './books.js';
 
 export function openFirstTaskDemo(learner, learnerId, onDone) {
+  if (document.querySelector('.first-task-demo-overlay')) return; // never stack two demos
   const existingBooks = getBooks(learner);
   const state = { bookId: existingBooks[0]?.id || '', title: '', minutes: '' };
 

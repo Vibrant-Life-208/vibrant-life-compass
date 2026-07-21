@@ -1339,7 +1339,10 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     const clean = (arr) => (arr || []).map((x) => (x || '').trim()).filter(Boolean).slice(0, MAX_ITEMS);
     const threshold = clean(s.threshold); // S3 halfway markers
     const challenges = clean(s.challenges); // S2 biggest challenges
-    const setup = clean(s.setup);           // S1 set-up-first actions
+    // Three C's are POSITIONAL (Yours / Your crew / The good part). Preserve all three slots so a
+    // blank middle answer can't compact and shift the others under the wrong label on re-open.
+    // No reader of goal.setup exists outside this modal, so empty slots are safe. (Review fix 2026-07-21.)
+    const setup = (s.setup || []).slice(0, MAX_ITEMS).map((x) => (x || '').trim());
     // 1. The year goal row. baseline = now; halfwayPoint = the primary (first) halfway marker,
     //    so the arc/timeline surface keeps working. The three phase arrays ride along as named
     //    fields so rowToGoal spreads them back to the top level on read.
@@ -1361,7 +1364,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         halfwayPoint: threshold[0] || undefined,
         targetSession: 6,
         status: prior?.status || 'active',
-        setup: setup.length ? setup : undefined,
+        setup: setup.some(Boolean) ? setup : undefined,
         challenges: challenges.length ? challenges : undefined,
         threshold: threshold.length ? threshold : undefined,
         detail: (s.detail || '').trim() || undefined, // wide brainstorm - needs adapter field-add before sync, like the phase arrays
