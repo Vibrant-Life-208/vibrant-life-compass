@@ -6,7 +6,7 @@ import { openGoalModal, openQuoteModal, openHorizonModal, openTraitsModal, openC
 import { isCurrentWheelBuild } from './thresholds.js';
 import { renderYearMap } from './year-map.js';
 import { getYearMapClickHandler } from './north.js';
-import { renderLifeWheel, getWheelAreas, COMPASS_V2, regionForLabel, regionIdForCategory } from './wheel.js';
+import { renderLifeWheel, getWheelAreas, regionForLabel, regionIdForCategory } from './wheel.js';
 
 let wired = false;
 
@@ -332,7 +332,7 @@ export async function renderYearView(learnerId) {
   // Under the fixed compass, a goal's legacy slice id (slice_movement) resolves
   // to its region id (slice_self) so existing goals match their region card and
   // never orphan. Non-slice/academic ids pass through unchanged.
-  const catIdOf = (g) => (COMPASS_V2 ? regionIdForCategory(g.categoryId) : g.categoryId);
+  const catIdOf = (g) => regionIdForCategory(g.categoryId);
   const goalFor = (cat) => goals.find((g) => catIdOf(g) === cat.id && g.text && g.text.trim().length > 0);
   const plannedCategories = categories.filter((cat) => goalFor(cat));
 
@@ -365,7 +365,7 @@ export async function renderYearView(learnerId) {
     // Legacy lifeArea labels (Movement, Heart, ...) resolve to their region for
     // grouping. NOTE: the goal-arc becoming cadence keys off the RAW label, not
     // this normalized value, so old Heart/Spirit goals keep their presence spine.
-    return (COMPASS_V2 ? regionForLabel(raw) : raw) || null;
+    return regionForLabel(raw) || null;
   };
 
   // Guide-summer (adult proving ground, Decision 3) gets the 1-year-by-wheel-

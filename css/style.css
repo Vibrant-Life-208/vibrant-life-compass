@@ -804,7 +804,7 @@ header h1 {
   gap: 0.75rem;
 }
 
-/* Wheel of Life - reflection-only, twelve areas held in view above the goals */
+/* Life Compass - reflection-only four-region frame held in view above the goals */
 .life-wheel {
   display: flex;
   flex-direction: column;
@@ -3668,6 +3668,19 @@ body.landscape-mountain {
   color: var(--text-soft);
   font-size: 0.85rem;
   font-style: italic;
+}
+
+/* Values picker over-limit guidance: a gentle nudge, not an error. Announced to
+   screen readers via role="status" aria-live. Dark green on pale green for
+   contrast well above WCAG AA 4.5:1. (Captain 2026-07-21.) */
+.onb-count-warn {
+  margin: 0.6rem 0 0;
+  padding: 0.55rem 0.8rem;
+  background: #e8efe6;
+  color: #3f5233;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 0.9rem;
+  line-height: 1.45;
 }
 
 .onb-select-grid {
