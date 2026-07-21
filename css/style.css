@@ -4407,3 +4407,46 @@ body.landscape-mountain {
 .tribe-current-title { font-size: 0.9rem; color: var(--text-soft); margin: 0.5rem 0 0.35rem; }
 .tribe-current-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
 .tribe-current-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.4rem 0.6rem; border: 1px solid var(--earth-pale); border-radius: 8px; font-size: 0.9rem; }
+
+/* ── Task wheel-colour system (captain 2026-07-21) ── */
+/* Band tag pill shown after a task's text (rhythm / weekly / milestone). */
+.task-band-tag { display: inline-block; margin-left: 0.5rem; padding: 0.05rem 0.45rem; border-radius: 999px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; vertical-align: middle; }
+
+/* Region picker in the task modal. */
+.task-region-grid { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.task-region-swatch { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.6rem 0.3rem 0.4rem; border: 1px solid var(--earth-light); border-radius: 999px; background: #fff; cursor: pointer; font-size: 0.82rem; color: var(--text); }
+.task-region-swatch.selected { border-color: var(--sage); box-shadow: inset 0 0 0 1px var(--sage); }
+.task-region-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--swatch, #ccc); display: inline-block; }
+.task-region-dot-none { background: repeating-linear-gradient(45deg, #ddd, #ddd 2px, #fff 2px, #fff 4px); }
+
+/* Game Plan chips carry the shade as a filled pill. */
+.game-plan-task { border: 1px solid var(--earth-pale); border-radius: 6px; padding: 0.25rem 0.4rem; margin-bottom: 0.25rem; font-size: 0.8rem; cursor: pointer; }
+.game-plan-task.is-done { opacity: 0.55; text-decoration: line-through; }
+
+/* Colour legend (shown above the Game Plan grid). */
+.gp-legend { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin: 0 0 0.6rem; font-size: 0.75rem; color: var(--text-muted); }
+.gp-legend-item { display: inline-flex; align-items: center; gap: 0.3rem; }
+.gp-legend-swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.gp-legend-swatch.recurring { background: #cbb98a; }
+.gp-legend-swatch.weekly { background: #8f6f2e; }
+.gp-legend-swatch.milestone { background: #4a3a17; }
+
+/* Calendar coloured task dots. */
+.cal-task-dots { display: inline-flex; gap: 2px; align-items: center; justify-content: center; margin-top: 1px; }
+.cal-task-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sage, #4a6741); display: inline-block; }
+.cal-task-more { font-size: 0.6rem; color: var(--text-muted); line-height: 1; }
+
+/* ── Game Plan week pool -> days planner (captain 2026-07-21) ── */
+.game-plan-pool { margin-top: 1rem; border: 1px dashed var(--earth-light); border-radius: 10px; padding: 0.75rem 0.9rem; background: var(--earth-pale); }
+.game-plan-pool-head { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.game-plan-pool-title { font-weight: 600; color: var(--text); font-size: 0.95rem; }
+.game-plan-pool-hint { font-size: 0.75rem; color: var(--text-muted); }
+.game-plan-pool-list { display: flex; flex-wrap: wrap; gap: 0.4rem; min-height: 1.5rem; }
+.game-plan-pool-list .game-plan-task { flex: 0 1 auto; }
+.game-plan-pool-add { margin-top: 0.5rem; }
+
+/* Week-assign modal */
+.week-assign-days { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.week-assign-day { border: 1px solid var(--earth-light); border-radius: 8px; padding: 0.4rem 0.7rem; }
+.week-assign-day.is-current { border-color: var(--sage); background: var(--sage-pale); color: var(--sage); }
+.week-assign-pool.is-current { color: var(--sage); font-weight: 600; }

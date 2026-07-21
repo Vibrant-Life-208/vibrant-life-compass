@@ -615,16 +615,24 @@ export async function getTasksForRange(learnerId, startISO, endISO) {
   return (data || []).map(rowToTask);
 }
 
+// Extended task fields packed into the v0.28 meta jsonb (mirrors goals.decomposition).
+const TASK_META_FIELDS = ['band', 'region', 'shape', 'timerMinutes', 'weekOf'];
+
 export async function saveTask(learnerId, task) {
   const row = {
     learner_id: learnerId,
     text: task.text,
-    planned_for: task.plannedFor,
+    // v0.28: planned_for is nullable - a "pool" task belongs to a week (weekOf) but
+    // no day yet. An empty string coerces to null.
+    planned_for: task.plannedFor || null,
     goal_id: task.goalId || null,
     category_id: task.categoryId || null,
     life_area: task.lifeArea || null,  // wheel slice; NULL = not placed (v0.18)
     status: task.status || 'open',
   };
+  const meta = {};
+  for (const k of TASK_META_FIELDS) if (task[k] !== undefined) meta[k] = task[k];
+  if (Object.keys(meta).length) row.meta = meta;
   if (task.id && !task.id.startsWith('hc_')) {
     await getClient().from('tasks').update(row).eq('id', task.id);
   } else {
@@ -655,13 +663,14 @@ function rowToTask(row) {
     id: row.id,
     learnerId: row.learner_id,
     text: row.text,
-    plannedFor: row.planned_for,
+    plannedFor: row.planned_for || '',  // v0.28: null (pool task) -> '' for the app
     goalId: row.goal_id,
     categoryId: row.category_id,
     lifeArea: row.life_area || null,  // wheel slice; NULL = not placed (v0.18)
     status: row.status,
     completedAt: row.completed_at,
     createdAt: row.created_at,
+    ...(row.meta || {}),  // v0.28 extended fields back to top level (band, region, shape, weekOf, timerMinutes)
   };
 }
 

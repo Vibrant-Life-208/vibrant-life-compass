@@ -46,6 +46,76 @@ export function regionIdForCategory(categoryId) {
   return region ? 'slice_' + region.toLowerCase() : categoryId;
 }
 
+// ── Task colour system (captain 2026-07-21) ──────────────────────────────────
+// One hue per compass region; three shades per hue by task "band":
+//   recurring  -> a light tint of the region colour
+//   weekly     -> the region colour itself (a weekly milestone)
+//   milestone  -> a darker shade (a milestone marker)
+// Hue = which part of life the task serves; shade = how load-bearing it is. The
+// values match the compass SVG (Self/Making/World/Others) + the Voice gold accent.
+export const REGION_COLORS = {
+  Self:   '#8f5e14',
+  Making: '#3f8a5f',
+  World:  '#35608f',
+  Others: '#c4634a',
+  Voice:  '#c99a3b',
+};
+
+function hexToRgb(hex) {
+  const h = String(hex).replace('#', '');
+  return { r: parseInt(h.slice(0, 2), 16), g: parseInt(h.slice(2, 4), 16), b: parseInt(h.slice(4, 6), 16) };
+}
+function rgbToHex(r, g, b) {
+  const c = (n) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, '0');
+  return `#${c(r)}${c(g)}${c(b)}`;
+}
+// Mix `hex` toward `target` by amt (0..1).
+function mix(hex, target, amt) {
+  const a = hexToRgb(hex), b = hexToRgb(target);
+  return rgbToHex(a.r + (b.r - a.r) * amt, a.g + (b.g - a.g) * amt, a.b + (b.b - a.b) * amt);
+}
+
+export function regionColor(region) {
+  return REGION_COLORS[regionForLabel(region)] || null;
+}
+
+// The three bands. Order = ascending weight, used for sorting by importance too.
+export const TASK_BANDS = ['recurring', 'weekly', 'milestone'];
+
+// Resolve a task's band. Explicit task.band wins; a legacy "rhythm" shape reads as
+// recurring; otherwise null (an uncoloured plain task).
+export function taskBand(task) {
+  if (task && TASK_BANDS.includes(task.band)) return task.band;
+  if (task && task.shape === 'rhythm') return 'recurring';
+  return null;
+}
+
+// Resolve a task's region from (in order) an explicit region, its lifeArea, or a
+// slice_ categoryId. Returns a canonical region label or null.
+export function taskRegion(task) {
+  if (!task) return null;
+  if (task.region && REGION_COLORS[regionForLabel(task.region)]) return regionForLabel(task.region);
+  if (task.lifeArea) { const r = regionForLabel(task.lifeArea); if (REGION_COLORS[r]) return r; }
+  if (typeof task.categoryId === 'string' && task.categoryId.startsWith('slice_')) {
+    const r = regionForLabel(task.categoryId.slice(6));
+    if (REGION_COLORS[r]) return r;
+  }
+  return null;
+}
+
+// The rendered colours for a task chip: { bg, border, fg } or null when the task
+// has no region (rendered neutral by callers). fg is chosen for contrast.
+export function taskColorStyle(task) {
+  const region = taskRegion(task);
+  if (!region) return null;
+  const base = REGION_COLORS[region];
+  const band = taskBand(task);
+  if (band === 'recurring') return { bg: mix(base, '#ffffff', 0.78), border: base, fg: mix(base, '#000000', 0.25) };
+  if (band === 'milestone') { const dark = mix(base, '#000000', 0.34); return { bg: dark, border: dark, fg: '#ffffff' }; }
+  // weekly (or plain-with-region) = the region colour itself.
+  return { bg: base, border: base, fg: '#ffffff' };
+}
+
 const WHEEL_TIERS = {
   sparks:         ['Movement', 'Heart', 'Family', 'Play'],
   discovery:      ['Movement', 'Learning', 'Heart', 'Family', 'Friends', 'Fun'],

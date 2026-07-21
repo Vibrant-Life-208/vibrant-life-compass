@@ -54,7 +54,9 @@ async function sendWeeklyStepsToNorth(learner, categoryId, weeklySteps, mode) {
       d.setDate(d.getDate() + (weekIdx - 1) * 7);
       plannedFor = toISO(d);
     }
-    await saveTask(learner.id, { text, plannedFor, categoryId });
+    // Steps from the plan are weekly milestones -> the base region colour (region
+    // resolves from categoryId when it is a slice_ life-area). (Captain 2026-07-21.)
+    await saveTask(learner.id, { text, plannedFor, categoryId, band: 'weekly' });
   }
 }
 

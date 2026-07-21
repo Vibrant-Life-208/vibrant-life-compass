@@ -11,7 +11,7 @@ import {
 } from './store.js';
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar, lifeAreaForCategory } from './studios.js';
-import { lifeWheelSvgFor } from './wheel.js';
+import { lifeWheelSvgFor, COMPASS_REGIONS, REGION_COLORS, taskBand, taskRegion } from './wheel.js';
 import { renderThresholdsHtml, buildSlicePlan, isCurrentWheelBuild, getThresholds } from './thresholds.js';
 import { renderGoalArcHtml, currentArcPosition, weeklyKindFor } from './goal-arc.js';
 import { getWeeklyAnswer, saveWeeklyAnswer } from './weekly-answers.js';
@@ -603,8 +603,22 @@ export function openLoginModal({ existing, onSave }) {
 
 export function openTaskModal({ existing, defaultDate, onSave }) {
   setModalTitle(existing ? 'Edit task' : 'Add a task');
-  const shape = existing?.shape === 'rhythm' ? 'rhythm' : 'once';
+  // Band = how load-bearing this task is; it drives the wheel-colour shade
+  // (recurring -> light, weekly -> the colour, milestone -> dark) AND the completion
+  // shape (a recurring rhythm has no check-off; weekly + milestone finish). Legacy
+  // rhythm tasks read as recurring. (Captain 2026-07-21.)
+  const band = existing ? (taskBand(existing) || 'weekly') : 'weekly';
+  const region = existing ? (taskRegion(existing) || '') : '';
   const timerMinutes = existing?.timerMinutes || '';
+  const bandOpts = [
+    { v: 'recurring', label: 'A rhythm - something I come back to (no finishing; resting is fine)' },
+    { v: 'weekly', label: "A weekly milestone - a step I'll finish this week" },
+    { v: 'milestone', label: 'A milestone marker - a bigger point I am reaching for' },
+  ];
+  const regionSwatches = COMPASS_REGIONS.map((r) => `
+    <button type="button" class="task-region-swatch${region === r ? ' selected' : ''}" data-region="${r}" style="--swatch:${REGION_COLORS[r]}" aria-pressed="${region === r}" title="${r}">
+      <span class="task-region-dot"></span><span class="task-region-name">${r}</span>
+    </button>`).join('');
   document.getElementById('form-fields').innerHTML = `
     <div class="form-field">
       <label for="task-text">What needs doing?</label>
@@ -612,10 +626,15 @@ export function openTaskModal({ existing, defaultDate, onSave }) {
     </div>
     <div class="form-field">
       <label>What kind?</label>
-      <label class="task-shape-opt"><input type="radio" name="task-shape" value="once" ${shape === 'once' ? 'checked' : ''}> Once - I'll finish it and check it off</label>
-      <label class="task-shape-opt"><input type="radio" name="task-shape" value="rhythm" ${shape === 'rhythm' ? 'checked' : ''}> A rhythm - something I come back to (no finishing; resting is fine)</label>
+      ${bandOpts.map((o) => `<label class="task-shape-opt"><input type="radio" name="task-band" value="${o.v}" ${band === o.v ? 'checked' : ''}> ${o.label}</label>`).join('')}
     </div>
-    <div class="form-field" id="task-timer-field" style="${shape === 'rhythm' ? '' : 'display:none'}">
+    <div class="form-field">
+      <label>Which part of life? <span class="onb-optional">(sets the colour)</span></label>
+      <div class="task-region-grid">${regionSwatches}
+        <button type="button" class="task-region-swatch${region === '' ? ' selected' : ''}" data-region="" aria-pressed="${region === ''}" title="None"><span class="task-region-dot task-region-dot-none"></span><span class="task-region-name">None</span></button>
+      </div>
+    </div>
+    <div class="form-field" id="task-timer-field" style="${band === 'recurring' ? '' : 'display:none'}">
       <label for="task-timer">A timer, if you'd like one (minutes) - optional</label>
       <input type="number" id="task-timer" min="1" max="120" placeholder="e.g. 20" value="${escapeAttr(String(timerMinutes))}">
     </div>
@@ -624,25 +643,37 @@ export function openTaskModal({ existing, defaultDate, onSave }) {
       <input type="date" id="task-date" value="${existing?.plannedFor || defaultDate || ''}">
     </div>
   `;
-  // Reveal the optional timer only for a rhythm.
-  document.querySelectorAll('input[name="task-shape"]').forEach((r) => {
+  // Reveal the optional timer only for a recurring rhythm.
+  document.querySelectorAll('input[name="task-band"]').forEach((r) => {
     r.addEventListener('change', () => {
       const f = document.getElementById('task-timer-field');
-      if (f) f.style.display = document.querySelector('input[name="task-shape"]:checked')?.value === 'rhythm' ? '' : 'none';
+      if (f) f.style.display = document.querySelector('input[name="task-band"]:checked')?.value === 'recurring' ? '' : 'none';
+    });
+  });
+  // Region swatch single-select.
+  let pickedRegion = region;
+  document.querySelectorAll('.task-region-swatch').forEach((b) => {
+    b.addEventListener('click', () => {
+      pickedRegion = b.dataset.region;
+      document.querySelectorAll('.task-region-swatch').forEach((x) => { x.classList.toggle('selected', x === b); x.setAttribute('aria-pressed', x === b); });
     });
   });
   activeSubmit = () => {
     const text = document.getElementById('task-text').value.trim();
     if (!text) return;
     const plannedFor = document.getElementById('task-date').value;
-    const shapeVal = document.querySelector('input[name="task-shape"]:checked')?.value || 'once';
+    const bandVal = document.querySelector('input[name="task-band"]:checked')?.value || 'weekly';
     const tMin = parseInt(document.getElementById('task-timer')?.value, 10);
     onSave({
       id: existing?.id,
       text,
       plannedFor: plannedFor || defaultDate || new Date().toISOString().slice(0, 10),
-      shape: shapeVal,
-      timerMinutes: shapeVal === 'rhythm' && tMin > 0 ? tMin : undefined,
+      band: bandVal,
+      // A recurring band keeps the legacy "rhythm" completion semantics (no check-off);
+      // weekly + milestone finish and check off.
+      shape: bandVal === 'recurring' ? 'rhythm' : 'once',
+      region: pickedRegion || undefined,
+      timerMinutes: bandVal === 'recurring' && tMin > 0 ? tMin : undefined,
     });
     closeModal();
   };
@@ -683,6 +714,39 @@ export function openMoveTaskModal(task, onMove) {
       onMove(newDate);
       closeModal();
     }
+  };
+  openModal();
+}
+
+// Assign a task to a day of THIS week, or keep it in the week's pool (no day yet).
+// ctx = { dates: [5 ISO strings], labels: [5 short labels] }. onAssign(plannedFor)
+// is called with a day ISO, or '' to mean "back to the pool". A custom cross-week
+// date is also offered. (Captain 2026-07-21 - week pool -> days planner.)
+export function openWeekAssignModal(task, ctx, onAssign) {
+  setModalTitle('Plan this task');
+  const dayBtns = ctx.dates.map((iso, i) => {
+    const d = new Date(iso + 'T00:00:00');
+    const isCur = task.plannedFor === iso;
+    return `<button type="button" class="btn btn-text week-assign-day${isCur ? ' is-current' : ''}" data-date="${iso}">${escapeHtml(ctx.labels[i])} ${d.getDate()}</button>`;
+  }).join('');
+  const inPool = !task.plannedFor;
+  document.getElementById('form-fields').innerHTML = `
+    <p style="color: var(--text-soft); margin: 0 0 0.75rem;">Put <em>"${escapeHtml(task.text)}"</em> on a day this week:</p>
+    <div class="week-assign-days">${dayBtns}</div>
+    <button type="button" class="btn btn-text week-assign-pool${inPool ? ' is-current' : ''}" data-pool="1" style="margin-top:0.5rem;">${inPool ? '✓ In this week’s pool (no day yet)' : 'Keep in this week’s pool (no day yet)'}</button>
+    <div class="form-field" style="margin-top: 1rem;">
+      <label for="week-assign-custom">Or another date</label>
+      <input type="date" id="week-assign-custom" value="${task.plannedFor || ''}">
+    </div>
+  `;
+  document.querySelectorAll('.week-assign-day').forEach((btn) => {
+    btn.addEventListener('click', () => { onAssign(btn.dataset.date); closeModal(); });
+  });
+  const poolBtn = document.querySelector('.week-assign-pool');
+  if (poolBtn) poolBtn.addEventListener('click', () => { onAssign(''); closeModal(); });
+  activeSubmit = () => {
+    const d = document.getElementById('week-assign-custom').value;
+    if (d) { onAssign(d); closeModal(); }
   };
   openModal();
 }

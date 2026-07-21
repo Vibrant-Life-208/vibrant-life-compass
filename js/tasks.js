@@ -4,6 +4,9 @@
 import { getTasksForDate, saveTask, toggleTaskDone, deleteTask, moveTask, getLearner } from './store.js';
 import { getStudio, OVERFLOW_COPY } from './studios.js';
 import { openTaskModal, openMoveTaskModal } from './modals.js';
+import { taskColorStyle, taskBand } from './wheel.js';
+
+const BAND_LABEL = { recurring: 'rhythm', weekly: 'weekly', milestone: 'milestone' };
 
 export function todayISO() {
   const d = new Date();
@@ -62,12 +65,21 @@ function renderTaskCard(learnerId, task) {
   // choice beside it, never a failure. A one-off keeps the check-it-off toggle.
   card.className = 'task-card' + (done && !isRhythm ? ' task-done' : '') + (isRhythm ? ' task-rhythm' : '');
   card.dataset.taskId = task.id;
+  // Wheel-colour rail: hue = region, shade = band (recurring light / weekly colour /
+  // milestone dark). Tasks without a region render neutral (no rail).
+  const style = taskColorStyle(task);
+  const band = taskBand(task);
+  if (style) {
+    card.style.borderLeft = `4px solid ${style.bg}`;
+    card.dataset.band = band || '';
+  }
+  const bandTag = (style && band) ? `<span class="task-band-tag" style="background:${style.bg};color:${style.fg}">${BAND_LABEL[band] || ''}</span>` : '';
   const lead = isRhythm
     ? `<span class="task-rhythm-mark" title="A rhythm you come back to" aria-label="A rhythm you come back to">↻</span>`
     : `<button type="button" class="task-check" data-action="toggle" aria-label="${done ? 'Mark open' : 'Mark done'}">${done ? '●' : '○'}</button>`;
   card.innerHTML = `
     ${lead}
-    <p class="task-text">${escapeHtml(task.text)}</p>
+    <p class="task-text">${escapeHtml(task.text)}${bandTag}</p>
     <div class="task-actions">
       <button type="button" class="btn-text task-action-btn" data-action="move">Move</button>
       <button type="button" class="btn-text task-action-btn" data-action="delete">Delete</button>

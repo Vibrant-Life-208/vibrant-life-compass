@@ -10,6 +10,7 @@
 
 import { getLearner, getGoals, getTasksForRange } from './store.js';
 import { getYearCalendar, getStudioName } from './studios.js';
+import { taskColorStyle } from './wheel.js';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -212,10 +213,20 @@ function buildMonth(year, month, ctx) {
 
     const dayTasks = tasksByDay[dISO];
     if (dayTasks && dayTasks.length) {
-      const dot = document.createElement('span');
-      dot.className = 'cal-task-dot';
-      if (dayTasks.length > 1) dot.classList.add('is-multi');
-      cell.appendChild(dot);
+      // One dot per task (up to 4), coloured by the task's wheel-region shade so the
+      // month reads the same colour language as North + the task list. Colourless
+      // tasks (no region) fall back to the neutral dot.
+      const dots = document.createElement('span');
+      dots.className = 'cal-task-dots';
+      dayTasks.slice(0, 4).forEach((t) => {
+        const dot = document.createElement('span');
+        dot.className = 'cal-task-dot';
+        const style = taskColorStyle(t);
+        if (style) dot.style.background = style.bg;
+        dots.appendChild(dot);
+      });
+      if (dayTasks.length > 4) { const more = document.createElement('span'); more.className = 'cal-task-more'; more.textContent = '+'; dots.appendChild(more); }
+      cell.appendChild(dots);
       const titles = dayTasks.map((t) => (t.text || '').trim()).filter(Boolean).join(' · ');
       cell.title = `${dayTasks.length} task${dayTasks.length === 1 ? '' : 's'}${titles ? ': ' + titles : ''}`;
     }
