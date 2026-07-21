@@ -6,7 +6,7 @@ import { openGoalModal, openQuoteModal, openHorizonModal, openTraitsModal, openC
 import { isCurrentWheelBuild } from './thresholds.js';
 import { renderYearMap } from './year-map.js';
 import { getYearMapClickHandler } from './north.js';
-import { renderLifeWheel, getWheelAreas } from './wheel.js';
+import { renderLifeWheel, getWheelAreas, COMPASS_V2, regionForLabel, regionIdForCategory } from './wheel.js';
 
 let wired = false;
 
@@ -329,7 +329,11 @@ export async function renderYearView(learnerId) {
   // real text. No more wall of empty category shells - planning happens in Setup's
   // guided walkthrough (js/setup.js); this page shows what's been planned. A goal
   // for a not-yet-started area is added in Setup, not here.
-  const goalFor = (cat) => goals.find((g) => g.categoryId === cat.id && g.text && g.text.trim().length > 0);
+  // Under the fixed compass, a goal's legacy slice id (slice_movement) resolves
+  // to its region id (slice_self) so existing goals match their region card and
+  // never orphan. Non-slice/academic ids pass through unchanged.
+  const catIdOf = (g) => (COMPASS_V2 ? regionIdForCategory(g.categoryId) : g.categoryId);
+  const goalFor = (cat) => goals.find((g) => catIdOf(g) === cat.id && g.text && g.text.trim().length > 0);
   const plannedCategories = categories.filter((cat) => goalFor(cat));
 
   // A pitcher plans on the studio they're growing INTO, so their year goals land on
@@ -342,7 +346,7 @@ export async function renderYearView(learnerId) {
   const orphanSliceGoals = goals.filter((g) =>
     g.text && g.text.trim().length > 0 &&
     typeof g.categoryId === 'string' && g.categoryId.startsWith('slice_') &&
-    !knownCatIds.has(g.categoryId)
+    !knownCatIds.has(catIdOf(g))
   );
 
   // Nothing planned yet -> point at the walkthrough, not a blank grid.
@@ -356,7 +360,13 @@ export async function renderYearView(learnerId) {
 
   // Which wheel slice does this category live in? A goal's own lifeArea wins
   // over the category's declared home, so a placement can be overridden per goal.
-  const sliceForCategory = (cat, goal) => (goal?.lifeArea || lifeAreaForCategory(cat.id)) || null;
+  const sliceForCategory = (cat, goal) => {
+    const raw = (goal?.lifeArea || lifeAreaForCategory(cat.id)) || null;
+    // Legacy lifeArea labels (Movement, Heart, ...) resolve to their region for
+    // grouping. NOTE: the goal-arc becoming cadence keys off the RAW label, not
+    // this normalized value, so old Heart/Spirit goals keep their presence spine.
+    return (COMPASS_V2 ? regionForLabel(raw) : raw) || null;
+  };
 
   // Guide-summer (adult proving ground, Decision 3) gets the 1-year-by-wheel-
   // slice view. Learner studios keep the flat list until the learner mapping is

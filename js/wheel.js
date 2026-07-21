@@ -8,11 +8,43 @@
 // (Play->Fun->Joy, Heart->Emotions, Learning->Mind, Calling->Career). Abstract
 // areas appear only when a person can hold them (Spirit/Mind mid-childhood;
 // Time/Money/Calling adolescence; Partner/Finances/Career adulthood).
-// FLAG (2026-07-20): the fixed four-region compass draw. Set false to restore
-// the tiered Wheel of Life below. DRAW-ONLY - does not change goal categories
-// (getWheelAreas still returns the tiered areas until the taxonomy migration).
+// FLAG (2026-07-20): the fixed four-region compass. Set false to restore the
+// tiered Wheel of Life below. Step 1 = the draw; step 2 = the taxonomy (goal
+// categories become the regions, with a legacy-id shim so no existing goal
+// orphans; the DB rewrite is deferred to the last step).
 // Ref: docs/design/2026-07-20-four-region-compass-mapping-v1.md
-const COMPASS_V2 = true;
+export const COMPASS_V2 = true;
+
+// The five fixed regions - one shared map for every learner. Voice is the
+// sovereign center; it also holds "becoming" goals.
+export const COMPASS_REGIONS = ['Self', 'Others', 'Making', 'World', 'Voice'];
+const REGION_SET = new Set(COMPASS_REGIONS.map((r) => r.toLowerCase()));
+// Old tiered wheel-area label (lowercased) -> new region. The compatibility shim
+// so existing goals (keyed by the old area) resolve to their region and never
+// orphan. Ratified 2026-07-20 (Accord / Jake / TCC).
+const LEGACY_TO_REGION = {
+  movement: 'Self', heart: 'Self', emotions: 'Self', joy: 'Self', play: 'Self', fun: 'Self', time: 'Self',
+  family: 'Others', friends: 'Others', home: 'Others', partner: 'Others',
+  money: 'Making', finances: 'Making', career: 'Making', calling: 'Making',
+  mind: 'World', learning: 'World',
+  spirit: 'Voice',
+};
+// A legacy or region area label -> its region label. Unknown labels pass through.
+export function regionForLabel(label) {
+  if (!label) return null;
+  const k = String(label).trim().toLowerCase();
+  if (REGION_SET.has(k)) return COMPASS_REGIONS.find((r) => r.toLowerCase() === k);
+  return LEGACY_TO_REGION[k] || label;
+}
+// A legacy or region slice-category id -> its region id. Non-slice ids (academic
+// categories) and unknown slice ids pass through unchanged.
+export function regionIdForCategory(categoryId) {
+  if (typeof categoryId !== 'string' || !categoryId.startsWith('slice_')) return categoryId;
+  const key = categoryId.slice(6);
+  if (REGION_SET.has(key)) return categoryId;
+  const region = LEGACY_TO_REGION[key];
+  return region ? 'slice_' + region.toLowerCase() : categoryId;
+}
 
 const WHEEL_TIERS = {
   sparks:         ['Movement', 'Heart', 'Family', 'Play'],
@@ -27,6 +59,7 @@ const ADULT_AREAS = WHEEL_TIERS['guide-summer'];
 // Which areas belong to this studio's wheel. Unknown/null studios default to the
 // full adult ring - "hold your whole life in view" is never wrong for an adult.
 export function getWheelAreas(studio) {
+  if (COMPASS_V2) return COMPASS_REGIONS;
   return WHEEL_TIERS[studio] || ADULT_AREAS;
 }
 

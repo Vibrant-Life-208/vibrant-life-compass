@@ -1,4 +1,4 @@
-import { getWheelAreas } from './wheel.js';
+import { getWheelAreas, COMPASS_V2, regionForLabel } from './wheel.js';
 
 // Per-studio category configuration.
 // PLACEHOLDER — confirm with guides before code-finalizing.
@@ -341,7 +341,10 @@ export const CATEGORY_LIFE_AREA = {
 // A caller-supplied override (e.g. a goal's own lifeArea) should win over this
 // default - this is only the category's declared home.
 export function lifeAreaForCategory(categoryId) {
-  return CATEGORY_LIFE_AREA[categoryId] ?? null;
+  const area = CATEGORY_LIFE_AREA[categoryId] ?? null;
+  // Under the fixed compass, an academic category's declared home resolves to
+  // its region (Movement -> Self, Mind -> World, ...). regionForLabel(null)=null.
+  return COMPASS_V2 ? regionForLabel(area) : area;
 }
 
 // Overflow prompt copy, tuned per studio voice. Praesens + Polaris design.
