@@ -26,12 +26,15 @@ import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
 import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, getOnboardingState, saveLearner, addNotification } from './store.js';
 import { isNewToTribe } from './tribe-roster.js';
 import { isEnrolled } from './flags.js';
+import { renderRecordSpike } from './observatory/record-spike.js';
 
-// --- Strangler-fig seam (Phase 0). Observatory (new UI) view registry — EMPTY for now.
+// --- Strangler-fig seam (Phase 0). Observatory (new UI) view registry.
 // An environment renders the new UI only if it has an entry here AND the user is enrolled
-// (see js/flags.js, ROLLOUT_PCT = 0). Empty registry => every tab falls through to the
-// legacy chain in showTab() below. This is a pure no-op until views are registered. ---
-const observatoryViews = {};
+// (see js/flags.js, ROLLOUT_PCT = 0). The single entry below is the throwaway Lit spike,
+// reachable only via ?ui=observatory; for everyone else every tab falls through to legacy. ---
+const observatoryViews = {
+  'record-view': renderRecordSpike, // PHASE-0 Lit spike (Record tab, ?ui=observatory only)
+};
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
