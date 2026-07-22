@@ -26,12 +26,15 @@ import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
 import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, getOnboardingState, saveLearner, addNotification } from './store.js';
 import { isNewToTribe } from './tribe-roster.js';
 import { isEnrolled } from './flags.js';
+import { renderAcademics } from './observatory/academics.js';
 
-// --- Strangler-fig seam (Phase 0). Observatory (new UI) view registry — EMPTY for now.
+// --- Strangler-fig seam. Observatory (new UI) view registry.
 // An environment renders the new UI only if it has an entry here AND the user is enrolled
-// (see js/flags.js, ROLLOUT_PCT = 0). Empty registry => every tab falls through to the
-// legacy chain in showTab() below. This is a pure no-op until views are registered. ---
-const observatoryViews = {};
+// (see js/flags.js, ROLLOUT_PCT = 0). Non-enrolled users always fall through to the legacy
+// chain in showTab() below. Phase 1 MVP: Academics mounts on the record-view slot (own tab = Group E). ---
+const observatoryViews = {
+  'record-view': renderAcademics,
+};
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
