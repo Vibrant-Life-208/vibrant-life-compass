@@ -37,6 +37,16 @@ enrolled (`js/flags.js`); everyone else falls through to the legacy chain. Flip 
 - **Draft-persistence:** nothing a learner types is ever lost (see the Academics env for the pattern).
 - When an env first imports Lit, add the vendored files to `sw.js` CORE and bump the cache.
 
+## Environment types (not every environment is a goal)
+
+Build the right shape per environment:
+
+- **Goal-bearing (use the Trail + goal flow):** **Academics · Life Skills · Creator Mindset** — a goal with baseline · now · goal.
+- **Accountability:** **Connection** — partner check-ins + book discussion. No goal, no Trail.
+- **Reflective:** **Purpose** — the four boxes (Values · Passion · Contribution · Hero's Journey). No goal.
+
+The `<vlc-trail>` component and the goal flow are shared across the three goal-bearing environments only.
+
 ## Status
 
 - **Vendored Lit:** `js/vendor/lit-core.min.js` (3.2.1) + `lit-css-tag.min.js` — pinned, self-contained, offline, no CDN.
