@@ -4,9 +4,12 @@
 // until a guide confirms tone.
 
 import { getGoals, getCheckIns } from './store.js';
+import { deadWatch, deadEnabled } from './dead-watch.js'; // Phase 0 dark-watch (retirement candidate)
 
 export async function renderPatterns(learnerId) {
   const list = document.getElementById('patterns-list');
+  deadWatch('patterns');
+  if (!deadEnabled('patterns')) { if (list) list.innerHTML = ''; return; } // Phase 0 kill-switch (default ON)
   const [goals, checkIns] = await Promise.all([
     getGoals(learnerId),
     getCheckIns(learnerId),

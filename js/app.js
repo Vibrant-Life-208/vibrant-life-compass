@@ -25,6 +25,13 @@ import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
 import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, getOnboardingState, saveLearner, addNotification } from './store.js';
 import { isNewToTribe } from './tribe-roster.js';
+import { isEnrolled } from './flags.js';
+
+// --- Strangler-fig seam (Phase 0). Observatory (new UI) view registry — EMPTY for now.
+// An environment renders the new UI only if it has an entry here AND the user is enrolled
+// (see js/flags.js, ROLLOUT_PCT = 0). Empty registry => every tab falls through to the
+// legacy chain in showTab() below. This is a pure no-op until views are registered. ---
+const observatoryViews = {};
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -543,6 +550,15 @@ async function showTab(tabId, learnerId) {
   document.querySelectorAll('.tab-content').forEach((c) => {
     c.classList.toggle('active', c.id === tabId);
   });
+
+  // Strangler-fig seam: an observatory view renders only if registered AND the user is enrolled;
+  // otherwise fall through to the legacy chain below. observatoryViews is empty => always legacy.
+  if (observatoryViews[tabId]) {
+    try {
+      const session = await getSession();
+      if (isEnrolled(session)) { await observatoryViews[tabId](learnerId, session); return; }
+    } catch (e) { console.warn('observatory seam -> legacy fallback:', e); }
+  }
 
   if (tabId === 'north-view') { await renderNorth(learnerId); applyLandscape(); }
   if (tabId === 'year-view') await renderYearView(learnerId);

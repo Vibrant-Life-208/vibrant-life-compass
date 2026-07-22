@@ -6,6 +6,8 @@
 // mapped to their region so none orphan.
 // Ref: docs/design/2026-07-20-four-region-compass-mapping-v1.md
 
+import { deadWatch } from './dead-watch.js'; // Phase 0 dark-watch (trace only; DATA-BACKED, no kill-switch)
+
 // The five fixed regions - one shared map for every learner. Voice is the
 // sovereign center; it also holds "becoming" goals.
 export const COMPASS_REGIONS = ['Self', 'Others', 'Making', 'World', 'Voice'];
@@ -25,6 +27,7 @@ export function regionForLabel(label) {
   if (!label) return null;
   const k = String(label).trim().toLowerCase();
   if (REGION_SET.has(k)) return COMPASS_REGIONS.find((r) => r.toLowerCase() === k);
+  if (LEGACY_TO_REGION[k]) deadWatch('legacyToRegion:label'); // a live goal still keyed by an old area
   return LEGACY_TO_REGION[k] || label;
 }
 // A legacy or region slice-category id -> its region id. Non-slice ids (academic
@@ -34,6 +37,7 @@ export function regionIdForCategory(categoryId) {
   const key = categoryId.slice(6);
   if (REGION_SET.has(key)) return categoryId;
   const region = LEGACY_TO_REGION[key];
+  if (region) deadWatch('legacyToRegion:category'); // a live goal still keyed by an old slice id
   return region ? 'slice_' + region.toLowerCase() : categoryId;
 }
 
