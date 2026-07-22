@@ -13,9 +13,10 @@ import { CATEGORIES } from '../studios.js';
 import { openYearGoalModal } from '../modals.js';
 
 const ACC = '#EE6C2B'; // Academics pillar = oranges
-const ACADEMIC = Object.entries(CATEGORIES)
-  .filter(([, c]) => c.kind === 'core')
-  .map(([id, c]) => ({ id, name: c.name }));
+// Academic subjects (kind:'core' also tags non-academic categories like Character, so use an
+// explicit list): Math · Reading · Writing · Civ. (New-map "Language Arts" = Reading + Writing.)
+const ACADEMIC_IDS = ['khan', 'reading', 'noRedInk', 'civ'];
+const ACADEMIC = ACADEMIC_IDS.filter((id) => CATEGORIES[id]).map((id) => ({ id, name: CATEGORIES[id].name }));
 
 class AcademicsEnv extends LitElement {
   static properties = { _goals: { state: true }, _checks: { state: true }, _loading: { state: true } };
