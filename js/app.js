@@ -26,13 +26,16 @@ import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits,
 import { isNewToTribe } from './tribe-roster.js';
 import { isEnrolled } from './flags.js';
 import { renderAcademics } from './observatory/academics.js';
+import { renderObservatory } from './observatory/observatory-stack.js';
 
 // --- Strangler-fig seam. Observatory (new UI) view registry.
 // An environment renders the new UI only if it has an entry here AND the user is enrolled
 // (see js/flags.js, ROLLOUT_PCT = 0). Non-enrolled users always fall through to the legacy
-// chain in showTab() below. Phase 1 MVP: Academics mounts on the record-view slot (own tab = Group E). ---
+// chain in showTab() below. Phase 1 MVP: Academics mounts on the record-view slot (own tab = Group E).
+// Observatory disc-stack mounts on the Compass (year-view) — its spec home (§1). Both flag-gated. ---
 const observatoryViews = {
   'record-view': renderAcademics,
+  'year-view': renderObservatory,
 };
 
 // renderEnvironment(env) — the formal seam. Two dials, both must be true for the new UI:
