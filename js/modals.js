@@ -2660,7 +2660,17 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     return v.filter(Boolean);
   }
   function climbStrengthsList() {
-    return (state.strengthResult?.top8 || state.strengths || []).filter(Boolean).slice(0, 5);
+    // state.strengthResult.top8 (fresh VIA upload) and state.strengths (loaded on resume) both
+    // hold VIA strength IDs (e.g. 'love_of_learning'), not display names. Map each id to its
+    // human label from the VIA lexicon so Connection, the Pillars echo, and the Threshold mirror
+    // show "Love of Learning", never the raw id. Unknown ids fall back to a de-underscored form.
+    const ids = (state.strengthResult?.top8 || state.strengths || []).filter(Boolean).slice(0, 5);
+    const lex = state.viaStrengths || [];
+    return ids.map((id) => {
+      const s = lex.find((x) => x.id === id);
+      const label = s && (s.display_label_child || s.display_label_adult);
+      return label || String(id).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    });
   }
   function climbChips(items) {
     if (!items.length) return '';
@@ -2727,7 +2737,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     ];
     return `
       <div class="onb-climb onb-climb-reveal">
-        <p class="onb-climb-kicker">The Observatory</p>
+        <p class="onb-climb-kicker">Your Pillars</p>
         <h3 class="onb-climb-head">You laid the foundation. Watch what stands on it.</h3>
         <p class="onb-climb-body">Five Pillars, rising from the base you built. Each one, and why it is here.</p>
         <ol class="onb-climb-pillars">
