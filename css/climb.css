@@ -76,3 +76,26 @@
 .onb-threshold-value .onb-climb-chips { margin: 0.1rem 0 0; }
 .onb-threshold-actions { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
 .onb-threshold-actions .btn-primary { width: 100%; }
+
+/* The mountain (W8): Vibrant Life's five Values as stacked Discs that build ONE PER PAGE from a
+   wide base (Purpose) to a narrow apex (Academics). Only revealed Discs show; the newest is
+   .active. Motion is opacity/transform only (page-spec §0), reduced-motion safe. */
+.onb-climb-mountain .onb-mountain { list-style: none; padding: 0; margin: 0.9rem 0 1rem; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.onb-mountain-band {
+  box-sizing: border-box; padding: 0.5rem 0.8rem; border-radius: 8px; text-align: center;
+  background: var(--band); color: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  animation: onb-disc-rise 0.4s ease-out;
+}
+.onb-mountain-band.base { border-radius: 8px 8px 12px 12px; }
+.onb-mountain-band.active { box-shadow: 0 0 0 3px rgba(255,255,255,0.55), 0 3px 10px rgba(0,0,0,0.28); }
+.onb-mountain-name { display: block; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.01em; }
+.onb-mountain-vals { display: block; font-size: 0.8rem; font-weight: 600; margin-top: 0.3rem; padding-top: 0.3rem; border-top: 1px solid rgba(255,255,255,0.35); }
+.onb-mountain-why { margin-top: 0.4rem; }
+.onb-mountain-echo { margin: 0.4rem 0 0; color: var(--sage); font-size: 0.9rem; font-style: italic; }
+@keyframes onb-disc-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .onb-mountain-band { animation: none; } }
+
+/* Connection (W9) sub-category ties - the four subs named with their on-screen relationships. */
+.onb-climb-subs { list-style: none; padding: 0; margin: 0.5rem 0 0.9rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.onb-climb-subs li { font-size: 0.9rem; color: var(--text-soft); line-height: 1.45; }
+.onb-climb-sub-name { font-weight: 600; color: var(--text); }

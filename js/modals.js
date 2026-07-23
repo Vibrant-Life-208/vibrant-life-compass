@@ -1412,10 +1412,13 @@ const CASCADE_SPARKS = ['breath', 'within_1yr'];
 const CLIMB_FULL = [
   'breath',            // W0  - body-first door
   'strengths',         // W2  - VIA toolkit (+ strengths_why)
-  'values',            // W3  - be vulnerable (+ values_why before)
-  'purpose_bridge',    // W4  - values -> purpose reflection
-  'purpose',           // W5-W7 - Purpose shown + base + four boxes (Values pre-filled)
-  'pillars_rise',      // W8  - the reveal: five Pillars rise, each "why" spoken
+  'values',            // W3  - be vulnerable (+ values_why before). The old W4 values->purpose
+                       //   bridge is folded into the Purpose framing below (no orphan capture).
+  'purpose',           // W5-W7 - Purpose shown + base + four Discs (Values pre-filled)
+  'mountain',          // W8  - THE MOUNTAIN: Vibrant Life's five Values as stacked Discs, rising
+                       //   ONE DISC PER PAGE (base->apex) with each Disc's "why", until the whole
+                       //   mountain stands. (Europa 2026-07-23: mountain = the slow Page-8 reveal;
+                       //   units are "Discs"; matches the parent five-disc pyramid graphic.)
   'connection',        // W9  - Connection + Conscious Living (seeded from W2 strengths)
   'creator_intro',     // W10 - Creator Mindset environment
   'beyond_5yr',        // W11 - Curiosity: the vision ladder (10yr)
@@ -1441,10 +1444,28 @@ const CLIMB_FULL = [
 // no onboarding_step Postgres enum change is needed to ship the walk.
 const NON_RESUME_STEPS = new Set([
   'pitch', 'slice_plan', 'strengths_why', 'values_why',
-  'purpose_bridge', 'purpose', 'pillars_rise', 'connection', 'creator_intro',
+  'mountain', 'purpose', 'connection', 'creator_intro',
   'life_skills', 'life_skills_woop',
   'academics_intro', 'academics_math', 'academics_reading', 'academics_la', 'threshold',
 ]);
+
+// W8 THE MOUNTAIN - Vibrant Life's five Values as stacked Discs, base -> apex. The "why" lines are
+// the fleet-approved, primary-source-verified reveal copy (COMPASS-CLIMB-SPEC W8, older-tier): a
+// reflection of what researchers found, never a promise to the child. echo marks which learner
+// input is mirrored back on that Disc (INV-2): Purpose echoes their values, Connection their
+// strengths. Colors from the page-spec disc palette.
+const MOUNTAIN_DISCS = [
+  { name: 'Purpose', color: '#E01230', echo: 'values',
+    why: 'Researchers have found that when people take time to name what they value, they handle stress and setbacks better and make choices that feel more like their own. Purpose is not a prize to win - it is a heading you can already set.' },
+  { name: 'Connection', color: '#7A3E9D', echo: 'strengths',
+    why: 'One of the longest studies ever done on happiness found that the quality of our relationships - more than money or fame - is the clearest and most consistent predictor of a healthy, happy life. Belonging is not a bonus. It is a human need, as basic as any.' },
+  { name: 'Creator Mindset', color: '#F5A623',
+    why: 'Researchers disagree about how much a "growth mindset" by itself changes grades - large reviews find the average effect small and easy to overstate, while one national study found a real but modest boost for students who were struggling, in schools that backed it up. What holds steadier: how you meet a challenge, and learning to steady your emotions, matters - alongside good teaching and real support, not on its own.' },
+  { name: 'Life Skills', color: '#1CA08D',
+    why: 'Health and education groups worldwide treat life skills - leading, making an idea real, managing money, tending your wellbeing - as core capacities, not extras. Studies link training in them to steadier work and money later. These are learnable, and there is no reason to wait.' },
+  { name: 'Academics', color: '#EE6C2B',
+    why: 'Reading researcher Maryanne Wolf describes how deep reading - slow, reflective reading - is not wired in at birth; the brain builds it, and with it the capacity to infer, reflect, and empathize. Academics are tools for understanding the world, and they are built, not given.' },
+];
 
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
@@ -1652,6 +1673,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     //          reading:{current,want:[]}, la:{program,link,baseline} }.
     climb: {},
     climbFoundations: {}, // the full foundations blob, so a write merges rather than clobbers
+    mountainIdx: 0, // W8 the mountain: which Disc is rising right now (0..4, base->apex)
   };
 
   // PROTECTED STRING (meeting 2026-07-21, Decisions 1 & 4). This modal title is the SINGLE,
@@ -1779,6 +1801,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // Stage O: entering the slice-plan step fresh - start the per-slice walk at its
     // intro page (orients before the year pass; behind the flag; legacy grid ignores this).
     if (currentWheel && steps[state.idx] === 'slice_plan') state.sliceWalk = { pass: 'intro', idx: 0 };
+    // Entering the mountain forward starts at the base Disc (Purpose); it builds upward from there.
+    if (steps[state.idx] === 'mountain') state.mountainIdx = 0;
     if (profileId && !NON_RESUME_STEPS.has(steps[state.idx])) await setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
@@ -1804,6 +1828,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     captureClimb();
     state.idx -= 1;
     if (steps[state.idx] === 'pitch') state.pitchStage = 'ask-age';
+    // Backing INTO the mountain lands on its summit (whole mountain standing); page down from there.
+    if (steps[state.idx] === 'mountain') state.mountainIdx = MOUNTAIN_DISCS.length - 1;
     if (profileId && !NON_RESUME_STEPS.has(steps[state.idx])) setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
@@ -2677,18 +2703,37 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     return `<ul class="onb-climb-chips">${items.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`;
   }
 
-  // W4 - Values -> Purpose bridge. Echoes the learner's own W3 values as the material it
-  // reasons from. Reflection only; optional; nothing scored (guardrail: invitation, not demand).
-  function renderPurposeBridge() {
+  // W8 - THE MOUNTAIN. Vibrant Life's five Values as stacked Discs, rising ONE PER PAGE from the
+  // base (Purpose) to the apex (Academics), each with its research-grounded "why". state.mountainIdx
+  // is the Disc rising now; the stack shows every Disc revealed so far (base at the bottom), so the
+  // mountain visibly builds page by page until it stands whole. The learner's own values sit at
+  // the heart of the base; their strengths are echoed under Connection (INV-2). A reveal - nothing
+  // captured. Metaphor + copy per Europa 2026-07-23 (units are "Discs"; matches the parent graphic).
+  function renderMountain() {
+    const idx = Math.min(state.mountainIdx, MOUNTAIN_DISCS.length - 1);
+    const disc = MOUNTAIN_DISCS[idx];
     const vals = climbValuesList();
+    const strengths = climbStrengthsList();
+    const last = idx === MOUNTAIN_DISCS.length - 1;
+    // Discs revealed so far, drawn apex-first (top-down) so Purpose sits at the bottom as the base.
+    const rows = MOUNTAIN_DISCS.slice(0, idx + 1).map((d, di) => ({ d, di })).reverse();
+    let echo = '';
+    if (disc.echo === 'values' && vals.length) echo = `You named it: ${vals.slice(0, 3).join(', ')}.`;
+    else if (disc.echo === 'strengths' && strengths.length) echo = `Built on the strengths you carry: ${strengths.slice(0, 3).join(', ')}.`;
     return `
-      <div class="onb-climb onb-climb-bridge">
-        <p class="onb-climb-kicker">Purpose</p>
-        <h3 class="onb-climb-head">Your values are pointing somewhere.</h3>
-        ${vals.length ? `<p class="onb-climb-body">These are the values you named:</p>${climbChips(vals)}` : ''}
-        <p class="onb-climb-body">What do they point you toward - what kind of work, or life, or person do they aim you at? There is no polished answer to reach for. Follow the thread as far as it goes, or leave it and come back whenever you like.</p>
-        <textarea id="onb-climb-text" class="onb-horizon" rows="4" placeholder="These values point me toward..."></textarea>
-        ${navButtons({ skippable: true })}
+      <div class="onb-climb onb-climb-mountain">
+        <p class="onb-climb-kicker">Vibrant Life's Values${last ? '' : ` &middot; ${idx + 1} of ${MOUNTAIN_DISCS.length}`}</p>
+        <h3 class="onb-climb-head">${escapeHtml(disc.name)}</h3>
+        <ol class="onb-mountain" aria-label="Vibrant Life's values, building base to apex">
+          ${rows.map(({ d, di }) => `
+            <li class="onb-mountain-band${di === 0 ? ' base' : ''}${di === idx ? ' active' : ''}" style="--band:${d.color}; width:${100 - di * 12}%">
+              <span class="onb-mountain-name">${escapeHtml(d.name)}</span>
+              ${di === 0 && vals.length ? `<span class="onb-mountain-vals">${vals.map((v) => escapeHtml(v)).join(' &middot; ')}</span>` : ''}
+            </li>`).join('')}
+        </ol>
+        <p class="onb-climb-body onb-mountain-why">${escapeHtml(disc.why)}</p>
+        ${echo ? `<p class="onb-mountain-echo">${escapeHtml(echo)}</p>` : ''}
+        ${navButtons({ skippable: false, continueLabel: last ? 'The mountain stands' : 'Next' })}
       </div>`;
   }
 
@@ -2708,50 +2753,15 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <p class="onb-climb-kicker">Purpose - the foundation</p>
         <h3 class="onb-climb-head">The base you stand on.</h3>
         <p class="onb-climb-body">What matters to you, and the direction you move because of it. The things you hold as true, the work that pulls you in, the mark you want to leave for other people, and the long story you are living as its hero. Not a place to arrive - a compass you already carry.</p>
+        <p class="onb-climb-body">Your values point somewhere. Name any of these that feel ready - there is no polished answer to reach for, and the rest are yours to open any time.</p>
         <div class="onb-climb-boxes">
           ${box('values', 'Values', '', null)}
           ${box('passion', 'Passion', 'What pulls you in?', state.climb.passion)}
           ${box('contribution', 'Contribution', 'The mark you want to leave for others?', state.climb.contribution)}
-          ${box('hero', "Hero's Journey", 'The long story you are the hero of?', state.climb.hero)}
+          ${box('hero', "Hero's Journey", 'The long story you are the hero of - your Self, your North.', state.climb.hero)}
         </div>
-        <p class="onb-climb-note">Your Values are already here, in your own words. The other three are yours to open any time from your Purpose - there is no need to fill them to move on.</p>
+        <p class="onb-climb-note">Your Values are already here, in your own words. Hero's Journey is where Purpose meets your Self - your North. The three open pieces are yours to fill any time from your Purpose - there is no need to fill them to move on.</p>
         ${navButtons({ skippable: true })}
-      </div>`;
-  }
-
-  // W8 - YOUR PILLARS RISE. The keystone reveal. Plain stacked reveal for the walkable build
-  // (the 3D-disc animation is a later layer); the meaning lives in the learner recognizing
-  // their own words inside the Purpose + Connection "why" (INV-3, the Closable Test).
-  function renderPillarsRise() {
-    const vals = climbValuesList();
-    const strengths = climbStrengthsList();
-    // base -> apex; colors from page spec §0.
-    const pillars = [
-      { name: 'Purpose', color: '#E01230', why: `Researchers have found that when people take time to name what they value, they handle stress and setbacks better and make choices that feel more like their own. Purpose is not a prize to win - it is a heading you can already set.`,
-        echo: vals.length ? `You named it: ${vals.slice(0, 3).join(', ')}.` : '' },
-      { name: 'Connection', color: '#7A3E9D', why: `One of the longest studies ever done on happiness found that the quality of our relationships - more than money or fame - is the clearest and most consistent predictor of a healthy, happy life. Belonging is not a bonus. It is a human need, as basic as any.`,
-        echo: strengths.length ? `Built on the strengths you carry: ${strengths.slice(0, 3).join(', ')}.` : '' },
-      { name: 'Creator Mindset', color: '#F5A623', why: `Researchers disagree about how much a "growth mindset" by itself changes grades - large reviews find the average effect small and easy to overstate, while one national study found a real but modest boost for students who were struggling, in schools that backed it up. What holds steadier: how you meet a challenge, and learning to steady your emotions, matters - alongside good teaching and real support, not on its own.`, echo: '' },
-      { name: 'Life Skills', color: '#1CA08D', why: `Health and education groups worldwide treat life skills - leading, making an idea real, managing money, tending your wellbeing - as core capacities, not extras. Studies link training in them to steadier work and money later. These are learnable, and there is no reason to wait.`, echo: '' },
-      { name: 'Academics', color: '#EE6C2B', why: `Reading researcher Maryanne Wolf describes how deep reading - slow, reflective reading - is not wired in at birth; the brain builds it, and with it the capacity to infer, reflect, and empathize. Academics are tools for understanding the world, and they are built, not given.`, echo: '' },
-    ];
-    return `
-      <div class="onb-climb onb-climb-reveal">
-        <p class="onb-climb-kicker">Your Pillars</p>
-        <h3 class="onb-climb-head">You laid the foundation. Watch what stands on it.</h3>
-        <p class="onb-climb-body">Five Pillars, rising from the base you built. Each one, and why it is here.</p>
-        <ol class="onb-climb-pillars">
-          ${pillars.map((p) => `
-            <li class="onb-climb-pillar">
-              <span class="onb-climb-pillar-dot" style="background:${p.color}"></span>
-              <div class="onb-climb-pillar-text">
-                <div class="onb-climb-pillar-name">${escapeHtml(p.name)}</div>
-                <p class="onb-climb-pillar-why">${escapeHtml(p.why)}</p>
-                ${p.echo ? `<p class="onb-climb-pillar-echo">${escapeHtml(p.echo)}</p>` : ''}
-              </div>
-            </li>`).join('')}
-        </ol>
-        ${navButtons({ skippable: false })}
       </div>`;
   }
 
@@ -2764,7 +2774,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <p class="onb-climb-kicker">Connection</p>
         <h3 class="onb-climb-head">You named what matters to you. Now - who do you matter with?</h3>
         <p class="onb-climb-body">How you are close to other people and how you move alongside them. Feeling what they feel, telling the truth and truly listening, living awake to the people and world around you, and belonging to something shared. The whole art of being with others, not around them.</p>
-        ${strengths.length ? `<p class="onb-climb-seed-label">This Pillar stands on the strengths you already named:</p>${climbChips(strengths)}` : ''}
+        <ul class="onb-climb-subs">
+          <li><span class="onb-climb-sub-name">Compassion</span> - feeling with others, and helping them grow.</li>
+          <li><span class="onb-climb-sub-name">Communication</span> - your voice: saying what is true, and truly listening.</li>
+          <li><span class="onb-climb-sub-name">Conscious Living</span> - living awake to the people and world you share.</li>
+          <li><span class="onb-climb-sub-name">Community</span> - belonging to something bigger; this is your Life piece.</li>
+        </ul>
+        <p class="onb-climb-body">Let's dive into <strong>Conscious Living</strong> - how your values and purpose come alive through the character strengths you named, and how those build connection.</p>
+        ${strengths.length ? `<p class="onb-climb-seed-label">This Disc stands on the strengths you already named:</p>${climbChips(strengths)}` : ''}
         <label class="onb-climb-label" for="onb-climb-text">How do these strengths show up in how you treat the people around you?</label>
         <textarea id="onb-climb-text" class="onb-horizon" rows="3" placeholder="With the people I care about, I...">${escapeHtml(state.climb.consciousLiving || '')}</textarea>
         <p class="onb-climb-note">Chosen time alone counts here too - solitude you pick is its own kind of full, not a gap in your life. The kind of alone that aches is the involuntary kind, and connection is what eases that one.</p>
@@ -2934,8 +2951,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   function captureClimb() {
     const step = curStep();
     const val = (id) => (document.getElementById(id)?.value || '').trim();
-    if (step === 'purpose_bridge') state.climb.bridge = val('onb-climb-text');
-    else if (step === 'purpose') {
+    if (step === 'purpose') {
       state.climb.passion = val('onb-climb-passion');
       state.climb.contribution = val('onb-climb-contribution');
       state.climb.hero = val('onb-climb-hero');
@@ -2965,6 +2981,20 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     state.climbFoundations = merged;
     return setProfileFoundations(profileId, merged);
   }
+
+  // W8 the mountain paging: Continue reveals the next Disc up the stack; only once the whole
+  // mountain stands does Continue advance to the next CLIMB step. Back pages down the stack,
+  // then out. Owns both buttons (wired via the wireStep early-return), so no generic handlers.
+  function wireMountain() {
+    document.getElementById('onb-continue')?.addEventListener('click', async () => {
+      if (state.mountainIdx < MOUNTAIN_DISCS.length - 1) { state.mountainIdx += 1; render(); }
+      else await advance(null);
+    });
+    document.getElementById('onb-back')?.addEventListener('click', () => {
+      if (state.mountainIdx > 0) { state.mountainIdx -= 1; render(); }
+      else back();
+    });
+  }
   // =======================================================================================
 
   function render() {
@@ -2977,9 +3007,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     else if (step === 'values') formFields.innerHTML = typeValues ? renderValuesType() : renderSelectStep({ kind: 'value', label: 'values' });
     else if (step === 'pitch') formFields.innerHTML = renderPitch();
     else if (step === 'slice_plan') formFields.innerHTML = renderSlicePlan();
-    else if (step === 'purpose_bridge') formFields.innerHTML = renderPurposeBridge();
+    else if (step === 'mountain') formFields.innerHTML = renderMountain();
     else if (step === 'purpose') formFields.innerHTML = renderPurpose();
-    else if (step === 'pillars_rise') formFields.innerHTML = renderPillarsRise();
     else if (step === 'connection') formFields.innerHTML = renderConnection();
     else if (step === 'creator_intro') formFields.innerHTML = renderCreatorIntro();
     else if (step === 'life_skills') formFields.innerHTML = renderLifeSkills();
@@ -3001,6 +3030,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // leave-open wiring, so skip the generic step handlers below. Flag off falls
     // through to the legacy grid wiring unchanged.
     if (currentWheel && step === 'slice_plan') { wireSliceWalk(); return; }
+
+    // W8 the mountain owns its own page-through (Disc by Disc); Continue advances the CLIMB step
+    // only once the whole mountain stands. Handles its own Back/Continue, so skip the generics.
+    if (step === 'mountain') { wireMountain(); return; }
 
     document.getElementById('onb-back')?.addEventListener('click', back);
     document.getElementById('onb-skip')?.addEventListener('click', skipStep);
@@ -3113,9 +3146,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         // to before Stage O: capture the boxes, then upsert non-empty slices as year goals.
         captureSlice();
         await advance(() => upsertYearGoals());
-      } else if (step === 'pillars_rise' || step === 'creator_intro' || step === 'academics_intro') {
-        await advance(null); // CLIMB reveal - nothing to persist
-      } else if (step === 'purpose' || step === 'purpose_bridge' || step === 'connection'
+      } else if (step === 'creator_intro' || step === 'academics_intro') {
+        await advance(null); // CLIMB reveal - nothing to persist (mountain pages via wireMountain)
+      } else if (step === 'purpose' || step === 'connection'
                  || step === 'life_skills' || step === 'life_skills_woop'
                  || step === 'academics_math' || step === 'academics_reading' || step === 'academics_la') {
         captureClimb();
