@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compass → Star Chart — the five per-Pillar asterisms (C6b preview)</title>
+<style>
+  /* §0: inline SVG only (no canvas); motion is opacity/transform ONLY; reduced-motion = static end-frame. */
+  :root{ --sky-top:#141a33; --sky-bot:#232a4d; --ink:#e7ebff; --muted:#9aa2cc; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    color:var(--ink); background:linear-gradient(to bottom,var(--sky-top),var(--sky-bot)); min-height:100vh; }
+  .wrap{ max-width:900px; margin:0 auto; padding:28px 20px 48px; }
+  h1{ font-size:20px; margin:0 0 4px; }
+  .sub{ color:var(--muted); font-size:13px; margin:0 0 6px; }
+  .rules{ color:var(--muted); font-size:12px; background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12); border-radius:9px; padding:8px 11px; margin:10px 0 22px; }
+  .rules b{ color:var(--ink); }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; }
+  .card{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.10);
+    border-radius:14px; padding:16px 12px 14px; text-align:center; }
+  /* the constellation svg — stars twinkle via opacity only; reduced-motion holds them steady. */
+  .card .aster-slot{ height:150px; display:flex; align-items:center; justify-content:center; }
+  .card svg.asterism{ width:150px; height:150px; overflow:visible; }
+  .card svg.asterism circle{ animation:tw 3.4s ease-in-out infinite; }
+  .card svg.asterism circle:nth-child(3n){ animation-delay:.9s; }
+  .card svg.asterism circle:nth-child(3n+1){ animation-delay:1.8s; }
+  @keyframes tw{ 0%,100%{opacity:1} 50%{opacity:.7} }
+  /* fade+scale in — transform/opacity only (mirrors spec §6 constellation arrival) */
+  .card{ opacity:0; animation:arrive .7s ease both; transform-origin:center; }
+  @keyframes arrive{ from{opacity:0; transform:translateY(8px) scale(.94)} to{opacity:1; transform:none} }
+  .card:nth-child(1){animation-delay:.05s} .card:nth-child(2){animation-delay:.16s}
+  .card:nth-child(3){animation-delay:.27s} .card:nth-child(4){animation-delay:.38s}
+  .card:nth-child(5){animation-delay:.49s}
+
+  /* label = not-color-alone: line-icon + Pillar name + shape name, in the Pillar color */
+  .cn{ display:flex; align-items:center; justify-content:center; gap:6px; margin-top:8px;
+    font-size:12px; font-weight:700; letter-spacing:.03em; }
+  .cn svg{ width:15px; height:15px; }
+  .shape{ color:var(--muted); font-size:11px; font-weight:500; letter-spacing:.02em; margin-top:2px; }
+
+  .constello{ margin-top:34px; }
+  .constello h2{ font-size:14px; letter-spacing:.04em; color:var(--muted); font-weight:600; margin:0 0 8px; }
+  /* the assembled sky: five asterisms placed around a fixed Polaris (spec §6 payoff view) */
+  .sky{ position:relative; height:360px; border:1px solid rgba(255,255,255,.10); border-radius:16px;
+    background:radial-gradient(120% 90% at 50% 40%, rgba(90,110,190,.18), transparent 70%); overflow:hidden; }
+  .sky .constl{ position:absolute; transform:translate(-50%,-50%); text-align:center; width:150px;
+    opacity:0; animation:arrive .8s ease both; }
+  .sky .constl svg.asterism{ width:120px; height:80px; overflow:visible; }
+  .sky .constl svg.asterism circle{ animation:tw 3.4s ease-in-out infinite; }
+  .sky .constl .cn{ margin-top:0; font-size:10px; }
+  .sky .constl .cn svg{ width:12px; height:12px; }
+  /* Polaris — fixed center, STEADY glow (does not breathe — spec §6). Static drop-shadow, no animation. */
+  .polaris{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; z-index:2; }
+  .polaris .pstar{ font-size:30px; line-height:1; color:#FFF3C4;
+    text-shadow:0 0 12px rgba(255,240,180,.85),0 0 22px rgba(255,220,120,.5); }
+  .polaris .plab{ font-size:9px; color:#cdd3ee; letter-spacing:.09em; margin-top:3px; }
+
+  .rm{ margin-top:20px; font-size:12px; color:var(--muted); }
+  @media (prefers-reduced-motion: reduce){
+    /* §0 rule 3: everything renders at its settled end-frame; no motion. */
+    .card, .sky .constl{ animation:none; opacity:1; transform:none; }
+    .card svg.asterism circle, .sky svg.asterism circle{ animation:none; opacity:1; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Compass → Star Chart — the five per-Pillar asterisms</h1>
+  <p class="sub">Phase 2 / C6b working shapes · standalone preview of <code>js/observatory/asterisms.js</code> · not wired into the app.</p>
+  <div class="rules">
+    <b>§0 honored:</b> inline SVG, no <code>&lt;canvas&gt;</code> · motion is <b>opacity/transform only</b> (stars twinkle by opacity; cards arrive by transform) · <b>prefers-reduced-motion → static end-frame</b> · not-color-alone: each carries a <b>line-icon + label + a distinct shape</b>. Each asterism is drawn as <b>stars + explicit edge lists</b> (branches, closed loops, and hubs — not connect-in-order).
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="constello">
+    <h2>ASSEMBLED — five constellations around a fixed Polaris (§6 vantage, not a score)</h2>
+    <div class="sky" id="sky">
+      <div class="polaris"><div class="pstar">✦</div><div class="plab">POLARIS · YOUR NORTH</div></div>
+    </div>
+  </div>
+
+  <p class="rm">Motion: <b>on</b>. Set your OS “Reduce motion” to see the static end-frames (stars hold steady, cards placed). Polaris holds a <b>steady</b> glow in both modes — the still point does not breathe (spec §6).</p>
+</div>
+
+<script type="module">
+  import { ASTERISMS, ICONS, asterismSVG } from './asterisms.js';
+
+  // 1) the five, labeled — the working shapes gallery
+  const grid = document.getElementById('grid');
+  const SHAPE_DESC = {
+    purpose: '4-point compass star',
+    connection: 'heart',
+    creator: 'spark burst',
+    lifeskills: 'sprout (stem + two leaves)',
+    academics: 'the W / Cassiopeia',
+  };
+  grid.innerHTML = ASTERISMS.map((a) => `
+    <div class="card">
+      <div class="aster-slot">${asterismSVG(a.key, { size: 150 })}</div>
+      <div class="cn" style="color:${a.starColor}">${ICONS[a.icon]}<span>${a.name}</span></div>
+      <div class="shape">${SHAPE_DESC[a.key] || ''}</div>
+    </div>`).join('');
+
+  // 2) assembled sky — the same five placed around Polaris (balanced ring; Polaris fixed at center)
+  const sky = document.getElementById('sky');
+  const POS = { // % positions around the fixed center (Polaris) — kept clear of its center label
+    purpose:    [50, 82],
+    connection: [19, 60],
+    academics:  [81, 60],
+    creator:    [30, 21],
+    lifeskills: [70, 21],
+  };
+  const frag = ASTERISMS.map((a, i) => {
+    const [x, y] = POS[a.key] || [50, 50];
+    return `<div class="constl" style="left:${x}%;top:${y}%;animation-delay:${(0.15 + i * 0.14).toFixed(2)}s">
+      ${asterismSVG(a.key, { size: 120, viewBox: '0 0 100 100' })}
+      <div class="cn" style="color:${a.starColor}">${ICONS[a.icon]}<span>${a.name}</span></div>
+    </div>`;
+  }).join('');
+  sky.insertAdjacentHTML('beforeend', frag);
+</script>
+</body>
+</html>

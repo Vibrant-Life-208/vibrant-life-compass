@@ -1,4 +1,4 @@
-const CACHE = 'heros-compass-v140';
+const CACHE = 'heros-compass-v141';
 const CORE = [
   '/',
   '/index.html',
@@ -20,6 +20,9 @@ const CORE = [
   '/js/pillars/creator.js',
   '/js/pillars/life-skills.js',
   '/js/pillars/academics.js',
+  '/js/observatory/pillar-disc.js',
+  '/js/observatory/observatory-stack.js',
+  '/js/observatory/asterisms.js',
   '/js/arrive.js',
   '/js/auth.js',
   '/js/family.js',

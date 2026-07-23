@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>observatory-stack — composition · Dome · Star Chart (SSC review harness)</title>
+<style>
+  :root{ --cream:#F4EFE6; --ink:#2C2A28; --muted:#6E655C; --line:#DCD3C6; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5;
+    padding:22px 18px 70px}
+  .wrap{max-width:640px;margin:0 auto}
+  h1{font-size:21px;margin:0 0 2px}
+  .sub{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+  .rules{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:16px;background:#fff}
+  .rules b{color:var(--ink)}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .controls button{font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;color:var(--ink);
+    border-radius:999px;padding:6px 13px;cursor:pointer}
+  .controls button:hover{border-color:var(--ink)}
+  .note{font-size:11.5px;color:var(--muted);margin-top:12px}
+  .note b{color:var(--ink)}
+  .gate{font-size:11.5px;border:1px solid #d9b400;background:#fff8dd;border-radius:10px;padding:10px 12px;margin-top:16px}
+  .gate b{color:#7a5c00}
+</style>
+</head><body>
+<div class="wrap">
+  <h1>Observatory — composition · Dome · Star Chart</h1>
+  <p class="sub">Standalone review harness (C6c/C6d/C6e). Not the app; drives states directly for SSC pacing review.</p>
+  <div class="rules">
+    <b>Render contract (§0):</b> inline SVG only, no canvas · opacity/transform only · reduced-motion = static end-frame · not-color-alone · no completeness signal.
+    <br><b>C6c state</b> is normally derived from store.js goals; here the buttons set it so you can reach the all-Energy Dome cue.
+  </div>
+
+  <div class="controls">
+    <button data-set="frame">All FRAME (no work yet)</button>
+    <button data-set="dressed">All DRESSED (entered Adventure)</button>
+    <button data-set="mixed">Mixed (real-ish: Academics dressed, rest frame)</button>
+    <button data-set="energy">All ENERGY (structure stands → Dome cue)</button>
+  </div>
+
+  <observatory-stack id="obs"></observatory-stack>
+
+  <p class="note">
+    <b>To walk the rite:</b> click <b>All ENERGY</b>, then the "The Observatory stands — open the Dome" button that appears.
+    The two shells part (threshold-hold first), the star field fades in, and the five discs give way to the Star Chart
+    around a steady Polaris. "Back to the Observatory" returns. Toggle OS "Reduce Motion" to verify the end-frames
+    (Dome already-open, constellations already-placed).
+  </p>
+
+  <div class="gate">
+    <b>SSC MOTION GATE (§11):</b> this motion stays behind the 0% flag and does <b>not</b> ship to any learner until
+    @kehleyr (somatic pacing/arousal) and @jake-sisko (no-completeness / earned-not-rewarded) sign off. The all-Energy
+    trigger is a <b>structural</b> cue ("the structure stands"), never a "5/5" meter.
+  </div>
+</div>
+
+<script type="module">
+  import './observatory-stack.js';
+  const el = document.getElementById('obs');
+  const KEYS = ['academics', 'lifeskills', 'creator', 'connection', 'purpose'];
+  const setAll = (state) => { el.pillars = KEYS.map((key) => ({ key, state })); };
+  const presets = {
+    frame:   () => setAll('frame'),
+    dressed: () => setAll('dressed'),
+    energy:  () => setAll('energy'),
+    mixed:   () => { el.pillars = KEYS.map((key) => ({ key, state: key === 'academics' ? 'dressed' : 'frame' })); },
+  };
+  document.querySelectorAll('.controls button').forEach((b) => {
+    b.addEventListener('click', () => presets[b.dataset.set]?.());
+  });
+  presets.mixed(); // start on the honest real-ish state
+</script>
+</body></html>
