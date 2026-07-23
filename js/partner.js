@@ -10,6 +10,22 @@ import {
   getGuides, getParents, getParentLearnerLinks,
 } from './store.js';
 import { openConfirmModal } from './modals.js';
+import { CATEGORIES, GUIDE_CATEGORIES } from './studios.js';
+import { regionForLabel } from './wheel.js';
+
+// Resolve a goal/task category id to the warm word a learner recognizes
+// (Math, not "khan"; Spirit / Meaning, not "guide_spirit"; Self, not
+// "slice_self"). Fallback returns the raw id, so this is strictly safer than
+// rendering the id directly - the worst case equals the prior behavior.
+// NOTE: when the Summary observation surface is built, promote this to a shared
+// labelForCategory() helper (COMPASS-WITNESS-LEXICON-v0.1) rather than duplicate.
+function categoryLabel(id) {
+  if (!id) return '';
+  if (CATEGORIES[id]) return CATEGORIES[id].name;
+  if (GUIDE_CATEGORIES[id]) return GUIDE_CATEGORIES[id].name;
+  if (typeof id === 'string' && id.startsWith('slice_')) return regionForLabel(id.slice(6)) || id;
+  return id;
+}
 
 export async function renderPartnerSection(learnerId) {
   const container = document.getElementById('north-partner');
@@ -453,7 +469,7 @@ async function renderYearPlanCard(plan, partner) {
       <div class="year-plan-goal ${isPriority ? 'is-priority' : ''}">
         <div class="year-plan-goal-header">
           ${isPriority ? '<span class="year-plan-star">★</span>' : ''}
-          <span class="year-plan-goal-cat">${escapeHtml(g.categoryId)}</span>
+          <span class="year-plan-goal-cat">${escapeHtml(categoryLabel(g.categoryId))}</span>
         </div>
         <p class="year-plan-goal-text">${escapeHtml(g.text)}</p>
         ${g.halfwayPoint ? `<p class="year-plan-goal-eos3"><strong>EOS 3:</strong> ${escapeHtml(g.halfwayPoint)}</p>` : ''}
