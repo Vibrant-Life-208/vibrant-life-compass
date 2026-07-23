@@ -1,4 +1,4 @@
-// Shared modal logic. Goal authoring, quote setting, traits, logins, first-run onboarding.
+// Shared modal logic. Goal authoring, quote setting, traits, first-run onboarding.
 
 import {
   getValuesLexicon, getViaCharacterStrengths,
@@ -551,55 +551,8 @@ export function openTraitsModal(existing, onSave) {
   setTimeout(() => document.getElementById('traits-input')?.focus(), 50);
 }
 
-export function openLoginModal({ existing, onSave }) {
-  setModalTitle(existing ? 'Edit password' : 'Add a password');
-  const kind = existing?.kind || 'core';
-  document.getElementById('form-fields').innerHTML = `
-    <div class="form-field">
-      <label for="login-kind">What's it for?</label>
-      <select id="login-kind">
-        <option value="core" ${kind === 'core' ? 'selected' : ''}>Core work (Khan, Lexia, Civ, etc.)</option>
-        <option value="passion" ${kind === 'passion' ? 'selected' : ''}>Passion project</option>
-        <option value="other" ${kind === 'other' ? 'selected' : ''}>Other</option>
-      </select>
-    </div>
-    <div class="form-field">
-      <label for="login-service">Service</label>
-      <input type="text" id="login-service" placeholder="Khan Academy" value="${existing ? escapeAttr(existing.service || '') : ''}" required>
-    </div>
-    <div class="form-field">
-      <label for="login-username">Username or email</label>
-      <input type="text" id="login-username" value="${existing ? escapeAttr(existing.username || '') : ''}">
-    </div>
-    <div class="form-field">
-      <label for="login-password">Password</label>
-      <input type="text" id="login-password" value="${existing ? escapeAttr(existing.password || '') : ''}">
-    </div>
-    <div class="form-field">
-      <label for="login-url">URL (optional)</label>
-      <input type="url" id="login-url" placeholder="https://khanacademy.org" value="${existing ? escapeAttr(existing.url || '') : ''}">
-    </div>
-    <div class="form-field">
-      <label for="login-note">Note (optional)</label>
-      <input type="text" id="login-note" value="${existing ? escapeAttr(existing.note || '') : ''}">
-    </div>
-  `;
-  activeSubmit = () => {
-    const service = document.getElementById('login-service').value.trim();
-    if (!service) return;
-    onSave({
-      kind: document.getElementById('login-kind').value,
-      service,
-      username: document.getElementById('login-username').value.trim(),
-      password: document.getElementById('login-password').value,
-      url: document.getElementById('login-url').value.trim(),
-      note: document.getElementById('login-note').value.trim(),
-    });
-    closeModal();
-  };
-  openModal();
-  setTimeout(() => document.getElementById('login-service')?.focus(), 50);
-}
+// openLoginModal retired 2026-07-22 (TCC ruling: Compass stores no third-party credentials;
+// the OS/browser password manager is the sovereign home for a credential). See SECURITY.md.
 
 export function openTaskModal({ existing, defaultDate, onSave, books = [] }) {
   setModalTitle(existing ? 'Edit task' : 'Add a task');

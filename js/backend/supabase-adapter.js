@@ -11,6 +11,7 @@
 
 import { SUPABASE_CONFIG } from './config.js';
 import { encryptField, decryptField } from '../crypto.js';
+import { deadWatch } from '../dead-watch.js'; // Phase 0 dark-watch instrumentation
 
 let client = null;
 
@@ -435,6 +436,7 @@ export async function setProfileHorizon(profileId, stepKey, text) {
 // so this code ships ahead of the column. DORMANT until the Session-1 movement screens exist.
 // Spec: docs/design/2026-07-20-session1-plan-foundational-inventory-spec.md.
 export async function getProfileFoundations(profileId) {
+  deadWatch('profileFoundations'); // Phase 0 dark-watch: DORMANT retirement candidate (trace only)
   try {
     const { data } = await getClient()
       .from('profiles')
@@ -740,51 +742,9 @@ function rowToTask(row) {
   };
 }
 
-// ============================================================================
-// Logins (passwords - ciphertext only crosses the wire)
-// ============================================================================
-export async function getLogins(learnerId) {
-  const { data } = await getClient().from('logins').select('*').eq('learner_id', learnerId);
-  return (data || []).map(rowToLogin);
-}
-
-export async function saveLogin(learnerId, login) {
-  // Encryption must happen client-side BEFORE this call.
-  // The adapter expects login.password as { ct, iv } already.
-  const row = {
-    learner_id: learnerId,
-    kind: login.kind || 'core',
-    service: login.service,
-    username: login.username || '',
-    password_ct: login.password?.ct || '',
-    password_iv: login.password?.iv || '',
-    url: login.url || '',
-    note: login.note || '',
-  };
-  if (login.id) {
-    await getClient().from('logins').update(row).eq('id', login.id);
-  } else {
-    await getClient().from('logins').insert(row);
-  }
-}
-
-export async function deleteLogin(learnerId, id) {
-  await getClient().from('logins').delete().eq('id', id);
-}
-
-function rowToLogin(row) {
-  return {
-    id: row.id,
-    learnerId: row.learner_id,
-    kind: row.kind,
-    service: row.service,
-    username: row.username,
-    password: { ct: row.password_ct, iv: row.password_iv },
-    url: row.url,
-    note: row.note,
-    createdAt: row.created_at,
-  };
-}
+// Logins (get/save/delete/reveal) retired 2026-07-22 — TCC ruling: Compass stores no
+// third-party credentials; the OS/browser password manager is the sovereign home for a
+// credential. The `logins` table is safe-deleted (see supabase/migrations). See SECURITY.md.
 
 // ============================================================================
 // Everyone posts
@@ -1092,16 +1052,7 @@ export async function addCheckIn(checkIn) {
   return data;
 }
 
-// ============================================================================
-// Logins (reveal)
-// ============================================================================
-export async function revealLoginPassword(learnerId, id) {
-  const { data: row } = await getClient().from('logins').select('*').eq('id', id).single();
-  if (!row) return null;
-  const envelope = { ct: row.password_ct, iv: row.password_iv };
-  // Decrypt happens in the caller using the learner's local key (per Decision 4).
-  return envelope;
-}
+// Logins (reveal) retired 2026-07-22 — see the retire note above and SECURITY.md.
 
 // ============================================================================
 // Partner links (T6 accountability partnerships)
