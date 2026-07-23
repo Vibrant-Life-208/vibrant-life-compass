@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pillar-disc — full state matrix</title>
+<style>
+  :root{ --cream:#F4EFE6; --ink:#2C2A28; --muted:#6E655C; --line:#DCD3C6; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5;
+    padding:22px 18px 70px}
+  .wrap{max-width:1040px;margin:0 auto}
+  h1{font-size:21px;margin:0 0 2px}
+  h2{font-size:14px;margin:26px 0 10px;letter-spacing:.02em}
+  .sub{font-size:12.5px;color:var(--muted);margin:0 0 14px;max-width:760px}
+  .rules{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-bottom:18px;background:#fff}
+  .rules b{color:var(--ink)}
+
+  /* every disc sits inside a definite-width dark "sky" cell (§2.2: the stack needs a definite-width ancestor,
+     or the percentage-width coins collapse to slivers). Dark bg so the Frame outline + Energy glow read. */
+  .stage{background:linear-gradient(to bottom,#2b2f45 0%,#3d3f56 55%,#4a4a5e 100%);
+    border-radius:14px;padding:34px 14px 60px}
+
+  /* ---- the full state matrix ---- */
+  table.matrix{border-collapse:separate;border-spacing:10px;width:100%}
+  table.matrix th{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:0 0 2px;text-align:center}
+  table.matrix th.rowh{text-align:right;white-space:nowrap;font-size:11px;color:var(--ink);padding-right:6px}
+  table.matrix td{width:150px}
+  .cell{width:150px}                 /* definite width for the percentage-based coin */
+  .cell pillar-disc{display:block}
+  .cap-note{font-size:10px;color:var(--muted);text-align:center;margin-top:4px}
+
+  /* ---- interactive spotlight row ---- */
+  .live{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;max-width:840px}
+  .live .cell{width:auto}
+
+  .legend{font-size:11.5px;color:var(--muted);margin-top:10px}
+  .legend b{color:var(--ink)}
+  .rm{font-size:11.5px;color:var(--muted);margin-top:10px}
+  .rm.active{color:#B84F16;font-weight:700}
+  .audit{font-size:11.5px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:10px 12px;margin-top:14px}
+  .audit table{border-collapse:collapse;font-size:11.5px;margin-top:6px}
+  .audit td,.audit th{padding:2px 10px 2px 0;text-align:left}
+  .pass{color:#127265;font-weight:700}
+  .fail{color:#B84F16;font-weight:700}
+</style></head>
+<body>
+<div class="wrap">
+  <h1>pillar-disc — full state matrix</h1>
+  <p class="sub">Every Pillar × every state, rendering the real <code>&lt;pillar-disc&gt;</code> component
+  (COMPASS-VISUAL-SYSTEM-SPEC-v0.1 §2–§4). <b>Frame / Dressed / Energy</b> are the base construction arc;
+  <b>Focus</b> (step-up) and <b>At-rest</b> (spotlight dulling) are orthogonal signals laid over a state (§4.6) —
+  shown here on a Dressed disc. Toggle your OS "Reduce motion" to see the static end-frames.</p>
+  <div class="rules"><b>Render contract honored:</b> HTML/CSS + inline SVG (no canvas) · animates
+  <b>opacity/transform only</b> (the glow is an opacity-breath over a static gradient, never an animated blur) ·
+  <b>prefers-reduced-motion</b> → steady end-frames · not-color-alone (icon + label + form + glow halo) ·
+  no completeness signal.</div>
+
+  <h2>Interactive — click a disc to focus it (§4.4)</h2>
+  <p class="sub" style="margin-top:-4px">The disc is itself the click target. Focusing one steps it up and dulls the
+  rest to at-rest (warm, never grey). Click it again to release. All five are Dressed here.</p>
+  <div class="stage">
+    <div class="live" id="live"></div>
+  </div>
+  <div class="legend"><b>Note:</b> a lone disc fills its host; the Observatory pyramid widths + z-ladder + spotlight
+  coordination belong to a container component, not to <code>&lt;pillar-disc&gt;</code>.</div>
+
+  <h2>The matrix — 5 Pillars × 5 states</h2>
+  <div class="stage">
+    <table class="matrix" id="matrix"></table>
+  </div>
+  <div class="rm" id="rmnote">Motion: <b>on</b>. (Set OS "Reduce motion" to see steady end-frames — the glow holds, the fill/step snap into place.)</div>
+
+  <div class="audit" id="audit">
+    <b>First-pass WCAG 1.4.3 — white/dark label legibility (formal per-pixel audit = C6h)</b>
+    <div id="audittable"></div>
+  </div>
+</div>
+
+<script type="module">
+  import './pillar-disc.js';
+  import { PILLARS } from './pillar-disc.js';
+
+  const PKEYS = ['academics', 'lifeskills', 'creator', 'connection', 'purpose']; // top → base
+  const COLS = [
+    { key: 'frame',   label: 'Frame',   attrs: { state: 'frame' } },
+    { key: 'dressed', label: 'Dressed', attrs: { state: 'dressed' } },
+    { key: 'energy',  label: 'Energy',  attrs: { state: 'energy' } },
+    { key: 'focus',   label: 'Focus',   attrs: { state: 'dressed', focused: true } },
+    { key: 'rest',    label: 'At-rest', attrs: { state: 'dressed', rest: true } },
+  ];
+
+  const mk = (pillar, attrs) => {
+    const el = document.createElement('pillar-disc');
+    el.pillar = pillar;
+    if (attrs.state) el.setAttribute('state', attrs.state);
+    if (attrs.focused) el.setAttribute('focused', '');
+    if (attrs.rest) el.setAttribute('rest', '');
+    return el;
+  };
+
+  // ---- matrix ----
+  const matrix = document.getElementById('matrix');
+  const head = document.createElement('tr');
+  head.innerHTML = '<th></th>' + COLS.map((c) => `<th>${c.label}</th>`).join('');
+  matrix.appendChild(head);
+  for (const pk of PKEYS) {
+    const tr = document.createElement('tr');
+    const rh = document.createElement('th');
+    rh.className = 'rowh'; rh.textContent = PILLARS[pk].name;
+    tr.appendChild(rh);
+    for (const c of COLS) {
+      const td = document.createElement('td');
+      const cell = document.createElement('div'); cell.className = 'cell';
+      cell.appendChild(mk(pk, c.attrs));
+      td.appendChild(cell);
+      tr.appendChild(td);
+    }
+    matrix.appendChild(tr);
+  }
+
+  // ---- interactive spotlight row ----
+  const live = document.getElementById('live');
+  const liveDiscs = PKEYS.map((pk) => {
+    const cell = document.createElement('div'); cell.className = 'cell';
+    const d = mk(pk, { state: 'dressed' });
+    cell.appendChild(d); live.appendChild(cell); return d;
+  });
+  let focusKey = '';
+  live.addEventListener('pillar-click', (e) => {
+    const k = e.detail.pillar;
+    focusKey = (focusKey === k) ? '' : k;
+    liveDiscs.forEach((d) => {
+      const isFocus = focusKey && d.pillar === focusKey;
+      d.focused = isFocus;
+      d.rest = !!focusKey && !isFocus;
+    });
+  });
+
+  // ---- first-pass WCAG audit: label color vs the coin's side band (where the face sits) ----
+  const lum = (hex) => {
+    const n = parseInt(hex.slice(1), 16);
+    const ch = [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]
+      .map((c) => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+    return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+  };
+  const ratio = (a, b) => { const L1 = lum(a), L2 = lum(b); const hi = Math.max(L1, L2), lo = Math.min(L1, L2); return (hi + 0.05) / (lo + 0.05); };
+
+  console.log('%c[WCAG 1.4.3] pillar-disc label legibility — target ≥ 4.5:1', 'font-weight:bold');
+  let rows = '<table><tr><th>Pillar</th><th>Label</th><th>on side (--base)</th><th>if on cap (--lt) — white?</th></tr>';
+  for (const pk of PKEYS) {
+    const p = PILLARS[pk];
+    const rBand = ratio(p.lbl, p.base);          // the real surface: face sits on the side band
+    const rCapWhite = ratio('#FFFFFF', p.lt);     // hypothetical: white text on the bright cap ellipse
+    const bandV = rBand >= 4.5 ? 'pass' : 'fail';
+    const capV = rCapWhite >= 4.5 ? 'pass' : 'fail';
+    console.log(`  ${p.name.padEnd(16)} label ${rBand.toFixed(2)}:1 ${rBand >= 4.5 ? 'PASS' : 'FAIL'}  |  white-on-cap ${rCapWhite.toFixed(2)}:1 ${rCapWhite >= 4.5 ? 'PASS' : 'FAIL'}`);
+    rows += `<tr><td>${p.name}</td><td>${p.bright ? 'dark' : 'white'} ${p.lbl}</td>`
+      + `<td class="${bandV}">${rBand.toFixed(2)}:1 ${bandV.toUpperCase()}</td>`
+      + `<td class="${capV}">${rCapWhite.toFixed(2)}:1 ${capV.toUpperCase()}</td></tr>`;
+  }
+  rows += '</table>';
+  rows += '<div style="margin-top:8px;color:#6E655C">The face rides the <b>side band</b> (top:15px, below the cap), '
+    + 'so the left column is the real surface — all five pass via the per-coin label color (dark on bright, white on dark; §9.2). '
+    + 'The right column shows why white-on-<b>cap</b> is avoided: every bright <code>--lt</code> cap fails white, so no label is ever seated on the cap ellipse. '
+    + 'No band needs a darker base beyond the locked palette. Formal per-pixel measurement across the real gradient = C6h.</div>';
+  document.getElementById('audittable').innerHTML = rows;
+
+  // reduced-motion note
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const rm = () => {
+    const n = document.getElementById('rmnote');
+    if (mq.matches) { n.innerHTML = 'Motion: <b>reduced</b> (OS setting detected). Glow holds steady; steps/fills are static end-frames.'; n.classList.add('active'); }
+    else { n.innerHTML = 'Motion: <b>on</b>. (Set OS "Reduce motion" to see steady end-frames — the glow holds, the fill/step snap into place.)'; n.classList.remove('active'); }
+  };
+  mq.addEventListener('change', rm); rm();
+</script>
+</body></html>
