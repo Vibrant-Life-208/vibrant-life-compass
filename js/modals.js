@@ -2796,7 +2796,13 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="onb-climb onb-climb-creator">
         <p class="onb-climb-kicker">Creator Mindset</p>
         <h3 class="onb-climb-head">You know what matters and who is with you. Here is where you find out you can build.</h3>
-        <p class="onb-climb-body">Your inner stance toward learning and toward yourself. The habits underneath the work: growing through challenge, steadying your emotions, following what pulls your curiosity, and carrying what is yours to carry. You are the one shaping it.</p>
+        <p class="onb-climb-body">Your inner stance toward learning and toward yourself - a bit of the world you live in, a bit of the maker you are becoming. You are the one shaping it.</p>
+        <ul class="onb-climb-subs">
+          <li><span class="onb-climb-sub-name">Growth Mindset</span> - growing through challenge; the belief you get better with practice.</li>
+          <li><span class="onb-climb-sub-name">Emotional Regulation</span> - steadying big feelings so they do not steer you.</li>
+          <li><span class="onb-climb-sub-name">Curiosity</span> - following what pulls you, and asking the next question.</li>
+          <li><span class="onb-climb-sub-name">Responsibility</span> - carrying what is yours to carry.</li>
+        </ul>
         <p class="onb-climb-note">One honest thing before we go on: noticing someone move ahead can pinch, and everybody feels it. Some people find that pinch can loosen into being glad for them and glad for yourself, without one taking from the other. See if that is true for you. And if you still feel the pinch - that is allowed too.</p>
         ${navButtons({ skippable: false })}
       </div>`;
