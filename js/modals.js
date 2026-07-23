@@ -1420,7 +1420,9 @@ const CLIMB_FULL = [
                        //   mountain stands. (Europa 2026-07-23: mountain = the slow Page-8 reveal;
                        //   units are "Discs"; matches the parent five-disc pyramid graphic.)
   'connection',        // W9  - Connection + Conscious Living (seeded from W2 strengths)
-  'creator_intro',     // W10 - Creator Mindset environment
+  'creator_intro',     // W10 - Creator Mindset environment (reveal, no capture)
+  'curious_intro',     // W11a - "Let's get curious": frames the vision ladder as imagination,
+                       //   not commitment (reveal, no text box), before the 10/5/1 screens
   'beyond_5yr',        // W11 - Curiosity: the vision ladder (10yr)
   'within_5yr',        // W11 - (5yr)
   'within_1yr',        // W11 - (1yr; becomes operative, feeds W12 + Threshold)
@@ -1444,7 +1446,7 @@ const CLIMB_FULL = [
 // no onboarding_step Postgres enum change is needed to ship the walk.
 const NON_RESUME_STEPS = new Set([
   'pitch', 'slice_plan', 'strengths_why', 'values_why',
-  'mountain', 'purpose', 'connection', 'creator_intro',
+  'mountain', 'purpose', 'connection', 'creator_intro', 'curious_intro',
   'life_skills', 'life_skills_woop',
   'academics_intro', 'academics_math', 'academics_reading', 'academics_la', 'threshold',
 ]);
@@ -2808,6 +2810,20 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       </div>`;
   }
 
+  // W11a - "Let's get curious." Frames the vision ladder (10/5/1) as imagination, not commitment
+  // (spec W11: "get curious," an act of imagination). Reveal only - NO text box; the vision text
+  // boxes come on the pages after this one.
+  function renderCuriousIntro() {
+    return `
+      <div class="onb-climb onb-climb-curious">
+        <p class="onb-climb-kicker">Creator Mindset &middot; Curiosity</p>
+        <h3 class="onb-climb-head">Let's get curious.</h3>
+        <p class="onb-climb-body">This is the part where you get to imagine. On the next few pages, picture your life ahead - ten years from now, then five, then one. Let yourself dream it as big or as small as feels true.</p>
+        <p class="onb-climb-body">Nothing here is a promise, and there is no wrong answer. You are not deciding your life - you are getting curious about who you might become.</p>
+        ${navButtons({ skippable: false })}
+      </div>`;
+  }
+
   // W14 - The Life Skills environment: pick one skill to work on this year. One active at a time;
   // the others are held for reference, never shown as "not chosen" (banned-word gate).
   function renderLifeSkills() {
@@ -3017,6 +3033,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     else if (step === 'purpose') formFields.innerHTML = renderPurpose();
     else if (step === 'connection') formFields.innerHTML = renderConnection();
     else if (step === 'creator_intro') formFields.innerHTML = renderCreatorIntro();
+    else if (step === 'curious_intro') formFields.innerHTML = renderCuriousIntro();
     else if (step === 'life_skills') formFields.innerHTML = renderLifeSkills();
     else if (step === 'life_skills_woop') formFields.innerHTML = renderLifeSkillsWoop();
     else if (step === 'academics_intro') formFields.innerHTML = renderAcademicsIntro();
@@ -3152,7 +3169,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         // to before Stage O: capture the boxes, then upsert non-empty slices as year goals.
         captureSlice();
         await advance(() => upsertYearGoals());
-      } else if (step === 'creator_intro' || step === 'academics_intro') {
+      } else if (step === 'creator_intro' || step === 'curious_intro' || step === 'academics_intro') {
         await advance(null); // CLIMB reveal - nothing to persist (mountain pages via wireMountain)
       } else if (step === 'purpose' || step === 'connection'
                  || step === 'life_skills' || step === 'life_skills_woop'
