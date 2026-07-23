@@ -3208,14 +3208,38 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   setModalGated(true); // first-run gate: no X / backdrop escape to the main face
 }
 
+// Curated starter quotes for the W1 picker (2026-07-23). Every attribution was verified to a
+// primary source before shipping (first duty to the truth); popular-but-misattributed lines were
+// rejected. Terence is the featured anchor - IDIC from antiquity - chosen by the Council of Seven
+// (decision log 2026-07-23); a learner still freely picks any line, or writes their own (the
+// "add your own" door is an anti-foreclosure requirement, never the curated set alone).
+const QUOTE_CHOICES = [
+  { text: 'I am human, and nothing human is alien to me.', author: 'Terence', featured: true },
+  { text: 'You have brains in your head. You have feet in your shoes. You can steer yourself any direction you choose.', author: 'Dr. Seuss' },
+  { text: 'You are never too small to make a difference.', author: 'Greta Thunberg' },
+  { text: 'One child, one teacher, one book, one pen can change the world.', author: 'Malala Yousafzai' },
+  { text: 'What you do makes a difference, and you have to decide what kind of difference you want to make.', author: 'Jane Goodall' },
+  { text: 'Look for the helpers. You will always find people who are helping.', author: 'Fred Rogers' },
+  { text: "Be a rainbow in somebody else's cloud.", author: 'Maya Angelou' },
+  { text: "A person's a person, no matter how small.", author: 'Dr. Seuss' },
+  { text: "Courage doesn't always roar. Sometimes courage is the quiet voice at the end of the day saying, 'I will try again tomorrow.'", author: 'Mary Anne Radmacher' },
+  { text: 'We may encounter many defeats, but we must not be defeated.', author: 'Maya Angelou' },
+  { text: "If you can't fly then run, if you can't run then walk, if you can't walk then crawl, but whatever you do you have to keep moving forward.", author: 'Martin Luther King Jr.' },
+  { text: "There is always light, if only we're brave enough to see it.", author: 'Amanda Gorman' },
+  { text: 'The important thing is not to stop questioning.', author: 'Albert Einstein' },
+  { text: 'Fall seven times, stand up eight.', author: 'Japanese proverb' },
+  { text: 'Little by little, one travels far.', author: 'Spanish proverb' },
+  { text: 'Each time a person stands up for an ideal, or acts to improve the lot of others, or strikes out against injustice, they send forth a tiny ripple of hope, and crossing each other from a million different centers of energy and daring, those ripples build a current that can sweep down the mightiest walls of oppression and resistance.', author: 'Robert F. Kennedy' },
+];
+
 // Quote flow (2026-06-24): the quote anchors the top of the page for the cycle.
-// One teaching screen (why a quote + who inspires you, combined) then one form
-// (the quote, who said it, what it means to you). Its OWN front-of-line flow so it always runs
-// from Begin when the quote is missing/stale - never resumed-past like a cascade
+// One teaching screen (why a quote + who inspires you) -> a curated PICKER (tap a line, or write
+// your own) -> the form (the quote, who said it, what it means to you). Its OWN front-of-line flow
+// so it always runs from Begin when the quote is missing/stale - never resumed-past like a cascade
 // step. Saves all three fields + stamps the cycle. If the person closes the modal
 // without saving, it simply re-prompts next sign-in.
 export function openQuoteFlow({ profileId = null, currentCycle = '', existing = {}, onComplete, gated = true } = {}) {
-  const SCREENS = ['intro', 'form'];
+  const SCREENS = ['intro', 'picker', 'form'];
   const state = {
     idx: 0,
     text: existing.text || '',
@@ -3246,12 +3270,40 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
     return `
       <div class="onb-horizon-prompt">
         <h3 class="onb-horizon-heading">Why a quote?</h3>
-        <p class="onb-horizon-body">A single line, chosen on purpose, can carry you through a whole year - a north star in words when the days get hard, kept at the top of your page. Think of words that inspire you, or someone you admire - a teacher, a writer, someone you love, a person whose life fills you with awe or wonder. On the next screen, you’ll write down the line you carry.</p>
+        <p class="onb-horizon-body">A single line, chosen on purpose, can carry you through a whole year - a north star in words when the days get hard, kept at the top of your page. Think of words that inspire you, or someone you admire - a teacher, a writer, someone you love, a person whose life fills you with awe or wonder. On the next screen, choose a line that speaks to you - or write your own.</p>
       </div>
       <div class="onb-step-actions">
         <span></span>
         <div class="onb-step-actions-right">
           <button type="button" id="qf-next" class="btn btn-primary">Continue</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // The picker: tap a curated line (pre-fills the form) or write your own. Terence is featured
+  // first (the Council-chosen anchor), but every line is a free choice and "write my own" is
+  // always present - the curated set is never the only door (anti-foreclosure, page-spec R2).
+  function renderPicker() {
+    return `
+      <div class="onb-horizon-prompt">
+        <h3 class="onb-horizon-heading">Choose a line that speaks to you.</h3>
+        <p class="onb-horizon-body">Pick the one that makes you feel something. You can change it later, add what it means to you next, or write your own.</p>
+      </div>
+      <ul class="qf-quote-list">
+        ${QUOTE_CHOICES.map((q, i) => `
+          <li>
+            <button type="button" class="qf-quote-card${q.featured ? ' featured' : ''}" data-qf-pick="${i}">
+              ${q.featured ? '<span class="qf-quote-flag">✦ a place to start</span>' : ''}
+              <span class="qf-quote-text">${escapeHtml(q.text)}</span>
+              <span class="qf-quote-author">${escapeHtml(q.author)}</span>
+            </button>
+          </li>`).join('')}
+      </ul>
+      <div class="onb-step-actions">
+        <button type="button" id="qf-back" class="btn btn-text">Back</button>
+        <div class="onb-step-actions-right">
+          <button type="button" id="qf-own" class="btn btn-primary">Write my own</button>
         </div>
       </div>
     `;
@@ -3289,6 +3341,7 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
     const formFields = document.getElementById('form-fields');
     const screen = SCREENS[state.idx];
     if (screen === 'intro') formFields.innerHTML = renderIntro();
+    else if (screen === 'picker') formFields.innerHTML = renderPicker();
     else formFields.innerHTML = renderForm();
     wire();
     if (screen === 'form') setTimeout(() => document.getElementById('qf-text')?.focus(), 50);
@@ -3302,6 +3355,22 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
       state.idx -= 1;
       render();
     });
+    // Picker: tapping a curated line pre-fills the quote + author and moves to the form (where
+    // the learner adds what it means). "Write my own" clears any pick and opens a blank form.
+    if (screen === 'picker') {
+      const toForm = () => { state.idx = SCREENS.indexOf('form'); render(); };
+      document.querySelectorAll('[data-qf-pick]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const q = QUOTE_CHOICES[Number(btn.dataset.qfPick)];
+          if (q) { state.text = q.text; state.author = q.author; }
+          toForm();
+        });
+      });
+      document.getElementById('qf-own')?.addEventListener('click', () => {
+        state.text = ''; state.author = '';
+        toForm();
+      });
+    }
     if (screen === 'form') {
       const textEl = document.getElementById('qf-text');
       const saveBtn = document.getElementById('qf-save');

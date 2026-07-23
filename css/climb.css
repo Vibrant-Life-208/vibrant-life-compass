@@ -99,3 +99,15 @@
 .onb-climb-subs { list-style: none; padding: 0; margin: 0.5rem 0 0.9rem; display: flex; flex-direction: column; gap: 0.4rem; }
 .onb-climb-subs li { font-size: 0.9rem; color: var(--text-soft); line-height: 1.45; }
 .onb-climb-sub-name { font-weight: 600; color: var(--text); }
+
+/* W1 quote picker: tap a curated line, or write your own. Terence is the featured anchor. */
+.qf-quote-list { list-style: none; padding: 0; margin: 0.4rem 0 1rem; display: flex; flex-direction: column; gap: 0.5rem; max-height: 46vh; overflow-y: auto; }
+.qf-quote-card {
+  width: 100%; text-align: left; cursor: pointer; padding: 0.7rem 0.85rem; border-radius: 12px;
+  border: 1px solid var(--border, #cdbfa6); background: rgba(255,255,255,0.55); transition: border-color 0.15s, background 0.15s;
+}
+.qf-quote-card:hover { border-color: var(--sage); background: rgba(255,255,255,0.8); }
+.qf-quote-card.featured { border-color: var(--sage); background: rgba(28,160,141,0.08); }
+.qf-quote-flag { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sage); margin-bottom: 0.3rem; }
+.qf-quote-text { display: block; color: var(--text); font-size: 0.95rem; line-height: 1.5; }
+.qf-quote-author { display: block; color: var(--text-soft); font-size: 0.85rem; font-style: italic; margin-top: 0.35rem; }
