@@ -553,6 +553,7 @@ function rowToGoal(row) {
     sessionIndex: row.session_index,
     text: row.text,
     lifeArea: row.life_area || null,  // wheel slice; NULL = not placed (v0.18)
+    isBecoming: row.is_becoming ?? null,  // frozen cadence disposition; NULL = fall back to slice test (v0.35)
     status: row.status,
     createdAt: row.created_at,
     ...(row.decomposition || {}),  // v0.22 extended fields back to top level (baseline, halfwayPoint, weeklySteps, ...)
@@ -584,6 +585,10 @@ function goalToRow(goal) {
   const decomposition = {};
   for (const k of DECOMPOSITION_FIELDS) if (goal[k] !== undefined) decomposition[k] = goal[k];
   if (Object.keys(decomposition).length) row.decomposition = decomposition;
+  // is_becoming (v0.35) is packed ONLY when the caller carries it, so a partial update that
+  // omits it never clobbers the flag the migration backfilled. rowToGoal always reads it back,
+  // so a full round-trip preserves it.
+  if (goal.isBecoming !== undefined) row.is_becoming = goal.isBecoming;
   return row;
 }
 

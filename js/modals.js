@@ -1042,7 +1042,7 @@ export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabe
 export async function openGoalArcModal({ goal, learnerId = null, lifeArea = null }) {
   const calendar = getYearCalendar();
   const position = currentArcPosition(calendar);
-  const kind = weeklyKindFor(lifeArea);
+  const kind = weeklyKindFor(lifeArea, goal?.isBecoming);  // stored flag wins (v0.35), slice label is fallback
   const d = new Date();
   const todayISO = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const canPersist = Boolean(learnerId && goal?.id);
@@ -1144,7 +1144,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
   // Detection via the goal's life-area (weeklyKindFor === 'presence'). PROVISIONAL presence copy
   // below is Comes' + Accord's to finalize before flip (mirrors the goal-arc.js becoming note).
   const lifeArea = goal?.lifeArea || (category?.id ? lifeAreaForCategory(category.id) : null);
-  const becoming = weeklyKindFor(lifeArea) === 'presence';
+  const becoming = weeklyKindFor(lifeArea, goal?.isBecoming) === 'presence';  // stored flag wins (v0.35)
 
   const s = {
     // FINISH goals walk: [yeargoal ->] now -> milestones -> challenges -> setup (backward-
