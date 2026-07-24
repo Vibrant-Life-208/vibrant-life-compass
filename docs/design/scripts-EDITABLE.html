@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vibrant Life - Companion Video Scripts</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Caveat:wght@600&display=swap');
+  :root{
+    --green:#56a06a; --green-deep:#3f7d52; --purple:#5b2c86; --magenta:#c0388f;
+    --coral:#ff6f5e; --salmon:#f2a891; --cream:#eaf2e8;
+    --ink:#3a4038; --muted:#7d8a7f; --page:#ffffff;
+    /* studio colours kept as wayfinding accents */
+    --tots:#ff8c1a; --spark:#f4b400; --discovery:#9b6dd6; --adventure:#5cb85c; --launch:#3f7fd6;
+  }
+  *{ box-sizing:border-box; }
+  @page{ size:Letter; margin:0; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:"Poppins","Century Gothic","Avenir Next","Trebuchet MS",sans-serif;
+    color:var(--ink); background:var(--page); line-height:1.55; font-size:11pt;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    padding:0 0.7in 40px;
+  }
+  h1,h2,h3{ margin:0; line-height:1.14; font-weight:600; }
+  p{ margin:.35em 0 .7em; }
+  b,strong{ font-weight:600; }
+  .avoid{ page-break-inside:avoid; }
+  .small{ font-size:9.9pt; } .muted{ color:var(--muted); }
+
+  /* ---------- TITLE HEADER BAND ---------- */
+  .titleband{ background:var(--green); color:var(--cream); border-radius:0 0 14px 14px;
+    padding:26px 30px 24px; margin:0 -0.7in 20px; }
+  .titleband h1{ font-size:27pt; font-weight:700; letter-spacing:1px; color:#fff; }
+  .titleband .sub{ font-size:11pt; font-weight:300; color:#dcefe0; margin-top:6px; letter-spacing:.3px; }
+
+  /* ---------- INTRO ---------- */
+  .intro{ background:#f5f8f3; border-left:4px solid var(--green); border-radius:6px;
+    padding:12px 16px; margin:0 0 20px; font-size:9.9pt; }
+  .intro b{ color:var(--green-deep); }
+
+  /* ---------- CASTING MAP ---------- */
+  .casting{ background:#faf7fc; border:1px solid #e6d9ef; border-radius:12px; padding:16px 18px; margin:0 0 24px; }
+  .casting h2{ color:var(--purple); font-size:14pt; font-weight:600; letter-spacing:.5px; margin-bottom:10px; }
+  .castrow{ display:flex; flex-wrap:wrap; gap:12px; }
+  .castcard{ flex:1 1 30%; min-width:200px; border-radius:10px; padding:12px 14px; color:#fff; }
+  .castcard .tag{ display:block; font-size:8.5pt; letter-spacing:2px; text-transform:uppercase; font-weight:600; opacity:.95; margin-bottom:5px; }
+  .castcard .who{ display:block; font-size:12pt; font-weight:600; margin-bottom:4px; }
+  .castcard .vids{ font-size:9pt; line-height:1.4; opacity:.97; }
+  .cast-jenna{ background:var(--purple); }
+  .cast-learners{ background:var(--coral); }
+  .cast-guides{ background:var(--green); }
+  .castnote{ background:#fff5db; border:1px solid #f0dfa4; border-radius:8px; padding:10px 13px;
+    margin-top:12px; font-size:9pt; color:#6a5514; }
+  .castnote b{ color:#5a4408; }
+
+  /* ---------- VIDEO CARD ---------- */
+  .video{ border:1px solid #e4ddce; border-radius:14px; padding:18px 20px 16px; margin:0 0 26px; }
+  .video > .head{ display:flex; flex-wrap:wrap; align-items:baseline; gap:12px; margin-bottom:4px; }
+  .video h2{ font-size:16.5pt; font-weight:600; color:var(--ink); }
+  .video .runtime{ font-size:9pt; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--magenta); }
+  .voicechip{ display:inline-block; font-size:8.5pt; font-weight:600; letter-spacing:1.5px; text-transform:uppercase;
+    color:#fff; border-radius:999px; padding:4px 12px; margin-bottom:8px; }
+  .vc-jenna{ background:var(--purple); } .vc-learners{ background:var(--coral); } .vc-guides{ background:var(--green); }
+  .video .adds{ font-size:9.4pt; font-style:italic; color:var(--muted); margin:2px 0 14px; }
+
+  /* beat rows */
+  .beat{ border-left:3px solid #e4ddce; padding:8px 0 8px 14px; margin:0 0 10px; }
+  .beat .ts{ display:inline-block; font-size:8.5pt; font-weight:600; letter-spacing:1px; color:var(--magenta);
+    background:#fbeef5; border-radius:999px; padding:2px 10px; margin-bottom:6px; }
+  .beat .visual{ font-size:9.3pt; color:var(--muted); margin:3px 0; }
+  .beat .visual b{ color:var(--ink); font-weight:600; }
+  .beat .voice{ font-size:11pt; color:var(--green-deep); font-weight:500; line-height:1.45;
+    background:#eef5ec; border-radius:8px; padding:9px 12px; margin:6px 0; }
+  .beat .voice b{ color:var(--green-deep); font-weight:700; }
+  .beat .caption{ font-size:8.9pt; color:var(--purple); font-style:italic; margin:4px 0 0; }
+  .beat .caption b{ font-style:normal; font-weight:600; color:var(--purple); }
+
+  /* studio short block (video 3) */
+  .studioshort{ border-left:4px solid var(--muted); padding:9px 0 9px 14px; margin:0 0 12px; }
+  .studioshort h3{ font-size:12pt; font-weight:600; margin-bottom:5px; }
+  .st-tots h3{ color:var(--tots); } .st-tots{ border-color:var(--tots); }
+  .st-spark h3{ color:#b8860b; } .st-spark{ border-color:var(--spark); }
+  .st-disc h3{ color:var(--discovery); } .st-disc{ border-color:var(--discovery); }
+  .st-adv h3{ color:var(--adventure); } .st-adv{ border-color:var(--adventure); }
+  .st-lp h3{ color:var(--launch); } .st-lp{ border-color:var(--launch); }
+  .studioshort .shape{ font-size:9.4pt; color:var(--muted); font-style:italic; margin:0 0 12px; }
+
+  /* asides */
+  .aside{ font-size:8.9pt; color:var(--muted); background:#f6f3ec; border-radius:8px; padding:8px 12px; margin:10px 0 4px; }
+  .aside b{ color:var(--purple); }
+
+  /* storyboard tables */
+  h4.sbtitle{ color:var(--purple); font-size:10.5pt; font-weight:600; text-transform:uppercase; letter-spacing:.6px; margin:14px 0 6px; }
+  table.sb{ width:100%; border-collapse:collapse; margin:4px 0 6px; font-size:9pt; }
+  table.sb th{ background:var(--green); color:#fff; text-align:left; padding:6px 8px; font-weight:600; font-size:8.5pt; letter-spacing:.3px; }
+  table.sb td{ padding:6px 8px; border-bottom:1px solid #ece4d6; vertical-align:top; line-height:1.4; }
+  table.sb tr:nth-child(even) td{ background:#f7faf5; }
+  table.sb td:first-child{ font-weight:600; color:var(--green-deep); width:34px; text-align:center; }
+
+  /* ---------- INTERNAL SECTION ---------- */
+  .divider{ border:0; border-top:2px dashed #d8cfbc; margin:34px -0.2in 22px; }
+  .internal{ background:#fafaf8; border:1px solid #e6e2d6; border-radius:12px; padding:16px 20px; color:#5a6058; }
+  .internal h2{ font-size:14pt; font-weight:600; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+  .internal h3{ font-size:11pt; font-weight:600; color:var(--green-deep); margin:16px 0 5px; }
+  .internal p{ font-size:9.4pt; }
+  .internal ul{ margin:5px 0 8px; padding-left:20px; } .internal li{ font-size:9.4pt; margin:3px 0; }
+  table.chk{ width:100%; border-collapse:collapse; margin:6px 0 8px; font-size:9pt; }
+  table.chk th{ background:#e9e5d9; color:#4a5048; text-align:left; padding:6px 8px; font-weight:600; }
+  table.chk td{ padding:6px 8px; border-bottom:1px solid #e6e2d6; vertical-align:top; }
+  .valframe{ display:flex; flex-wrap:wrap; gap:10px; margin:8px 0; }
+  .valframe div{ flex:1 1 30%; min-width:170px; background:#fff; border:1px solid #e0dccf; border-radius:9px; padding:10px 12px; font-size:9pt; }
+  .valframe b{ color:var(--purple); display:block; margin-bottom:3px; }
+
+  /* ===== EDIT TOOLBAR (screen only - never prints) ===== */
+  #editbar{ position:fixed; top:0; left:0; right:0; z-index:9999; background:#3a4038; color:#fff;
+    display:flex; align-items:center; gap:10px; padding:8px 14px; font-family:"Poppins",sans-serif; font-size:13px; box-shadow:0 2px 10px #0004; }
+  #editbar strong{ color:#ffd08a; letter-spacing:.5px; }
+  #editbar button{ font:inherit; font-size:12px; border:0; border-radius:999px; padding:6px 13px; cursor:pointer; background:#56a06a; color:#fff; }
+  #editbar button:hover{ filter:brightness(1.08); }
+  #editbar button.tog{ background:#c0388f; }
+  #editbar button.tog.on{ background:#f4b400; color:#3a4038; }
+  #editbar button.save{ background:#3f7fd6; }
+  #editbar a.pdfdl{ font:inherit; font-size:12px; text-decoration:none; border-radius:999px; padding:6px 13px; cursor:pointer; background:#5b2c86; color:#fff; }
+  #editbar a.pdfdl:hover{ filter:brightness(1.12); }
+  #editbar a.navlink{ font:inherit; font-size:12px; text-decoration:none; border-radius:999px; padding:6px 13px; cursor:pointer; background:#56a06a; color:#fff; }
+  #editbar a.navlink:hover{ filter:brightness(1.12); }
+  #editbar .sp{ flex:1; }
+  #editbar .hint{ color:#cfe6d4; font-size:11px; }
+  body.hasbar{ padding-top:46px; }
+  body.editing [contenteditable="true"]{ outline:1px dashed #c0388f55; outline-offset:2px; border-radius:3px; }
+  /* focus = visible ring only, NEVER a background (would hide white text on colored boxes) */
+  body.editing [contenteditable="true"]:focus{ outline:2px solid #c0388f; outline-offset:2px; box-shadow:0 0 0 3px rgba(192,56,143,.22); }
+  .dupwrap{ position:relative; }
+  .editctl{ position:absolute; top:-11px; right:6px; z-index:50; display:none; gap:4px; }
+  body.editing .dupwrap:hover > .editctl{ display:flex; }
+  .editctl button{ font:600 11px/1 "Poppins",sans-serif; border:0; border-radius:999px; padding:4px 9px; cursor:pointer; box-shadow:0 1px 4px #0003; }
+  .editctl .cpy{ background:#56a06a; color:#fff; } .editctl .del{ background:#ff6f5e; color:#fff; }
+  .editctl .sp-less, .editctl .sp-more{ background:#7d8a7f; color:#fff; padding:4px 7px; }
+  /* Add-block toolbar group (revealed only while editing) */
+  #editbar .addgrp{ display:none; gap:6px; align-items:center; }
+  body.editing #editbar .addgrp{ display:flex; }
+  #editbar .addgrp .albl{ color:#cfe6d4; font-size:11px; }
+  #editbar .addgrp button{ background:#0e8f83; }
+  /* Newly inserted blocks + adjustable spacer */
+  .newblock{ border:1px dashed #c9bfa4; border-radius:8px; padding:10px 12px; margin:10px 0; color:var(--ink); min-height:1.3em; }
+  .newbox{ background:#eef5ec; border:2px solid var(--green); border-radius:12px; padding:13px 16px; margin:12px 0; color:var(--ink); }
+  .spacer{ height:24px; }
+  body.editing .spacer{ outline:1px dashed #c0388f44; background:repeating-linear-gradient(45deg,#0000000a,#0000000a 6px,transparent 6px,transparent 12px); }
+  @media print{ #editbar{ display:none !important; } body.hasbar{ padding-top:0; } .editctl{ display:none !important; } .spacer{ outline:none !important; background:none !important; } }
+
+  /* screen-only working note */
+  .print-note{ background:#fff; border:1px dashed #cbb98f; border-radius:8px; padding:8px 14px; margin:0 0 16px; font-size:9pt; color:#7d8a7f; }
+  @media print{ .print-note{ display:none; } }
+</style>
+</head>
+<body>
+
+<div id="editbar">
+  <strong>Video Scripts</strong>
+  <button class="tog" id="toggleEdit" type="button">&#9998; Edit: OFF</button>
+  <span class="hint" id="editHint">Edit ON &rarr; click any text to change it. Hover a block for copy / &#9650;&#9660; spacing / delete.</span>
+  <span class="addgrp">
+    <span class="albl">Add:</span>
+    <button id="addText" type="button">&#43; Text</button>
+    <button id="addBox" type="button">&#43; Box</button>
+    <button id="addSpace" type="button">&#43; Space</button>
+  </span>
+  <span class="sp"></span>
+  <a class="navlink" href="index.html">&#8592; Playbook</a>
+  <a class="pdfdl" href="scripts.pdf" download>&#11015; Download PDF</a>
+  <button class="save" id="saveBtn" type="button">&#128190; Save a copy</button>
+  <button id="printBtn" type="button">&#128424; Print / PDF</button>
+</div>
+
+<div class="print-note">Working document for the four companion videos. Voice lines (green boxes) are the read-aloud lines. Turn Edit ON to change wording, or hover any beat / row to duplicate or delete it. Print / export: Cmd-P &rarr; Letter &rarr; Save as PDF.</div>
+
+<!-- ============ TITLE ============ -->
+<header class="titleband">
+  <h1>Vibrant Life - Companion Video Scripts</h1>
+  <div class="sub">2026-2027 Family Playbook - four additive videos</div>
+</header>
+
+<!-- ============ INTRO / THE RULE ============ -->
+<div class="intro avoid">
+  <p><b>What this is:</b> the four companion-video scripts for the Family Playbook, combined into one working document. Base is the <b>v0.2 additive cut</b> (2026-06-30 panel, approved) - the "show, model, or carry feeling" version, not the recite-the-page version.</p>
+  <p><b>The rule for every script here:</b> if a line could be lifted straight off the v0.6 playbook page, it doesn't belong in the video. Each video ADDS something not on the page, and ends by pointing back to the playbook. v0.1 stays as the <i>content guarantee</i> (what must be true); this is <i>how to show it.</i></p>
+  <p><b>Style:</b> cartoon/animated; studio colors as set; four-video ceiling held. TTS for a rough cut; Videos 1 and 4 especially want the <b>real re-record</b> (Jenna's warmth; modeled dialogue) - TTS is a placeholder there.</p>
+</div>
+
+<!-- ============ WHO VOICES WHAT ============ -->
+<div class="casting avoid">
+  <h2>Who Voices What</h2>
+  <div class="castrow">
+    <div class="castcard cast-jenna">
+      <span class="tag">Jenna Says</span>
+      <span class="who">Jenna's real voice</span>
+      <div class="vids"><b>Video 1 - Why Vibrant Life</b> (warmest as the owner).<br><b>Video 4 - Partner, Don't Rescue</b> (modeled kitchen-table dialogue).</div>
+    </div>
+    <div class="castcard cast-learners">
+      <span class="tag">Learners Read</span>
+      <span class="who">Learner-narrator</span>
+      <div class="vids"><b>Video 2 - A Day at Vibrant Life.</b> A learner describing their own day is powerful and on-brand. <b>Requires parental consent</b> for any identifiable child on camera or voice.</div>
+    </div>
+    <div class="castcard cast-guides">
+      <span class="tag">Guides Say</span>
+      <span class="who">Each studio's own guide</span>
+      <div class="vids"><b>Video 3 - Studio Shorts.</b> On camera, per short.</div>
+    </div>
+  </div>
+  <div class="castnote"><b>OPEN CASTING QUESTION (unresolved - do not decide here):</b> v0.1 floated using <b>learner-narrators for the Studio Shorts (Video 3) too</b> ("a learner describing their own studio is powerful and on-brand; needs parental consent"). The v0.2 cut assigns Video 3 to the guides. Whether the studio shorts should be guide-voiced, learner-voiced, or a mix is an <b>unresolved casting decision</b> pending Jenna's call (and parental consent if learner-voiced).</div>
+</div>
+
+<!-- ============ VIDEO 1 ============ -->
+<div class="video avoid">
+  <span class="voicechip vc-jenna">Voice: Jenna Says</span>
+  <div class="head"><h2>Video 1 - "Why Vibrant Life"</h2><span class="runtime">~70s</span></div>
+  <p class="adds">ADDS: Jenna's personal <b>why</b> + one real "becoming" moment + warmth. Does NOT recite the mission - the mission words live on page 1. Best with Jenna's real voice.</p>
+
+  <div class="beat">
+    <span class="ts">0:00-0:14</span>
+    <p class="visual"><b>VISUAL:</b> A child stuck on something - a puzzle, a tricky line of a book - hesitating, glancing around for help.</p>
+    <div class="voice"><b>VOICE (Jenna):</b> "I'm Jenna. I started Vibrant Life because I kept watching bright kids learn one quiet lesson a little too well: <i>wait to be told.</i>"</div>
+    <p class="caption"><b>CAPTION:</b> <i>Why we exist</i></p>
+  </div>
+  <div class="beat">
+    <span class="ts">0:14-0:34</span>
+    <p class="visual"><b>VISUAL:</b> The same child decides to try it themselves - works at it - and gets it. The small, real light-up on their face.</p>
+    <div class="voice"><b>VOICE:</b> "I wanted a place where a child learns the opposite. That they can find the answer. Lead the room. Own their own growth. That look - right there, when they figure it out without being rescued - that's the whole thing."</div>
+    <p class="caption"><b>CAPTION:</b> <i>It's about becoming.</i></p>
+  </div>
+  <div class="beat">
+    <span class="ts">0:34-0:55</span>
+    <p class="visual"><b>VISUAL:</b> Quick warm glimpses of the community - a tribe outside, a guide kneeling beside a learner, families at an exhibition.</p>
+    <div class="voice"><b>VOICE:</b> "We're not here to do school to your child. We're here to help them become someone who can find a calling and change the world - and to walk it with your whole family."</div>
+    <p class="caption"><b>CAPTION:</b> <i>We walk it with your family.</i></p>
+  </div>
+  <div class="beat">
+    <span class="ts">0:55-1:10</span>
+    <p class="visual"><b>VISUAL:</b> Tagline resolves.</p>
+    <div class="voice"><b>VOICE:</b> "Our mission and our promise to you are on the very first page of the playbook. This is the feeling behind those words. Take your time with it - we'll think about it together."</div>
+    <p class="caption"><b>CAPTION:</b> <i>The mission is on page 1. This is the heart of it.</i></p>
+  </div>
+
+  <div class="aside"><b>Bridge:</b> points to the playbook's Mission/Welcome page rather than repeating it.<br><b>L6:</b> poses (invites, doesn't sell); valued (leads with the child's becoming and Jenna's why, not a hook).</div>
+
+  <h4 class="sbtitle">Storyboard - Video 1</h4>
+  <table class="sb">
+    <thead><tr><th>Panel</th><th>Illustration</th><th>On-screen text</th><th>VO</th><th>~sec</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>A child stuck on a puzzle / a tricky page, hesitating, glancing around for help</td><td><i>Why we exist</i></td><td>"I'm Jenna. I started Vibrant Life because I kept watching bright kids learn one quiet lesson a little too well: wait to be told."</td><td>0-14</td></tr>
+      <tr><td>2</td><td>The same child decides to try - works at it - gets it; a small real light-up on their face</td><td><i>It's about becoming.</i></td><td>"I wanted a place where a child learns the opposite. That they can find the answer, lead the room, own their growth. That look - right there, when they figure it out without being rescued - that's the whole thing."</td><td>14-34</td></tr>
+      <tr><td>3</td><td>Warm community glimpses: a tribe outside, Maya kneeling beside a learner, families at an exhibition</td><td><i>We walk it with your family.</i></td><td>"We're not here to do school to your child. We're here to help them become someone who can find a calling and change the world - and to walk it with your whole family."</td><td>34-55</td></tr>
+      <tr><td>4</td><td>Tagline resolves over the grounds</td><td><i>The mission is on page 1. This is the heart of it.</i></td><td>"Our mission and our promise are on the very first page of the playbook. This is the feeling behind those words. Take your time - we'll think about it together."</td><td>55-70</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ VIDEO 2 ============ -->
+<div class="video avoid">
+  <span class="voicechip vc-learners">Voice: Learners Read</span>
+  <div class="head"><h2>Video 2 - "A Day, and How Growth Works"</h2><span class="runtime">~80s</span></div>
+  <p class="adds">Learner-narrator; needs parental consent. ADDS: the rhythm <b>in motion</b> + a <b>real exhibition shown</b> (the growth model demonstrated, not stated). Does NOT re-read the schedule - times stay on the page. Light VO; let the day breathe.</p>
+
+  <div class="beat">
+    <span class="ts">0:00-0:08</span>
+    <p class="visual"><b>VISUAL:</b> Black-to-warm open on an empty studio at 8:25, then learners arriving.</p>
+    <div class="voice"><b>VOICE:</b> "Words on a page can't quite show you a day here. So watch one."</div>
+    <p class="caption"><b>CAPTION:</b> <i>A day at Vibrant Life</i></p>
+  </div>
+  <div class="beat">
+    <span class="ts">0:08-0:34 - mostly visual, ambient, minimal VO</span>
+    <p class="visual"><b>VISUAL:</b> A flowing montage - Brain Gym on the grass; morning circle; a Quest project taking shape; two learners working a problem out <i>without</i> a guide jumping in; lunch outside, muddy boots.</p>
+    <div class="voice"><b>VOICE (sparingly, ~once):</b> "Outside, in their bodies, then deep in real work. We power-pack the time."</div>
+    <p class="caption"><b>CAPTION:</b> <i>(let it breathe)</i></p>
+  </div>
+  <div class="beat">
+    <span class="ts">0:34-1:00 - the heart: a real exhibition</span>
+    <p class="visual"><b>VISUAL:</b> A learner stands to present at an exhibition - nervous, then finding their footing. The guide stays seated, doesn't step in. Parents and tribe watch. A badge moment.</p>
+    <div class="voice"><b>VOICE:</b> "This is how we 'grade.' Learners show what they've actually made, to people who care - no red pen, no report card. Some move quickly, some take longer. The only person they're racing is who they were yesterday."</div>
+    <p class="caption"><b>CAPTION:</b> <i>No grades. Real work, shown. You, yesterday.</i></p>
+  </div>
+  <div class="beat">
+    <span class="ts">1:00-1:15</span>
+    <p class="visual"><b>VISUAL:</b> Roundabout pickup, a tired-and-proud learner.</p>
+    <div class="voice"><b>VOICE:</b> "That's a day. They leave a little more themselves."</div>
+    <p class="caption"><b>CAPTION:</b> <i>The full rhythm &amp; calendar are in your playbook.</i></p>
+  </div>
+
+  <div class="aside"><b>Bridge:</b> the schedule and calendar live on the page; the video shows the <i>feeling</i> and the <i>exhibition</i> the page can only describe.<br><b>L6:</b> poses (shows how growth works, lets the parent judge); valued (honest, centered on the child, no ranking).</div>
+
+  <h4 class="sbtitle">Storyboard - Video 2</h4>
+  <table class="sb">
+    <thead><tr><th>Panel</th><th>Illustration</th><th>On-screen text</th><th>VO</th><th>~sec</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>An empty studio at 8:25 warming to life as learners arrive</td><td><i>A day at Vibrant Life</i></td><td>"Words on a page can't quite show you a day here. So watch one."</td><td>0-8</td></tr>
+      <tr><td>2</td><td><b>Montage, ambient, minimal VO:</b> Brain Gym on the grass; morning circle; a Quest project taking shape; two learners working a problem out with no guide stepping in; lunch outside, muddy boots</td><td><i>(let it breathe)</i></td><td>"Outside, in their bodies, then deep in real work. We power-pack the time." (once)</td><td>8-34</td></tr>
+      <tr><td>3 <b>(heart)</b></td><td><b>The Exhibition:</b> a learner stands to present - nervous, then steady; Maya stays seated, doesn't step in; families and tribe watch; a badge moment</td><td><i>No grades. Real work, shown. You, yesterday.</i></td><td>"This is how we 'grade.' Learners show what they've actually made, to people who care - no red pen, no report card. Some move quickly, some take longer. The only person they're racing is who they were yesterday."</td><td>34-60</td></tr>
+      <tr><td>4</td><td>Roundabout pickup, a tired-and-proud learner</td><td><i>The full rhythm &amp; calendar are in your playbook.</i></td><td>"That's a day. They leave a little more themselves."</td><td>60-80</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ VIDEO 3 ============ -->
+<div class="video avoid">
+  <span class="voicechip vc-guides">Voice: Guides Say</span>
+  <div class="head"><h2>Video 3 - Studio Shorts</h2><span class="runtime">~35-45s each</span></div>
+  <p class="adds">Per-studio guide, on camera. See the OPEN CASTING QUESTION above - v0.1 floated learner-narrators for the studio shorts too; unresolved. ADDS, per studio: the <b>guide's own face/voice</b> + <b>one concrete moment or example</b> from that studio. Does NOT re-read the Fields of Play bullets - "what each studio is about" stays on the page. Guide voices = re-record. Tint each in its studio color. Order youngest-first.</p>
+  <p class="studioshort shape" style="border:0;padding:0"><b>Shared shape:</b> guide waves and introduces themselves &rarr; "here's a real moment from our studio" (one specific example) &rarr; "what we're about is in your playbook - here's a peek inside."</p>
+
+  <div class="studioshort st-tots">
+    <h3>Tots Tribe (3-4 &middot; ORANGE)</h3>
+    <p class="visual"><b>VISUAL:</b> Guide at a nature circle; a tot beside a parent in a quiet "Safe Base" goodbye at the door.</p>
+    <p class="caption"><b>ON-SCREEN:</b> <i>Tots Tribe &middot; a peek inside</i></p>
+    <div class="voice"><b>VOICE:</b> "I'm [guide]. Here's a morning in the Tots Tribe - we follow the child's play, and parents grow right alongside. Last week a little one said goodbye at the door all by herself for the first time. That's the work. What we're growing, and how you grow with us, is in your playbook."</div>
+  </div>
+  <div class="studioshort st-spark">
+    <h3>Spark (5-7 &middot; YELLOW)</h3>
+    <p class="visual"><b>VISUAL:</b> A Spark learner mapping "our community"; the tribe planting a spring garden; a flash-forward to a small debate in front of parents.</p>
+    <p class="caption"><b>ON-SCREEN:</b> <i>Spark &middot; a peek inside</i></p>
+    <div class="voice"><b>VOICE:</b> "I'm Ms. Megan, in Spark. Our Quests follow the seasons. Right now the tribe is mapping our own community and starting a garden for spring. And later this year, these five- to seven-year-olds will hold a real debate, in front of you. Even at five, they're driving. What Spark is all about is in your playbook."</div>
+  </div>
+  <div class="studioshort st-disc">
+    <h3>Discovery (8-10 &middot; PURPLE)</h3>
+    <p class="visual"><b>VISUAL:</b> A real quest in progress - learners writing, building a set, performing.</p>
+    <p class="caption"><b>ON-SCREEN:</b> <i>Discovery &middot; a peek inside</i></p>
+    <div class="voice"><b>VOICE:</b> "I'm [guide], in Discovery. Last session our tribe ran a Process Drama quest - they wrote it, built the set, and performed it for their families. That's a Discovery quest. There's more about how we learn in your playbook."</div>
+  </div>
+  <div class="studioshort st-adv">
+    <h3>Adventure (11-14 &middot; GREEN)</h3>
+    <p class="visual"><b>VISUAL:</b> An Adventure learner running a Town Hall - proposing a rule, the tribe deciding; leading / pitching at an exhibition.</p>
+    <p class="caption"><b>ON-SCREEN:</b> <i>Adventure &middot; a peek inside</i></p>
+    <div class="voice"><b>VOICE:</b> "I'm Ben, in Adventure. Watch one of our learners run our studio's Town Hall - they propose the rules, they hold each other to them. That's what 'learner-led' actually looks like. The full picture is in your playbook."</div>
+  </div>
+  <div class="studioshort st-lp">
+    <h3>Launch Pad (15-18 &middot; BLUE &middot; coming soon)</h3>
+    <p class="visual"><b>VISUAL:</b> A blue horizon; a teen with a portfolio + a "Launch Plan" page; a "coming soon" banner.</p>
+    <p class="caption"><b>ON-SCREEN:</b> <i>Launch Pad &middot; coming soon</i></p>
+    <div class="voice"><b>VOICE:</b> "Launch Pad is on its way. Picture a young person graduating not with a transcript alone, but a real portfolio and a public Launch Plan they designed. We'll share more as it opens."</div>
+  </div>
+
+  <div class="aside"><b>Bridge:</b> each short shows a <i>moment</i>; the studio's description stays on the page.<br><b>L6:</b> poses ("here's a peek - decide if it fits"); valued (a guide's real face, an honest example, no superlatives).</div>
+</div>
+
+<!-- ============ VIDEO 4 ============ -->
+<div class="video avoid">
+  <span class="voicechip vc-jenna">Voice: Jenna Says</span>
+  <div class="head"><h2>Video 4 - "Partner, Don't Rescue"</h2><span class="runtime">~60s</span></div>
+  <p class="adds">Jenna's real voice; modeled dialogue. ADDS: a <b>modeled before/after scene</b> of the one commitment that changes most at home. Does NOT re-list the parent commitments - the full list stays on the page. The whole point is showing the <b>how</b>, which a page can only name. Best with real voices.</p>
+
+  <div class="beat">
+    <span class="ts">0:00-0:10</span>
+    <p class="visual"><b>VISUAL:</b> Jenna, or a warm narrator, to camera.</p>
+    <div class="voice"><b>VOICE:</b> "We ask real things of families - they're all in the playbook. But there's one that changes the most at home. Let us show you, instead of just telling you."</div>
+    <p class="caption"><b>CAPTION:</b> <i>The one to practice first</i></p>
+  </div>
+  <div class="beat">
+    <span class="ts">0:10-0:28 - the rescue</span>
+    <p class="visual"><b>VISUAL:</b> A child at the kitchen table, frustrated. "I can't do my project, it's too hard." A parent slides in: "Here, let me just do this part for you." Child slumps back, hands it over.</p>
+    <p class="caption"><b>CAPTION:</b> <i>The rescue</i></p>
+  </div>
+  <div class="beat">
+    <span class="ts">0:28-0:48 - the partner</span>
+    <p class="visual"><b>VISUAL:</b> Same scene. The parent pauses, sits beside them: "Hmm. What have you already tried? What's one small next step?" The child thinks, picks up the pencil, tries.</p>
+    <p class="caption"><b>CAPTION:</b> <i>The partner</i></p>
+  </div>
+  <div class="beat">
+    <span class="ts">0:48-1:00</span>
+    <p class="visual"><b>VISUAL:</b> The child, a little later, showing the parent what they figured out.</p>
+    <div class="voice"><b>VOICE:</b> "Same love. Different move. We call it partnering, not rescuing - and it's how confidence is born. Your calm is contagious."</div>
+    <p class="caption"><b>CAPTION:</b> <i>Everything we ask is in your playbook. Start here.</i></p>
+  </div>
+
+  <div class="aside"><b>Bridge:</b> the commitments list stays on the page; the video models the one that's hardest to <i>do.</i><br><b>L6:</b> poses (shows a choice, doesn't shame the rescue instinct); valued (names it "same love," honors the parent).</div>
+
+  <h4 class="sbtitle">Storyboard - Video 4</h4>
+  <table class="sb">
+    <thead><tr><th>Panel</th><th>Illustration</th><th>On-screen text</th><th>VO</th><th>~sec</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Jenna (or a warm narrator) to camera</td><td><i>The one to practice first</i></td><td>"We ask real things of families - they're all in the playbook. But there's one that changes the most at home. Let us show you, instead of just telling you."</td><td>0-10</td></tr>
+      <tr><td>2 <b>(the rescue)</b></td><td>Kitchen table: a frustrated child - "I can't do my project, it's too hard." A parent slides in: "Here, let me just do this part." Child slumps, hands it over</td><td><i>The rescue</i></td><td><i>(in-scene dialogue, no narrator)</i></td><td>10-28</td></tr>
+      <tr><td>3 <b>(the partner)</b></td><td>Same scene: the parent pauses, sits beside them - "Hmm. What have you already tried? What's one small next step?" The child thinks, picks up the pencil, tries</td><td><i>The partner</i></td><td><i>(in-scene dialogue)</i></td><td>28-48</td></tr>
+      <tr><td>4</td><td>A little later, the child shows the parent what they figured out</td><td><i>Everything we ask is in your playbook. Start here.</i></td><td>"Same love. Different move. We call it partnering, not rescuing - and it's how confidence is born. Your calm is contagious."</td><td>48-60</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ CAST & WORLD BIBLE ============ -->
+<div class="video avoid">
+  <div class="head"><h2>Cast &amp; World Bible</h2><span class="runtime">reuse across all four + the PDF</span></div>
+
+  <h4 class="sbtitle">Characters</h4>
+  <ul class="internal" style="border:0;background:none;padding:0;margin:0 0 6px">
+    <li><b>Jenna</b> - warm owner, speaks to camera in Videos 1 and 4. (Real voice for re-record.)</li>
+    <li><b>Maya the Guide</b> - represents the guides; kneels to eye-level, never lectures. Recolor lightly per studio.</li>
+    <li><b>Learner characters</b> - a Spark (~6), Discovery (~9), Adventure (~12), teen (~16, Launch Pad), and a <b>tot + parent pair</b> (Tots Tribe).</li>
+    <li><b>A parent + a child</b> - the kitchen-table pair for the Video 4 modeled scene.</li>
+  </ul>
+
+  <h4 class="sbtitle">Settings</h4>
+  <p class="small">The Studio (calm, warm); the Outdoors (grassy field, two practice trees, all-weather sky); the Roundabout (drop-off/pickup); <b>the Exhibition</b> (a small stage, a tribe + families watching) - <i>new, central to Video 2</i>; <b>the Kitchen Table</b> (home) - <i>new, for Video 4</i>.</p>
+
+  <h4 class="sbtitle">Studio colors</h4>
+  <p class="small">Tots <b style="color:var(--tots)">orange</b> &middot; Spark <b style="color:#b8860b">yellow</b> &middot; Discovery <b style="color:var(--discovery)">purple</b> &middot; Adventure <b style="color:var(--adventure)">green</b> &middot; Launch Pad <b style="color:var(--launch)">blue</b> (coming soon). Order youngest-first. Next Great Adventure is folded into Launch Pad.</p>
+
+  <h4 class="sbtitle">Style</h4>
+  <p class="small">Bright, friendly, simple. Bar: <i>"she pictures her child here," not "what a nice video."</i> <b>Rule:</b> if a panel's VO could be lifted off the v0.6 page, redesign it.</p>
+</div>
+
+<!-- ============ INTERNAL ============ -->
+<hr class="divider">
+<div class="internal avoid">
+  <h2>Internal</h2>
+
+  <h3>Additive check (the rule we held)</h3>
+  <table class="chk">
+    <thead><tr><th>Video</th><th>What it ADDS (not on the page)</th><th>Recites the page?</th></tr></thead>
+    <tbody>
+      <tr><td>1 Why Vibrant Life</td><td>Jenna's personal why + a becoming moment + warmth</td><td>No</td></tr>
+      <tr><td>2 A Day</td><td>rhythm in motion + a real exhibition shown</td><td>No</td></tr>
+      <tr><td>3 Studio Shorts</td><td>guide's face/voice + one concrete example per studio</td><td>No</td></tr>
+      <tr><td>4 Partner, Don't Rescue</td><td>a modeled before/after scene (the <i>how</i>)</td><td>No</td></tr>
+    </tbody>
+  </table>
+  <p>Every video ends pointing back to the playbook ("it's in your playbook"); the playbook's video buttons point forward ("watch to see it"). Complementary, never duplicative.</p>
+
+  <h3>Build order if time is tight</h3>
+  <p>Cast &amp; World bible (incl. Jenna, the Exhibition, the Kitchen Table) &rarr; Video 1 &rarr; Video 3 (reuse cast) &rarr; Video 2 (needs the Exhibition scene) &rarr; Video 4 (needs the Kitchen Table + 2 child/parent beats).</p>
+
+  <h3>Still to do</h3>
+  <ul>
+    <li><b>Re-sync legacy storyboards</b> - the v0.1 storyboards follow the reciting approach; the v0.2 storyboards above supersede them.</li>
+    <li><b>Voices:</b> Videos 1 and 4 want Jenna's real voice; Video 3 wants the guides'. Video 2 is learner-narrated (parental consent). TTS is a rough-cut placeholder for all of these.</li>
+    <li><b>Resolve the open casting question:</b> guide-voiced vs learner-voiced (vs mix) for the Studio Shorts - pending Jenna's call (parental consent if learner-voiced).</li>
+    <li><b>Examples to confirm with Jenna:</b> the specific studio moments (Process Drama quest, the Town Hall, the Tots door-goodbye) - swap in real ones she prefers.</li>
+    <li><b>Consent:</b> confirm comfort/consent of any guide or learner on camera, and parental consent for any identifiable child.</li>
+    <li>v0.1 retained as the content guarantee.</li>
+  </ul>
+
+  <h3>Values framing (org-wide, current)</h3>
+  <p>The retired "Learn / Do / Be" framing is replaced org-wide by:</p>
+  <div class="valframe">
+    <div><b>Identity</b>"We are the creators of our lives."</div>
+    <div><b>Values</b>"Curiosity. Courage. Connection."</div>
+    <div><b>Outcome</b>"Purpose. Clarity. Joy."</div>
+  </div>
+  <p>No surviving beat or caption in this combined document uses the retired "Learn / Do / Be" language (it lived only in the v0.1 reference cut, which is not the base here).</p>
+</div>
+
+<script>
+(function(){
+  var body=document.body; body.classList.add('hasbar');
+  // Text elements that become directly click-to-edit when Edit is ON
+  var EDIT_SEL='h1,h2,h3,h4,p,li,td,th,.sub,.tag,.who,.vids,.runtime,.voicechip,.adds,.ts,.visual,.voice,.caption,.shape,.aside,.castnote,.intro,.valframe > div,.newblock,.newbox';
+  // Repeatable blocks that get copy / spacing / delete controls on hover
+  var DUP_SEL=['.video','.beat','.studioshort','.castcard','table.sb tbody tr','table.chk tbody tr',
+    '.internal ul > li','.internal ol > li','.valframe > div','.aside','.newblock','.newbox','.spacer'];
+  var editing=false, lastEl=null;
+
+  function setEditable(on){
+    document.querySelectorAll(EDIT_SEL).forEach(function(el){
+      if(el.closest('#editbar')) return;
+      if(on) el.setAttribute('contenteditable','true');
+      else el.removeAttribute('contenteditable');
+    });
+  }
+  document.addEventListener('focusin',function(e){
+    var t=e.target; if(!t.closest || t.closest('#editbar')) return;
+    if(t.hasAttribute && t.hasAttribute('contenteditable')){ lastEl = t.closest('.dupwrap') || t; }
+  });
+  document.addEventListener('click',function(e){
+    if(!e.target.closest || e.target.closest('#editbar')) return;
+    var b=e.target.closest('.dupwrap'); if(b) lastEl=b;
+  });
+  function mkbtn(cls,txt,title){ var b=document.createElement('button'); b.type='button'; b.className=cls; b.textContent=txt; if(title)b.title=title; return b; }
+
+  function addControls(){
+    DUP_SEL.forEach(function(sel){
+      document.querySelectorAll(sel).forEach(function(el){
+        if(el.closest('#editbar')) return;
+        if(el.querySelector(':scope > .editctl')) return;
+        el.classList.add('dupwrap');
+        var isSpacer=el.classList.contains('spacer');
+        var ctl=document.createElement('span'); ctl.className='editctl'; ctl.setAttribute('contenteditable','false');
+        var cpy=mkbtn('cpy','⧉ copy','Duplicate this block');
+        var less=mkbtn('sp-less','▲','Less space');
+        var more=mkbtn('sp-more','▼','More space');
+        var del=mkbtn('del','🗑','Delete this block');
+        cpy.addEventListener('click',function(e){ e.stopPropagation();
+          var clone=el.cloneNode(true);
+          var c=clone.querySelector(':scope > .editctl'); if(c) c.remove();
+          clone.classList.remove('dupwrap');
+          el.after(clone); lastEl=clone; if(editing) refresh();
+        });
+        function bump(px){
+          var prop = isSpacer ? 'height' : 'marginBottom';
+          var cur=parseInt(el.style[prop]||'',10);
+          if(isNaN(cur)) cur = isSpacer ? 24 : 0;
+          cur+=px; if(cur<0) cur=0; el.style[prop]=cur+'px';
+        }
+        more.addEventListener('click',function(e){ e.stopPropagation(); bump(8); });
+        less.addEventListener('click',function(e){ e.stopPropagation(); bump(-8); });
+        del.addEventListener('click',function(e){ e.stopPropagation(); el.remove(); });
+        if(isSpacer){ ctl.appendChild(less); ctl.appendChild(more); ctl.appendChild(del); }
+        else { ctl.appendChild(cpy); ctl.appendChild(less); ctl.appendChild(more); ctl.appendChild(del); }
+        el.appendChild(ctl);
+      });
+    });
+  }
+  function refresh(){ addControls(); setEditable(true); }
+
+  function insertBlock(node){
+    node.classList.add('avoid');
+    if(lastEl && document.body.contains(lastEl)){ lastEl.after(node); }
+    else { document.body.appendChild(node); }
+    lastEl=node; refresh();
+    try{ node.focus(); }catch(_){}
+  }
+
+  document.getElementById('toggleEdit').addEventListener('click',function(){
+    editing=!editing; body.classList.toggle('editing',editing);
+    this.textContent = editing ? '✎ Edit: ON' : '✎ Edit: OFF';
+    this.classList.toggle('on',editing);
+    if(editing) refresh(); else setEditable(false);
+  });
+  var aT=document.getElementById('addText'); if(aT) aT.addEventListener('click',function(){ if(!editing) return; var d=document.createElement('p'); d.className='newblock'; d.textContent='New text - click to edit.'; insertBlock(d); });
+  var aB=document.getElementById('addBox'); if(aB) aB.addEventListener('click',function(){ if(!editing) return; var d=document.createElement('div'); d.className='newbox'; d.innerHTML='<b>New box</b><br>Click to edit this box.'; insertBlock(d); });
+  var aS=document.getElementById('addSpace'); if(aS) aS.addEventListener('click',function(){ if(!editing) return; var d=document.createElement('div'); d.className='spacer'; insertBlock(d); });
+
+  document.getElementById('printBtn').addEventListener('click',function(){ window.print(); });
+  document.getElementById('saveBtn').addEventListener('click',function(){
+    // Clone, strip the editing UI, keep the file re-openable & editable next time
+    var clone=document.documentElement.cloneNode(true);
+    clone.querySelectorAll('.editctl').forEach(function(n){ n.remove(); });
+    clone.querySelectorAll('[contenteditable]').forEach(function(n){ n.removeAttribute('contenteditable'); });
+    clone.querySelectorAll('.dupwrap').forEach(function(n){ n.classList.remove('dupwrap'); });
+    var b=clone.querySelector('body'); if(b) b.classList.remove('editing');
+    var blob=new Blob(['<!doctype html>\n'+clone.outerHTML],{type:'text/html'});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    a.download='Vibrant-Life-Video-Scripts-EDITED.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); },1500);
+  });
+})();
+</script>
+
+</body>
+</html>
