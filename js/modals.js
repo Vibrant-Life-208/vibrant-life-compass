@@ -2997,6 +2997,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   // Persist the accumulated CLIMB captures as profiles.foundations.climb, merged so a sibling
   // Session-1 inventory key is never clobbered. No-op without a profile (local anon walk).
+  // INV-FOUNDATIONS-CANON (ratified 2026-07-25): foundations.* is self-only reflective
+  // narrative, NEVER the source of record for strengths/values/quote (those are the dedicated
+  // columns via_strengths_top_3 / values_top_3 / quote_text) and NEVER read onto any
+  // guide/parent/owner dashboard, aggregate, or export. Read back only by the learner's own walk.
   function saveClimb() {
     if (!profileId) return Promise.resolve();
     const merged = { ...(state.climbFoundations || {}), climb: state.climb };
