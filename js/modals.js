@@ -997,7 +997,7 @@ export function openConfirmModal({ title, body, confirmLabel = 'Yes', cancelLabe
 export async function openGoalArcModal({ goal, learnerId = null, lifeArea = null }) {
   const calendar = getYearCalendar();
   const position = currentArcPosition(calendar);
-  const kind = weeklyKindFor(lifeArea);
+  const kind = weeklyKindFor(lifeArea, goal?.isBecoming);  // stored flag wins (v0.35), slice label is fallback
   const d = new Date();
   const todayISO = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const canPersist = Boolean(learnerId && goal?.id);
@@ -1099,7 +1099,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
   // Detection via the goal's life-area (weeklyKindFor === 'presence'). PROVISIONAL presence copy
   // below is Comes' + Accord's to finalize before flip (mirrors the goal-arc.js becoming note).
   const lifeArea = goal?.lifeArea || (category?.id ? lifeAreaForCategory(category.id) : null);
-  const becoming = weeklyKindFor(lifeArea) === 'presence';
+  const becoming = weeklyKindFor(lifeArea, goal?.isBecoming) === 'presence';  // stored flag wins (v0.35)
 
   const s = {
     // FINISH goals walk: [yeargoal ->] now -> milestones -> challenges -> setup (backward-
@@ -2997,6 +2997,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
   // Persist the accumulated CLIMB captures as profiles.foundations.climb, merged so a sibling
   // Session-1 inventory key is never clobbered. No-op without a profile (local anon walk).
+  // INV-FOUNDATIONS-CANON (ratified 2026-07-25): foundations.* is self-only reflective
+  // narrative, NEVER the source of record for strengths/values/quote (those are the dedicated
+  // columns via_strengths_top_3 / values_top_3 / quote_text) and NEVER read onto any
+  // guide/parent/owner dashboard, aggregate, or export. Read back only by the learner's own walk.
   function saveClimb() {
     if (!profileId) return Promise.resolve();
     const merged = { ...(state.climbFoundations || {}), climb: state.climb };

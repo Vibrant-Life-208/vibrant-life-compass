@@ -1,3 +1,10 @@
+-- INV-FOUNDATIONS-CANON (ratified 2026-07-25): this JSONB column is self-only reflective
+-- narrative. It is NEVER the source of record for strengths / values / year-quote - those are
+-- the dedicated columns via_strengths_top_3 / values_top_3 / quote_text (+ quote_vision). The
+-- foundations blob (incl. foundations.climb) must NEVER be read onto a guide/parent/owner
+-- dashboard, aggregate, or export. A surface needing a learner's strengths/values reads the
+-- dedicated columns; foundations.* is read back only by the learner's own onboarding walk.
+--
 -- v0.26: profiles.foundations - the Session-1 foundational inventory (the "Ground / Posture /
 -- Self" answers beyond strengths/values/vision). Design spec + copy:
 --   docs/design/2026-07-20-session1-plan-foundational-inventory-spec.md   (Q-C: jsonb)

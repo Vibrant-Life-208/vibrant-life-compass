@@ -13,7 +13,9 @@ import {
   getProfileValues, getValuesFreetext, getStrengthRanking,
   getValuesLexicon, getViaCharacterStrengths,
   getFamilyUpdates, addFamilyUpdate,
+  getGoals, getLearner,
 } from './store.js';
+import { getBooks } from './books.js';
 import { renderSafeBaseDailyBlessing } from './parent-badges.js';
 
 export function isFamilySession(session) {
@@ -134,15 +136,21 @@ export async function renderFamilyView(familyId, { onBack } = {}) {
   const sharedValues = tally(summaries.flatMap((s) => s.values)).filter(([, n]) => n >= 2);
   const sharedStrengths = tally(summaries.flatMap((s) => s.strengths)).filter(([, n]) => n >= 2);
 
-  const cards = summaries.map((s) => `
-    <div class="family-member-card">
-      <h3 class="family-member-name">${s.member.displayName || s.member.name}
-        <span class="member-kind">${s.member.kind === 'parent' ? 'Parent' : 'Learner'}</span></h3>
+  // Learner cards open a fuller portrait of that child; parent cards stay static.
+  // A learner name is a doorway, not a row of data (fleet meeting 2026-07-21).
+  const cards = summaries.map((s, i) => {
+    const isLearner = s.member.kind === 'learner';
+    const inner = `
+      <h3 class="family-member-name">${escapeHtml(s.member.displayName || s.member.name)}
+        <span class="member-kind">${isLearner ? 'Learner' : 'Parent'}</span>${isLearner ? '<span class="family-member-open">View &rarr;</span>' : ''}</h3>
       <div class="family-row"><span class="family-row-label">Values</span>
         <span class="family-chips">${chips(s.values, 'Not chosen yet')}</span></div>
       <div class="family-row"><span class="family-row-label">Strengths</span>
-        <span class="family-chips">${chips(s.strengths, 'Not added yet')}</span></div>
-    </div>`).join('');
+        <span class="family-chips">${chips(s.strengths, 'Not added yet')}</span></div>`;
+    return isLearner
+      ? `<button type="button" class="family-member-card family-member-card-open" data-portrait="${i}">${inner}</button>`
+      : `<div class="family-member-card">${inner}</div>`;
+  }).join('');
 
   const shared = (sharedValues.length || sharedStrengths.length) ? `
     <div class="family-shared">
@@ -180,6 +188,15 @@ export async function renderFamilyView(familyId, { onBack } = {}) {
     </div>`;
   screen.querySelector('[data-back]')?.addEventListener('click', () => onBack && onBack());
 
+  // A child's name is a doorway. Clicking it opens their portrait; Back returns here.
+  screen.querySelectorAll('[data-portrait]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const member = summaries[Number(btn.dataset.portrait)]?.member;
+      if (!member) return;
+      renderLearnerPortrait(member, family, { onBack: () => renderFamilyView(familyId, { onBack }) });
+    });
+  });
+
   // Parent-side Parents & Tots - the daily Safe-Base blessing during the first session
   // (captain 2026-07-20; replaces the four-badge journey). Shows nothing outside session 1.
   const session = await getSession();
@@ -189,6 +206,82 @@ export async function renderFamilyView(familyId, { onBack } = {}) {
     const { renderParentAnchor } = await import('./parent-anchor.js');
     renderParentAnchor(document.getElementById('parent-anchor-host'), activeMember.profileId);
   }
+}
+
+function firstName(name) {
+  return String(name || '').trim().split(/\s+/)[0] || 'This learner';
+}
+
+// A learner's portrait — a portrait, not a report (fleet meeting 2026-07-21).
+// Tiers by sovereignty class:
+//   A (always shareable, identity the learner authored to be seen): strengths, values.
+//   B (shareable with framing, never a scoreboard): goals in the learner's own words,
+//     book titles. Completion state — goal status, book progress — is NEVER surfaced.
+//   C (sealed): the North Star quote is self-only in RLS and simply does not load for an
+//     owner; practice/private moments never render. Absence is invisible — no padlock,
+//     no "Private" placeholder. What isn't shown leaves no shadow.
+async function renderLearnerPortrait(member, family, { onBack } = {}) {
+  const screen = document.getElementById('family-view-screen');
+  if (!screen) return;
+  showOnly(screen);
+  const name = member.displayName || member.name || 'This learner';
+  screen.innerHTML = `<div class="picker-container family-view"><p class="picker-sub">Gathering ${escapeHtml(firstName(name))}'s portrait…</p></div>`;
+
+  const [lexicon, viaList] = await Promise.all([getValuesLexicon(), getViaCharacterStrengths()]);
+  const summary = await memberSummary(member, lexicon, viaList); // Tier A: values + strengths
+
+  // Tier B — reaching toward: active goals in the learner's own words. Status is used to
+  // hide finished goals from the shelf; it is never shown. No percentages, no counts.
+  let reaching = [];
+  try {
+    const goals = await getGoals(member.profileId);
+    reaching = (goals || [])
+      .filter((g) => g && g.text && g.status !== 'done' && g.status !== 'archived')
+      .map((g) => String(g.text).trim())
+      .filter(Boolean)
+      .slice(0, 4);
+  } catch { reaching = []; }
+
+  // Tier B — lighting up lately: book titles only. The bookmark ("where you are") is the
+  // learner's private evolving now and is deliberately not carried here.
+  let books = [];
+  try {
+    const learner = await getLearner(member.profileId);
+    books = getBooks(learner).map((b) => b.title).filter(Boolean).slice(0, 3);
+  } catch { books = []; }
+
+  const reachingBlock = reaching.length ? `
+    <div class="portrait-section">
+      <h2 class="portrait-section-title">Reaching toward</h2>
+      <ul class="portrait-list">${reaching.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+    </div>` : '';
+  const booksBlock = books.length ? `
+    <div class="portrait-section">
+      <h2 class="portrait-section-title">Lighting up lately</h2>
+      <ul class="portrait-list">${books.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>
+    </div>` : '';
+
+  screen.innerHTML = `
+    <div class="picker-container family-view learner-portrait">
+      <button type="button" class="owner-back" data-back="1">&#8592; ${escapeHtml(family?.name || 'Family')}</button>
+      <div class="portrait-head">
+        <span class="member-avatar member-avatar-learner portrait-avatar">${initials(name)}</span>
+        <h1 class="portrait-name">${escapeHtml(name)}</h1>
+      </div>
+      <p class="portrait-frame">This is who ${escapeHtml(firstName(name))} is showing us they're becoming - an invitation to encourage, not a report to evaluate.</p>
+      <div class="portrait-section">
+        <span class="family-row-label">Strengths</span>
+        <div class="family-chips">${chips(summary.strengths, 'Not added yet')}</div>
+      </div>
+      <div class="portrait-section">
+        <span class="family-row-label">Values</span>
+        <div class="family-chips">${chips(summary.values, 'Not chosen yet')}</div>
+      </div>
+      ${reachingBlock}
+      ${booksBlock}
+      <button type="button" class="picker-signout" data-back="1">Back</button>
+    </div>`;
+  screen.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', () => onBack && onBack()));
 }
 
 function chips(items, emptyText) {

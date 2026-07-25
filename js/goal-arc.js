@@ -70,18 +70,31 @@ function isBecomingSlice(lifeArea) {
   return BECOMING_SLICES.has(String(lifeArea || '').trim().toLowerCase());
 }
 
-// The cadence-split kind for a slice: Heart 'becoming' goals register PRESENCE; everything
-// else takes the FINISH-shaped question. Exported so the modal can tag the saved answer.
-export function weeklyKindFor(lifeArea) {
-  return isBecomingSlice(lifeArea) ? 'presence' : 'finish';
+// E-2.5 (Gate L): the STORED per-goal flag wins over the slice label. A goal's becoming
+// disposition is frozen (migration v0.35) from its ORIGINAL slice, so the cadence survives
+// the LEGACY_TO_REGION collapse (emotions -> Self) that would otherwise flip a becoming goal
+// from presence to finish. The slice test is the fallback for goals written before the flag
+// existed (flag null/undefined) — for those, behavior is identical to before.
+function resolveBecoming(lifeArea, isBecoming) {
+  if (isBecoming === true) return true;
+  if (isBecoming === false) return false;
+  return isBecomingSlice(lifeArea);
+}
+
+// The cadence-split kind for a goal: 'becoming' goals register PRESENCE; everything else
+// takes the FINISH-shaped question. Exported so the modal can tag the saved answer. Pass the
+// goal's stored `isBecoming` flag (v0.35) so the split survives the region collapse; omit it
+// and the slice label alone decides (legacy fallback).
+export function weeklyKindFor(lifeArea, isBecoming = null) {
+  return resolveBecoming(lifeArea, isBecoming) ? 'presence' : 'finish';
 }
 
 // The pulled weekly progressing question for a slice, cadence-split. Read-only prompt in
 // M1 (the "pull" is that the learner opened the goal); M2 makes it answerable. Never a
-// per-goal push-strip (§7).
-function weeklyPrompt(lifeArea) {
+// per-goal push-strip (§7). Takes the resolved becoming boolean so it honors the stored flag.
+function weeklyPrompt(lifeArea, becoming) {
   const area = escapeHtml(lifeArea || 'this part of your life');
-  return isBecomingSlice(lifeArea)
+  return becoming
     ? `This week in ${area}: what did you notice? (You do not finish becoming - you notice it growing.)`
     : `This week in ${area}: what is the one thing you will work on?`;
 }
@@ -94,7 +107,7 @@ function weeklyPrompt(lifeArea) {
 export function renderGoalArcHtml(goal, { lifeArea = null, position = { session: 1, week: 1 }, todayTasks = [], weeklyAnswer = '' } = {}) {
   const area = lifeArea || goal?.lifeArea || null;
   const destination = (goal?.text || '').trim();
-  const becoming = isBecomingSlice(area);
+  const becoming = resolveBecoming(area, goal?.isBecoming);
 
   // The middle of the arc, between the destination and the weekly zoom.
   //
@@ -150,7 +163,7 @@ export function renderGoalArcHtml(goal, { lifeArea = null, position = { session:
   const week = `
     <section class="arc-week">
       <h4 class="arc-zoom-heading">This week</h4>
-      <p class="arc-week-prompt">${weeklyPrompt(area)}</p>
+      <p class="arc-week-prompt">${weeklyPrompt(area, becoming)}</p>
       <textarea id="arc-week-answer" class="arc-week-input" rows="2" placeholder="Just this week - a sentence is plenty.">${escapeHtml(weeklyAnswer)}</textarea>
       <div class="arc-week-actions">
         <button type="button" class="btn btn-text" id="arc-week-save">Save this week</button>

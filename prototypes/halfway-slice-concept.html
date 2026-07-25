@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hero's Compass — Design Prototype (not live)</title>
+<style>
+  :root{
+    --sage:#6f8e5a; --sage-deep:#4f6f3f; --sage-pale:#e8f0e0;
+    --cream:#f0ebe0; --warm-white:#f9f5ec; --text:#2f3a24;
+    --muted:#7c7c70; --soft:#a2a294; --earth:#b08a5a; --earth-pale:#f0e6d6;
+    --carry-green:#2f7d3f; --carry-bg:#e6f2e0; --carry-border:#bcd8a8;
+    --line:#e2dccd; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    color:var(--text);background:var(--cream);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px 90px}
+  .sandbox{background:#fbe9c8;border-bottom:1px solid #e6cf9a;color:#7a5a1e;
+    text-align:center;font-size:.82rem;padding:8px 12px;letter-spacing:.02em}
+  header.hero{text-align:center;padding:34px 0 10px}
+  header.hero h1{margin:0 0 4px;color:var(--sage-deep);font-size:1.7rem;font-weight:700}
+  header.hero p{margin:0;color:var(--muted);font-style:italic}
+  .intro{text-align:center;color:var(--muted);max-width:580px;margin:6px auto 0}
+  .zoomtag{display:inline-block;margin:36px 0 4px;font-size:.72rem;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--earth)}
+  .zoomtitle{margin:2px 0 4px;font-size:1.28rem;color:var(--sage-deep)}
+  .zoomsub{margin:0 0 18px;color:var(--muted)}
+  .panel{background:var(--warm-white);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 22px 26px;box-shadow:0 1px 2px rgba(60,60,40,.04)}
+  .stack{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+  .ctxcard{flex:1 1 240px;background:var(--cream);border-left:4px solid var(--sage);
+    border-radius:8px;padding:10px 14px}
+  .ctxcard .lbl{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ctxcard p{margin:4px 0 0;font-size:.92rem;line-height:1.45}
+  .wheelwrap{display:flex;justify-content:center;margin:8px 0 6px}
+  .wheelwrap svg{width:320px;height:320px;max-width:88vw}
+  .wheelcap{text-align:center;color:var(--soft);font-size:.82rem;margin:0 0 18px}
+  .slices{display:flex;flex-direction:column;gap:10px}
+  .slice{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+  .slice .name{font-weight:700;color:var(--sage-deep);font-size:1.02rem;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .dot{width:12px;height:12px;border-radius:50%;flex:none}
+  .aim{width:100%;border:1px dashed #cfd6c2;background:var(--cream);border-radius:8px;
+    padding:9px 11px;color:var(--soft);font-style:italic;font-size:.92rem}
+  .carry{margin:8px 0 2px;background:var(--carry-bg);border:1px solid var(--carry-border);
+    border-radius:8px;padding:9px 12px}
+  .carry .clbl{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--carry-green);margin-bottom:3px}
+  .carry ul{margin:0;padding-left:18px;color:var(--carry-green);font-size:.9rem}
+  .carry li{margin:1px 0}
+  .readonly-note{font-size:.72rem;color:var(--carry-green);opacity:.8;margin-top:4px;font-style:italic}
+
+  /* "who you're becoming" banner */
+  .why{background:linear-gradient(180deg,#eef3e5,#e7efe0);border:1px solid var(--carry-border);
+    border-radius:12px;padding:14px 18px;margin-bottom:18px}
+  .why .wlbl{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-deep)}
+  .why h3{margin:3px 0 6px;color:var(--sage-deep);font-size:1.06rem}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-size:.8rem;padding:4px 11px;border-radius:20px;font-weight:600}
+  .chip.trait{background:#dbe8cc;color:#3f6030}
+  .chip.value{background:#e7ddc4;color:#77592a}
+  .why p{margin:8px 0 0;font-size:.86rem;color:#5a6a48}
+
+  /* goals (each threshold is its own) */
+  .goal{border:1px solid var(--line);border-radius:10px;background:#fff;padding:14px 16px;margin-bottom:10px}
+  .goal.compact{padding:11px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+  .goal h4{margin:0;color:var(--sage-deep);font-size:1rem;display:flex;align-items:center;gap:8px}
+  .gtag{font-size:.6rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    background:var(--carry-bg);color:var(--carry-green);border:1px solid var(--carry-border);border-radius:5px;padding:2px 6px}
+  .gtag.own{background:#eee7d6;color:#77592a;border-color:#e0cfa8}
+  .goal .from{font-size:.78rem;color:var(--carry-green);margin:4px 0 12px}
+  .goal.compact .open{color:var(--soft);font-size:.82rem}
+  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .step{display:flex;gap:10px;align-items:flex-start;background:var(--cream);border-radius:8px;padding:9px 12px}
+  .step .ring{width:16px;height:16px;border:2px solid var(--sage);border-radius:50%;flex:none;margin-top:3px}
+  .step .txt{font-size:.93rem}
+  .step .when{display:block;color:var(--muted);font-size:.78rem;margin-top:2px}
+  .addbtn{margin-top:10px;background:none;border:1px dashed var(--sage);color:var(--sage-deep);
+    border-radius:8px;padding:8px 12px;font-size:.86rem;cursor:pointer}
+  .addown{width:100%;border:1px solid var(--earth);background:#fffdf8;border-radius:10px;
+    padding:11px 13px;font:inherit;font-size:.93rem;margin-top:4px}
+  .addown::placeholder{color:#b79a6a}
+  .ownhint{font-size:.74rem;color:var(--earth);margin:6px 2px 0}
+
+  .doors{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .door{flex:1 1 200px;border-radius:10px;padding:12px 14px;cursor:pointer;border:1px solid transparent}
+  .door.step{background:var(--sage-deep);color:#fff}
+  .door.rest{background:var(--earth-pale);border-color:#e2cfa8;color:#6b5426}
+  .door .dh{font-weight:700;font-size:.96rem}
+  .door .ds{font-size:.8rem;opacity:.9;margin-top:2px}
+  #doormsg{min-height:1.2em;margin:10px 2px 0;font-size:.88rem;color:var(--sage-deep)}
+
+  /* Zoom 3 — session progression timeline */
+  .goalhead{font-size:1.05rem;color:var(--sage-deep);font-weight:700;margin:2px 0 2px}
+  .goalhead .gtag{vertical-align:middle;margin-left:8px}
+  .timeline{position:relative;margin:16px 0 0;padding-left:26px}
+  .timeline:before{content:"";position:absolute;left:9px;top:6px;bottom:64px;width:2px;background:var(--carry-border)}
+  .sess{position:relative;margin-bottom:14px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .sess:before{content:"";position:absolute;left:-21px;top:16px;width:12px;height:12px;border-radius:50%;
+    background:var(--sage);border:2px solid var(--warm-white)}
+  .sess .snum{font-size:.64rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--earth)}
+  .sess .srole{font-weight:700;color:var(--sage-deep);font-size:1rem;margin:1px 0 4px}
+  .sess .sgoal{font-size:.92rem;margin:0 0 7px}
+  .sess .stask{display:flex;gap:8px;align-items:flex-start;background:var(--cream);border-radius:7px;padding:7px 10px;font-size:.86rem}
+  .sess .stask .ring{width:14px;height:14px;border:2px solid var(--sage);border-radius:50%;flex:none;margin-top:2px}
+  .halfmark{position:relative;background:var(--sage-pale);border:1px solid var(--carry-border);border-radius:12px;
+    padding:14px 16px;margin-top:2px}
+  .halfmark:before{content:"";position:absolute;left:-22px;top:18px;width:14px;height:14px;border-radius:50%;
+    background:var(--earth);border:2px solid var(--warm-white)}
+  .halfmark .hh{font-weight:700;color:var(--sage-deep);font-size:1.02rem}
+  .halfmark p{margin:3px 0 0;font-size:.88rem;color:#4a5a3a}
+  .ladder{background:#fff;border:1px dashed var(--line);border-radius:10px;padding:12px 15px;margin:16px 0 0;font-size:.85rem;color:var(--muted)}
+  .ladder b{color:var(--text)}
+
+  .relook{margin-top:20px;background:var(--sage-pale);border-radius:12px;padding:16px 18px}
+  .relook .rlbl{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sage-deep)}
+  .relook h3{margin:4px 0 6px;color:var(--sage-deep);font-size:1.08rem}
+  .relook p{margin:0;color:#4a5a3a;font-size:.94rem}
+  .note{background:#fff;border:1px dashed var(--line);border-radius:10px;padding:12px 16px;margin:28px 0 0;font-size:.86rem;color:var(--muted)}
+  .note b{color:var(--text)}
+  /* Zoom 4 — week & day */
+  .weeks{display:flex;flex-direction:column;gap:8px;margin:8px 0 18px}
+  .week{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 13px;font-size:.92rem}
+  .week.open{border-color:var(--sage);background:var(--sage-pale)}
+  .week .wk{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--earth);flex:none;width:56px}
+  .week .arrow{margin-left:auto;color:var(--soft);font-size:.78rem}
+  .week.open .arrow{color:var(--sage-deep);font-weight:600}
+  .today{background:var(--warm-white);border:1px solid var(--carry-border);border-radius:12px;padding:16px 18px}
+  .today .th{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .today h3{margin:0;color:var(--sage-deep);font-size:1.1rem}
+  .today .count{font-size:.76rem;color:var(--carry-green);background:var(--carry-bg);border-radius:20px;padding:3px 11px;font-weight:600}
+  .tlist{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .titem{display:flex;gap:10px;align-items:flex-start;background:var(--cream);border-radius:9px;padding:10px 13px}
+  .titem .ring{width:16px;height:16px;border:2px solid var(--sage);border-radius:50%;flex:none;margin-top:3px}
+  .titem .slicetag{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:5px;margin-right:6px}
+  .titem .tt{font-size:.92rem}
+  .titem .when{display:block;color:var(--muted);font-size:.77rem;margin-top:2px}
+  .numnote{background:#fff;border:1px dashed var(--carry-border);border-radius:10px;padding:13px 16px;margin-top:16px;font-size:.88rem;color:#4a5a3a}
+  .numnote b{color:var(--sage-deep)}
+  .numnote .scale{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+  .numnote .sc{background:var(--sage-pale);border-radius:8px;padding:6px 11px;font-size:.82rem}
+  /* accountability layer */
+  .acct{display:flex;flex-direction:column;gap:8px;margin:4px 0 4px}
+  .acctrow{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:9px;padding:11px 14px}
+  .acctrow .grain{flex:none;width:150px;font-weight:700;color:var(--sage-deep);font-size:.9rem}
+  .acctrow .who{font-size:.88rem;line-height:1.45}
+  .acctrow .who .w{font-weight:600;color:var(--earth)}
+  .acctrow.private{background:var(--sage-pale);border-color:var(--carry-border)}
+  .witness{background:var(--warm-white);border:1px solid var(--carry-border);border-radius:12px;padding:16px 18px;margin-top:14px}
+  .witness .wl{font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sage-deep)}
+  .witness h3{margin:3px 0 4px;color:var(--sage-deep);font-size:1.06rem}
+  .witness>p{margin:0 0 12px;font-size:.9rem;color:#4a5a3a}
+  .pcard{display:flex;gap:12px;align-items:center;background:var(--cream);border-radius:10px;padding:12px 14px}
+  .pavatar{width:38px;height:38px;border-radius:50%;background:#c0a884;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex:none}
+  .pcard .pn{font-weight:700;color:var(--text);font-size:.92rem}
+  .pcard .pm{font-size:.8rem;color:var(--muted)}
+  .pbtn{margin-left:auto;background:var(--sage-deep);color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:.85rem;cursor:pointer}
+  hr.div{border:none;border-top:1px solid var(--line);margin:42px 0 0}
+</style>
+</head>
+<body>
+<div class="sandbox">SANDBOX — design prototype only. The live onboarding flow is untouched. Nothing here is wired to the app or the backend.</div>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>Hero's Compass</h1>
+    <p>Design prototype — "the elephant, made eatable"</p>
+  </header>
+  <p class="intro">Three zoom levels. Onboarding <b>plants</b> the direction. The Compass <b>cultivates</b> it
+  into bite-sized action. The <b>session arc</b> walks the first half of the year, one job at a time — until
+  the elephant is half-eaten.</p>
+
+  <!-- ZOOM 1 -->
+  <div class="zoomtag">Zoom 1</div>
+  <h2 class="zoomtitle">Onboarding plants — light</h2>
+  <p class="zoomsub">The halfway step: your year and your "right now" on top, your wheel below, one line per slice. Nothing forced.</p>
+  <div class="panel">
+    <div class="stack">
+      <div class="ctxcard"><div class="lbl">1 year from now</div>
+        <p>“I'll be working in my new studio, met all my thresholds, still asking Ms. Jenna about yoga before studio time.”</p></div>
+      <div class="ctxcard"><div class="lbl">Right now — the mirror</div>
+        <p>“I'm good at reading but I put off math. I get shy in Socratic.”</p></div>
+    </div>
+    <div class="wheelwrap" id="wheel1"></div>
+    <p class="wheelcap">Your life — hold it all in view.</p>
+    <div class="slices" id="slices1"></div>
+  </div>
+
+  <hr class="div">
+
+  <!-- ZOOM 2 -->
+  <div class="zoomtag">Zoom 2</div>
+  <h2 class="zoomtitle">The Compass cultivates — deep</h2>
+  <p class="zoomsub">Open a slice. Each carried threshold is its <b>own</b> goal to master — and you add your own, too.</p>
+  <div class="panel">
+
+    <div class="why">
+      <div class="wlbl">Who you're becoming — think big</div>
+      <h3>Let your strengths and values pull the dream upward.</h3>
+      <div class="chips">
+        <span class="chip trait">Courage</span><span class="chip trait">Curiosity</span><span class="chip trait">Perseverance</span>
+        <span class="chip value">Growth</span><span class="chip value">Family</span><span class="chip value">Adventure</span>
+      </div>
+      <p>These aren't decoration. When a goal feels heavy, they're the "why" underneath it — the person the work is making you.</p>
+    </div>
+
+    <p style="margin:0 0 12px;color:var(--muted)"><b style="color:var(--sage-deep)">Learning</b> — opened. Each of these is its own goal.</p>
+    <div id="goals2"></div>
+
+    <input class="addown" placeholder="+ Add a learning goal of your own (yours to name and edit)…">
+    <p class="ownhint">Your own goals sit right alongside the carried ones — the difference is these are yours to write and change. The green ones you're carrying, not editing.</p>
+
+    <p style="margin:18px 0 8px;color:var(--muted);font-size:.9rem">On a day the motivation isn't there, two honest doors — never one:</p>
+    <div class="doors">
+      <div class="door step" onclick="pick(this)"><div class="dh">One small step →</div><div class="ds">The plan carries you when the feeling doesn't. Just the next tiny thing.</div></div>
+      <div class="door rest" onclick="pick(this)"><div class="dh">Rest today ☾</div><div class="ds">Sometimes not-feeling-it is information. Resting is a real choice, not a miss.</div></div>
+    </div>
+    <p id="doormsg"></p>
+  </div>
+
+  <hr class="div">
+
+  <!-- ZOOM 3 -->
+  <div class="zoomtag">Zoom 3</div>
+  <h2 class="zoomtitle">The session arc — cutting the elephant in half</h2>
+  <p class="zoomsub">The first half of the year is <b>Sessions 1–4</b>, and each session has a job. Reach the halfway point and half the elephant is already eaten — a skill at a time.</p>
+  <div class="panel">
+
+    <div class="why" style="margin-bottom:16px">
+      <div class="wlbl">Think big — this is the mountain</div>
+      <h3>Master grade 2–5 math</h3>
+      <div class="chips"><span class="chip trait">Perseverance</span><span class="chip value">Growth</span></div>
+      <p>Big dream, chosen for growth. Now we walk it down to something you can do on a Tuesday morning.</p>
+    </div>
+
+    <div class="goalhead">First half — one goal, four sessions <span class="gtag">carried</span></div>
+
+    <div class="timeline" id="timeline"></div>
+
+    <div class="ladder">
+      <b>How it ladders:</b> a <b>daily task</b> (“one math skill”) → a <b>weekly step</b> → a <b>session goal</b> (the job of that session)
+      → the <b>half-year</b>. You only ever hold the small end. The big end takes care of itself.
+    </div>
+
+    <div class="relook">
+      <div class="rlbl">Session re-look — the ritual</div>
+      <h3>You've finished a session. Look back.</h3>
+      <p>What did you notice? &nbsp;(Asked <i>first</i> — before anything about what's undone. No counts, no red, no “behind.”)</p>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <!-- ZOOM 4 -->
+  <div class="zoomtag">Zoom 4</div>
+  <h2 class="zoomtitle">The week &amp; the day — the smallest end</h2>
+  <p class="zoomsub">A session breaks into <b>weeks</b>; a week breaks into a few <b>daily tasks</b>. This is where a big dream becomes something you actually do this morning.</p>
+  <div class="panel">
+    <p style="margin:0 0 6px;color:var(--muted)"><b style="color:var(--sage-deep)">Session 2 · The challenge</b> &nbsp;→&nbsp; Push through fractions</p>
+    <div class="weeks">
+      <div class="week"><span class="wk">Week 1</span> Get what a fraction really is <span class="arrow">done ✓</span></div>
+      <div class="week open"><span class="wk">Week 2</span> Add &amp; subtract fractions <span class="arrow">this week ↓</span></div>
+      <div class="week"><span class="wk">Week 3</span> Fractions of a number <span class="arrow">soon →</span></div>
+      <div class="week"><span class="wk">Week 4</span> Mixed practice + the quiz <span class="arrow">soon →</span></div>
+    </div>
+
+    <div class="today">
+      <div class="th"><h3>Today · Tuesday</h3><span class="count">3 things — that's it</span></div>
+      <ul class="tlist">
+        <li class="titem"><span class="ring"></span><span class="tt"><span class="slicetag" style="background:#e6f2e0;color:#2f7d3f">Learning</span>One fractions skill<span class="when">Right after I sit down — before I open anything else.</span></span></li>
+        <li class="titem"><span class="ring"></span><span class="tt"><span class="slicetag" style="background:#e6f2e0;color:#2f7d3f">Learning</span>Read for 15 minutes<span class="when">At reading time, on the beanbag.</span></span></li>
+        <li class="titem"><span class="ring"></span><span class="tt"><span class="slicetag" style="background:#f3e7d0;color:#77592a">Heart</span>Say one thing in Socratic<span class="when">When a question comes that I have a thought about.</span></span></li>
+      </ul>
+      <div class="doors" style="margin-top:12px">
+        <div class="door step" onclick="pick(this)"><div class="dh">Knock one out →</div><div class="ds">Pick the easiest first. Momentum is a feeling you make, not one you wait for.</div></div>
+        <div class="door rest" onclick="pick(this)"><div class="dh">Light day ☾</div><div class="ds">Two is plenty some days. Resting one is a choice, not a miss.</div></div>
+      </div>
+    </div>
+
+    <div class="numnote">
+      <b>How many daily tasks?</b> Not a fixed 5–7 — <b>age-scaled and small</b>, and a <b>soft ceiling, never a quota.</b>
+      Today's list pulls a few things from <i>across</i> the wheel, so no single goal floods the day. Fewer-finished beats many-abandoned — that's what builds “I can.”
+      <div class="scale">
+        <span class="sc"><b>Sparks</b> ~2</span><span class="sc"><b>Discovery</b> ~3</span><span class="sc"><b>Adventure</b> ~5</span><span class="sc"><b>Launch Pad</b> ~7</span>
+      </div>
+      <p style="margin:9px 0 0;font-size:.8rem;color:var(--muted)">(These match the app's existing per-studio daily-task thresholds. Go over the number and it's a gentle “that's a lot for today — move one to tomorrow?” — the child, with their guide, decides. Never a hard quota.)</p>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <!-- ACCOUNTABILITY LAYER -->
+  <div class="zoomtag">The accountability layer</div>
+  <h2 class="zoomtitle">Who holds you to it</h2>
+  <p class="zoomsub">Accountability scales with the size of the commitment. The daily list stays private; the big crossings get witnessed — never the other way around.</p>
+  <div class="panel">
+    <div class="acct">
+      <div class="acctrow private"><div class="grain">Daily tasks</div><div class="who"><span class="w">You alone</span> — plus the two doors. A partner watching your <i>undone</i> daily list would be surveillance. Daily stays yours.</div></div>
+      <div class="acctrow"><div class="grain">Session crossings<br><span style="font-weight:400;font-size:.76rem;color:var(--muted)">finish line · halfway</span></div><div class="who"><span class="w">Your accountability partner</span> — witnesses &amp; celebrates. The “someone saw me do the big thing” moment.</div></div>
+      <div class="acctrow"><div class="grain">Year goals · pitch</div><div class="who"><span class="w">Partner confirms + guide signs</span> — the check-off flow that already exists, at the right grain.</div></div>
+      <div class="acctrow"><div class="grain">Shared wins</div><div class="who"><span class="w">Parents</span> (opt-in) — the “share this win with my parents” moment.</div></div>
+      <div class="acctrow" style="background:#faf3e6;border-color:#e6cf9a"><div class="grain">Sparks · ages 4–7</div><div class="who"><span class="w" style="color:#7a5a1e">The parent holds all of it</span> — no account, no peer partner. The parent sets the aims, companions the ~2 daily things, and celebrates. This whole surface is the <i>parent's</i> view. 💛</div></div>
+    </div>
+
+    <div class="witness">
+      <div class="wl">The partner moment — at the crossing, not the daily tick</div>
+      <h3>You crossed your Session 3 finish line. 🎉</h3>
+      <p>The moment to be seen — right when you're already looking back. Send the crossing to your partner. They see <b>what you did</b>, never your undone daily list.</p>
+      <div class="pcard">
+        <div class="pavatar">M</div>
+        <div><div class="pn">Maya · your partner</div><div class="pm">Will see: “Finished the grade-5 Course Challenge.” &nbsp;Not your daily tasks.</div></div>
+        <button class="pbtn" onclick="this.textContent='Maya witnessed it ✓ 🎉';this.style.background='#3f7d3f'">Ask Maya to witness</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>This round adds —</b> each carried threshold as its <b>own</b> goal; an <b>editable</b> input for the learner's own
+    goals (replacing the vague "room to grow"); the <b>character-traits + values</b> banner as the "think big" anchor; and
+    <b>Zoom 3</b>, the Sessions 1–4 arc (Set up → Challenge → Finish line → Clean up &amp; prep) that cuts the year in half.<br><br>
+    <b>Still a sandbox —</b> the live onboarding cascade, Setup, and backend are untouched.
+  </div>
+
+</div>
+
+<script>
+// --- Wheel geometry, faithful to js/wheel.js ---
+const DISCOVERY = ['Movement','Learning','Heart','Family','Friends','Fun'];
+const TINTS = ['#bcd49a','#a2c5d6','#e6c986','#c6a8db','#9fd4ba','#dcabb0'];
+const NUDGE = { Heart:8, Family:-8, Fun:-8, Movement:8 };
+function polar(cx,cy,r,a){const t=(a-90)*Math.PI/180;return [cx+r*Math.cos(t), cy+r*Math.sin(t)];}
+function wheelSvg(areas){
+  const cx=170,cy=170,R=132,hub=30,n=areas.length,step=360/n;let segs='',labels='';
+  areas.forEach((label,i)=>{
+    const a0=i*step,a1=(i+1)*step;
+    const [x0,y0]=polar(cx,cy,R,a0),[x1,y1]=polar(cx,cy,R,a1);
+    const [hx0,hy0]=polar(cx,cy,hub,a0),[hx1,hy1]=polar(cx,cy,hub,a1);
+    segs+=`<path d="M ${hx0.toFixed(1)} ${hy0.toFixed(1)} L ${x0.toFixed(1)} ${y0.toFixed(1)} A ${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)} L ${hx1.toFixed(1)} ${hy1.toFixed(1)} A ${hub} ${hub} 0 0 0 ${hx0.toFixed(1)} ${hy0.toFixed(1)} Z" fill="${TINTS[i%TINTS.length]}" stroke="#fff" stroke-width="1.5"/>`;
+    const [lx,ly]=polar(cx,cy,R*0.63,a0+step/2);
+    labels+=`<text x="${(lx+(NUDGE[label]||0)).toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="18" font-weight="700" fill="#2f3a24">${label}</text>`;
+  });
+  return `<svg viewBox="0 0 340 340" role="img" aria-label="Wheel of your life areas">${segs}${labels}
+    <circle cx="${cx}" cy="${cy}" r="${hub}" fill="#fff" stroke="#cdbfa6" stroke-width="1.5"/>
+    <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#8a8a80">your life</text></svg>`;
+}
+document.getElementById('wheel1').innerHTML = wheelSvg(DISCOVERY);
+
+// --- Zoom 1 slices: one light line each; Learning carries read-only green thresholds ---
+const CARRIED = ['Master grade 2–5 (Khan)','Finish reading levels','Spelling','Handwriting','Typing','Journey Tracker'];
+const slices1 = document.getElementById('slices1');
+DISCOVERY.forEach((name,i)=>{
+  const div=document.createElement('div'); div.className='slice';
+  let inner=`<div class="name"><span class="dot" style="background:${TINTS[i%TINTS.length]}"></span>${name}</div>`;
+  if(name==='Learning'){
+    inner+=`<div class="carry"><div class="clbl">Carried from your pitch</div><ul>${CARRIED.map(c=>`<li>${c}</li>`).join('')}</ul>
+      <div class="readonly-note">Read-only — these are what you're carrying, not a plan to fill in here.</div></div>`;
+  }
+  inner+=`<div class="aim">${name==='Learning'?'Get steady with math' : (name==='Heart'?'Speak up once in Socratic':'Tap to write a one-line aim — or leave it open')}</div>`;
+  div.innerHTML=inner; slices1.appendChild(div);
+});
+
+// --- Zoom 2: each carried threshold is its OWN goal ---
+const g2 = document.getElementById('goals2');
+// first goal, fully opened, with bite-sized if-then steps
+g2.innerHTML = `
+  <div class="goal">
+    <h4>Master grade 2–5 math <span class="gtag">carried</span></h4>
+    <p class="from">This stays green — carried from your pitch, not yours to erase. But how you eat it is all yours.</p>
+    <ul class="steps">
+      <li class="step"><span class="ring"></span><span class="txt">Do one math skill<span class="when">On school mornings, right after I sit down — before I open anything else.</span></span></li>
+      <li class="step"><span class="ring"></span><span class="txt">Ask my guide when I'm stuck 3 in a row<span class="when">Whenever it happens — that's the rule, not a failure.</span></span></li>
+    </ul>
+    <button class="addbtn" onclick="addStep(this)">+ add a bite-sized step</button>
+  </div>`;
+// the rest, each its own compact goal (tap to open)
+CARRIED.slice(1).forEach(name=>{
+  const d=document.createElement('div'); d.className='goal compact';
+  d.innerHTML=`<h4>${name} <span class="gtag">carried</span></h4><span class="open">tap to break it down →</span>`;
+  g2.appendChild(d);
+});
+
+function addStep(btn){
+  const ul=btn.previousElementSibling;
+  const li=document.createElement('li'); li.className='step';
+  li.innerHTML='<span class="ring"></span><span class="txt" contenteditable="true" style="outline:none">New bite-sized step… <span class="when">On [when], I will [what].</span></span>';
+  ul.appendChild(li);
+}
+function pick(el){
+  document.querySelectorAll('.door').forEach(d=>d.style.outline='none');
+  el.style.outline='3px solid rgba(80,110,60,.35)';
+  document.getElementById('doormsg').textContent = el.classList.contains('rest')
+    ? 'Rest logged as a choice — not a miss. The walk continues tomorrow. I\'m still here.'
+    : 'One small step it is. That\'s a deposit in “I\'m someone who does hard things.”';
+}
+
+// --- Zoom 3: the four-session first-half arc ---
+const SESSIONS = [
+  {n:'Session 1', role:'Set up', goal:'Find my starting line — where am I now? — and build the daily habit.', task:'One math skill each school morning.'},
+  {n:'Session 2', role:'The challenge', goal:'Push through the hardest units — fractions and long division.', task:'Three skills a week; pass the mastery quiz before moving on.'},
+  {n:'Session 3', role:'Cross the finish line', goal:'Finish the grade-5 Course Challenge at 90%.', task:'Two focused blocks a week; ask my guide when stuck 3 in a row.'},
+  {n:'Session 4', role:'Clean up & prep', goal:'Lock in what\'s shaky, celebrate, and pick my second-half aim.', task:'Review my misses; write my next-half goal.'},
+];
+const tl = document.getElementById('timeline');
+SESSIONS.forEach(s=>{
+  const d=document.createElement('div'); d.className='sess';
+  d.innerHTML=`<div class="snum">${s.n}</div><div class="srole">${s.role}</div>
+    <p class="sgoal">${s.goal}</p>
+    <div class="stask"><span class="ring"></span><span>${s.task}</span></div>`;
+  tl.appendChild(d);
+});
+const half=document.createElement('div'); half.className='halfmark';
+half.innerHTML=`<div class="hh">🐘 Halfway point — half the elephant, eaten.</div>
+  <p>You did that a skill at a time. Now you set the second half — bigger, because you've proven you can.</p>`;
+tl.appendChild(half);
+</script>
+</body>
+</html>

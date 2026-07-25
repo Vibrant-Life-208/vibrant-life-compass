@@ -464,6 +464,75 @@ html, body {
 }
 .family-empty { color: #b0b0a6; font-size: 0.85rem; }
 
+/* Learner card as a doorway into their portrait */
+.family-member-card-open {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.family-member-card-open:hover,
+.family-member-card-open:focus-visible {
+  border-color: var(--sage);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+  outline: none;
+}
+.family-member-open {
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--sage);
+}
+
+/* Learner portrait - a portrait, not a report */
+.learner-portrait { max-width: 560px; }
+.portrait-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 0.6rem 0 0.5rem;
+}
+.portrait-avatar { width: 54px; height: 54px; font-size: 1.15rem; }
+.portrait-name {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #3a3a34;
+}
+.portrait-frame {
+  background: #f3f0ea;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  margin: 0 0 1.3rem;
+  color: #6a6a60;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.portrait-section { margin: 1.1rem 0; }
+.portrait-section-title {
+  margin: 0 0 0.55rem;
+  color: var(--sage);
+  font-weight: 500;
+  font-size: 1rem;
+}
+.portrait-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.portrait-list li {
+  background: #fff;
+  border: 1px solid #e3ddd0;
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  color: #4a4a44;
+  line-height: 1.4;
+}
+
 /* Family updates feed (learner-shared, receive-only) */
 .family-updates { margin: 1.5rem 0; }
 .family-updates h3 { margin: 0 0 0.6rem; color: var(--sage); font-weight: 500; }
