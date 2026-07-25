@@ -1,0 +1,113 @@
+/* THE CLIMB onboarding waypoints - styles (2026-07-23). Split into its own file
+   so the walkable-CLIMB commit never touches css/style.css (which carries parallel
+   working-tree edits). Linked from index.html after style.css; same token vocabulary.
+   Loaded/precached like style.css (sw.js CORE). */
+/* ============================================================================
+   THE CLIMB onboarding waypoints (2026-07-23). Walkable-build styling for the
+   W1-W22 sequence gated behind ?climb=on. Tone: warm, quiet, never a scoreboard
+   - no progress meters, no red, no counts (INV-1). Reuses .onb-horizon for
+   textareas and .onb-step-actions for the Back/Continue row.
+   ============================================================================ */
+.onb-climb { padding: 0.5rem 0.25rem 0; }
+.onb-climb-kicker {
+  text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; font-weight: 600;
+  color: var(--sage); margin: 0 0 0.35rem;
+}
+.onb-climb-head {
+  color: var(--text); font-size: 1.15rem; font-weight: 600; line-height: 1.35; margin: 0 0 0.7rem;
+}
+.onb-climb-body { color: var(--text); line-height: 1.6; font-size: 0.95rem; margin: 0 0 0.9rem; }
+.onb-climb-label { display: block; color: var(--text); font-weight: 500; font-size: 0.92rem; margin: 0.9rem 0 0.35rem; }
+.onb-climb-note {
+  margin: 0.9rem 0 0.4rem; padding: 0.7rem 0.85rem; border-radius: 10px;
+  background: rgba(255,255,255,0.5); color: var(--text-soft, #5a5a52);
+  font-size: 0.88rem; line-height: 1.5;
+}
+.onb-climb-input {
+  width: 100%; box-sizing: border-box; padding: 0.6rem 0.7rem; border-radius: 10px;
+  border: 1px solid var(--border, #cdbfa6); background: rgba(255,255,255,0.6);
+  font-size: 0.95rem; color: var(--text); margin-bottom: 0.2rem;
+}
+.onb-climb-input:focus { outline: none; border-color: var(--sage); }
+
+/* Learner's own words, reflected back (INV-2) - values / strengths chips. */
+.onb-climb-chips { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0; margin: 0.2rem 0 0.8rem; }
+.onb-climb-chips li {
+  padding: 0.3rem 0.7rem; border-radius: 999px; background: rgba(122,62,157,0.08);
+  border: 1px solid var(--border, #cdbfa6); font-size: 0.85rem; color: var(--text);
+}
+
+/* W7 - the four Purpose boxes (Values pre-filled; three open). */
+.onb-climb-boxes { display: flex; flex-direction: column; gap: 0.6rem; margin: 0.4rem 0 0.6rem; }
+.onb-climb-box { padding: 0.6rem 0.75rem; border: 1px solid var(--border, #cdbfa6); border-radius: 12px; background: rgba(255,255,255,0.4); }
+.onb-climb-box-name { font-weight: 600; font-size: 0.9rem; color: var(--sage); margin-bottom: 0.35rem; }
+.onb-climb-box-input { width: 100%; box-sizing: border-box; border: none; background: transparent; resize: vertical; font-size: 0.92rem; color: var(--text); line-height: 1.5; }
+.onb-climb-box-input:focus { outline: none; }
+.onb-climb-box-open { font-size: 0.85rem; color: var(--text-muted); font-style: italic; }
+
+/* W8 - the Pillars rise. Plain stacked reveal (3D-disc animation is a later layer). */
+.onb-climb-pillars { list-style: none; padding: 0; margin: 0.5rem 0 1rem; display: flex; flex-direction: column; gap: 0.9rem; }
+.onb-climb-pillar { display: flex; gap: 0.7rem; align-items: flex-start; }
+.onb-climb-pillar-dot { flex: 0 0 auto; width: 14px; height: 14px; border-radius: 50%; margin-top: 0.3rem; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.onb-climb-pillar-name { font-weight: 600; color: var(--text); font-size: 1rem; margin-bottom: 0.2rem; }
+.onb-climb-pillar-why { margin: 0; color: var(--text-soft); font-size: 0.9rem; line-height: 1.55; }
+.onb-climb-pillar-echo { margin: 0.3rem 0 0; color: var(--sage); font-size: 0.85rem; font-style: italic; }
+
+/* W14 - Life Skills single-select choices. */
+.onb-climb-choices { display: flex; flex-direction: column; gap: 0.55rem; margin: 0.5rem 0 0.6rem; }
+.onb-climb-choice {
+  text-align: left; padding: 0.7rem 0.85rem; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--border, #cdbfa6); background: rgba(255,255,255,0.5); transition: border-color 0.15s, background 0.15s;
+}
+.onb-climb-choice:hover { border-color: var(--sage); }
+.onb-climb-choice.selected { border-color: var(--sage); background: rgba(28,160,141,0.1); }
+.onb-climb-choice-name { display: block; font-weight: 600; color: var(--text); font-size: 0.95rem; }
+.onb-climb-choice-hint { display: block; color: var(--text-soft); font-size: 0.85rem; margin-top: 0.15rem; }
+.onb-climb-seed-label { color: var(--text); font-size: 0.92rem; margin: 0.6rem 0 0.1rem; }
+
+/* W22 - the Threshold mirror + symmetric crossing. */
+.onb-threshold-mirror {
+  display: flex; flex-direction: column; gap: 0.7rem; margin: 0.8rem 0 1rem;
+  padding: 1rem; border-radius: 14px; background: rgba(255,255,255,0.55); border: 1px solid var(--border, #cdbfa6);
+}
+.onb-threshold-row { display: flex; flex-direction: column; gap: 0.25rem; }
+.onb-threshold-label { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.7rem; font-weight: 600; color: var(--text-muted); }
+.onb-threshold-value { color: var(--text); font-size: 0.95rem; line-height: 1.5; }
+.onb-threshold-value .onb-climb-chips { margin: 0.1rem 0 0; }
+.onb-threshold-actions { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+.onb-threshold-actions .btn-primary { width: 100%; }
+
+/* The mountain (W8): Vibrant Life's five Values as stacked Discs that build ONE PER PAGE from a
+   wide base (Purpose) to a narrow apex (Academics). Only revealed Discs show; the newest is
+   .active. Motion is opacity/transform only (page-spec §0), reduced-motion safe. */
+.onb-climb-mountain .onb-mountain { list-style: none; padding: 0; margin: 0.9rem 0 1rem; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.onb-mountain-band {
+  box-sizing: border-box; padding: 0.5rem 0.8rem; border-radius: 8px; text-align: center;
+  background: var(--band); color: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  animation: onb-disc-rise 0.4s ease-out;
+}
+.onb-mountain-band.base { border-radius: 8px 8px 12px 12px; }
+.onb-mountain-band.active { box-shadow: 0 0 0 3px rgba(255,255,255,0.55), 0 3px 10px rgba(0,0,0,0.28); }
+.onb-mountain-name { display: block; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.01em; }
+.onb-mountain-vals { display: block; font-size: 0.8rem; font-weight: 600; margin-top: 0.3rem; padding-top: 0.3rem; border-top: 1px solid rgba(255,255,255,0.35); }
+.onb-mountain-why { margin-top: 0.4rem; }
+.onb-mountain-echo { margin: 0.4rem 0 0; color: var(--sage); font-size: 0.9rem; font-style: italic; }
+@keyframes onb-disc-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .onb-mountain-band { animation: none; } }
+
+/* Connection (W9) sub-category ties - the four subs named with their on-screen relationships. */
+.onb-climb-subs { list-style: none; padding: 0; margin: 0.5rem 0 0.9rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.onb-climb-subs li { font-size: 0.9rem; color: var(--text-soft); line-height: 1.45; }
+.onb-climb-sub-name { font-weight: 600; color: var(--text); }
+
+/* W1 quote picker: tap a curated line, or write your own. Terence is the featured anchor. */
+.qf-quote-list { list-style: none; padding: 0; margin: 0.4rem 0 1rem; display: flex; flex-direction: column; gap: 0.5rem; max-height: 46vh; overflow-y: auto; }
+.qf-quote-card {
+  width: 100%; text-align: left; cursor: pointer; padding: 0.7rem 0.85rem; border-radius: 12px;
+  border: 1px solid var(--border, #cdbfa6); background: rgba(255,255,255,0.55); transition: border-color 0.15s, background 0.15s;
+}
+.qf-quote-card:hover { border-color: var(--sage); background: rgba(255,255,255,0.8); }
+.qf-quote-card.featured { border-color: var(--sage); background: rgba(28,160,141,0.08); }
+.qf-quote-flag { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sage); margin-bottom: 0.3rem; }
+.qf-quote-text { display: block; color: var(--text); font-size: 0.95rem; line-height: 1.5; }
+.qf-quote-author { display: block; color: var(--text-soft); font-size: 0.85rem; font-style: italic; margin-top: 0.35rem; }

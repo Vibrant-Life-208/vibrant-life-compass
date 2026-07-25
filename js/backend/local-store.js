@@ -17,7 +17,6 @@ const KEYS = {
   yearQuotes: 'hc_year_quotes',  // keyed by learner.id OR guide.id (both UUIDs)
   yearVisions: 'hc_year_visions',  // 1-year vision prompt (Captain pedagogy add 2026-05-13)
   yearTraits: 'hc_year_traits',  // same
-  logins: 'hc_logins',
   tasks: 'hc_tasks',
   partnerLinks: 'hc_partner_links',
   parents: 'hc_parents',
@@ -439,62 +438,11 @@ export async function setYearTraits(identityId, traits) {
   write(KEYS.yearTraits, all);
 }
 
-// ============================================================================
-// External-service logins (passwords for Khan, Lexia, etc.)
-// Password is encrypted at rest via crypto.js (AES-GCM 256).
-// ============================================================================
-import { getOrCreateLearnerKey, encryptString, decryptString, isEnvelope } from '../crypto.js';
-import { encryptField, decryptField } from '../crypto.js';
-
-export async function getLogins(learnerId) {
-  const all = read(KEYS.logins) || {};
-  return all[learnerId] || [];
-}
-
-export async function saveLogin(learnerId, login) {
-  const all = read(KEYS.logins) || {};
-  const list = all[learnerId] || [];
-
-  let passwordField = login.password;
-  if (typeof passwordField === 'string' && passwordField.length > 0) {
-    const key = await getOrCreateLearnerKey(learnerId);
-    passwordField = await encryptString(passwordField, key);
-  } else if (typeof passwordField === 'string' && passwordField.length === 0) {
-    passwordField = { ct: '', iv: '' };
-  }
-
-  const { id, ...loginRest } = login;
-  const sanitized = { ...loginRest, password: passwordField };
-
-  if (id) {
-    const idx = list.findIndex((l) => l.id === id);
-    if (idx >= 0) list[idx] = { ...list[idx], ...sanitized, id, updatedAt: new Date().toISOString() };
-  } else {
-    list.push({ id: generateId(), createdAt: new Date().toISOString(), ...sanitized });
-  }
-  all[learnerId] = list;
-  write(KEYS.logins, all);
-  return list;
-}
-
-export async function revealLoginPassword(learnerId, id) {
-  const list = await getLogins(learnerId);
-  const login = list.find((l) => l.id === id);
-  if (!login) return '';
-  if (!isEnvelope(login.password)) {
-    return typeof login.password === 'string' ? login.password : '';
-  }
-  const key = await getOrCreateLearnerKey(learnerId);
-  return decryptString(login.password, key);
-}
-
-export async function deleteLogin(learnerId, id) {
-  const all = read(KEYS.logins) || {};
-  const list = (all[learnerId] || []).filter((l) => l.id !== id);
-  all[learnerId] = list;
-  write(KEYS.logins, all);
-  return list;
-}
+// External-service logins (get/save/reveal/delete) retired 2026-07-22 — TCC ruling:
+// Compass stores no third-party credentials; the OS/browser password manager is the
+// sovereign home for a credential. See SECURITY.md.
+import { encryptField, decryptField } from '../crypto.js'; // still used by guide-practice crossings
+import { deadWatch } from '../dead-watch.js'; // Phase 0 dark-watch instrumentation
 
 // ============================================================================
 // Accountability partners
@@ -996,6 +944,7 @@ export async function setProfileHorizon(id, stepKey, text) {
 // strengths/values/vision). One object per profile; self-only by construction. DORMANT until
 // the movement screens are built. Mirrors the supabase-adapter accessors.
 export async function getProfileFoundations(id) {
+  deadWatch('profileFoundations'); // Phase 0 dark-watch: DORMANT retirement candidate (trace only)
   const all = read(KEYS.profileFoundations) || {};
   const f = all[id];
   return (f && typeof f === 'object' && !Array.isArray(f)) ? f : {};

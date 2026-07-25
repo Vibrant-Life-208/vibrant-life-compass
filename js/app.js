@@ -20,21 +20,40 @@ import { renderTaskList } from './task-list.js';
 import { renderGoalBreakdown } from './goal-breakdown.js';
 import { renderGrowthRecord } from './growth-record.js';
 import { renderPractice } from './practice.js';
-import { renderLogins, initLogins } from './logins.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
 import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, getOnboardingState, saveLearner, addNotification } from './store.js';
 import { isNewToTribe } from './tribe-roster.js';
 import { isEnrolled } from './flags.js';
-import { renderRecordSpike } from './observatory/record-spike.js';
+import { renderAcademics } from './observatory/academics.js';
 
-// --- Strangler-fig seam (Phase 0). Observatory (new UI) view registry.
+// --- Strangler-fig seam. Observatory (new UI) view registry.
 // An environment renders the new UI only if it has an entry here AND the user is enrolled
-// (see js/flags.js, ROLLOUT_PCT = 0). The single entry below is the throwaway Lit spike,
-// reachable only via ?ui=observatory; for everyone else every tab falls through to legacy. ---
+// (see js/flags.js, ROLLOUT_PCT = 0). Non-enrolled users always fall through to the legacy
+// chain in showTab() below. Phase 1 MVP: Academics mounts on the record-view slot (own tab = Group E). ---
 const observatoryViews = {
-  'record-view': renderRecordSpike, // PHASE-0 Lit spike (Record tab, ?ui=observatory only)
+  'record-view': renderAcademics,
 };
+
+// renderEnvironment(env) — the formal seam. Two dials, both must be true for the new UI:
+//   Dial 1: the environment has been rebuilt (an observatoryViews[env] entry exists).
+//   Dial 2: the user is enrolled (js/flags.js, ROLLOUT_PCT = 0 => no one, today).
+// Returns true when the observatory handled the render; false to fall through to the
+// legacy chain (the default, safe path — the existing showTab() branches ARE legacyViews).
+// Any error falls through to legacy. Pure no-op while observatoryViews is empty.
+async function renderEnvironment(env, learnerId) {
+  const view = observatoryViews[env];
+  if (!view) return false; // env not rebuilt -> legacy
+  try {
+    const session = await getSession();
+    if (!isEnrolled(session)) return false; // user not enrolled -> legacy
+    await view(learnerId, session);
+    return true;
+  } catch (e) {
+    console.warn('observatory seam -> legacy fallback:', e);
+    return false;
+  }
+}
 
 // Tab configurations per role. Order matters; first tab is the default.
 const TABS_BY_ROLE = {
@@ -46,10 +65,9 @@ const TABS_BY_ROLE = {
     { id: 'session-view', label: 'Session' },
     { id: 'partner-view', label: 'Partner' },
     { id: 'patterns-view', label: 'Patterns' },
-    { id: 'passwords-view', label: 'Passwords' },
   ],
   // Captain decision 2026-05-11: parents only see session goals + end-of-session
-  // recap. No year goals, no daily tasks, no passwords.
+  // recap. No year goals, no daily tasks.
   parent: [
     { id: 'parent-view', label: 'My learner' },
   ],
@@ -64,7 +82,6 @@ const TABS_BY_ROLE = {
     { id: 'session-view', label: 'Session' },
     { id: 'patterns-view', label: 'Patterns' },
     { id: 'practice-view', label: 'Practice' },
-    { id: 'passwords-view', label: 'Passwords' },
   ],
 };
 
@@ -309,7 +326,6 @@ async function onSignedIn() {
 
   const learnerId = await resolveLearnerId(session);
   initSessionNav(learnerId);
-  initLogins(learnerId);
   initStillness();
   wireBearingAgain();
   // Defensive: a backend hiccup in the breadcrumb fetch must never abort the
@@ -554,14 +570,9 @@ async function showTab(tabId, learnerId) {
     c.classList.toggle('active', c.id === tabId);
   });
 
-  // Strangler-fig seam: an observatory view renders only if registered AND the user is enrolled;
-  // otherwise fall through to the legacy chain below. observatoryViews is empty => always legacy.
-  if (observatoryViews[tabId]) {
-    try {
-      const session = await getSession();
-      if (isEnrolled(session)) { await observatoryViews[tabId](learnerId, session); return; }
-    } catch (e) { console.warn('observatory seam -> legacy fallback:', e); }
-  }
+  // Strangler-fig seam: the observatory renders only when the env is rebuilt AND the user is
+  // enrolled; otherwise fall through to the legacy chain below. No-op while empty (=> always legacy).
+  if (await renderEnvironment(tabId, learnerId)) return;
 
   if (tabId === 'north-view') { await renderNorth(learnerId); applyLandscape(); }
   if (tabId === 'year-view') await renderYearView(learnerId);
@@ -572,7 +583,6 @@ async function showTab(tabId, learnerId) {
   if (tabId === 'patterns-view') await renderPatterns(learnerId);
   if (tabId === 'practice-view') await renderPractice();
   if (tabId === 'school-view') { try { await renderAnchorInsights(); } catch (e) { console.warn('anchor insights:', e); } }
-  if (tabId === 'passwords-view') await renderLogins(learnerId);
   if (tabId === 'partner-view') await renderPartnerPage(learnerId);
   if (tabId === 'guide-view') await renderRoleView('guide', learnerId);
   if (tabId === 'tribe-view') { try { await renderTribeView(); } catch (e) { console.warn('tribe view:', e); } }

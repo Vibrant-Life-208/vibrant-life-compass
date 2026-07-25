@@ -44,3 +44,22 @@ export function resolveVariant(session) {
 export function isEnrolled(session) {
   return resolveVariant(session) === 'observatory';
 }
+
+// THE CLIMB onboarding cascade gate (2026-07-23). Separate dial from the
+// observatory render variant so the CLIMB waypoint sequence can be walked and
+// tested independently of the 3D-disc rendering work. Default OFF: the legacy
+// cascade (breath -> strengths -> values -> telescope -> slice plan) is
+// byte-for-byte unchanged for everyone until a learner opts in with ?climb=on.
+// The test cohort (Erin + both Jennas + Wes) turns it on per-device; it is
+// remembered in localStorage so it survives PWA/offline reloads.
+const CLIMB_LS_KEY = 'vlc_climb_override';
+export function isClimbBuild() {
+  try {
+    const p = new URLSearchParams(location.search).get('climb');
+    if (p === 'on' || p === 'off') {
+      localStorage.setItem(CLIMB_LS_KEY, p);
+      return p === 'on';
+    }
+    return localStorage.getItem(CLIMB_LS_KEY) === 'on';
+  } catch (_) { return false; }
+}

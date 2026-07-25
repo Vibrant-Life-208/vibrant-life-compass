@@ -1,16 +1,18 @@
-const CACHE = 'heros-compass-v115';
+const CACHE = 'heros-compass-v123';
 const CORE = [
   '/',
   '/index.html',
   '/manifest.json',
   '/css/style.css',
+  '/css/climb.css',
   '/js/vendor/supabase.umd.js',
   '/js/vendor/lit-core.min.js',
   '/js/vendor/lit-css-tag.min.js',
   '/js/app.js',
   '/js/flags.js',
   '/js/dead-watch.js',
-  '/js/observatory/record-spike.js',
+  '/js/observatory/trail.js',
+  '/js/observatory/academics.js',
   '/js/arrive.js',
   '/js/auth.js',
   '/js/family.js',
@@ -27,7 +29,6 @@ const CORE = [
   '/js/session-view.js',
   '/js/patterns.js',
   '/js/modals.js',
-  '/js/logins.js',
   '/js/stillness.js',
   '/js/tasks.js',
   '/js/game-plan.js',

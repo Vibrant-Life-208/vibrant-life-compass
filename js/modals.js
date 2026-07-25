@@ -1,4 +1,4 @@
-// Shared modal logic. Goal authoring, quote setting, traits, logins, first-run onboarding.
+// Shared modal logic. Goal authoring, quote setting, traits, first-run onboarding.
 
 import {
   getValuesLexicon, getViaCharacterStrengths,
@@ -8,7 +8,9 @@ import {
   setQuoteAnchor, setStrengthRanking, setValuesFreetext, getValuesFreetext,
   saveLearner, saveGoal, getGoals, getLearner, getTasksForDate, saveTask, toggleTaskDone,
   getThresholdAdditions, saveThresholdAdditions,
+  getProfileFoundations, setProfileFoundations,
 } from './store.js';
+import { isClimbBuild } from './flags.js';
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar, lifeAreaForCategory } from './studios.js';
 import { lifeWheelSvgFor, COMPASS_REGIONS, REGION_COLORS, taskBand, taskRegion } from './wheel.js';
@@ -551,55 +553,8 @@ export function openTraitsModal(existing, onSave) {
   setTimeout(() => document.getElementById('traits-input')?.focus(), 50);
 }
 
-export function openLoginModal({ existing, onSave }) {
-  setModalTitle(existing ? 'Edit password' : 'Add a password');
-  const kind = existing?.kind || 'core';
-  document.getElementById('form-fields').innerHTML = `
-    <div class="form-field">
-      <label for="login-kind">What's it for?</label>
-      <select id="login-kind">
-        <option value="core" ${kind === 'core' ? 'selected' : ''}>Core work (Khan, Lexia, Civ, etc.)</option>
-        <option value="passion" ${kind === 'passion' ? 'selected' : ''}>Passion project</option>
-        <option value="other" ${kind === 'other' ? 'selected' : ''}>Other</option>
-      </select>
-    </div>
-    <div class="form-field">
-      <label for="login-service">Service</label>
-      <input type="text" id="login-service" placeholder="Khan Academy" value="${existing ? escapeAttr(existing.service || '') : ''}" required>
-    </div>
-    <div class="form-field">
-      <label for="login-username">Username or email</label>
-      <input type="text" id="login-username" value="${existing ? escapeAttr(existing.username || '') : ''}">
-    </div>
-    <div class="form-field">
-      <label for="login-password">Password</label>
-      <input type="text" id="login-password" value="${existing ? escapeAttr(existing.password || '') : ''}">
-    </div>
-    <div class="form-field">
-      <label for="login-url">URL (optional)</label>
-      <input type="url" id="login-url" placeholder="https://khanacademy.org" value="${existing ? escapeAttr(existing.url || '') : ''}">
-    </div>
-    <div class="form-field">
-      <label for="login-note">Note (optional)</label>
-      <input type="text" id="login-note" value="${existing ? escapeAttr(existing.note || '') : ''}">
-    </div>
-  `;
-  activeSubmit = () => {
-    const service = document.getElementById('login-service').value.trim();
-    if (!service) return;
-    onSave({
-      kind: document.getElementById('login-kind').value,
-      service,
-      username: document.getElementById('login-username').value.trim(),
-      password: document.getElementById('login-password').value,
-      url: document.getElementById('login-url').value.trim(),
-      note: document.getElementById('login-note').value.trim(),
-    });
-    closeModal();
-  };
-  openModal();
-  setTimeout(() => document.getElementById('login-service')?.focus(), 50);
-}
+// openLoginModal retired 2026-07-22 (TCC ruling: Compass stores no third-party credentials;
+// the OS/browser password manager is the sovereign home for a credential). See SECURITY.md.
 
 export function openTaskModal({ existing, defaultDate, onSave, books = [] }) {
   setModalTitle(existing ? 'Edit task' : 'Add a task');
@@ -1443,10 +1398,76 @@ const CASCADE_FULL = ['breath', 'strengths', 'values', 'beyond_5yr', 'within_5yr
 // Just the breath and a single near horizon.
 const CASCADE_SPARKS = ['breath', 'within_1yr'];
 
+// THE CLIMB (2026-07-23, spec COMPASS-CLIMB-SPEC-v0.1.md). The full W1-W22 waypoint
+// sequence, gated behind isClimbBuild() (?climb=on). W1 (the quote) runs as its own
+// front-of-line flow (openQuoteFlow), so the cascade opens at the breath (W0) and walks
+// the five Pillars bottom-to-top: Purpose -> Connection -> Creator Mindset -> Life Skills
+// -> Academics, then the Threshold. Existing steps (breath, strengths, values, the 10/5/1
+// telescope, slice_plan) are REUSED in CLIMB order; the rest are the new waypoints. The
+// strengths_why / values_why intros still splice in (their indexOf hooks match here too).
+// current_state + halfway are kept after the telescope - existing, working captures the
+// spec's W11 does not forbid. W13 (Creator recap) is a Wave-2 recognition beat, not walked
+// here. Older-tier (12-18) copy ships first (test cohort are adults/guides); the younger
+// register is a Wave-2 drop-in on the existing studio/role tier signal.
+const CLIMB_FULL = [
+  'breath',            // W0  - body-first door
+  'strengths',         // W2  - VIA toolkit (+ strengths_why)
+  'values',            // W3  - be vulnerable (+ values_why before). The old W4 values->purpose
+                       //   bridge is folded into the Purpose framing below (no orphan capture).
+  'purpose',           // W5-W7 - Purpose shown + base + four Discs (Values pre-filled)
+  'mountain',          // W8  - THE MOUNTAIN: Vibrant Life's five Values as stacked Discs, rising
+                       //   ONE DISC PER PAGE (base->apex) with each Disc's "why", until the whole
+                       //   mountain stands. (Europa 2026-07-23: mountain = the slow Page-8 reveal;
+                       //   units are "Discs"; matches the parent five-disc pyramid graphic.)
+  'connection',        // W9  - Connection + Conscious Living (seeded from W2 strengths)
+  'creator_intro',     // W10 - Creator Mindset environment (reveal, no capture)
+  'curious_intro',     // W11a - "Let's get curious": frames the vision ladder as imagination,
+                       //   not commitment (reveal, no text box), before the 10/5/1 screens
+  'beyond_5yr',        // W11 - Curiosity: the vision ladder (10yr)
+  'within_5yr',        // W11 - (5yr)
+  'within_1yr',        // W11 - (1yr; becomes operative, feeds W12 + Threshold)
+  'current_state',     // the mirror (kept)
+  'halfway',           // halfway (kept)
+  'slice_plan',        // W12 - one real goal (existing slice walk)
+  'life_skills',       // W14 - Life Skills env, pick one skill
+  'life_skills_woop',  // W15 - break it down (WOOP: obstacle + if-then)
+  'academics_intro',   // W15t - the Academics apex (concept)
+  'academics_math',    // W16-W17 - Math program + launch link + baseline (NO passwords)
+  'academics_reading', // W18-W19 - Deep Reading: current book + want-to-read list
+  'academics_la',      // W20-W21 - Language Arts program + link + baseline (NO passwords)
+  'threshold',         // W22 - the crossing -> enter the Compass
+];
+
 // Steps whose progress is NOT tracked by the onboarding_step resume enum. Their
 // state lives elsewhere (pitch -> learner row; slice_plan -> year goals), so they
 // are safe to re-show on resume and must never be written as the resume pointer.
-const NON_RESUME_STEPS = new Set(['pitch', 'slice_plan', 'strengths_why', 'values_why']);
+// The new CLIMB waypoints join this set: their captures live in the profiles.foundations
+// jsonb (self-only, never surveilled - PDC-1), so re-showing on resume is idempotent and
+// no onboarding_step Postgres enum change is needed to ship the walk.
+const NON_RESUME_STEPS = new Set([
+  'pitch', 'slice_plan', 'strengths_why', 'values_why',
+  'mountain', 'purpose', 'connection', 'creator_intro', 'curious_intro',
+  'life_skills', 'life_skills_woop',
+  'academics_intro', 'academics_math', 'academics_reading', 'academics_la', 'threshold',
+]);
+
+// W8 THE MOUNTAIN - Vibrant Life's five Values as stacked Discs, base -> apex. The "why" lines are
+// the fleet-approved, primary-source-verified reveal copy (COMPASS-CLIMB-SPEC W8, older-tier): a
+// reflection of what researchers found, never a promise to the child. echo marks which learner
+// input is mirrored back on that Disc (INV-2): Purpose echoes their values, Connection their
+// strengths. Colors from the page-spec disc palette.
+const MOUNTAIN_DISCS = [
+  { name: 'Purpose', color: '#E01230', echo: 'values',
+    why: 'Researchers have found that when people take time to name what they value, they handle stress and setbacks better and make choices that feel more like their own. Purpose is not a prize to win - it is a heading you can already set.' },
+  { name: 'Connection', color: '#7A3E9D', echo: 'strengths',
+    why: 'One of the longest studies ever done on happiness found that the quality of our relationships - more than money or fame - is the clearest and most consistent predictor of a healthy, happy life. Belonging is not a bonus. It is a human need, as basic as any.' },
+  { name: 'Creator Mindset', color: '#F5A623',
+    why: 'Researchers disagree about how much a "growth mindset" by itself changes grades - large reviews find the average effect small and easy to overstate, while one national study found a real but modest boost for students who were struggling, in schools that backed it up. What holds steadier: how you meet a challenge, and learning to steady your emotions, matters - alongside good teaching and real support, not on its own.' },
+  { name: 'Life Skills', color: '#1CA08D',
+    why: 'Health and education groups worldwide treat life skills - leading, making an idea real, managing money, tending your wellbeing - as core capacities, not extras. Studies link training in them to steadier work and money later. These are learnable, and there is no reason to wait.' },
+  { name: 'Academics', color: '#EE6C2B',
+    why: 'Reading researcher Maryanne Wolf describes how deep reading - slow, reflective reading - is not wired in at birth; the brain builds it, and with it the capacity to infer, reflect, and empathize. Academics are tools for understanding the world, and they are built, not given.' },
+];
 
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
@@ -1511,7 +1532,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // (e.g. an adult onboarding with no learnerId) resolves false = the legacy flow, unchanged.
   const onbLearner = learnerId ? await getLearner(learnerId) : null;
   const currentWheel = isCurrentWheelBuild(onbLearner);
-  const steps = [...(studio === 'sparks' ? CASCADE_SPARKS : CASCADE_FULL)];
+  // Cascade selection: Sparks (tots) stay screen-free always. Otherwise, ?climb=on walks
+  // THE CLIMB; flag-off keeps the legacy telescope cascade byte-for-byte. The strengths_why
+  // / values_why splices below still fire (ids match in both arrays). CLIMB is the LEARNER
+  // onboarding takeover (spec W1-W22 includes learner-only academics baselines), so guides,
+  // parents and owners keep their existing cascade even with the flag on.
+  const climb = isClimbBuild() && studio !== 'sparks' && role === 'learner';
+  const baseCascade = studio === 'sparks' ? CASCADE_SPARKS : (climb ? CLIMB_FULL : CASCADE_FULL);
+  const steps = [...baseCascade];
   // After the VIA strengths import, a short "why your strengths matter" page with
   // the person's top strengths pinned on top (captain 2026-07-19). Shown to
   // EVERYONE who does the strengths import (learners + guides; anyone whose
@@ -1585,7 +1613,17 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     if (at >= 0) steps.splice(at, 0, 'pitch');
     else steps.push('pitch');
   }
-  if (hasSlicePlan) steps.push('slice_plan');
+  // Legacy cascade appends slice_plan at the end for learners. CLIMB already carries
+  // slice_plan mid-sequence (W12, between the vision ladder and Life Skills), so it is NOT
+  // re-appended here; instead it is spliced OUT when this learner has no slice plan.
+  if (climb) {
+    if (!hasSlicePlan) {
+      const at = steps.indexOf('slice_plan');
+      if (at >= 0) steps.splice(at, 1);
+    }
+  } else if (hasSlicePlan) {
+    steps.push('slice_plan');
+  }
   // Values (captain 2026-07-13): Launch Pad learners + all adults (guides,
   // parents TYPE their values via the quiz (free text + archetype); Discovery +
   // Adventure learners AND guides PICK from the curated 44-value list (with the
@@ -1630,6 +1668,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     //     detail to the learner while the system keeps it read-only underneath.
     sliceItems: {},
     thresholdDetail: {},
+    // THE CLIMB (2026-07-23): the new waypoints' captures accumulate here and persist as
+    // profiles.foundations.climb on each advance (self-only jsonb, never surveilled - PDC-1).
+    // Shape: { bridge, passion, contribution, hero, consciousLiving, lifeSkill,
+    //          woop:{setup,obstacle,ifThen,success}, math:{program,link,baseline},
+    //          reading:{current,want:[]}, la:{program,link,baseline} }.
+    climb: {},
+    climbFoundations: {}, // the full foundations blob, so a write merges rather than clobbers
+    mountainIdx: 0, // W8 the mountain: which Disc is rising right now (0..4, base->apex)
   };
 
   // PROTECTED STRING (meeting 2026-07-21, Decisions 1 & 4). This modal title is the SINGLE,
@@ -1664,6 +1710,18 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     if (savedHorizons) state.horizons = { ...state.horizons, ...savedHorizons };
     const resumeIdx = steps.indexOf(onb.step);
     state.idx = resumeIdx >= 0 ? resumeIdx : 0;
+  }
+
+  // THE CLIMB: preload the foundations blob so the new waypoints show prior answers on a
+  // re-walk and each write merges (never clobbers a sibling Session-1 inventory key).
+  // Read-safe before v0.26 is applied (getProfileFoundations returns {} on error).
+  if (climb && profileId) {
+    try {
+      const f = await getProfileFoundations(profileId);
+      state.climbFoundations = (f && typeof f === 'object' && !Array.isArray(f)) ? f : {};
+      const c = state.climbFoundations.climb;
+      state.climb = (c && typeof c === 'object' && !Array.isArray(c)) ? c : {};
+    } catch (e) { /* non-fatal: the CLIMB captures just start blank */ }
   }
 
   // Preload any year goals already set against wheel slices, so the slice-plan
@@ -1745,6 +1803,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // Stage O: entering the slice-plan step fresh - start the per-slice walk at its
     // intro page (orients before the year pass; behind the flag; legacy grid ignores this).
     if (currentWheel && steps[state.idx] === 'slice_plan') state.sliceWalk = { pass: 'intro', idx: 0 };
+    // Entering the mountain forward starts at the base Disc (Purpose); it builds upward from there.
+    if (steps[state.idx] === 'mountain') state.mountainIdx = 0;
     if (profileId && !NON_RESUME_STEPS.has(steps[state.idx])) await setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
@@ -1755,6 +1815,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     captureHorizon();
     captureValuesTyped();
     captureSlice();
+    captureClimb();
     // Non-resume steps (pitch, slice_plan) aren't in the onboarding_step enum, so
     // never record a skip against them.
     if (profileId && step !== 'breath' && !NON_RESUME_STEPS.has(step)) await markOnboardingStepSkipped(profileId, step);
@@ -1766,8 +1827,11 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     captureHorizon();
     captureValuesTyped();
     captureSlice();
+    captureClimb();
     state.idx -= 1;
     if (steps[state.idx] === 'pitch') state.pitchStage = 'ask-age';
+    // Backing INTO the mountain lands on its summit (whole mountain standing); page down from there.
+    if (steps[state.idx] === 'mountain') state.mountainIdx = MOUNTAIN_DISCS.length - 1;
     if (profileId && !NON_RESUME_STEPS.has(steps[state.idx])) setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
@@ -2610,6 +2674,351 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     return `<p class="onb-slice-invitation">${escapeHtml(body)}</p>`;
   }
 
+  // ==== THE CLIMB waypoints (2026-07-23) =================================================
+  // Copy is the fleet-approved OLDER-tier register (12-18) from COMPASS-CLIMB-SPEC-v0.1.md
+  // (Hoshi glosses + Janeway-gated W8 "why" lines, all citations primary-verified). The
+  // younger register (8-11) is a Wave-2 drop-in on the existing studio/role tier signal.
+  // Governance held inline: hyphens not em/en dashes; no banned words (only/just/not yet/
+  // behind/incomplete/missing/unfinished); no "so that"; TCC no-password gate on academics.
+
+  // The learner's own words, for the throughline (INV-2): their values and strengths reappear
+  // verbatim in the bridge, the reveal, Conscious Living, and the Threshold mirror.
+  function climbValuesList() {
+    const v = typeValues ? (state.valuesTyped?.values || []) : (state.values || []);
+    return v.filter(Boolean);
+  }
+  function climbStrengthsList() {
+    // state.strengthResult.top8 (fresh VIA upload) and state.strengths (loaded on resume) both
+    // hold VIA strength IDs (e.g. 'love_of_learning'), not display names. Map each id to its
+    // human label from the VIA lexicon so Connection, the Pillars echo, and the Threshold mirror
+    // show "Love of Learning", never the raw id. Unknown ids fall back to a de-underscored form.
+    const ids = (state.strengthResult?.top8 || state.strengths || []).filter(Boolean).slice(0, 5);
+    const lex = state.viaStrengths || [];
+    return ids.map((id) => {
+      const s = lex.find((x) => x.id === id);
+      const label = s && (s.display_label_child || s.display_label_adult);
+      return label || String(id).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    });
+  }
+  function climbChips(items) {
+    if (!items.length) return '';
+    return `<ul class="onb-climb-chips">${items.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`;
+  }
+
+  // W8 - THE MOUNTAIN. Vibrant Life's five Values as stacked Discs, rising ONE PER PAGE from the
+  // base (Purpose) to the apex (Academics), each with its research-grounded "why". state.mountainIdx
+  // is the Disc rising now; the stack shows every Disc revealed so far (base at the bottom), so the
+  // mountain visibly builds page by page until it stands whole. The learner's own values sit at
+  // the heart of the base; their strengths are echoed under Connection (INV-2). A reveal - nothing
+  // captured. Metaphor + copy per Europa 2026-07-23 (units are "Discs"; matches the parent graphic).
+  function renderMountain() {
+    const idx = Math.min(state.mountainIdx, MOUNTAIN_DISCS.length - 1);
+    const disc = MOUNTAIN_DISCS[idx];
+    const vals = climbValuesList();
+    const strengths = climbStrengthsList();
+    const last = idx === MOUNTAIN_DISCS.length - 1;
+    // Discs revealed so far, drawn apex-first (top-down) so Purpose sits at the bottom as the base.
+    const rows = MOUNTAIN_DISCS.slice(0, idx + 1).map((d, di) => ({ d, di })).reverse();
+    let echo = '';
+    if (disc.echo === 'values' && vals.length) echo = `You named it: ${vals.slice(0, 3).join(', ')}.`;
+    else if (disc.echo === 'strengths' && strengths.length) echo = `Built on the strengths you carry: ${strengths.slice(0, 3).join(', ')}.`;
+    return `
+      <div class="onb-climb onb-climb-mountain">
+        <p class="onb-climb-kicker">Vibrant Life's Values${last ? '' : ` &middot; ${idx + 1} of ${MOUNTAIN_DISCS.length}`}</p>
+        <h3 class="onb-climb-head">${escapeHtml(disc.name)}</h3>
+        <ol class="onb-mountain" aria-label="Vibrant Life's values, building base to apex">
+          ${rows.map(({ d, di }) => `
+            <li class="onb-mountain-band${di === 0 ? ' base' : ''}${di === idx ? ' active' : ''}" style="--band:${d.color}; width:${100 - di * 12}%">
+              <span class="onb-mountain-name">${escapeHtml(d.name)}</span>
+              ${di === 0 && vals.length ? `<span class="onb-mountain-vals">${vals.map((v) => escapeHtml(v)).join(' &middot; ')}</span>` : ''}
+            </li>`).join('')}
+        </ol>
+        <p class="onb-climb-body onb-mountain-why">${escapeHtml(disc.why)}</p>
+        ${echo ? `<p class="onb-mountain-echo">${escapeHtml(echo)}</p>` : ''}
+        ${navButtons({ skippable: false, continueLabel: last ? 'The mountain stands' : 'Next' })}
+      </div>`;
+  }
+
+  // W5-W7 - Purpose shown + the base + the four pieces. The Values box is pre-filled from W3;
+  // the other three (Passion / Contribution / Hero's Journey) are fill-any-time, never required.
+  function renderPurpose() {
+    const vals = climbValuesList();
+    const box = (key, name, hint, val) => `
+      <div class="onb-climb-box">
+        <div class="onb-climb-box-name">${escapeHtml(name)}</div>
+        ${key === 'values'
+          ? `<div class="onb-climb-box-filled">${vals.length ? climbChips(vals) : '<span class="onb-climb-box-open">yours to fill</span>'}</div>`
+          : `<textarea id="onb-climb-${key}" class="onb-climb-box-input" rows="2" placeholder="${escapeAttr(hint)}">${escapeHtml(val || '')}</textarea>`}
+      </div>`;
+    return `
+      <div class="onb-climb onb-climb-purpose">
+        <p class="onb-climb-kicker">Purpose - the foundation</p>
+        <h3 class="onb-climb-head">The base you stand on.</h3>
+        <p class="onb-climb-body">What matters to you, and the direction you move because of it. The things you hold as true, the work that pulls you in, the mark you want to leave for other people, and the long story you are living as its hero. Not a place to arrive - a compass you already carry.</p>
+        <p class="onb-climb-body">Your values point somewhere. Name any of these that feel ready - there is no polished answer to reach for, and the rest are yours to open any time.</p>
+        <div class="onb-climb-boxes">
+          ${box('values', 'Values', '', null)}
+          ${box('passion', 'Passion', 'What pulls you in?', state.climb.passion)}
+          ${box('contribution', 'Contribution', 'The mark you want to leave for others?', state.climb.contribution)}
+          ${box('hero', "Hero's Journey", 'The long story you are the hero of - your Self, your North.', state.climb.hero)}
+        </div>
+        <p class="onb-climb-note">Your Values are already here, in your own words. Hero's Journey is where Purpose meets your Self - your North. The three open pieces are yours to fill any time from your Purpose - there is no need to fill them to move on.</p>
+        ${navButtons({ skippable: true })}
+      </div>`;
+  }
+
+  // W9 - Connection + Conscious Living. Conscious Living is SEEDED from the learner's W2
+  // strengths (the most visible proof of INV-2). Carries the solitude-vs-loneliness clause (PDC).
+  function renderConnection() {
+    const strengths = climbStrengthsList();
+    return `
+      <div class="onb-climb onb-climb-connection">
+        <p class="onb-climb-kicker">Connection</p>
+        <h3 class="onb-climb-head">You named what matters to you. Now - who do you matter with?</h3>
+        <p class="onb-climb-body">How you are close to other people and how you move alongside them. Feeling what they feel, telling the truth and truly listening, living awake to the people and world around you, and belonging to something shared. The whole art of being with others, not around them.</p>
+        <ul class="onb-climb-subs">
+          <li><span class="onb-climb-sub-name">Compassion</span> - feeling with others, and helping them grow.</li>
+          <li><span class="onb-climb-sub-name">Communication</span> - your voice: saying what is true, and truly listening.</li>
+          <li><span class="onb-climb-sub-name">Conscious Living</span> - living awake to the people and world you share.</li>
+          <li><span class="onb-climb-sub-name">Community</span> - belonging to something bigger; this is your Life piece.</li>
+        </ul>
+        <p class="onb-climb-body">Let's dive into <strong>Conscious Living</strong> - how your values and purpose come alive through the character strengths you named, and how those build connection.</p>
+        ${strengths.length ? `<p class="onb-climb-seed-label">This Disc stands on the strengths you already named:</p>${climbChips(strengths)}` : ''}
+        <label class="onb-climb-label" for="onb-climb-text">How do these strengths show up in how you treat the people around you?</label>
+        <textarea id="onb-climb-text" class="onb-horizon" rows="3" placeholder="With the people I care about, I...">${escapeHtml(state.climb.consciousLiving || '')}</textarea>
+        <p class="onb-climb-note">Chosen time alone counts here too - solitude you pick is its own kind of full, not a gap in your life. The kind of alone that aches is the involuntary kind, and connection is what eases that one.</p>
+        ${navButtons({ skippable: true })}
+      </div>`;
+  }
+
+  // W10 - The Creator Mindset environment. Reveal only. Carries the mudita note in the OLDER-tier
+  // self-managed form (sting-first, invitation-never-command; SSC-ruled). No capture, nothing logged.
+  function renderCreatorIntro() {
+    return `
+      <div class="onb-climb onb-climb-creator">
+        <p class="onb-climb-kicker">Creator Mindset</p>
+        <h3 class="onb-climb-head">You know what matters and who is with you. Here is where you find out you can build.</h3>
+        <p class="onb-climb-body">Your inner stance toward learning and toward yourself - a bit of the world you live in, a bit of the maker you are becoming. You are the one shaping it.</p>
+        <ul class="onb-climb-subs">
+          <li><span class="onb-climb-sub-name">Growth Mindset</span> - growing through challenge; the belief you get better with practice.</li>
+          <li><span class="onb-climb-sub-name">Emotional Regulation</span> - steadying big feelings so they do not steer you.</li>
+          <li><span class="onb-climb-sub-name">Curiosity</span> - following what pulls you, and asking the next question.</li>
+          <li><span class="onb-climb-sub-name">Responsibility</span> - carrying what is yours to carry.</li>
+        </ul>
+        <p class="onb-climb-note">One honest thing before we go on: noticing someone move ahead can pinch, and everybody feels it. Some people find that pinch can loosen into being glad for them and glad for yourself, without one taking from the other. See if that is true for you. And if you still feel the pinch - that is allowed too.</p>
+        ${navButtons({ skippable: false })}
+      </div>`;
+  }
+
+  // W11a - "Let's get curious." Frames the vision ladder (10/5/1) as imagination, not commitment
+  // (spec W11: "get curious," an act of imagination). Reveal only - NO text box; the vision text
+  // boxes come on the pages after this one.
+  function renderCuriousIntro() {
+    return `
+      <div class="onb-climb onb-climb-curious">
+        <p class="onb-climb-kicker">Creator Mindset &middot; Curiosity</p>
+        <h3 class="onb-climb-head">Let's get curious.</h3>
+        <p class="onb-climb-body">This is the part where you get to imagine. On the next few pages, picture your life ahead - ten years from now, then five, then one. Let yourself dream it as big or as small as feels true.</p>
+        <p class="onb-climb-body">Nothing here is a promise, and there is no wrong answer. You are not deciding your life - you are getting curious about who you might become.</p>
+        ${navButtons({ skippable: false })}
+      </div>`;
+  }
+
+  // W14 - The Life Skills environment: pick one skill to work on this year. One active at a time;
+  // the others are held for reference, never shown as "not chosen" (banned-word gate).
+  function renderLifeSkills() {
+    const skills = [
+      { id: 'leadership', name: 'Leadership', hint: 'leading alongside people' },
+      { id: 'entrepreneurship', name: 'Entrepreneurship', hint: 'turning an idea into something real' },
+      { id: 'financial', name: 'Financial Literacy', hint: 'making money make sense' },
+      { id: 'wellness', name: 'Wellness', hint: 'tending your own wellbeing' },
+    ];
+    const chosen = state.climb.lifeSkill || '';
+    return `
+      <div class="onb-climb onb-climb-lifeskills">
+        <p class="onb-climb-kicker">Life Skills</p>
+        <h3 class="onb-climb-head">The capacities you build for a life you run yourself.</h3>
+        <p class="onb-climb-body">Leading alongside people, turning an idea into something real, making money make sense, and tending your own wellbeing. Grown-up powers, started now.</p>
+        <p class="onb-climb-label">Which is most important to you at this stage of life - what would you like to work on this year?</p>
+        <div class="onb-climb-choices">
+          ${skills.map((s) => `
+            <button type="button" class="onb-climb-choice${chosen === s.id ? ' selected' : ''}" data-climb-skill="${escapeAttr(s.id)}">
+              <span class="onb-climb-choice-name">${escapeHtml(s.name)}</span>
+              <span class="onb-climb-choice-hint">${escapeHtml(s.hint)}</span>
+            </button>`).join('')}
+        </div>
+        ${navButtons({ skippable: true })}
+      </div>`;
+  }
+
+  // W15 - Life Skills goal, broken down (WOOP). Obstacle framed as NOTICING, not warning [TROI];
+  // the if-then is a plan the learner gets to make. Sequence over deadline - no overdue states.
+  function renderLifeSkillsWoop() {
+    const skillName = ({ leadership: 'Leadership', entrepreneurship: 'Entrepreneurship', financial: 'Financial Literacy', wellness: 'Wellness' })[state.climb.lifeSkill] || 'this';
+    const w = state.climb.woop || {};
+    return `
+      <div class="onb-climb onb-climb-woop">
+        <p class="onb-climb-kicker">Life Skills - ${escapeHtml(skillName)}</p>
+        <h3 class="onb-climb-head">Let's break it down.</h3>
+        <label class="onb-climb-label" for="onb-woop-setup">What would you like to be true about ${escapeHtml(skillName)} by the end of this season?</label>
+        <textarea id="onb-woop-setup" class="onb-horizon" rows="2" placeholder="By the end of the season...">${escapeHtml(w.setup || '')}</textarea>
+        <label class="onb-climb-label" for="onb-woop-obstacle">What is one thing that could get in the way? Not a prediction - just something worth noticing now, so you have a plan for it.</label>
+        <textarea id="onb-woop-obstacle" class="onb-horizon" rows="2" placeholder="One thing to watch for...">${escapeHtml(w.obstacle || '')}</textarea>
+        <label class="onb-climb-label" for="onb-woop-ifthen">Make the plan: if that happens, then I will...</label>
+        <textarea id="onb-woop-ifthen" class="onb-horizon" rows="2" placeholder="If ___, then I will ___">${escapeHtml(w.ifThen || '')}</textarea>
+        <label class="onb-climb-label" for="onb-woop-success">What does it look like when this is going well?</label>
+        <textarea id="onb-woop-success" class="onb-horizon" rows="2" placeholder="It is going well when...">${escapeHtml(w.success || '')}</textarea>
+        ${navButtons({ skippable: true })}
+      </div>`;
+  }
+
+  // W15t - The Academics apex (concept). Reveal only. Held neutral-warm: a starting altitude,
+  // never a summit and never a deficit [TROI/JANEWAY].
+  function renderAcademicsIntro() {
+    return `
+      <div class="onb-climb onb-climb-academics-intro">
+        <p class="onb-climb-kicker">Academics - the apex</p>
+        <h3 class="onb-climb-head">Name where you are, so you can watch yourself climb.</h3>
+        <p class="onb-climb-body">The tools you use to understand the world and shape your own thinking. Reading closely, writing to say what you mean, working with numbers, and reasoning things through for yourself. Where you are standing now, with plenty of country still ahead.</p>
+        <p class="onb-climb-note">This is a starting altitude, not a grade. What comes next is you locating yourself on your own map.</p>
+        ${navButtons({ skippable: false })}
+      </div>`;
+  }
+
+  // W16-W17 - Math: program name + launch link + baseline. TCC HARD GATE: NO credential fields
+  // are rendered or stored; access is by link-out only.
+  function renderAcademicsMath() {
+    const m = state.climb.math || {};
+    return `
+      <div class="onb-climb onb-climb-academics">
+        <p class="onb-climb-kicker">Academics - Math</p>
+        <h3 class="onb-climb-head">Your Math program.</h3>
+        <label class="onb-climb-label" for="onb-math-program">What Math program are you using at home or online? (Khan Academy, and so on.)</label>
+        <input id="onb-math-program" class="onb-climb-input" type="text" placeholder="Program name" value="${escapeAttr(m.program || '')}">
+        <label class="onb-climb-label" for="onb-math-link">A link to open it - the program's own site or app. We do not store any login, just the door.</label>
+        <input id="onb-math-link" class="onb-climb-input" type="url" inputmode="url" placeholder="https://..." value="${escapeAttr(m.link || '')}">
+        <label class="onb-climb-label" for="onb-math-baseline">Where are you now in Math, in your own words? A starting point on your own map, not a grade.</label>
+        <textarea id="onb-math-baseline" class="onb-horizon" rows="2" placeholder="Right now in Math, I am working on...">${escapeHtml(m.baseline || '')}</textarea>
+        ${navButtons({ skippable: true })}
+      </div>`;
+  }
+
+  // W18-W19 - Deep Reading: the current book + a want-to-read list (the learner's own, one at a
+  // time). Do NOT count books - a rhythm, never a trophy count.
+  function renderAcademicsReading() {
+    const r = state.climb.reading || {};
+    const want = Array.isArray(r.want) ? r.want.join('\n') : '';
+    return `
+      <div class="onb-climb onb-climb-academics">
+        <p class="onb-climb-kicker">Academics - Deep Reading</p>
+        <h3 class="onb-climb-head">A book that challenges you, with support.</h3>
+        <label class="onb-climb-label" for="onb-reading-current">What deep book are you reading now?</label>
+        <input id="onb-reading-current" class="onb-climb-input" type="text" placeholder="The book you are in now" value="${escapeAttr(r.current || '')}">
+        <label class="onb-climb-label" for="onb-reading-want">Any books you want to read next? Add a few - your own list, one at a time (one per line).</label>
+        <textarea id="onb-reading-want" class="onb-horizon" rows="3" placeholder="One book per line...">${escapeHtml(want)}</textarea>
+        <p class="onb-climb-note">This is your library, chosen by what interests you. There is no quota and no count to reach.</p>
+        ${navButtons({ skippable: true })}
+      </div>`;
+  }
+
+  // W20-W21 - Language Arts: program + link + baseline (Writing + Critical Thinking). Same TCC
+  // HARD GATE as Math: no credential fields, link-out only.
+  function renderAcademicsLa() {
+    const la = state.climb.la || {};
+    return `
+      <div class="onb-climb onb-climb-academics">
+        <p class="onb-climb-kicker">Academics - Language Arts</p>
+        <h3 class="onb-climb-head">Your Language Arts program.</h3>
+        <label class="onb-climb-label" for="onb-la-program">What Language Arts program are you using? (Lexia, and so on.) This covers writing and thinking things through.</label>
+        <input id="onb-la-program" class="onb-climb-input" type="text" placeholder="Program name" value="${escapeAttr(la.program || '')}">
+        <label class="onb-climb-label" for="onb-la-link">A link to open it. Again - no login stored, just the door.</label>
+        <input id="onb-la-link" class="onb-climb-input" type="url" inputmode="url" placeholder="https://..." value="${escapeAttr(la.link || '')}">
+        <label class="onb-climb-label" for="onb-la-baseline">Where are you now in writing and reasoning things through, in your own words?</label>
+        <textarea id="onb-la-baseline" class="onb-horizon" rows="2" placeholder="Right now, my writing and thinking...">${escapeHtml(la.baseline || '')}</textarea>
+        ${navButtons({ skippable: true })}
+      </div>`;
+  }
+
+  // W22 - THE THRESHOLD. The Observatory-whole moment PRECEDES the fork and is complete
+  // regardless of the answer: declining does not un-build what stands. The mirror reflects the
+  // learner's own words back (Your North / What you carry / What matters / What you are hoping
+  // for). Both buttons enter the Compass; "Not yet" is a gentle landing, never a loss.
+  function renderThreshold() {
+    const vals = climbValuesList();
+    const strengths = climbStrengthsList();
+    const north = (state.climb.quote || '').trim();
+    const hoping = (state.horizons.within_1yr || '').trim();
+    const row = (label, body) => body
+      ? `<div class="onb-threshold-row"><div class="onb-threshold-label">${escapeHtml(label)}</div><div class="onb-threshold-value">${body}</div></div>`
+      : '';
+    return `
+      <div class="onb-climb onb-threshold">
+        <p class="onb-climb-kicker">The Threshold</p>
+        <h3 class="onb-climb-head">Look at what you built.</h3>
+        <div class="onb-threshold-mirror">
+          ${row('Your North', north ? escapeHtml(north) : '')}
+          ${row('What you carry', strengths.length ? climbChips(strengths) : '')}
+          ${row('What matters', vals.length ? climbChips(vals) : '')}
+          ${row("What you are hoping for", hoping ? escapeHtml(hoping) : '')}
+        </div>
+        <p class="onb-climb-body">This is yours now, whatever you choose next. When you are ready, cross into your Compass and start using what you built.</p>
+        <div class="onb-threshold-actions">
+          <button type="button" id="onb-threshold-cross" class="btn btn-primary">Enter your Compass</button>
+          <button type="button" id="onb-threshold-notyet" class="btn btn-text">Not yet - let me sit with this</button>
+        </div>
+      </div>`;
+  }
+
+  // Read the current CLIMB step's inputs into state.climb (so Back / skip never lose them).
+  function captureClimb() {
+    const step = curStep();
+    const val = (id) => (document.getElementById(id)?.value || '').trim();
+    if (step === 'purpose') {
+      state.climb.passion = val('onb-climb-passion');
+      state.climb.contribution = val('onb-climb-contribution');
+      state.climb.hero = val('onb-climb-hero');
+    } else if (step === 'connection') state.climb.consciousLiving = val('onb-climb-text');
+    else if (step === 'life_skills_woop') {
+      state.climb.woop = {
+        setup: val('onb-woop-setup'), obstacle: val('onb-woop-obstacle'),
+        ifThen: val('onb-woop-ifthen'), success: val('onb-woop-success'),
+      };
+    } else if (step === 'academics_math') {
+      state.climb.math = { program: val('onb-math-program'), link: val('onb-math-link'), baseline: val('onb-math-baseline') };
+    } else if (step === 'academics_reading') {
+      state.climb.reading = {
+        current: val('onb-reading-current'),
+        want: (document.getElementById('onb-reading-want')?.value || '').split('\n').map((s) => s.trim()).filter(Boolean),
+      };
+    } else if (step === 'academics_la') {
+      state.climb.la = { program: val('onb-la-program'), link: val('onb-la-link'), baseline: val('onb-la-baseline') };
+    }
+  }
+
+  // Persist the accumulated CLIMB captures as profiles.foundations.climb, merged so a sibling
+  // Session-1 inventory key is never clobbered. No-op without a profile (local anon walk).
+  function saveClimb() {
+    if (!profileId) return Promise.resolve();
+    const merged = { ...(state.climbFoundations || {}), climb: state.climb };
+    state.climbFoundations = merged;
+    return setProfileFoundations(profileId, merged);
+  }
+
+  // W8 the mountain paging: Continue reveals the next Disc up the stack; only once the whole
+  // mountain stands does Continue advance to the next CLIMB step. Back pages down the stack,
+  // then out. Owns both buttons (wired via the wireStep early-return), so no generic handlers.
+  function wireMountain() {
+    document.getElementById('onb-continue')?.addEventListener('click', async () => {
+      if (state.mountainIdx < MOUNTAIN_DISCS.length - 1) { state.mountainIdx += 1; render(); }
+      else await advance(null);
+    });
+    document.getElementById('onb-back')?.addEventListener('click', () => {
+      if (state.mountainIdx > 0) { state.mountainIdx -= 1; render(); }
+      else back();
+    });
+  }
+  // =======================================================================================
+
   function render() {
     const formFields = document.getElementById('form-fields');
     const step = curStep();
@@ -2620,6 +3029,18 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     else if (step === 'values') formFields.innerHTML = typeValues ? renderValuesType() : renderSelectStep({ kind: 'value', label: 'values' });
     else if (step === 'pitch') formFields.innerHTML = renderPitch();
     else if (step === 'slice_plan') formFields.innerHTML = renderSlicePlan();
+    else if (step === 'mountain') formFields.innerHTML = renderMountain();
+    else if (step === 'purpose') formFields.innerHTML = renderPurpose();
+    else if (step === 'connection') formFields.innerHTML = renderConnection();
+    else if (step === 'creator_intro') formFields.innerHTML = renderCreatorIntro();
+    else if (step === 'curious_intro') formFields.innerHTML = renderCuriousIntro();
+    else if (step === 'life_skills') formFields.innerHTML = renderLifeSkills();
+    else if (step === 'life_skills_woop') formFields.innerHTML = renderLifeSkillsWoop();
+    else if (step === 'academics_intro') formFields.innerHTML = renderAcademicsIntro();
+    else if (step === 'academics_math') formFields.innerHTML = renderAcademicsMath();
+    else if (step === 'academics_reading') formFields.innerHTML = renderAcademicsReading();
+    else if (step === 'academics_la') formFields.innerHTML = renderAcademicsLa();
+    else if (step === 'threshold') formFields.innerHTML = renderThreshold();
     else formFields.innerHTML = renderHorizon(step);
     wireStep();
     if (HORIZON_PROMPTS[step]) setTimeout(() => document.getElementById('onb-horizon')?.focus(), 50);
@@ -2632,6 +3053,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // leave-open wiring, so skip the generic step handlers below. Flag off falls
     // through to the legacy grid wiring unchanged.
     if (currentWheel && step === 'slice_plan') { wireSliceWalk(); return; }
+
+    // W8 the mountain owns its own page-through (Disc by Disc); Continue advances the CLIMB step
+    // only once the whole mountain stands. Handles its own Back/Continue, so skip the generics.
+    if (step === 'mountain') { wireMountain(); return; }
 
     document.getElementById('onb-back')?.addEventListener('click', back);
     document.getElementById('onb-skip')?.addEventListener('click', skipStep);
@@ -2744,6 +3169,13 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         // to before Stage O: capture the boxes, then upsert non-empty slices as year goals.
         captureSlice();
         await advance(() => upsertYearGoals());
+      } else if (step === 'creator_intro' || step === 'curious_intro' || step === 'academics_intro') {
+        await advance(null); // CLIMB reveal - nothing to persist (mountain pages via wireMountain)
+      } else if (step === 'purpose' || step === 'connection'
+                 || step === 'life_skills' || step === 'life_skills_woop'
+                 || step === 'academics_math' || step === 'academics_reading' || step === 'academics_la') {
+        captureClimb();
+        await advance(saveClimb); // CLIMB capture -> profiles.foundations.climb (merged)
       } else {
         captureHorizon();
         const text = state.horizons[step] || '';
@@ -2751,6 +3183,24 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         await advance(() => profileId ? setProfileHorizon(profileId, step, text) : Promise.resolve());
       }
     });
+
+    // W14 - Life Skills: single-select the skill to work on this year, then Continue.
+    if (step === 'life_skills') {
+      document.querySelectorAll('[data-climb-skill]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.climb.lifeSkill = btn.dataset.climbSkill;
+          render();
+        });
+      });
+    }
+
+    // W22 - THE THRESHOLD: both paths enter the Compass. "Not yet" is a gentle landing, never
+    // a loss - the Observatory is already built; the crossing is a separate, free choice.
+    if (step === 'threshold') {
+      const cross = async () => { await saveClimb(); if (profileId) await completeOnboarding(profileId); finish(); };
+      document.getElementById('onb-threshold-cross')?.addEventListener('click', cross);
+      document.getElementById('onb-threshold-notyet')?.addEventListener('click', cross);
+    }
 
     // Selection-card toggling for the strengths/values steps.
     document.querySelectorAll('.onb-select-card').forEach((card) => {
@@ -2781,14 +3231,38 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   setModalGated(true); // first-run gate: no X / backdrop escape to the main face
 }
 
+// Curated starter quotes for the W1 picker (2026-07-23). Every attribution was verified to a
+// primary source before shipping (first duty to the truth); popular-but-misattributed lines were
+// rejected. Terence is the featured anchor - IDIC from antiquity - chosen by the Council of Seven
+// (decision log 2026-07-23); a learner still freely picks any line, or writes their own (the
+// "add your own" door is an anti-foreclosure requirement, never the curated set alone).
+const QUOTE_CHOICES = [
+  { text: 'I am human, and nothing human is alien to me.', author: 'Terence', featured: true },
+  { text: 'You have brains in your head. You have feet in your shoes. You can steer yourself any direction you choose.', author: 'Dr. Seuss' },
+  { text: 'You are never too small to make a difference.', author: 'Greta Thunberg' },
+  { text: 'One child, one teacher, one book, one pen can change the world.', author: 'Malala Yousafzai' },
+  { text: 'What you do makes a difference, and you have to decide what kind of difference you want to make.', author: 'Jane Goodall' },
+  { text: 'Look for the helpers. You will always find people who are helping.', author: 'Fred Rogers' },
+  { text: "Be a rainbow in somebody else's cloud.", author: 'Maya Angelou' },
+  { text: "A person's a person, no matter how small.", author: 'Dr. Seuss' },
+  { text: "Courage doesn't always roar. Sometimes courage is the quiet voice at the end of the day saying, 'I will try again tomorrow.'", author: 'Mary Anne Radmacher' },
+  { text: 'We may encounter many defeats, but we must not be defeated.', author: 'Maya Angelou' },
+  { text: "If you can't fly then run, if you can't run then walk, if you can't walk then crawl, but whatever you do you have to keep moving forward.", author: 'Martin Luther King Jr.' },
+  { text: "There is always light, if only we're brave enough to see it.", author: 'Amanda Gorman' },
+  { text: 'The important thing is not to stop questioning.', author: 'Albert Einstein' },
+  { text: 'Fall seven times, stand up eight.', author: 'Japanese proverb' },
+  { text: 'Little by little, one travels far.', author: 'Spanish proverb' },
+  { text: 'Each time a person stands up for an ideal, or acts to improve the lot of others, or strikes out against injustice, they send forth a tiny ripple of hope, and crossing each other from a million different centers of energy and daring, those ripples build a current that can sweep down the mightiest walls of oppression and resistance.', author: 'Robert F. Kennedy' },
+];
+
 // Quote flow (2026-06-24): the quote anchors the top of the page for the cycle.
-// One teaching screen (why a quote + who inspires you, combined) then one form
-// (the quote, who said it, what it means to you). Its OWN front-of-line flow so it always runs
-// from Begin when the quote is missing/stale - never resumed-past like a cascade
+// One teaching screen (why a quote + who inspires you) -> a curated PICKER (tap a line, or write
+// your own) -> the form (the quote, who said it, what it means to you). Its OWN front-of-line flow
+// so it always runs from Begin when the quote is missing/stale - never resumed-past like a cascade
 // step. Saves all three fields + stamps the cycle. If the person closes the modal
 // without saving, it simply re-prompts next sign-in.
 export function openQuoteFlow({ profileId = null, currentCycle = '', existing = {}, onComplete, gated = true } = {}) {
-  const SCREENS = ['intro', 'form'];
+  const SCREENS = ['intro', 'picker', 'form'];
   const state = {
     idx: 0,
     text: existing.text || '',
@@ -2819,12 +3293,40 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
     return `
       <div class="onb-horizon-prompt">
         <h3 class="onb-horizon-heading">Why a quote?</h3>
-        <p class="onb-horizon-body">A single line, chosen on purpose, can carry you through a whole year - a north star in words when the days get hard, kept at the top of your page. Think of words that inspire you, or someone you admire - a teacher, a writer, someone you love, a person whose life fills you with awe or wonder. On the next screen, you’ll write down the line you carry.</p>
+        <p class="onb-horizon-body">A single line, chosen on purpose, can carry you through a whole year - a north star in words when the days get hard, kept at the top of your page. Think of words that inspire you, or someone you admire - a teacher, a writer, someone you love, a person whose life fills you with awe or wonder. On the next screen, choose a line that speaks to you - or write your own.</p>
       </div>
       <div class="onb-step-actions">
         <span></span>
         <div class="onb-step-actions-right">
           <button type="button" id="qf-next" class="btn btn-primary">Continue</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // The picker: tap a curated line (pre-fills the form) or write your own. Terence is featured
+  // first (the Council-chosen anchor), but every line is a free choice and "write my own" is
+  // always present - the curated set is never the only door (anti-foreclosure, page-spec R2).
+  function renderPicker() {
+    return `
+      <div class="onb-horizon-prompt">
+        <h3 class="onb-horizon-heading">Choose a line that speaks to you.</h3>
+        <p class="onb-horizon-body">Pick the one that makes you feel something. You can change it later, add what it means to you next, or write your own.</p>
+      </div>
+      <ul class="qf-quote-list">
+        ${QUOTE_CHOICES.map((q, i) => `
+          <li>
+            <button type="button" class="qf-quote-card${q.featured ? ' featured' : ''}" data-qf-pick="${i}">
+              ${q.featured ? '<span class="qf-quote-flag">✦ a place to start</span>' : ''}
+              <span class="qf-quote-text">${escapeHtml(q.text)}</span>
+              <span class="qf-quote-author">${escapeHtml(q.author)}</span>
+            </button>
+          </li>`).join('')}
+      </ul>
+      <div class="onb-step-actions">
+        <button type="button" id="qf-back" class="btn btn-text">Back</button>
+        <div class="onb-step-actions-right">
+          <button type="button" id="qf-own" class="btn btn-primary">Write my own</button>
         </div>
       </div>
     `;
@@ -2862,6 +3364,7 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
     const formFields = document.getElementById('form-fields');
     const screen = SCREENS[state.idx];
     if (screen === 'intro') formFields.innerHTML = renderIntro();
+    else if (screen === 'picker') formFields.innerHTML = renderPicker();
     else formFields.innerHTML = renderForm();
     wire();
     if (screen === 'form') setTimeout(() => document.getElementById('qf-text')?.focus(), 50);
@@ -2875,6 +3378,22 @@ export function openQuoteFlow({ profileId = null, currentCycle = '', existing = 
       state.idx -= 1;
       render();
     });
+    // Picker: tapping a curated line pre-fills the quote + author and moves to the form (where
+    // the learner adds what it means). "Write my own" clears any pick and opens a blank form.
+    if (screen === 'picker') {
+      const toForm = () => { state.idx = SCREENS.indexOf('form'); render(); };
+      document.querySelectorAll('[data-qf-pick]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const q = QUOTE_CHOICES[Number(btn.dataset.qfPick)];
+          if (q) { state.text = q.text; state.author = q.author; }
+          toForm();
+        });
+      });
+      document.getElementById('qf-own')?.addEventListener('click', () => {
+        state.text = ''; state.author = '';
+        toForm();
+      });
+    }
     if (screen === 'form') {
       const textEl = document.getElementById('qf-text');
       const saveBtn = document.getElementById('qf-save');

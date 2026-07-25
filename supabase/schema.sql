@@ -174,23 +174,10 @@ create table check_ins (
 );
 create index idx_check_ins_learner on check_ins(learner_id);
 
--- Logins (external service credentials). Password is encrypted client-side
--- with the learner's local key. Server only stores ciphertext + IV.
--- Per Decision 4: server never receives plaintext.
-create table logins (
-  id uuid primary key default uuid_generate_v4(),
-  learner_id uuid not null references learners(id) on delete cascade,
-  kind text not null default 'core' check (kind in ('core', 'passion', 'other')),
-  service text not null,
-  username text,
-  password_ct text,  -- base64 ciphertext (AES-GCM 256)
-  password_iv text,  -- base64 IV
-  url text,
-  note text,
-  created_at timestamptz default now(),
-  updated_at timestamptz default now()
-);
-create index idx_logins_learner on logins(learner_id);
+-- Logins (external service credentials) — RETIRED 2026-07-22 (TCC ruling: Worf/Riker/Tutela).
+-- Compass stores no third-party credentials; the OS/browser password manager is the sovereign
+-- home for a credential. The table is safe-deleted on existing databases via
+-- supabase/migrations/2026-07-22-v0.34-retire-logins.sql. No table is created here.
 
 -- Everyone Page posts. The only learner-visible-to-other-learners surface.
 -- Per Decision: guides post directly; learner submissions require guide review
@@ -370,7 +357,6 @@ alter table year_traits enable row level security;
 alter table goals enable row level security;
 alter table tasks enable row level security;
 alter table check_ins enable row level security;
-alter table logins enable row level security;
 alter table everyone_posts enable row level security;
 alter table partner_links enable row level security;
 alter table year_plans enable row level security;
@@ -422,7 +408,7 @@ create policy "learners_read" on learners
 create policy "learners_write_self" on learners
   for update using (id = auth.uid()) with check (id = auth.uid());
 
--- Year quotes, traits, goals, tasks, check_ins, logins all follow the same
+-- Year quotes, traits, goals, tasks, check_ins all follow the same
 -- visibility pattern: visible to learner + parents + guides.
 -- Writes restricted to the learner themselves.
 
@@ -449,11 +435,6 @@ create policy "tasks_write" on tasks for all
 create policy "check_ins_read" on check_ins for select
   using (learner_id in (select learner_id from my_visible_learners));
 create policy "check_ins_write" on check_ins for all
-  using (learner_id = auth.uid()) with check (learner_id = auth.uid());
-
-create policy "logins_read" on logins for select
-  using (learner_id in (select learner_id from my_visible_learners));
-create policy "logins_write" on logins for all
   using (learner_id = auth.uid()) with check (learner_id = auth.uid());
 
 -- Parent and guide assignments: readable by all parties involved.
@@ -555,8 +536,6 @@ create trigger year_traits_touch before update on year_traits
 create trigger goals_touch before update on goals
   for each row execute function touch_updated_at();
 create trigger tasks_touch before update on tasks
-  for each row execute function touch_updated_at();
-create trigger logins_touch before update on logins
   for each row execute function touch_updated_at();
 
 -- Guide insights: privacy-preserving anchor aggregates (counts only, guide-only,

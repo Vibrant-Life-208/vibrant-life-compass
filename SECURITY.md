@@ -1,6 +1,8 @@
 # Security Posture - Hero's Compass for Vibrant Life
 
-*Last updated: 2026-05-12. Maintained alongside the codebase. Pre-deployment checklist for Vibrant Life staff, privacy counsel, and security reviewers.*
+*Last updated: 2026-07-22. Maintained alongside the codebase. Pre-deployment checklist for Vibrant Life staff, privacy counsel, and security reviewers.*
+
+> **2026-07-22 — third-party credential vault RETIRED (TCC ruling: Worf / Riker / Tutela, ratified by Europa).** Compass no longer stores third-party service credentials (Khan, Lexia, Google, etc.). The prior "Passwords" surface and the `logins` table are removed; the OS/browser password manager (autofill / passkeys) is the sovereign home for a credential. Compass keeps only a program link + the learner's own baseline/progress — never the secret. Earlier revisions of this document claimed a client-side AES-GCM vault for these credentials; that claim was not true in the deployed (Supabase) path, where the client wrote plaintext into a `{ ct, iv }` shape it never populated. That section has been corrected below.
 
 ---
 
@@ -10,8 +12,8 @@ Hero's Compass is a closed-system goal-tracking PWA for one Acton-shaped school 
 
 | Threat | Source | Mitigation |
 |---|---|---|
-| Casual data leak between learners on a shared studio iPad | A learner who forgot to sign out | Per-reveal confirmation on passwords + auto-hide; per-learner data scoping; session timeout (TBD) |
-| Credential theft | Plaintext at rest | AES-GCM 256 encryption with non-extractable IndexedDB key |
+| Casual data leak between learners on a shared studio iPad | A learner who forgot to sign out | Per-learner data scoping; session timeout (TBD). No third-party credentials are stored in Compass at all |
+| Third-party credential theft (Khan, Lexia, etc.) | A credential vault would be a high-value target | Compass stores NO third-party credentials. The device/browser password manager (autofill / passkeys) holds them; Compass keeps only a program link + the learner's progress |
 | Peer surveillance | Learner-to-learner visibility | No broadcast surface; 1:1 partnership only; goals/journals never visible to peers |
 | Parent over-reach | Parent reading day-by-day journals | Parent view restricted to session-level goals + end-of-session recap only |
 | Vendor data extraction | Third-party services consuming child data | No third-party scripts. No analytics. No fonts from CDNs. No tracking |
@@ -38,36 +40,41 @@ Hero's Compass does not use Google OAuth, social login, or any external identity
 | Hero name / role / studio | Not encrypted (not secret; visible by design to learner + parents + guides) | TLS | N/A |
 | Year goals + session goals + tasks | Not encrypted (visible to learner + parents + guides) | TLS | N/A |
 | Motivational quote, character traits | Not encrypted (visible to learner + parents + guides) | TLS | N/A |
-| External-service passwords (Khan, Lexia, etc.) | AES-GCM 256 envelope `{ ct, iv }` per password | TLS | Visible for 10 seconds when learner taps Reveal, then auto-hidden |
-| Guide reflections — `story` + `moment` (Practice surface) | AES-GCM 256 envelope, per-guide key (same as passwords) | TLS | Held in the DOM only while the guide views their own Practice tab |
+| External-service passwords (Khan, Lexia, etc.) | Not stored by Compass — held by the device/browser password manager | N/A | Never in Compass |
+| Guide reflections — `story` + `moment` (Practice surface) | AES-GCM 256 envelope via `crypto.js`, per-guide key | TLS | Held in the DOM only while the guide views their own Practice tab |
 | Hero's Compass password itself | bcrypt hash via Supabase Auth | TLS | Plaintext only during login submission |
 
-### External-service password encryption details
+### Third-party credentials — not stored (retired 2026-07-22)
 
-- Algorithm: AES-GCM 256
-- Key: per-learner symmetric key, generated on first password save
-- Key storage: IndexedDB as a non-extractable `CryptoKey` object - the raw bytes of the key are never accessible to JavaScript
-- IV: 12 random bytes per encryption, stored alongside the ciphertext
-- Test: `JSON.stringify(localStorage)` searched for known plaintext returns false (verified during Decision 4 ship)
+Compass does **not** store third-party service credentials. There is no credential vault, no "Passwords" tab, and no `logins` table (safe-deleted; see `supabase/migrations/2026-07-22-v0.34-retire-logins.sql`).
+
+- **Where the credential lives:** the learner's own device/browser password manager (autofill, passkeys) — the sovereign, OS-level home for a secret.
+- **What Compass keeps:** the program name + a **deep-link** to it, plus the learner's baseline/progress ("where are you now"). Never a username or password.
+- **Why the change:** a shared credential vault is a high-value target and a surveillance surface (parents/guides could read a child's secrets). The prior client-side-AES-GCM claim was also false in the deployed Supabase path — plaintext was written into a ciphertext-shaped field that was never populated. Retiring the vault removes both the risk and the false claim. (TCC ruling 2026-07-22; decision logged same day.)
+- **If ever re-needed:** only true client-side end-to-end encryption (learner-held key, server-never-sees-plaintext, no guardian read path, end-to-end verified before going live). Default = do not store.
+
+The `crypto.js` AES-GCM primitives remain in the codebase; they are used **only** for the guide-practice `story`/`moment` reflections (below), not for any credential.
 
 ### Guide reflections — the Practice surface (v0.24)
 
 The guide "Your Practice" surface lets a guide record private, self-named reflections ("crossings") on the twelve Key Characteristics. It is not a badge system — no scores, tiers, ranks, or leaderboards — and its privacy is enforced at two layers:
 
 - **The wall (RLS self-only).** `guide_crossings` has a single policy, `guide_crossings_self` (`guide_id = auth.uid()` for all operations). There is deliberately **no owner path, no peer path, no visible-set membership** — an owner (including Jenna and Wes) literally cannot `select` another guide's crossing. This is the insider-abuse / peer-surveillance mitigation applied to the guide's own inner reflections.
-- **Encryption at rest.** `story` and `moment` are stored as AES-GCM envelopes (same mechanism as external passwords), written/read at the store-adapter boundary so the crypto cannot be forgotten. The `moment` field invites "a child or moment you want to remember," so it can hold a child's name — child-adjacent free text must not sit plaintext behind RLS alone. Only `characteristic` and `created_at` stay plaintext (they feed the aggregate; they carry no reflection content).
+- **Encryption at rest.** `story` and `moment` are stored as AES-GCM envelopes (via `crypto.js`), written/read at the store-adapter boundary so the crypto cannot be forgotten. The `moment` field invites "a child or moment you want to remember," so it can hold a child's name — child-adjacent free text must not sit plaintext behind RLS alone. Only `characteristic` and `created_at` stay plaintext (they feed the aggregate; they carry no reflection content).
 - **The culture bloom is counts-only.** The owner "Tending the Studio" surface reads `public.studio_practice_pulse(tribe)`, a `SECURITY DEFINER` aggregate that returns per-characteristic counts of *distinct opted-in guides* who reflected this season — never the story, the moment, or a guide id. It suppresses any count below `v_min = 3` and returns nothing at all for a studio with fewer than 3 opted-in guides (graceful degradation — better an empty bloom than a de-anonymized one). Contribution is opt-in per guide (`profiles.share_practice_pulse`, default false).
 - **Ratified** by the privacy panel 2026-07-18 (Naomi/G1, Worf + Tutela/TCC, Accord, Geordi). Standing condition: any future migration reading `guide_crossings` must preserve self-only-or-suppressed-aggregate and return to that panel.
 
 ## Data scope per role
 
-| Role | Year goals | Session goals | Daily tasks | Partner | Patterns | Passwords | Quote/Traits |
-|---|---|---|---|---|---|---|---|
-| Learner (self) | r/w | r/w | r/w | r/w (1:1 only) | r | r/w | r/w |
-| Parent (linked) | none | read-only, plus end-of-session recap | none | none | none | none | none |
-| Guide (assigned) | read | read | read | read | read | read | read |
-| Peer learners | none | none | none | none | none | none | none |
-| Unauthenticated | none | none | none | none | none | none | none |
+| Role | Year goals | Session goals | Daily tasks | Partner | Patterns | Quote/Traits |
+|---|---|---|---|---|---|---|
+| Learner (self) | r/w | r/w | r/w | r/w (1:1 only) | r | r/w |
+| Parent (linked) | none | read-only, plus end-of-session recap | none | none | none | none |
+| Guide (assigned) | read | read | read | read | read | read |
+| Peer learners | none | none | none | none | none | none |
+| Unauthenticated | none | none | none | none | none | none |
+
+*(Third-party service credentials are not a Compass data class at all as of 2026-07-22 — they live in the device password manager, so they carry no per-role grant here.)*
 
 Enforced at:
 - **App layer:** view configurations restrict tabs per role (see `js/app.js` `TABS_BY_ROLE`)
@@ -88,7 +95,7 @@ Enforced at:
 
 Things we have shipped:
 
-- [x] Password encryption at rest (Decision 4)
+- [x] Third-party credential vault retired (TCC ruling 2026-07-22) — Compass stores no third-party credentials; `logins` table safe-deleted
 - [x] Per-learner data scoping in app layer
 - [x] Per-learner RLS policies in Supabase schema
 - [x] No external scripts, CDNs, or trackers
