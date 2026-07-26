@@ -19,10 +19,10 @@ export function shell(header, sections) {
   const sub = header.subtitle ? `<p class="pillar-subtitle">${escapeHtml(header.subtitle)}</p>` : '';
   return `
     <div class="pillar pillar-${escapeAttr(header.color)}">
-      <header class="pillar-header">
+      <div class="pillar-header">
         <span class="pillar-swatch" aria-hidden="true"></span>
         <h2 class="pillar-title">${escapeHtml(header.title)}</h2>
-      </header>
+      </div>
       ${sub}
       <div class="pillar-body">${(sections || []).filter(Boolean).join('')}</div>
     </div>`;
