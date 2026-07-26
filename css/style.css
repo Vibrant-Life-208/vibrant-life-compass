@@ -4536,3 +4536,52 @@ body.landscape-mountain {
 .record-node-detail { display: block; font-size: 0.82rem; color: var(--text); margin-top: 0.15rem; }
 .record-foot { border-top: 1px solid var(--earth-pale); padding-top: 0.9rem; margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-soft); line-height: 1.5; }
 .record-foot em { color: var(--sage); }
+
+/* ── Pillar tabs (2026-07-25) ──────────────────────────────────────────────
+   The five learner Pillars. Colors match the onboarding disc reveal (modals.js
+   PILLARS) so the tab header swatch and the pyramid agree. */
+:root {
+  --pillar-purpose: #E01230;
+  --pillar-connection: #7A3E9D;
+  --pillar-creator: #F5A623;
+  --pillar-lifeskills: #1CA08D;
+  --pillar-academics: #EE6C2B;
+}
+.pillar { --pc: var(--sage); }
+.pillar-purpose { --pc: var(--pillar-purpose); }
+.pillar-connection { --pc: var(--pillar-connection); }
+.pillar-creator { --pc: var(--pillar-creator); }
+.pillar-lifeskills { --pc: var(--pillar-lifeskills); }
+.pillar-academics { --pc: var(--pillar-academics); }
+
+.pillar-header { display: flex; align-items: center; gap: 0.6rem; margin: 0.25rem 0 0.35rem; }
+.pillar-swatch { flex: 0 0 auto; width: 1.1rem; height: 1.1rem; border-radius: 6px; background: var(--pc); box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+.pillar-title { margin: 0; font-size: 1.35rem; color: var(--text); font-weight: 600; }
+.pillar-subtitle { margin: 0 0 1rem; color: var(--text-soft); font-size: 0.95rem; line-height: 1.5; }
+.pillar-body { display: flex; flex-direction: column; gap: 1.1rem; }
+
+.pillar-section { border-left: 3px solid var(--pc); padding: 0.15rem 0 0.15rem 0.9rem; }
+.pillar-section-title { margin: 0 0 0.5rem; font-size: 1rem; color: var(--text); font-weight: 600; }
+.pillar-prompt { margin: 0 0 0.5rem; color: var(--text-soft); font-size: 0.9rem; line-height: 1.5; }
+.pillar-empty { margin: 0; color: var(--text-soft); font-size: 0.9rem; font-style: italic; }
+.pillar-coming { margin: 0; color: #9a9a90; font-size: 0.88rem; }
+
+.pillar-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.pillar-chip { background: color-mix(in srgb, var(--pc) 12%, #fff); border: 1px solid color-mix(in srgb, var(--pc) 35%, #fff); color: var(--text); border-radius: 999px; padding: 0.3rem 0.8rem; font-size: 0.88rem; }
+
+.pillar-box { width: 100%; box-sizing: border-box; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.6rem 0.7rem; font: inherit; color: var(--text); resize: vertical; min-height: 3.2rem; }
+.pillar-box:focus { outline: none; border-color: var(--pc); }
+.pillar-box-actions { display: flex; align-items: center; gap: 0.8rem; margin-top: 0.35rem; min-height: 1.4rem; }
+.pillar-box-saved { color: var(--sage); font-size: 0.82rem; }
+
+.pillar-goal { border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 12px; padding: 0.7rem 0.85rem; background: #fff; }
+.pillar-goal + .pillar-goal { margin-top: 0.6rem; }
+.pillar-goal-text { margin: 0; color: var(--text); font-weight: 500; }
+.pillar-goal-meta { margin: 0.3rem 0 0; color: var(--text-soft); font-size: 0.85rem; }
+.pillar-goal-label { color: #9a9a90; }
+
+.pillar-horizon { margin-bottom: 0.6rem; }
+.pillar-horizon-label { margin: 0 0 0.15rem; color: #9a9a90; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.03em; }
+.pillar-horizon-text { margin: 0; color: var(--text); line-height: 1.5; }
+
+.pillar-list { margin: 0.3rem 0 0; padding-left: 1.1rem; color: var(--text-soft); line-height: 1.6; }

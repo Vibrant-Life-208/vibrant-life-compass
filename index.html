@@ -42,7 +42,8 @@
   <div id="welcome-screen" class="screen">
     <div class="welcome-container">
       <h1 id="welcome-title" class="welcome-title">Welcome</h1>
-      <p class="welcome-intro">Hero's Compass is your year-long companion for setting course and walking it.</p>
+      <p class="welcome-intro">This is your compass for the year ahead.</p>
+      <p class="welcome-intro">A compass doesn't tell you where to go. It shows you which way you're facing - so every step is yours.</p>
       <p class="welcome-intro">Each cycle unfolds across eight sessions: seven through the school year, and an eighth for summer.</p>
       <p id="welcome-late-start" class="welcome-late-start" hidden></p>
       <p id="welcome-role-tagline" class="welcome-role-tagline"></p>
@@ -228,6 +229,15 @@
       <div id="year-categories" class="category-list"></div>
     </main>
 
+    <!-- Pillar tabs (2026-07-25). Each is filled by its render in js/pillars/*.
+         The learner nav is the pyramid: Purpose -> Connection -> Creator Mindset
+         -> Life Skills -> Academics. -->
+    <main id="purpose-view" class="tab-content"></main>
+    <main id="connection-view" class="tab-content"></main>
+    <main id="creator-view" class="tab-content"></main>
+    <main id="lifeskills-view" class="tab-content"></main>
+    <main id="academics-view" class="tab-content"></main>
+
     <!-- Passwords View retired 2026-07-22 (TCC ruling: no third-party credential storage).
          The OS/browser password manager is the sovereign home for a credential. -->
 
@@ -252,10 +262,9 @@
       </div>
     </main>
 
-    <!-- Partner Page (replaces Everyone) -->
-    <main id="partner-view" class="tab-content">
-      <div id="partner-view-content"></div>
-    </main>
+    <!-- Partner Page folded into the Connection Pillar (2026-07-25). renderPartnerPage
+         now targets the #partner-view-content that js/pillars/connection.js creates.
+         The old standalone partner-view tab is retired from the learner nav. -->
 
     <!-- Guide "Your Practice" — private reflection surface (filled by practice.js) -->
     <main id="practice-view" class="tab-content"></main>

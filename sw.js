@@ -1,4 +1,4 @@
-const CACHE = 'heros-compass-v126';
+const CACHE = 'heros-compass-v127';
 const CORE = [
   '/',
   '/index.html',
@@ -13,6 +13,13 @@ const CORE = [
   '/js/dead-watch.js',
   '/js/observatory/trail.js',
   '/js/observatory/academics.js',
+  '/js/pillars/index.js',
+  '/js/pillars/_scaffold.js',
+  '/js/pillars/purpose.js',
+  '/js/pillars/connection.js',
+  '/js/pillars/creator.js',
+  '/js/pillars/life-skills.js',
+  '/js/pillars/academics.js',
   '/js/arrive.js',
   '/js/auth.js',
   '/js/family.js',

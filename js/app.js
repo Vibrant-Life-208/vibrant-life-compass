@@ -26,6 +26,7 @@ import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits,
 import { isNewToTribe } from './tribe-roster.js';
 import { isEnrolled } from './flags.js';
 import { renderAcademics } from './observatory/academics.js';
+import { PILLARS, renderPillar } from './pillars/index.js';
 
 // --- Strangler-fig seam. Observatory (new UI) view registry.
 // An environment renders the new UI only if it has an entry here AND the user is enrolled
@@ -59,12 +60,15 @@ async function renderEnvironment(env, learnerId) {
 const TABS_BY_ROLE = {
   // Captain decision 2026-05-12: Everyone tab removed entirely. No broadcast
   // surface between learners. Accountability is 1:1 via the Partner tab.
+  // Pillar nav (2026-07-25): the learner surface IS the pyramid. North + Calendar,
+  // then the five Pillars (from js/pillars/index.js - single source of truth), then
+  // Summary. Compass(year-view)/Session/Partner/Plan fold into North + the Pillars
+  // (Partner -> Connection; weekly/session + task list -> North). The wheel/Compass
+  // view is parked for Launch Pad. Calendar is injected at slot 2 in buildTabs.
   learner: [
     { id: 'north-view', label: 'North' },
-    { id: 'year-view', label: 'Compass' },
-    { id: 'session-view', label: 'Session' },
-    { id: 'partner-view', label: 'Partner' },
-    { id: 'patterns-view', label: 'Patterns' },
+    ...PILLARS.map((p) => ({ id: p.id, label: p.label })),
+    { id: 'patterns-view', label: 'Summary' },
   ],
   // Captain decision 2026-05-11: parents only see session goals + end-of-session
   // recap. No year goals, no daily tasks.
@@ -520,10 +524,14 @@ async function buildTabs(role) {
     const l = await getLearner(learnerId);
     matureLearner = l?.studio === 'launchpad';
   }
+  // Learner Pillar nav (2026-07-25): Calendar sits at slot 2 (right after North),
+  // before the Pillars. Plan (task list) folds into North, so it is no longer a tab.
+  if (isLearner && !tabs.some((t) => t.id === 'calendar-view')) {
+    tabs.splice(1, 0, { id: 'calendar-view', label: 'Calendar' });
+  }
   const inject = [];
-  if (isLearner) inject.push({ id: 'tasklist-view', label: 'Plan' });
   if (isLearner && matureLearner) inject.push({ id: 'breakdown-view', label: 'Breakdown' });
-  if (isLearner || isStaff) inject.push({ id: 'calendar-view', label: 'Calendar' });
+  if (isStaff) inject.push({ id: 'calendar-view', label: 'Calendar' });
   // Growth Record - preview/scaffold. Shown only to staff (the "grown-ups who review a
   // record") while it is being built; not surfaced to learners yet. (Captain 2026-07-21.)
   if (isStaff) inject.push({ id: 'record-view', label: 'Record' });
@@ -573,6 +581,10 @@ async function showTab(tabId, learnerId) {
   // Strangler-fig seam: the observatory renders only when the env is rebuilt AND the user is
   // enrolled; otherwise fall through to the legacy chain below. No-op while empty (=> always legacy).
   if (await renderEnvironment(tabId, learnerId)) return;
+
+  // Pillar tabs (Purpose/Connection/Creator Mindset/Life Skills/Academics) dispatch
+  // from the single PILLARS registry (js/pillars/index.js).
+  if (await renderPillar(tabId, learnerId)) return;
 
   if (tabId === 'north-view') { await renderNorth(learnerId); applyLandscape(); }
   if (tabId === 'year-view') await renderYearView(learnerId);
