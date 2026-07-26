@@ -1,7 +1,8 @@
 // North view - the dashboard.
 
-import { getLearner, getGoals, getQuoteState } from './store.js';
+import { getLearner, getGoals, getQuoteState, getCheckIns } from './store.js';
 import { openViaImportModal } from './via-import.js';
+import './observatory/trail.js'; // registers <vlc-trail> for the North trail strip
 import { getCategoriesForStudio } from './studios.js';
 import { renderToday, initTodayFab } from './tasks.js';
 import { renderGamePlan } from './game-plan.js';
@@ -69,6 +70,7 @@ export async function renderNorth(learnerId) {
     renderQuoteSection(learnerId),
     renderToday(learnerId),
     renderGamePlan(learnerId),
+    renderTrail(learnerId),
     renderVision(learnerId, learner),
     renderReading(learnerId, learner),
   ]);
@@ -196,6 +198,40 @@ async function renderReading(learnerId, learner) {
 function formatToday() {
   const d = new Date();
   return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
+// The Trail - North's emotional center. One honest strip: start -> now -> goal,
+// a dot for every check-in (each time "where you are" changed), placed by the
+// session it happened in. Compares only to the learner's own start; no numbers,
+// no percentage (the <vlc-trail> component enforces that). Hidden until the
+// learner has a year goal to journey toward.
+async function renderTrail(learnerId) {
+  const section = document.getElementById('north-trail');
+  const mount = document.getElementById('north-trail-mount');
+  if (!section || !mount) return;
+  const [goals, checkIns] = await Promise.all([getGoals(learnerId), getCheckIns(learnerId)]);
+  const yearGoals = (goals || []).filter((g) => g.scope === 'year' && g.text);
+  if (!yearGoals.length) { section.hidden = true; mount.innerHTML = ''; return; }
+  section.hidden = false;
+
+  const sorted = [...(checkIns || [])].sort((a, b) => String(a.createdAt || '').localeCompare(String(b.createdAt || '')));
+  // Position each check-in by the session it landed in (1-7 -> 0.125..0.875), so the
+  // dots read as movement across the year. Missing session -> spread evenly by order.
+  const posOf = (c, i) => {
+    const s = Number(c.sessionIndex);
+    if (s >= 1 && s <= 7) return s / 8;
+    return sorted.length > 1 ? 0.1 + (i / (sorted.length - 1)) * 0.7 : 0.1;
+  };
+  const steps = sorted.map((c, i) => ({ at: posOf(c, i) })).slice(-14);
+
+  mount.innerHTML = '';
+  const trail = document.createElement('vlc-trail');
+  trail.setAttribute('start-label', 'Started');
+  trail.setAttribute('now-label', steps.length ? 'You are here' : 'Just beginning');
+  trail.setAttribute('goal-label', 'Your year');
+  trail.setAttribute('color', 'var(--sage, #5a7d5a)');
+  if (steps.length) trail.steps = steps; else trail.now = 0.05;
+  mount.appendChild(trail);
 }
 
 async function renderVision(learnerId, learner) {
