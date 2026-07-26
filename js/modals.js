@@ -2785,7 +2785,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <p class="onb-climb-body">Let's dive into <strong>Conscious Living</strong> - how your values and purpose come alive through the character strengths you named, and how those build connection.</p>
         ${strengths.length ? `<p class="onb-climb-seed-label">This Disc stands on the strengths you already named:</p>${climbChips(strengths)}` : ''}
         <label class="onb-climb-label" for="onb-climb-text">How do these strengths show up in how you treat the people around you?</label>
-        <textarea id="onb-climb-text" class="onb-horizon" rows="3" placeholder="With the people I care about, I...">${escapeHtml(state.climb.consciousLiving || '')}</textarea>
+        <textarea id="onb-climb-text" class="onb-horizon" rows="6" style="min-height: 8.5rem;" placeholder="With the people I care about, I...">${escapeHtml(state.climb.consciousLiving || '')}</textarea>
         <p class="onb-climb-note">Chosen time alone counts here too - solitude you pick is its own kind of full, not a gap in your life. The kind of alone that aches is the involuntary kind, and connection is what eases that one.</p>
         ${navButtons({ skippable: true })}
       </div>`;
