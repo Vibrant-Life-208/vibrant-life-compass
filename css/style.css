@@ -4597,3 +4597,18 @@ body.landscape-mountain {
 .north-plan-summary { cursor: pointer; font-size: 1.05rem; font-weight: 600; color: var(--text); padding: 0.2rem 0; list-style-position: outside; }
 .north-plan-summary:hover { color: var(--sage); }
 .north-plan[open] .north-plan-summary { margin-bottom: 0.6rem; }
+
+/* Readable panels over the landscape (2026-07-26). A translucent cream card so
+   content reads cleanly on any session's backdrop, while the landscape still
+   shows through faintly - the "travel" aesthetic is kept, not covered. Applies
+   to the five Pillars and North's two new sections (Trail + Plan). */
+.pillar,
+.north-trail-section,
+.north-plan {
+  background: rgba(250, 248, 244, 0.86);
+  border-radius: 16px;
+  padding: 1.1rem 1.25rem 1.3rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+.north-trail-section,
+.north-plan { margin-top: 1rem; }
