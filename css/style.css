@@ -4017,6 +4017,17 @@ body.landscape-mountain {
   background: #f3f0ea; color: #6a6a62; font-size: 0.85rem; line-height: 1.5;
 }
 
+/* Guide Recognition-Arc reference collapsed by default (Option A, 2026-07-25).
+   A quiet one-line summary sits at the foot of the guide account; the four
+   equal cards open on request. Matches the .pt-honesty disclosure treatment. */
+.pt-arc-collapse { margin-top: 0.4rem; }
+.pt-arc-summary {
+  cursor: pointer; color: #6a6a62; font-size: 0.9rem; line-height: 1.5;
+  padding: 0.2rem 0; list-style-position: outside;
+}
+.pt-arc-summary:hover { color: #4a4a44; }
+.pt-arc-collapse[open] .pt-arc-summary { margin-bottom: 0.4rem; }
+
 /* Parents & Tots · parent-side journey (private, self-disclosed, never scored) */
 .pt-journey { margin: 1.5rem 0 0.5rem; }
 .pt-optin { background: #f3f0ea; border-radius: 12px; padding: 0.9rem 1rem; text-align: center; }

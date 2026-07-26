@@ -153,11 +153,19 @@ export function renderParentBadgesReference(show) {
         <p class="pt-badge-why">${esc(b.why)}</p>
       </div>
     </li>`).join('');
+  // Option A (2026-07-25, captain): collapse the four-card block behind a
+  // disclosure so it no longer sits open at the foot of every guide account.
+  // A plain one-line "what this is" summary stays visible; the cards open on
+  // request. The expanded grid keeps its EQUAL, UNORDERED wrap (Decision 4,
+  // 2026-07-18) - no rank, no order change, and the collapse touches no state.
   el.innerHTML = `
     <div class="admin-header"><h3 class="admin-title">Parents &amp; Tots · the Recognition Arc</h3></div>
-    <p class="admin-sub">A reference for the recognition you offer aloud in the parent circle - spoken first, never scored. This shows no family's state, and never will.</p>
-    <ul class="pt-badges pt-grid">${steps}</ul>
-    <p class="pt-guardrail">These honor the <strong>parent</strong>. They never count - no completion, no streak, no scoreboard, no per-parent view - and they live apart from the children's mastery badges, always.</p>`;
+    <details class="pt-arc-collapse">
+      <summary class="pt-arc-summary">A reference for the recognition you offer aloud in the parent circle - four postures that honor the parent, spoken first and never scored. Open to read them.</summary>
+      <p class="admin-sub">This shows no family's state, and never will.</p>
+      <ul class="pt-badges pt-grid">${steps}</ul>
+      <p class="pt-guardrail">These honor the <strong>parent</strong>. They never count - no completion, no streak, no scoreboard, no per-parent view - and they live apart from the children's mastery badges, always.</p>
+    </details>`;
 }
 
 // ---------------------------------------------------------------------------
