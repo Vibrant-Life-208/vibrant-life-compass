@@ -10,6 +10,7 @@ import { getBooks, addBook, setBookmark, removeBook, MAX_BOOKS } from './books.j
 import { openPracticeTimer } from './practice-timer.js';
 import { isNewToTribe } from './tribe-roster.js';
 import { openFirstTaskDemo } from './first-task-demo.js';
+import { renderTaskList } from './task-list.js';
 
 // Year-map click handler is still needed (Compass page sets it).
 let yearMapClickHandler = null;
@@ -73,6 +74,7 @@ export async function renderNorth(learnerId) {
     renderTrail(learnerId),
     renderVision(learnerId, learner),
     renderReading(learnerId, learner),
+    renderPlan(learnerId),
   ]);
 
   initTodayFab(learnerId);
@@ -232,6 +234,17 @@ async function renderTrail(learnerId) {
   trail.setAttribute('color', 'var(--sage, #5a7d5a)');
   if (steps.length) trail.steps = steps; else trail.now = 0.05;
   mount.appendChild(trail);
+}
+
+// Plan folded into North: the full task-list plan at the bottom, collapsible
+// (expand-and-shrink per the vision). renderTaskList fills #tasklist-view, which
+// now lives inside North's collapsible section.
+async function renderPlan(learnerId) {
+  const section = document.getElementById('north-plan');
+  const mount = document.getElementById('tasklist-view');
+  if (!section || !mount) return;
+  section.hidden = false;
+  try { await renderTaskList(learnerId); } catch (e) { console.warn('north plan:', e); }
 }
 
 async function renderVision(learnerId, learner) {
