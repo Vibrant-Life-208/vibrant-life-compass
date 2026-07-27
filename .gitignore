@@ -15,3 +15,10 @@ _viatest.pdf
 # DB backups (pg_dump output - learner data; never commit)
 backups/
 scripts/loadtest-creds.json
+
+# Real account-provisioning lists (contain learner/family names; never commit).
+# The tracked template is scripts/accounts-template.csv - placeholder names only.
+# Copy it to one of these filenames and fill in real names to run bulk-import.
+scripts/accounts.csv
+scripts/accounts-*.local.csv
+scripts/*.roster.csv
