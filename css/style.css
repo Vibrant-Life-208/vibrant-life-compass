@@ -4622,6 +4622,13 @@ body.landscape-mountain {
 .pillar-resp-input { flex: 1; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.5rem 0.7rem; font: inherit; color: var(--text); }
 .pillar-resp-input:focus { outline: none; border-color: var(--pc, var(--sage)); }
 
+/* Life Skills: WOOP skill-goal fields (2026-07-27). Capacity-goal, editable, no
+   score/streak - the goal is the plan, tended. */
+.pillar-woop-field { margin: 0 0 0.7rem; }
+.pillar-woop-label { display: block; margin: 0 0 0.3rem; color: var(--text-soft); font-size: 0.85rem; line-height: 1.4; }
+.pillar-woop-input { width: 100%; box-sizing: border-box; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.5rem 0.7rem; font: inherit; color: var(--text); resize: vertical; }
+.pillar-woop-input:focus { outline: none; border-color: var(--pc, var(--sage)); }
+
 /* Creator Mindset: Emotional Regulation tool cards (2026-07-27). */
 .pillar-tools { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.4rem; }
 .pillar-tool { background: #fff; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.55rem 0.75rem; }

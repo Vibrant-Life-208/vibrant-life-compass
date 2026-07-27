@@ -1414,6 +1414,10 @@ const CLIMB_FULL = [
   'strengths',         // W2  - VIA toolkit (+ strengths_why)
   'values',            // W3  - be vulnerable (+ values_why before). The old W4 values->purpose
                        //   bridge is folded into the Purpose framing below (no orphan capture).
+  'compass_intro',     // W4b - "Welcome to your compass": the WHOLE mountain shown at once
+                       //   (Vibrant Life's five Values, base->apex) - the peak from the trailhead,
+                       //   before the Purpose deep-dive and the disc-by-disc climb. A reveal, no
+                       //   capture. (Europa 2026-07-25: show the image of the mountain, before Purpose.)
   'purpose',           // W5-W7 - Purpose shown + base + four Discs (Values pre-filled)
   'mountain',          // W8  - THE MOUNTAIN: Vibrant Life's five Values as stacked Discs, rising
                        //   ONE DISC PER PAGE (base->apex) with each Disc's "why", until the whole
@@ -1446,7 +1450,7 @@ const CLIMB_FULL = [
 // no onboarding_step Postgres enum change is needed to ship the walk.
 const NON_RESUME_STEPS = new Set([
   'pitch', 'slice_plan', 'strengths_why', 'values_why',
-  'mountain', 'purpose', 'connection', 'creator_intro', 'curious_intro',
+  'compass_intro', 'mountain', 'purpose', 'connection', 'creator_intro', 'curious_intro',
   'life_skills', 'life_skills_woop',
   'academics_intro', 'academics_math', 'academics_reading', 'academics_la', 'threshold',
 ]);
@@ -1462,7 +1466,12 @@ const MOUNTAIN_DISCS = [
   { name: 'Connection', color: '#7A3E9D', echo: 'strengths',
     why: 'One of the longest studies ever done on happiness found that the quality of our relationships - more than money or fame - is the clearest and most consistent predictor of a healthy, happy life. Belonging is not a bonus. It is a human need, as basic as any.' },
   { name: 'Creator Mindset', color: '#F5A623',
-    why: 'Researchers disagree about how much a "growth mindset" by itself changes grades - large reviews find the average effect small and easy to overstate, while one national study found a real but modest boost for students who were struggling, in schools that backed it up. What holds steadier: how you meet a challenge, and learning to steady your emotions, matters - alongside good teaching and real support, not on its own.' },
+    // Register-matched rewrite (Europa + room, 2026-07-26): keeps the honest anti-overclaim
+    // (growth mindset is not magic on its own; it needs real teaching + support - the Greene
+    // firewall) but drops the lit-review hedging that read past grade 12. Now grade ~7-8 and in
+    // the same warm, honest register as its four sibling Discs. The robust claim - how you meet a
+    // hard thing can be learned - is the one that leads.
+    why: 'You are not stuck at the level you start. How you meet a hard thing - keep going, ask for help, try another way - can be learned, and so can steadying yourself when it gets tough. A growth mindset is not magic on its own; it grows with good teaching and real support. The way you meet a challenge is not fixed - it is built, and the building is yours.' },
   { name: 'Life Skills', color: '#1CA08D',
     why: 'Health and education groups worldwide treat life skills - leading, making an idea real, managing money, tending your wellbeing - as core capacities, not extras. Studies link training in them to steadier work and money later. These are learnable, and there is no reason to wait.' },
   { name: 'Academics', color: '#EE6C2B',
@@ -2705,6 +2714,31 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     return `<ul class="onb-climb-chips">${items.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`;
   }
 
+  // W4b - "WELCOME TO YOUR COMPASS". The mountain shown WHOLE, right after Values and before the
+  // Purpose deep-dive: the learner sees the peak from the trailhead - Vibrant Life's five Values as
+  // one complete mountain (base->apex), their own values already sitting in the base. Same Disc
+  // render as renderMountain (below), so the overview and the disc-by-disc climb are visibly the
+  // same object. A reveal - nothing captured. Continue walks into Purpose (the base).
+  function renderCompassIntro() {
+    const vals = climbValuesList();
+    // All five Discs, drawn apex-first (top-down) so Purpose sits at the bottom as the base.
+    const rows = MOUNTAIN_DISCS.map((d, di) => ({ d, di })).reverse();
+    return `
+      <div class="onb-climb onb-climb-mountain onb-climb-compass-intro">
+        <p class="onb-climb-kicker">Welcome to your compass</p>
+        <h3 class="onb-climb-head">Vibrant Life's Values</h3>
+        <p class="onb-climb-body">This is the mountain you'll build - five values, from the base you stand on to the peak. You'll walk it one part at a time. Let's start at the base.</p>
+        <ol class="onb-mountain" aria-label="Vibrant Life's values, base to apex">
+          ${rows.map(({ d, di }) => `
+            <li class="onb-mountain-band${di === 0 ? ' base' : ''}" style="--band:${d.color}; width:${100 - di * 12}%">
+              <span class="onb-mountain-name">${escapeHtml(d.name)}</span>
+              ${di === 0 && vals.length ? `<span class="onb-mountain-vals">${vals.map((v) => escapeHtml(v)).join(' &middot; ')}</span>` : ''}
+            </li>`).join('')}
+        </ol>
+        ${navButtons({ skippable: false, continueLabel: 'Start at the base' })}
+      </div>`;
+  }
+
   // W8 - THE MOUNTAIN. Vibrant Life's five Values as stacked Discs, rising ONE PER PAGE from the
   // base (Purpose) to the apex (Academics), each with its research-grounded "why". state.mountainIdx
   // is the Disc rising now; the stack shows every Disc revealed so far (base at the bottom), so the
@@ -2768,7 +2802,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   }
 
   // W9 - Connection + Conscious Living. Conscious Living is SEEDED from the learner's W2
-  // strengths (the most visible proof of INV-2). Carries the solitude-vs-loneliness clause (PDC).
+  // strengths (the most visible proof of INV-2). The solitude-vs-loneliness care is EMBODIED
+  // here, not stated (Europa reconciliation): the page holds the lonely learner without naming
+  // loneliness - "being with others, not around them" - rather than a stated clause (PDC).
   function renderConnection() {
     const strengths = climbStrengthsList();
     return `
@@ -2860,8 +2896,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="onb-climb onb-climb-woop">
         <p class="onb-climb-kicker">Life Skills - ${escapeHtml(skillName)}</p>
         <h3 class="onb-climb-head">Let's break it down.</h3>
-        <label class="onb-climb-label" for="onb-woop-setup">What would you like to be true about ${escapeHtml(skillName)} by the end of this season?</label>
-        <textarea id="onb-woop-setup" class="onb-horizon" rows="2" placeholder="By the end of the season...">${escapeHtml(w.setup || '')}</textarea>
+        <label class="onb-climb-label" for="onb-woop-setup">What would you like to be true about ${escapeHtml(skillName)} by the end of this year?</label>
+        <textarea id="onb-woop-setup" class="onb-horizon" rows="2" placeholder="By the end of this year...">${escapeHtml(w.setup || '')}</textarea>
         <label class="onb-climb-label" for="onb-woop-obstacle">What is one thing that could get in the way? Not a prediction - just something worth noticing now, so you have a plan for it.</label>
         <textarea id="onb-woop-obstacle" class="onb-horizon" rows="2" placeholder="One thing to watch for...">${escapeHtml(w.obstacle || '')}</textarea>
         <label class="onb-climb-label" for="onb-woop-ifthen">Make the plan: if that happens, then I will...</label>
@@ -3033,6 +3069,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     else if (step === 'values') formFields.innerHTML = typeValues ? renderValuesType() : renderSelectStep({ kind: 'value', label: 'values' });
     else if (step === 'pitch') formFields.innerHTML = renderPitch();
     else if (step === 'slice_plan') formFields.innerHTML = renderSlicePlan();
+    else if (step === 'compass_intro') formFields.innerHTML = renderCompassIntro();
     else if (step === 'mountain') formFields.innerHTML = renderMountain();
     else if (step === 'purpose') formFields.innerHTML = renderPurpose();
     else if (step === 'connection') formFields.innerHTML = renderConnection();
@@ -3173,7 +3210,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         // to before Stage O: capture the boxes, then upsert non-empty slices as year goals.
         captureSlice();
         await advance(() => upsertYearGoals());
-      } else if (step === 'creator_intro' || step === 'curious_intro' || step === 'academics_intro') {
+      } else if (step === 'compass_intro' || step === 'creator_intro' || step === 'curious_intro' || step === 'academics_intro') {
         await advance(null); // CLIMB reveal - nothing to persist (mountain pages via wireMountain)
       } else if (step === 'purpose' || step === 'connection'
                  || step === 'life_skills' || step === 'life_skills_woop'
@@ -3240,22 +3277,18 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 // rejected. Terence is the featured anchor - IDIC from antiquity - chosen by the Council of Seven
 // (decision log 2026-07-23); a learner still freely picks any line, or writes their own (the
 // "add your own" door is an anti-foreclosure requirement, never the curated set alone).
+// The curated anchor set - four quotes, each verified to primary source, chosen
+// by the Council of Seven (decision log 2026-07-23) on the captain's criterion:
+// which best guides a child toward a more Star Trek future. Terence is the
+// featured anchor; Goodall + Tutu are the accessible companions; Kennedy is the
+// stretch line for older learners. Tutu restored to the set by captain call
+// 2026-07-25 (the Council had released him; the captain kept the full four).
+// "Write my own" is always present - the curated set is a starting place, never
+// a foreclosure (anti-foreclosure, page-spec R2).
 const QUOTE_CHOICES = [
   { text: 'I am human, and nothing human is alien to me.', author: 'Terence', featured: true },
-  { text: 'You have brains in your head. You have feet in your shoes. You can steer yourself any direction you choose.', author: 'Dr. Seuss' },
-  { text: 'You are never too small to make a difference.', author: 'Greta Thunberg' },
-  { text: 'One child, one teacher, one book, one pen can change the world.', author: 'Malala Yousafzai' },
   { text: 'What you do makes a difference, and you have to decide what kind of difference you want to make.', author: 'Jane Goodall' },
-  { text: 'Look for the helpers. You will always find people who are helping.', author: 'Fred Rogers' },
-  { text: "Be a rainbow in somebody else's cloud.", author: 'Maya Angelou' },
-  { text: "A person's a person, no matter how small.", author: 'Dr. Seuss' },
-  { text: "Courage doesn't always roar. Sometimes courage is the quiet voice at the end of the day saying, 'I will try again tomorrow.'", author: 'Mary Anne Radmacher' },
-  { text: 'We may encounter many defeats, but we must not be defeated.', author: 'Maya Angelou' },
-  { text: "If you can't fly then run, if you can't run then walk, if you can't walk then crawl, but whatever you do you have to keep moving forward.", author: 'Martin Luther King Jr.' },
-  { text: "There is always light, if only we're brave enough to see it.", author: 'Amanda Gorman' },
-  { text: 'The important thing is not to stop questioning.', author: 'Albert Einstein' },
-  { text: 'Fall seven times, stand up eight.', author: 'Japanese proverb' },
-  { text: 'Little by little, one travels far.', author: 'Spanish proverb' },
+  { text: "Do your little bit of good where you are; it's those little bits of good put together that overwhelm the world.", author: 'Desmond Tutu' },
   { text: 'Each time a person stands up for an ideal, or acts to improve the lot of others, or strikes out against injustice, they send forth a tiny ripple of hope, and crossing each other from a million different centers of energy and daring, those ripples build a current that can sweep down the mightiest walls of oppression and resistance.', author: 'Robert F. Kennedy' },
 ];
 

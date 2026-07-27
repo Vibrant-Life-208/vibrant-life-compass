@@ -358,3 +358,35 @@ named by Vedek in the meeting).
 - Fleet meeting: `agents/meetings/2026/07/2026-07-16-compass-goal-decomposition-progression-architecture.md` (evoke-agents-backup)
 - Prior ratification (reopened here): `docs/design/2026-07-14-threshold-to-wheel-slice-mapping-v0.1.md`
 - Prototype: `prototypes/halfway-slice-concept.html`
+
+---
+
+## 2026-07-27 addendum — capacity-goals vs disposition-practices (research verdict)
+
+Added after the Compass learner-walkthrough meeting (2026-07-25 to -27, 8 agents) and a scoped literature research-cycle. This addendum **narrows the model for two pillars specifically** and must be honored before "setup → challenge → crossing" is generalized across all five.
+
+**The finding (well-supported, not the contested mindset literature):** treating a
+**disposition** as a goal-with-a-success-line is a **category error**. Goal-setting
+theory's own logic (Locke & Latham task-complexity moderator; Seijts & Latham) shows
+outcome/performance goals *impair* complex skill acquisition; a disposition has no
+finish line, so a success line both misapplies an outcome goal and fabricates a
+"failed to be curious/regulated" event — an evidence error **and** a psyche-protection
+risk (Prime Directive 2).
+
+**Two goal-object models — do not conflate:**
+
+| Pillar | What its "goals" are | Model | Progress shown as |
+|---|---|---|---|
+| **Life Skills** (leadership, entrepreneurship, financial literacy, wellness) | *Capacities* | **WOOP** — well-supported (Duckworth 2013 child RCT; 2021 meta-analysis g≈0.34), valid only when the wish is a **concrete behaviour inside** the capacity, not "achieve the capacity" | the plan itself, learner-owned |
+| **Creator Mindset** (growth mindset, emotional regulation, curiosity, responsibility) | *Dispositions* | **Practice object / learning goal** — a learner-chosen recurring *way of engaging*. **Never a success line.** | private narrative of **reduced reliance** — never a score, streak, completion state, or leaderboard (overjustification risk) |
+
+**Hard rules for these two pillars:**
+- **Never** attach a success line or completion state to a Creator Mindset disposition.
+- **Growth mindset** is the single weakest possible learner-facing goal target — Macnamara & Burgoyne 2023 (preregistered, 122 studies) found the average effect near zero. Do not target it; scaffold it, honestly hedged (as the shipped Disc "why" now does).
+- `creator.js` is **already close to right** — dispositions live as Emotional Regulation *tools* and *Responsibilities* (a self-owned list), and its "goals" are concrete maker year-goals. The verdict **validates existing design** and forbids adding disposition-goals. The "break your skill into a goal" surface belongs on **Life Skills only**.
+- All of it stays **SDT autonomy-supportive**: learner picks and phrases, offer-not-assign, frictionless exit, no rewards.
+
+**Still gated:** the standing watch-with-a-real-learner condition (Salus) remains open — a *consented child* must walk the disposition-goal moment to confirm the literature. Protocol: `docs/design/2026-07-26-learner-walk-protocol-lifeskills-creator-goals.md`.
+
+**Full brief:** `docs/research/2026-07-26-lifeskills-creator-goal-decomposition-research-brief.md`.
+**Meeting record:** `agents/meetings/2026/07/2026-07-25-compass-learner-walkthrough.md` (evoke-agents-backup).
