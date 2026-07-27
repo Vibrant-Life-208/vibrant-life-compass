@@ -4647,3 +4647,11 @@ body.landscape-mountain {
 .acad-journal-entry { background: #fff; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.55rem 0.75rem; }
 .acad-journal-entry p { margin: 0.15rem 0 0; color: var(--text); line-height: 1.5; white-space: pre-wrap; }
 .acad-journal-date { font-size: 0.75rem; color: #9a9a90; text-transform: uppercase; letter-spacing: 0.03em; }
+
+/* Summary: the story of the learner (2026-07-27). */
+.summary-block { margin-bottom: 1.1rem; }
+.summary-block-title { margin: 0 0 0.4rem; font-size: 1rem; font-weight: 600; color: var(--sage); }
+.summary-quote { margin: 0 0 0.4rem; font-style: italic; color: var(--text); line-height: 1.5; }
+.summary-block p { margin: 0 0 0.3rem; color: var(--text); line-height: 1.55; }
+.summary-goals { margin: 0.2rem 0 0; padding-left: 1.1rem; color: var(--text); line-height: 1.6; }
+.summary-goal-half { color: var(--text-soft); font-size: 0.88rem; }
