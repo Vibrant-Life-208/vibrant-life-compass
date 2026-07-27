@@ -2758,7 +2758,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     else if (disc.echo === 'strengths' && strengths.length) echo = `Built on the strengths you carry: ${strengths.slice(0, 3).join(', ')}.`;
     return `
       <div class="onb-climb onb-climb-mountain">
-        <p class="onb-climb-kicker">Vibrant Life's Values${last ? '' : ` &middot; ${idx + 1} of ${MOUNTAIN_DISCS.length}`}</p>
+        <p class="onb-climb-kicker">Vibrant Life's Values</p>
         <h3 class="onb-climb-head">${escapeHtml(disc.name)}</h3>
         <ol class="onb-mountain" aria-label="Vibrant Life's values, building base to apex">
           ${rows.map(({ d, di }) => `
@@ -2822,7 +2822,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         ${strengths.length ? `<p class="onb-climb-seed-label">This Disc stands on the strengths you already named:</p>${climbChips(strengths)}` : ''}
         <label class="onb-climb-label" for="onb-climb-text">How do these strengths show up in how you treat the people around you?</label>
         <textarea id="onb-climb-text" class="onb-horizon" rows="6" style="min-height: 8.5rem;" placeholder="With the people I care about, I...">${escapeHtml(state.climb.consciousLiving || '')}</textarea>
-        <p class="onb-climb-note">Chosen time alone counts here too - solitude you pick is its own kind of full, not a gap in your life. The kind of alone that aches is the involuntary kind, and connection is what eases that one.</p>
+        <p class="onb-climb-note">Chosen time alone counts here too - solitude you pick is its own kind of full, not a gap in your life.</p>
         ${navButtons({ skippable: true })}
       </div>`;
   }
