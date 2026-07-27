@@ -729,13 +729,15 @@ async function renderGuideCommunityReview(learners, session, onChange) {
   const section = document.getElementById('guide-community-review');
   const list = document.getElementById('guide-community-list');
   if (!section || !list) return;
-  const { getCommunityReviewQueue, reviewCommunityPost } = await import('./store.js');
+  const { getCommunityReviewQueue, reviewCommunityPost, getLearner } = await import('./store.js');
   const pending = await getCommunityReviewQueue('pending_guide');
   if (!pending.length) { section.hidden = true; list.innerHTML = ''; return; }
   section.hidden = false;
   list.innerHTML = '';
   for (const post of pending) {
-    const learner = (learners || []).find((l) => l.id === post.learnerId);
+    // Prefer the already-loaded roster; fall back to a direct read so a name always shows.
+    const learner = (learners || []).find((l) => l.id === post.learnerId)
+      || await getLearner(post.learnerId).catch(() => null);
     const card = document.createElement('div');
     card.className = 'community-review-card';
     card.innerHTML = `
