@@ -4655,3 +4655,6 @@ body.landscape-mountain {
 .summary-block p { margin: 0 0 0.3rem; color: var(--text); line-height: 1.55; }
 .summary-goals { margin: 0.2rem 0 0; padding-left: 1.1rem; color: var(--text); line-height: 1.6; }
 .summary-goal-half { color: var(--text-soft); font-size: 0.88rem; }
+
+/* Connection: compassion walkthrough steps (2026-07-27). */
+.compassion-steps li { margin-bottom: 0.5rem; }
