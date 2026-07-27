@@ -713,10 +713,49 @@ async function renderRoleView(role, learnerId) {
     // Year-plan sign-off: learners who finished setup submit their plan to their guide.
     try { await renderGuideYearPlanApprovals(learners, session, () => renderRoleView('guide', learnerId)); }
     catch (e) { console.warn('yearplan approvals:', e); }
+    // Community ideas: a roster learner's submission awaiting the guide gate.
+    try { await renderGuideCommunityReview(learners, session, () => renderRoleView('guide', learnerId)); }
+    catch (e) { console.warn('community review:', e); }
   }
   if (role === 'parent') {
     import('./parent-view.js').then(m => m.renderParentView());
   }
+}
+
+// Community-idea review for the guide (v0.37). A roster learner's submission sits in
+// 'pending_guide'; the guide sends it to the owner (-> pending_owner) or returns it with
+// a note (-> denied). RLS already scopes the queue to this guide's roster.
+async function renderGuideCommunityReview(learners, session, onChange) {
+  const section = document.getElementById('guide-community-review');
+  const list = document.getElementById('guide-community-list');
+  if (!section || !list) return;
+  const { getCommunityReviewQueue, reviewCommunityPost } = await import('./store.js');
+  const pending = await getCommunityReviewQueue('pending_guide');
+  if (!pending.length) { section.hidden = true; list.innerHTML = ''; return; }
+  section.hidden = false;
+  list.innerHTML = '';
+  for (const post of pending) {
+    const learner = (learners || []).find((l) => l.id === post.learnerId);
+    const card = document.createElement('div');
+    card.className = 'community-review-card';
+    card.innerHTML = `
+      <p class="community-review-who"><strong>${escapeHtml(learner?.name || 'A learner')}</strong> wants to bring this to the community:</p>
+      <p class="community-review-body">${escapeHtml(post.body)}</p>
+      <div class="community-review-actions">
+        <button type="button" class="btn btn-text" data-cr-return="${escapeHtml(post.id)}">Return with a note</button>
+        <button type="button" class="btn btn-primary" data-cr-approve="${escapeHtml(post.id)}">Send to owner ✓</button>
+      </div>`;
+    list.appendChild(card);
+  }
+  list.querySelectorAll('[data-cr-approve]').forEach((btn) => btn.addEventListener('click', async () => {
+    await reviewCommunityPost(btn.dataset.crApprove, { status: 'pending_owner', stage: 'guide' });
+    if (onChange) await onChange();
+  }));
+  list.querySelectorAll('[data-cr-return]').forEach((btn) => btn.addEventListener('click', async () => {
+    const note = prompt('A note for the learner (optional):') || '';
+    await reviewCommunityPost(btn.dataset.crReturn, { status: 'denied', stage: 'guide', guideNote: note });
+    if (onChange) await onChange();
+  }));
 }
 
 // Year-plan sign-off surface for the guide (captain 2026-07-21). A learner submits their

@@ -51,6 +51,11 @@ export async function renderOwnerHome({ onCompass } = {}) {
           <span class="owner-card-title">Tending the Studio</span>
           <span class="owner-card-sub">How your guides' practice is blooming</span>
         </button>
+        <button type="button" class="owner-card" data-go="community">
+          <span class="owner-card-icon">&#128204;</span>
+          <span class="owner-card-title">Community Board</span>
+          <span class="owner-card-sub">Approve ideas; see what's on the board</span>
+        </button>
         <button type="button" class="owner-card" data-go="family">
           <span class="owner-card-icon">&#128106;</span>
           <span class="owner-card-title">My Family</span>
@@ -68,6 +73,7 @@ export async function renderOwnerHome({ onCompass } = {}) {
   const back = () => renderOwnerHome({ onCompass });
   screen.querySelector('[data-go="school"]').addEventListener('click', () => renderOwnerSchool(back));
   screen.querySelector('[data-go="studio"]').addEventListener('click', () => renderOwnerStudio(back, session));
+  screen.querySelector('[data-go="community"]').addEventListener('click', () => renderOwnerCommunity(back));
   screen.querySelector('[data-go="family"]').addEventListener('click', async () => {
     const famId = await getFamilyIdForProfile(ownIdOf(session));
     if (!famId) { renderOwnerNote('No family is linked to your account yet.', back); return; }
@@ -75,6 +81,41 @@ export async function renderOwnerHome({ onCompass } = {}) {
   });
   screen.querySelector('[data-go="compass"]').addEventListener('click', () => onCompass && onCompass());
   screen.querySelector('[data-signout]').addEventListener('click', async () => { await clearSession(); location.reload(); });
+}
+
+// Community Board — the owner's final gate (v0.37). Ideas a guide passed up sit in
+// 'pending_owner'; the owner posts one to the board (-> posted). The board below is
+// what every learner sees. RLS lets an owner see + act on all posts.
+async function renderOwnerCommunity(onBack) {
+  const screen = document.getElementById('owner-context-screen');
+  if (!screen) return;
+  showOnly(screen);
+  const { getCommunityReviewQueue, getPostedBoard, reviewCommunityPost } = await import('./store.js');
+  const [pending, board] = await Promise.all([
+    getCommunityReviewQueue('pending_owner').catch(() => []),
+    getPostedBoard().catch(() => []),
+  ]);
+  screen.innerHTML = `
+    <div class="picker-container owner-context">
+      <button type="button" class="owner-back" data-back="1">&#8592; Menu</button>
+      <h1 class="picker-title">Community Board</h1>
+      <p class="picker-sub">Ideas your guides have passed up. Post one to the board, and see what's live.</p>
+      <div class="owner-community">
+        <h3 class="guide-section-title">Waiting on you</h3>
+        ${pending.length ? pending.map((p) => `
+          <div class="community-review-card">
+            <p class="community-review-body">${escapeHtml(p.body)}</p>
+            <div class="community-review-actions"><button type="button" class="btn btn-primary" data-post="${escapeHtml(p.id)}">Post it &#10003;</button></div>
+          </div>`).join('') : '<p class="pillar-empty">Nothing waiting - all clear.</p>'}
+        <h3 class="guide-section-title">On the board</h3>
+        ${board.length ? `<ul class="conn-board">${board.map((b) => `<li>${escapeHtml(b.body)}</li>`).join('')}</ul>` : '<p class="pillar-empty">Nothing posted yet.</p>'}
+      </div>
+    </div>`;
+  screen.querySelector('[data-back]').addEventListener('click', () => onBack());
+  screen.querySelectorAll('[data-post]').forEach((btn) => btn.addEventListener('click', async () => {
+    await reviewCommunityPost(btn.dataset.post, { status: 'posted', stage: 'owner' });
+    await renderOwnerCommunity(onBack);
+  }));
 }
 
 // Whole-school view on its own clean screen, with a clear way back to the menu.
