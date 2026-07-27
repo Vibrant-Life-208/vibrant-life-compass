@@ -4612,3 +4612,12 @@ body.landscape-mountain {
 }
 .north-trail-section,
 .north-plan { margin-top: 1rem; }
+
+/* Creator Mindset: the Responsibilities list (2026-07-27). */
+.pillar-resp-list { list-style: none; margin: 0.3rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.pillar-resp-item { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; background: #fff; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.5rem 0.7rem; color: var(--text); }
+.pillar-resp-remove { border: none; background: none; color: #9a9a90; font-size: 1.2rem; line-height: 1; cursor: pointer; padding: 0 0.3rem; }
+.pillar-resp-remove:hover { color: var(--pillar-purpose, #c0392b); }
+.pillar-resp-add { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+.pillar-resp-input { flex: 1; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.5rem 0.7rem; font: inherit; color: var(--text); }
+.pillar-resp-input:focus { outline: none; border-color: var(--pc, var(--sage)); }
