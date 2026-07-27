@@ -1396,3 +1396,66 @@ export async function getStudioPracticePulse(tribe) {
   if (error) { console.warn('getStudioPracticePulse:', error.message); return []; }
   return data || [];
 }
+
+// ── Community bulletin (v0.37) ───────────────────────────────────────────────
+// Learners submit ideas; a guide then the owner gate them; posted items form the
+// board. RLS limits WHO sees/touches a row (learner = own + posted; guide =
+// roster; owner = all). Status transitions are enforced here in the app.
+function rowToCommunityPost(r) {
+  return {
+    id: r.id, learnerId: r.learner_id, body: r.body, status: r.status,
+    guideNote: r.guide_note || '',
+    guideReviewedBy: r.guide_reviewed_by, guideReviewedAt: r.guide_reviewed_at,
+    ownerReviewedBy: r.owner_reviewed_by, ownerReviewedAt: r.owner_reviewed_at,
+    createdAt: r.created_at, updatedAt: r.updated_at,
+  };
+}
+
+export async function submitCommunityPost(learnerId, body) {
+  const t = (body || '').trim();
+  if (!t) return null;
+  const { data, error } = await getClient().from('community_posts')
+    .insert({ learner_id: learnerId, body: t.slice(0, 500) }).select().single();
+  if (error) { console.warn('submitCommunityPost:', error.message); return null; }
+  return rowToCommunityPost(data);
+}
+
+export async function getMyCommunityPosts(learnerId) {
+  const { data, error } = await getClient().from('community_posts')
+    .select('*').eq('learner_id', learnerId).order('created_at', { ascending: false });
+  if (error) { console.warn('getMyCommunityPosts:', error.message); return []; }
+  return (data || []).map(rowToCommunityPost);
+}
+
+export async function getPostedBoard() {
+  const { data, error } = await getClient().from('community_posts')
+    .select('*').eq('status', 'posted').order('owner_reviewed_at', { ascending: false, nullsFirst: false });
+  if (error) { console.warn('getPostedBoard:', error.message); return []; }
+  return (data || []).map(rowToCommunityPost);
+}
+
+// Staff review queue. RLS already scopes visibility (guide -> roster, owner -> all).
+// Pass a status to filter (e.g. 'pending_guide' for a guide, 'pending_owner' for owner).
+export async function getCommunityReviewQueue(status) {
+  let q = getClient().from('community_posts').select('*');
+  if (status) q = q.eq('status', status);
+  const { data, error } = await q.order('created_at', { ascending: true });
+  if (error) { console.warn('getCommunityReviewQueue:', error.message); return []; }
+  return (data || []).map(rowToCommunityPost);
+}
+
+// Apply a review. patch: { status, stage: 'guide'|'owner', guideNote? }.
+export async function reviewCommunityPost(id, patch) {
+  const { data: u } = await getClient().auth.getUser();
+  const uid = u?.user?.id || null;
+  const now = new Date().toISOString();
+  const row = { status: patch.status, updated_at: now };
+  if (patch.stage === 'guide') {
+    row.guide_reviewed_by = uid; row.guide_reviewed_at = now;
+    if (patch.guideNote !== undefined) row.guide_note = patch.guideNote;
+  }
+  if (patch.stage === 'owner') { row.owner_reviewed_by = uid; row.owner_reviewed_at = now; }
+  const { data, error } = await getClient().from('community_posts').update(row).eq('id', id).select().single();
+  if (error) { console.warn('reviewCommunityPost:', error.message); return null; }
+  return rowToCommunityPost(data);
+}

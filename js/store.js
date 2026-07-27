@@ -120,6 +120,11 @@ export const {
   getSharePracticePulse,
   setSharePracticePulse,
   getStudioPracticePulse,
+  submitCommunityPost,
+  getMyCommunityPosts,
+  getPostedBoard,
+  getCommunityReviewQueue,
+  reviewCommunityPost,
 } = impl;
 
 // La'an's runtime write-wall — the single store write edge for goal rows. saveGoal dispatches

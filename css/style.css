@@ -4665,3 +4665,12 @@ body.landscape-mountain {
 
 /* Connection: compassion walkthrough steps (2026-07-27). */
 .compassion-steps li { margin-bottom: 0.5rem; }
+
+/* Connection: community bulletin (2026-07-27). */
+.conn-mine { background: #fff; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.55rem 0.75rem; margin-bottom: 0.5rem; }
+.conn-mine-body { margin: 0 0 0.25rem; color: var(--text); }
+.conn-mine-status { margin: 0; font-size: 0.82rem; color: var(--text-soft); }
+.conn-status-posted { color: var(--sage); }
+.conn-status-denied { color: #9a6a6a; }
+.conn-board { list-style: none; margin: 0.3rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.conn-board li { background: color-mix(in srgb, var(--pc, var(--sage)) 10%, #fff); border: 1px solid color-mix(in srgb, var(--pc, var(--sage)) 28%, #fff); border-radius: 10px; padding: 0.5rem 0.75rem; color: var(--text); }

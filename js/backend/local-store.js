@@ -1180,3 +1180,10 @@ export async function getStudioPracticePulse(tribe) {
     .filter(([, cnt]) => cnt >= MIN)               // never reveal a small count
     .map(([characteristic, cnt]) => ({ characteristic, guides: cnt, group_size: groupSize }));
 }
+
+// ── Community bulletin (v0.37) — local stubs (prod uses the supabase adapter) ──
+export async function submitCommunityPost() { return null; }
+export async function getMyCommunityPosts() { return []; }
+export async function getPostedBoard() { return []; }
+export async function getCommunityReviewQueue() { return []; }
+export async function reviewCommunityPost() { return null; }
