@@ -108,7 +108,7 @@ const STYLE_ID = 'observatory-stack-styles';
 const CSS = `
 observatory-stack{display:block}
 observatory-stack .sky{position:relative;display:flex;justify-content:center;overflow:hidden;
-  border-radius:16px;padding:34px 10px 44px;min-height:360px;
+  border-radius:16px;padding:92px 10px 44px;min-height:360px;
   background:linear-gradient(to bottom,#2b2f45 0%,#3d3f56 46%,#4a4a5e 100%)}   /* calm, static sky field (§1.1) */
 observatory-stack .mountain{display:flex;flex-direction:column;align-items:center;width:100%;max-width:400px;
   transition:opacity .8s ease}                                                 /* discs fade out into the Star Chart (§6) */
@@ -122,17 +122,16 @@ observatory-stack .rite button{font:inherit;font-size:12px;border:1px solid #f5e
   border-radius:999px;padding:7px 16px;cursor:pointer}
 observatory-stack .rite button.ghost{background:transparent;color:#e9ecf5;border-color:#6b6f88}
 
-/* ── Dome (§5): two half-shells parting to reveal the star field. transform/opacity ONLY. ── */
-observatory-stack .dome{position:absolute;inset:0;z-index:4;pointer-events:none}
+/* ── Dome (§5): ONE half-dome lid, hinged at its base on the top disc, lifting up-and-back on the
+   hinge to reveal the star field. transform/opacity ONLY (rotateX around the hinge is a transform). ── */
+observatory-stack .dome{position:absolute;inset:0;z-index:4;pointer-events:none;perspective:820px}
 observatory-stack .dome .starfield{position:absolute;inset:0;opacity:0;transition:opacity 1.6s ease}
-observatory-stack .dome .shell{position:absolute;left:50%;top:26px;width:230px;height:120px;
-  transition:transform 1.7s cubic-bezier(.4,0,.2,1);transform-origin:bottom center;will-change:transform}
-observatory-stack .dome .shell.left{transform:translateX(-100%)}
-observatory-stack .dome .shell.right{transform:translateX(0)}
-/* opened: the shells part outward (translate + slight rotate), the sky behind fades in */
+observatory-stack .dome .shell{position:absolute;left:50%;top:34px;width:150px;height:82px;margin-left:-75px;
+  transform-origin:50% 100%;transform:rotateX(0deg);
+  transition:transform 1.9s cubic-bezier(.34,0,.2,1);will-change:transform}
+/* opened: the lid swings up-and-back on its base hinge; the sky behind fades in (no flash) */
 observatory-stack.dome-open .dome .starfield{opacity:1}
-observatory-stack.dome-open .dome .shell.left{transform:translateX(-168%) rotate(-9deg)}
-observatory-stack.dome-open .dome .shell.right{transform:translateX(68%) rotate(9deg)}
+observatory-stack.dome-open .dome .shell{transform:translateY(-14px) rotateX(52deg)}
 
 /* ── Star Chart (§6): constellations fade+scale in around a fixed steady Polaris. ── */
 observatory-stack .chart{position:absolute;inset:0;z-index:5;opacity:0;pointer-events:none;transition:opacity .9s ease}
@@ -169,9 +168,8 @@ observatory-stack.phase-chart .chart .constellation:nth-child(5){transition-dela
   observatory-stack .chart,observatory-stack .chart .constellation{transition:none}
   observatory-stack .chart .constellation{transform:translate(-50%,-50%) scale(1)}   /* placed end-frame */
   observatory-stack .chart .constellation .twinkle{animation:none;opacity:.9}         /* steady stars */
-  /* Dome renders already-open (end-frame): shells parted, star field visible, no parting motion */
-  observatory-stack.dome-open .dome .shell.left{transform:translateX(-168%) rotate(-9deg)}
-  observatory-stack.dome-open .dome .shell.right{transform:translateX(68%) rotate(9deg)}
+  /* Dome renders already-open (end-frame): lid up-and-back, star field visible, no hinge motion */
+  observatory-stack.dome-open .dome .shell{transform:translateY(-14px) rotateX(52deg)}
 }
 `;
 function ensureStyles() {
@@ -257,22 +255,18 @@ class ObservatoryStack extends LitElement {
   }
 
   _dome() {
-    // Two half-shells meeting at a seam above the stack, soft static gradient echoing the sky (§5).
-    // No flash: the reveal is an opacity crossfade of the star field, never a filter/exposure animation.
+    // ONE half-dome lid, hinged at its base on the top disc; it lifts up-and-back on the hinge
+    // (rotateX around the base) to reveal the star field. No flash: the sky is an opacity crossfade (§5).
     return html`
       <div class="dome" aria-hidden=${this._phase === 'chart' ? 'true' : 'false'}>
         <div class="starfield">${this._starfield()}</div>
-        <svg class="shell left" viewBox="0 0 230 120" aria-hidden="true">
-          <defs><linearGradient id="obs-shell-l" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#3d4363"/><stop offset="1" stop-color="#242840"/>
-          </linearGradient></defs>
-          <path d="M230,120 A115,112 0 0 0 0,120 Z" fill="url(#obs-shell-l)"/>
-        </svg>
-        <svg class="shell right" viewBox="0 0 230 120" aria-hidden="true">
-          <defs><linearGradient id="obs-shell-r" x1="0" y1="0" x2="0" y2="1">
+        <svg class="shell" viewBox="0 0 230 120" aria-hidden="true">
+          <defs><linearGradient id="obs-shell" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="#454b6b"/><stop offset="1" stop-color="#2a2f4a"/>
           </linearGradient></defs>
-          <path d="M0,120 A115,112 0 0 1 230,120 Z" fill="url(#obs-shell-r)"/>
+          <path d="M0,120 A115,112 0 0 1 230,120 Z" fill="url(#obs-shell)"/>
+          <!-- hinge rim: a thin line along the base where the lid meets the top disc -->
+          <line x1="8" y1="119" x2="222" y2="119" stroke="#5b6288" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>`;
   }
