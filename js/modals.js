@@ -1546,7 +1546,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // / values_why splices below still fire (ids match in both arrays). CLIMB is the LEARNER
   // onboarding takeover (spec W1-W22 includes learner-only academics baselines), so guides,
   // parents and owners keep their existing cascade even with the flag on.
-  const climb = isClimbBuild() && studio !== 'sparks' && role === 'learner';
+  // Discovery tier-gate (2026-08-01, SSC + PDC interim wall). The CLIMB copy is written for the
+  // 12-18 (Adventure+) register; the younger Discovery (~8-11) register is not built yet. Per the
+  // 2026-07-27 review's most-converged finding (10 reviews / 7 circles: "youngest learners handed
+  // older-tier copy") and Salus's supervised-only safety lock, Discovery learners are routed to the
+  // legacy telescope cascade (CASCADE_FULL, below) instead of the adult-copy CLIMB, until the younger
+  // register ships and Salus's consented-young-learner walk passes. Remove `studio !== 'discovery'`
+  // then. Ref: COMPASS-RESEARCH-BRIEF-v0.1.md (CS-10) + 2026-07-27 full-fleet review.
+  const climb = isClimbBuild() && studio !== 'sparks' && studio !== 'discovery' && role === 'learner';
   const baseCascade = studio === 'sparks' ? CASCADE_SPARKS : (climb ? CLIMB_FULL : CASCADE_FULL);
   const steps = [...baseCascade];
   // After the VIA strengths import, a short "why your strengths matter" page with
