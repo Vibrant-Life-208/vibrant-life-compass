@@ -2153,10 +2153,17 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // for learners on the vision steps only; the slice-plan step stays invitational
     // (Accord + TCC coverage-frame sign-off, 2026-07-15). Guides/parents keep skip.
     const required = role === 'learner' || role === 'guide'; // guides + owners get the full learner path (captain 2026-07-16); parents stay light
+    // In CLIMB, the vision ladder + mirror + halfway are the Creator Mindset disc's work, so tag
+    // them with the disc kicker - the 10/5/1 belongs to Creator, not a free-floating telescope.
+    // (Europa 2026-08-03.) Legacy (non-climb) horizons render without it, unchanged.
+    const climbKicker = climb
+      ? `<p class="onb-climb-kicker">Creator Mindset${['beyond_5yr', 'within_5yr', 'within_1yr'].includes(step) ? ' &middot; Curiosity' : ''}</p>`
+      : '';
     return `
       ${wheel}
       ${stack}
       <div class="onb-horizon-prompt">
+        ${climbKicker}
         <h3 class="onb-horizon-heading">${escapeHtml(p.heading)}</h3>
         <p class="onb-horizon-body">${escapeHtml(p.body)}</p>
         ${step === 'beyond_5yr' ? `<p class="onb-horizon-sparks">${escapeHtml((role !== 'learner' || TENYR_SPARKS_MATURE_STUDIOS.has(studio)) ? TENYR_SPARKS.mature : TENYR_SPARKS.young)}</p>` : ''}
