@@ -2994,10 +2994,18 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   function renderAcademicsReading() {
     const r = state.climb.reading || {};
     const want = Array.isArray(r.want) ? r.want.join('\n') : '';
+    // "Deep book" gloss (captain 2026-08-03): define it, don't assume it. The six deep-reading
+    // reflection questions (books.js REFLECTION_QUESTIONS) are the full practice surface on North;
+    // this is the short definition. Young register for Discovery (~8-11).
+    const young = role === 'learner' && studio === 'discovery';
+    const deepGloss = young
+      ? 'A deep book is one you can really think about. When you read one, you can ask: Why did the author write it? Was a character a bit like you? Did they change? Did the book change how you think? A book that gives you those is a deep one.'
+      : "A deep book is one you can really think about - one you can ask real questions of: what the author was trying to do, whether a character felt like you or changed in a way you recognized, whether reading it shifted how you see things. A book that gives you those is a deep one.";
     return `
       <div class="onb-climb onb-climb-academics">
         <p class="onb-climb-kicker">Academics - Deep Reading</p>
         <h3 class="onb-climb-head">A book that challenges you, with support.</h3>
+        <p class="onb-climb-note">${escapeHtml(deepGloss)}</p>
         <label class="onb-climb-label" for="onb-reading-current">What deep book are you reading now?</label>
         <input id="onb-reading-current" class="onb-climb-input" type="text" placeholder="The book you are in now" value="${escapeAttr(r.current || '')}">
         <label class="onb-climb-label" for="onb-reading-want">Any books you want to read next? Add a few - your own list, one at a time (one per line).</label>

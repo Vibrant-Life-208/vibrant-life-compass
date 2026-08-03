@@ -6,7 +6,7 @@ import './observatory/trail.js'; // registers <vlc-trail> for the North trail st
 import { getCategoriesForStudio } from './studios.js';
 import { renderToday, initTodayFab } from './tasks.js';
 import { renderGamePlan } from './game-plan.js';
-import { getBooks, addBook, setBookmark, removeBook, MAX_BOOKS } from './books.js';
+import { getBooks, addBook, setBookmark, removeBook, MAX_BOOKS, REFLECTION_QUESTIONS, getReflections, setReflection } from './books.js';
 import { openPracticeTimer } from './practice-timer.js';
 import { isNewToTribe } from './tribe-roster.js';
 import { openFirstTaskDemo } from './first-task-demo.js';
@@ -154,6 +154,8 @@ async function renderReading(learnerId, learner) {
       </div>
       <label class="reading-book-mark-label">Where are you now?</label>
       <input type="text" class="reading-book-mark slice-box" data-book-mark="${escapeHtml(b.id)}" value="${escapeHtml(b.bookmark || '')}" placeholder="A page, a chapter, a moment - wherever you are">
+      <button type="button" class="btn btn-text reading-book-reflect-toggle" data-book-reflect="${escapeHtml(b.id)}" aria-expanded="false">Reflect on this book</button>
+      <div class="reading-book-reflect" data-reflect-panel="${escapeHtml(b.id)}" hidden></div>
     </div>
   `).join('');
   const adder = books.length < MAX_BOOKS
@@ -195,6 +197,39 @@ async function renderReading(learnerId, learner) {
       await renderReading(learnerId, learner);
     });
   }
+
+  // Deep-reading reflection (captain 2026-08-03). Six optional questions per book - the "doing"
+  // surface for deep reading. Lazy-loaded on expand (nothing decrypted until the learner asks),
+  // young-register wording for Discovery, private-by-default, skippable, NO count. Answers save
+  // encrypted at rest (books.js setReflection). Same discipline as the bookmark: a companion, not
+  // a scorer.
+  const young = learner?.studio === 'discovery';
+  list.querySelectorAll('[data-book-reflect]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const bookId = btn.dataset.bookReflect;
+      const panel = list.querySelector(`[data-reflect-panel="${bookId}"]`);
+      if (!panel) return;
+      const opening = panel.hidden;
+      panel.hidden = !opening;
+      btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+      if (opening && panel.dataset.loaded !== '1') {
+        panel.dataset.loaded = '1';
+        const book = getBooks(learner).find((x) => x.id === bookId);
+        const answers = book ? await getReflections(learnerId, book) : {};
+        panel.innerHTML =
+          '<p class="reading-reflect-hint">Only for you. Answer any, skip any - there is no count and no right answer.</p>' +
+          REFLECTION_QUESTIONS.map((rq) => `
+            <label class="reading-reflect-q">${escapeHtml(young ? rq.young : rq.q)}</label>
+            <textarea class="reading-reflect-input slice-box" data-reflect-key="${escapeHtml(rq.key)}" rows="2" placeholder="yours to fill, or leave empty">${escapeHtml(answers[rq.key] || '')}</textarea>
+          `).join('');
+        panel.querySelectorAll('[data-reflect-key]').forEach((ta) => {
+          ta.addEventListener('change', async () => {
+            learner.books = await setReflection(learner, bookId, ta.dataset.reflectKey, ta.value);
+          });
+        });
+      }
+    });
+  });
 }
 
 function formatToday() {
