@@ -1462,21 +1462,40 @@ const NON_RESUME_STEPS = new Set([
 // strengths. Colors from the page-spec disc palette.
 const MOUNTAIN_DISCS = [
   { name: 'Purpose', color: '#E01230', echo: 'values',
-    why: 'Researchers have found that when people take time to name what they value, they handle stress and setbacks better and make choices that feel more like their own. Purpose is not a prize to win - it is a heading you can already set.' },
+    why: 'Researchers have found that when people take time to name what they value, they handle stress and setbacks better and make choices that feel more like their own. Purpose is not a prize to win - it is a heading you can already set.',
+    whyYoung: 'When you know what matters most to you, the hard days get a little easier, and your choices start to feel like yours. Purpose isn\'t a prize you win someday - it\'s a direction you can point yourself in, starting now.' },
   { name: 'Connection', color: '#7A3E9D', echo: 'strengths',
-    why: 'One of the longest studies ever done on happiness found that the quality of our relationships - more than money or fame - is the clearest and most consistent predictor of a healthy, happy life. Belonging is not a bonus. It is a human need, as basic as any.' },
+    why: 'One of the longest studies ever done on happiness found that the quality of our relationships - more than money or fame - is the clearest and most consistent predictor of a healthy, happy life. Belonging is not a bonus. It is a human need, as basic as any.',
+    whyYoung: 'People who studied happiness for a very long time found something clear: the people we love, and who love us back, matter more than money or being famous. Belonging isn\'t a bonus. Everybody needs it.' },
   { name: 'Creator Mindset', color: '#F5A623',
     // Register-matched rewrite (Europa + room, 2026-07-26): keeps the honest anti-overclaim
     // (growth mindset is not magic on its own; it needs real teaching + support - the Greene
     // firewall) but drops the lit-review hedging that read past grade 12. Now grade ~7-8 and in
     // the same warm, honest register as its four sibling Discs. The robust claim - how you meet a
     // hard thing can be learned - is the one that leads.
-    why: 'You are not stuck at the level you start. How you meet a hard thing - keep going, ask for help, try another way - can be learned, and so can steadying yourself when it gets tough. A growth mindset is not magic on its own; it grows with good teaching and real support. The way you meet a challenge is not fixed - it is built, and the building is yours.' },
+    why: 'You are not stuck at the level you start. How you meet a hard thing - keep going, ask for help, try another way - can be learned, and so can steadying yourself when it gets tough. A growth mindset is not magic on its own; it grows with good teaching and real support. The way you meet a challenge is not fixed - it is built, and the building is yours.',
+    whyYoung: 'You are not stuck at whatever you can do today. When something is hard, you can learn to keep going, ask for help, or try another way. It doesn\'t happen by magic, and it doesn\'t happen alone - good teachers and people who care about you are part of it. How you meet a hard thing isn\'t set in stone. You get to build it.' },
   { name: 'Life Skills', color: '#1CA08D',
-    why: 'Health and education groups worldwide treat life skills - leading, making an idea real, managing money, tending your wellbeing - as core capacities, not extras. Studies link training in them to steadier work and money later. These are learnable, and there is no reason to wait.' },
+    why: 'Health and education groups worldwide treat life skills - leading, making an idea real, managing money, tending your wellbeing - as core capacities, not extras. Studies link training in them to steadier work and money later. These are learnable, and there is no reason to wait.',
+    whyYoung: 'Leading, making an idea real, taking care of your money, taking care of yourself - grown-ups all over the world call these real skills, not extras. You can learn them, and you don\'t have to wait until you\'re big to start.' },
   { name: 'Academics', color: '#EE6C2B',
-    why: 'Reading researcher Maryanne Wolf describes how deep reading - slow, reflective reading - is not wired in at birth; the brain builds it, and with it the capacity to infer, reflect, and empathize. Academics are tools for understanding the world, and they are built, not given.' },
+    why: 'Reading researcher Maryanne Wolf describes how deep reading - slow, reflective reading - is not wired in at birth; the brain builds it, and with it the capacity to infer, reflect, and empathize. Academics are tools for understanding the world, and they are built, not given.',
+    whyYoung: 'Here\'s something cool a scientist who studies reading found: your brain isn\'t born knowing how to read - it builds that. Reading slowly, and thinking about what you read, helps you understand people and ideas. School subjects are tools for understanding the world, and nobody just hands them to you - you build them, too.' },
 ];
+
+// Younger-register selector for the mountain "why" copy. Discovery (~8-11) reads a plainer,
+// still-honest register; every other tier that reaches the mountain (Adventure 12-18, Launch Pad,
+// guides) keeps the 12-18 `why`. Selected by studio+role, the same way TENYR_SPARKS picks its
+// mature-vs-young spark (below). The whyYoung strings are DRAFTS held open until the joint
+// Salus + Jake consented-young-learner walk (2026-08-03 fleet meeting) - shipped DARK: the
+// modals.js cascade gate (`studio !== 'discovery'`) still routes Discovery away from the mountain,
+// so no real child renders this until that gate lifts on walk-pass. Ref:
+// agents/meetings/2026/08/2026-08-03-discovery-mountain-climb-younger-register.md.
+const MOUNTAIN_YOUNG_STUDIOS = new Set(['discovery']);
+function mountainWhy(disc, studio, role) {
+  const young = role === 'learner' && MOUNTAIN_YOUNG_STUDIOS.has(studio);
+  return young && disc.whyYoung ? disc.whyYoung : disc.why;
+}
 
 // Telescoping prompts for the horizon steps (adult register).
 const HORIZON_PROMPTS = {
@@ -2774,7 +2793,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
               ${di === 0 && vals.length ? `<span class="onb-mountain-vals">${vals.map((v) => escapeHtml(v)).join(' &middot; ')}</span>` : ''}
             </li>`).join('')}
         </ol>
-        <p class="onb-climb-body onb-mountain-why">${escapeHtml(disc.why)}</p>
+        <p class="onb-climb-body onb-mountain-why">${escapeHtml(mountainWhy(disc, studio, role))}</p>
         ${echo ? `<p class="onb-mountain-echo">${escapeHtml(echo)}</p>` : ''}
         ${navButtons({ skippable: false, continueLabel: last ? 'The mountain stands' : 'Next' })}
       </div>`;
