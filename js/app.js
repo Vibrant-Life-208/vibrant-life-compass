@@ -508,7 +508,6 @@ async function showSetupView(learnerId) {
 
 async function buildTabs(role) {
   const nav = document.getElementById('tab-nav');
-  nav.innerHTML = '';
   const tabs = [...(TABS_BY_ROLE[role] || TABS_BY_ROLE.learner)];
   const session = await requireSession();
   const learnerId = await resolveLearnerId(session);
@@ -522,10 +521,12 @@ async function buildTabs(role) {
   const isLearner = role === 'learner' && !!learnerId;
   const isStaff = role === 'guide' || !!session.is_owner;
   let matureLearner = false;
+  let learnerStudio = '';
   if (isLearner) {
     const { getLearner } = await import('./store.js');
     const l = await getLearner(learnerId);
-    matureLearner = l?.studio === 'launchpad';
+    learnerStudio = l?.studio || '';
+    matureLearner = learnerStudio === 'launchpad';
   }
   // Learner Pillar nav (2026-07-25): Calendar sits at slot 2 (right after North),
   // before the Pillars. Plan (task list) folds into North, so it is no longer a tab.
@@ -552,9 +553,24 @@ async function buildTabs(role) {
     partnerNotifCount = await getPartnerNotificationCount(learnerId);
   }
 
+  // Studio tier drives the pillar-tab treatment (see css .tab-nav--*): Discovery = outlined,
+  // Adventure = solid, Launch Pad = glow. Set on the nav so the whole bar reads as one tier.
+  // Pillar tabs also carry their own color class (pillar-purpose/... -> --pc) so the tier rules
+  // fill/outline/glow in that Pillar's color. (Europa 2026-08-03.)
+  const pillarColorById = Object.fromEntries(PILLARS.map((p) => [p.id, p.color]));
+  nav.className = 'tab-nav' + (isLearner && learnerStudio ? ` tab-nav--${learnerStudio}` : '');
+
+  // Clear the nav here - right before the synchronous append - not at the top of buildTabs.
+  // buildTabs runs several awaits above and is called more than once during sign-in (initial
+  // render + the hc:partner-changed listener). Clearing at the top let overlapping calls each
+  // clear early, yield on their awaits, then all append their tab set -> the nav stacked 2-3
+  // duplicate copies. Clearing immediately before the non-yielding forEach makes each rebuild
+  // atomic, so the nav always ends with exactly one set. (2026-08-03: duplicate-tabs fix.)
+  nav.innerHTML = '';
   tabs.forEach((t, i) => {
     const btn = document.createElement('button');
-    btn.className = 'tab' + (i === 0 ? ' active' : '');
+    const pillarClass = pillarColorById[t.id] ? ` pillar-${pillarColorById[t.id]}` : '';
+    btn.className = 'tab' + (i === 0 ? ' active' : '') + pillarClass;
     btn.dataset.tab = t.id;
     btn.innerHTML = escapeHtml(t.label);
     if (t.id === 'partner-view' && partnerNotifCount > 0) {

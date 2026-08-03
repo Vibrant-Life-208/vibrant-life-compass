@@ -4681,3 +4681,47 @@ body.landscape-mountain {
 .community-review-who { margin: 0 0 0.3rem; color: var(--text-soft); font-size: 0.88rem; }
 .community-review-body { margin: 0 0 0.5rem; color: var(--text); font-weight: 500; }
 .community-review-actions { display: flex; gap: 0.6rem; justify-content: flex-end; align-items: center; }
+
+/* ============================================================================
+   Pillar-colored tabs, by studio tier (Europa 2026-08-03).
+   Each Pillar tab (Purpose/Connection/Creator/Life Skills/Academics) carries its
+   color via .pillar-* (which sets --pc). The nav's tier class picks the treatment:
+   Discovery = outlined, Adventure = solid fill, Launch Pad = glow (tier not built
+   yet - forward hook). The active tab lifts. North/Calendar/Summary are utility
+   tabs (no pillar class) and keep the neutral text-with-underline style.
+   ============================================================================ */
+.tab-nav { align-items: center; gap: 0.3rem; padding-top: 0.4rem; padding-bottom: 0.4rem; }
+
+/* Pillar tabs = colored pills; base/Discovery treatment is an outline (no fill) */
+.tab-nav .tab[class*="pillar-"] {
+  color: var(--pc);
+  border: 1.5px solid var(--pc);
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem;
+  background: transparent;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.tab-nav .tab[class*="pillar-"]:hover { color: var(--pc); background: color-mix(in srgb, var(--pc) 10%, transparent); }
+
+/* Adventure: solid fill in the Pillar's color */
+.tab-nav--adventure .tab[class*="pillar-"] { background: var(--pc); color: #fff; }
+
+/* Launch Pad: glow (filled + luminous ring) */
+.tab-nav--launchpad .tab[class*="pillar-"] {
+  background: var(--pc); color: #fff;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--pc) 30%, transparent),
+              0 0 14px color-mix(in srgb, var(--pc) 55%, transparent);
+}
+
+/* Active tab lifts (every tab). Pillar tabs lift more + drop the sage underline. */
+.tab.active { transform: translateY(-2px); }
+.tab-nav .tab[class*="pillar-"].active {
+  transform: translateY(-3px);
+  border-bottom-color: var(--pc);
+  box-shadow: 0 5px 12px color-mix(in srgb, var(--pc) 35%, transparent);
+}
+/* Discovery/outlined active: a soft tint so it reads as selected without a full fill */
+.tab-nav--discovery .tab[class*="pillar-"].active { background: color-mix(in srgb, var(--pc) 14%, transparent); color: var(--pc); }
+/* Adventure + Launch Pad active stay filled (white on the Pillar color) */
+.tab-nav--adventure .tab[class*="pillar-"].active,
+.tab-nav--launchpad .tab[class*="pillar-"].active { background: var(--pc); color: #fff; }
