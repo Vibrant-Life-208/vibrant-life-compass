@@ -49,8 +49,10 @@ export function isEnrolled(session) {
 // observatory render variant so the CLIMB waypoint sequence can be walked and
 // tested independently of the 3D-disc rendering work. Default ON (flipped
 // 2026-07-25): the CLIMB mountain onboarding is the default for learners.
-// ?climb=off escapes to the legacy compass/wheel cascade (kept for Launch Pad
-// next year; launchpad-tier gating is deferred - see Option A, 2026-07-25).
+// ?climb=off escapes to the legacy compass/wheel cascade. That legacy wheel is
+// reserved for next year's OLDER Launch Pad learners - it is NOT the young-learner
+// home: Discovery (~8-11) climbs the mountain like everyone else (captain override,
+// 2026-08-03). Launchpad-tier gating is deferred - see Option A, 2026-07-25.
 // Sparks tots are gated separately (modals.js) and are unaffected. The override
 // is remembered in localStorage so it survives PWA/offline reloads.
 const CLIMB_LS_KEY = 'vlc_climb_override';

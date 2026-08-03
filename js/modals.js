@@ -1565,14 +1565,17 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // / values_why splices below still fire (ids match in both arrays). CLIMB is the LEARNER
   // onboarding takeover (spec W1-W22 includes learner-only academics baselines), so guides,
   // parents and owners keep their existing cascade even with the flag on.
-  // Discovery tier-gate (2026-08-01, SSC + PDC interim wall). The CLIMB copy is written for the
-  // 12-18 (Adventure+) register; the younger Discovery (~8-11) register is not built yet. Per the
-  // 2026-07-27 review's most-converged finding (10 reviews / 7 circles: "youngest learners handed
-  // older-tier copy") and Salus's supervised-only safety lock, Discovery learners are routed to the
-  // legacy telescope cascade (CASCADE_FULL, below) instead of the adult-copy CLIMB, until the younger
-  // register ships and Salus's consented-young-learner walk passes. Remove `studio !== 'discovery'`
-  // then. Ref: COMPASS-RESEARCH-BRIEF-v0.1.md (CS-10) + 2026-07-27 full-fleet review.
-  const climb = isClimbBuild() && studio !== 'sparks' && studio !== 'discovery' && role === 'learner';
+  // Discovery now walks THE CLIMB (the mountain), same as Adventure+. (Captain override,
+  // 2026-08-03: Europa directed "we want the mountain for Discovery too - lift and ship now.")
+  // This CONSCIOUSLY overrides the 2026-08-01 SSC + PDC interim wall and Salus's + Jake's binding
+  // consented-young-learner walk gates - overridden on the record, not silently dropped. Refs:
+  // agents/meetings/2026/08/2026-08-03-discovery-mountain-climb-younger-register.md + the override
+  // decision log (2026-08-03). HONEST GAP SHIPPED: only the five mountain Disc "why" lines are in
+  // the young 8-11 register (MOUNTAIN_YOUNG_STUDIOS / whyYoung); the surrounding CLIMB waypoints
+  // (Purpose, Connection, Creator, Academics, Threshold) are still the 12-18 register until the
+  // Wave-2 young rewrite lands (see the OLDER-tier copy note ~renderClimb). Sparks (tots) stay
+  // screen-free, gated below.
+  const climb = isClimbBuild() && studio !== 'sparks' && role === 'learner';
   const baseCascade = studio === 'sparks' ? CASCADE_SPARKS : (climb ? CLIMB_FULL : CASCADE_FULL);
   const steps = [...baseCascade];
   // After the VIA strengths import, a short "why your strengths matter" page with
