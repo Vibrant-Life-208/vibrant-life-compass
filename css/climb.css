@@ -111,3 +111,27 @@
 .qf-quote-flag { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sage); margin-bottom: 0.3rem; }
 .qf-quote-text { display: block; color: var(--text); font-size: 0.95rem; line-height: 1.5; }
 .qf-quote-author { display: block; color: var(--text-soft); font-size: 0.85rem; font-style: italic; margin-top: 0.35rem; }
+
+/* CLIMB reflection boxes: a generous, open writing space instead of a cramped few-line field.
+   The class-based .onb-horizon textareas (Connection's "how do these strengths show up", the WOOP
+   break-it-down boxes) otherwise get NO width and render at the browser's tiny default - give them
+   full width and a comfortable floor. The vision-ladder box (#onb-horizon) holds the longer writing,
+   so it opens taller. Drag-to-grow stays on. Connection (#onb-climb-text) keeps its inline height.
+   (Europa 2026-08-03: "fixed large open text boxes instead of these smaller ones", seen in the
+   Connection reflection and the 10/5/1 year breakdown.) */
+textarea.onb-horizon {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 5.5rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--earth-light, #c4b49a);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--cream, #f5f0e8);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+textarea.onb-horizon:focus { outline: none; border-color: var(--sage); }
+#onb-horizon { min-height: 9rem; }   /* the 10/5/1 vision ladder - room to imagine wide */

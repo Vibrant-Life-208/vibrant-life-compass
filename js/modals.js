@@ -1418,12 +1418,16 @@ const CLIMB_FULL = [
                        //   (Vibrant Life's five Values, base->apex) - the peak from the trailhead,
                        //   before the Purpose deep-dive and the disc-by-disc climb. A reveal, no
                        //   capture. (Europa 2026-07-25: show the image of the mountain, before Purpose.)
+  // THE MOUNTAIN, interleaved (Europa 2026-08-03): compass_intro still shows the peak from the
+  // trailhead, then each Pillar "sets root" on its own page(s) - its reveal + its actual work - and
+  // rises on its own mtn_* "grow" beat. So the mountain rebuilds one earned Disc at a time, base ->
+  // apex, standing whole only after Academics. A back and forth: space for each Disc to set root,
+  // then watch it grow. The grow beats reuse renderMountain at a fixed Disc index (see MOUNTAIN_GROW);
+  // they are reveals - nothing captured. Replaces the old single all-at-once 'mountain' build step.
   'purpose',           // W5-W7 - Purpose shown + base + four Discs (Values pre-filled)
-  'mountain',          // W8  - THE MOUNTAIN: Vibrant Life's five Values as stacked Discs, rising
-                       //   ONE DISC PER PAGE (base->apex) with each Disc's "why", until the whole
-                       //   mountain stands. (Europa 2026-07-23: mountain = the slow Page-8 reveal;
-                       //   units are "Discs"; matches the parent five-disc pyramid graphic.)
+  'mtn_purpose',       // W8  - the base Disc sets: the mountain begins with Purpose
   'connection',        // W9  - Connection + Conscious Living (seeded from W2 strengths)
+  'mtn_connection',    // W8  - the mountain grows to two (Purpose + Connection)
   'creator_intro',     // W10 - Creator Mindset environment (reveal, no capture)
   'curious_intro',     // W11a - "Let's get curious": frames the vision ladder as imagination,
                        //   not commitment (reveal, no text box), before the 10/5/1 screens
@@ -1433,12 +1437,15 @@ const CLIMB_FULL = [
   'current_state',     // the mirror (kept)
   'halfway',           // halfway (kept)
   'slice_plan',        // W12 - one real goal (existing slice walk)
+  'mtn_creator',       // W8  - the mountain grows to three (+ Creator Mindset)
   'life_skills',       // W14 - Life Skills env, pick one skill
   'life_skills_woop',  // W15 - break it down (WOOP: obstacle + if-then)
+  'mtn_lifeskills',    // W8  - the mountain grows to four (+ Life Skills)
   'academics_intro',   // W15t - the Academics apex (concept)
   'academics_math',    // W16-W17 - Math program + launch link + baseline (NO passwords)
   'academics_reading', // W18-W19 - Deep Reading: current book + want-to-read list
   'academics_la',      // W20-W21 - Language Arts program + link + baseline (NO passwords)
+  'mtn_academics',     // W8  - the mountain stands whole (all five Discs, apex earned)
   'threshold',         // W22 - the crossing -> enter the Compass
 ];
 
@@ -1450,10 +1457,15 @@ const CLIMB_FULL = [
 // no onboarding_step Postgres enum change is needed to ship the walk.
 const NON_RESUME_STEPS = new Set([
   'pitch', 'slice_plan', 'strengths_why', 'values_why',
-  'compass_intro', 'mountain', 'purpose', 'connection', 'creator_intro', 'curious_intro',
+  'compass_intro', 'mtn_purpose', 'mtn_connection', 'mtn_creator', 'mtn_lifeskills', 'mtn_academics',
+  'purpose', 'connection', 'creator_intro', 'curious_intro',
   'life_skills', 'life_skills_woop',
   'academics_intro', 'academics_math', 'academics_reading', 'academics_la', 'threshold',
 ]);
+
+// mtn_* grow-beat step -> the Disc index it reveals (index into MOUNTAIN_DISCS). renderMountain
+// draws every Disc up to and including this index, so each beat shows the stack one Disc taller.
+const MOUNTAIN_GROW = { mtn_purpose: 0, mtn_connection: 1, mtn_creator: 2, mtn_lifeskills: 3, mtn_academics: 4 };
 
 // W8 THE MOUNTAIN - Vibrant Life's five Values as stacked Discs, base -> apex. The "why" lines are
 // the fleet-approved, primary-source-verified reveal copy (COMPASS-CLIMB-SPEC W8, older-tier): a
@@ -1473,8 +1485,8 @@ const MOUNTAIN_DISCS = [
     // firewall) but drops the lit-review hedging that read past grade 12. Now grade ~7-8 and in
     // the same warm, honest register as its four sibling Discs. The robust claim - how you meet a
     // hard thing can be learned - is the one that leads.
-    why: 'You are not stuck at the level you start. How you meet a hard thing - keep going, ask for help, try another way - can be learned, and so can steadying yourself when it gets tough. A growth mindset is not magic on its own; it grows with good teaching and real support. The way you meet a challenge is not fixed - it is built, and the building is yours.',
-    whyYoung: 'You are not stuck at whatever you can do today. When something is hard, you can learn to keep going, ask for help, or try another way. It doesn\'t happen by magic, and it doesn\'t happen alone - good teachers and people who care about you are part of it. How you meet a hard thing isn\'t set in stone. You get to build it.' },
+    why: 'You are not stuck at the level you start. How you meet a hard thing - keep going, ask for help, try another way - can be learned, and so can steadying yourself when it gets tough. A growth mindset is not magic on its own; it grows with good guidance and real support. The way you meet a challenge is not fixed - it is built, and the building is yours.',
+    whyYoung: 'You are not stuck at whatever you can do today. When something is hard, you can learn to keep going, ask for help, or try another way. It doesn\'t happen by magic, and it doesn\'t happen alone - good guides and people who care about you are part of it. How you meet a hard thing isn\'t set in stone. You get to build it.' },
   { name: 'Life Skills', color: '#1CA08D',
     why: 'Health and education groups worldwide treat life skills - leading, making an idea real, managing money, tending your wellbeing - as core capacities, not extras. Studies link training in them to steadier work and money later. These are learnable, and there is no reason to wait.',
     whyYoung: 'Leading, making an idea real, taking care of your money, taking care of yourself - grown-ups all over the world call these real skills, not extras. You can learn them, and you don\'t have to wait until you\'re big to start.' },
@@ -1841,8 +1853,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // Stage O: entering the slice-plan step fresh - start the per-slice walk at its
     // intro page (orients before the year pass; behind the flag; legacy grid ignores this).
     if (currentWheel && steps[state.idx] === 'slice_plan') state.sliceWalk = { pass: 'intro', idx: 0 };
-    // Entering the mountain forward starts at the base Disc (Purpose); it builds upward from there.
-    if (steps[state.idx] === 'mountain') state.mountainIdx = 0;
     if (profileId && !NON_RESUME_STEPS.has(steps[state.idx])) await setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
@@ -1868,8 +1878,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     captureClimb();
     state.idx -= 1;
     if (steps[state.idx] === 'pitch') state.pitchStage = 'ask-age';
-    // Backing INTO the mountain lands on its summit (whole mountain standing); page down from there.
-    if (steps[state.idx] === 'mountain') state.mountainIdx = MOUNTAIN_DISCS.length - 1;
     if (profileId && !NON_RESUME_STEPS.has(steps[state.idx])) setOnboardingStep(profileId, steps[state.idx]);
     render();
   }
@@ -2749,9 +2757,11 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // render as renderMountain (below), so the overview and the disc-by-disc climb are visibly the
   // same object. A reveal - nothing captured. Continue walks into Purpose (the base).
   function renderCompassIntro() {
-    const vals = climbValuesList();
     // All five Discs, drawn apex-first (top-down) so Purpose sits at the bottom as the base.
     const rows = MOUNTAIN_DISCS.map((d, di) => ({ d, di })).reverse();
+    // The learner's named values (their "purpose choices") stay on the closer-look Purpose step;
+    // the mountain-into-view - including this trailhead preview - shows the Discs, not the choices
+    // already made (captain 2026-08-03).
     return `
       <div class="onb-climb onb-climb-mountain onb-climb-compass-intro">
         <p class="onb-climb-kicker">Welcome to your compass</p>
@@ -2761,30 +2771,31 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
           ${rows.map(({ d, di }) => `
             <li class="onb-mountain-band${di === 0 ? ' base' : ''}" style="--band:${d.color}; width:${100 - di * 12}%">
               <span class="onb-mountain-name">${escapeHtml(d.name)}</span>
-              ${di === 0 && vals.length ? `<span class="onb-mountain-vals">${vals.map((v) => escapeHtml(v)).join(' &middot; ')}</span>` : ''}
             </li>`).join('')}
         </ol>
         ${navButtons({ skippable: false, continueLabel: 'Start at the base' })}
       </div>`;
   }
 
-  // W8 - THE MOUNTAIN. Vibrant Life's five Values as stacked Discs, rising ONE PER PAGE from the
-  // base (Purpose) to the apex (Academics), each with its research-grounded "why". state.mountainIdx
-  // is the Disc rising now; the stack shows every Disc revealed so far (base at the bottom), so the
-  // mountain visibly builds page by page until it stands whole. The learner's own values sit at
-  // the heart of the base; their strengths are echoed under Connection (INV-2). A reveal - nothing
-  // captured. Metaphor + copy per Europa 2026-07-23 (units are "Discs"; matches the parent graphic).
+  // W8 - THE MOUNTAIN. Vibrant Life's five Values as stacked Discs, base (Purpose) to apex
+  // (Academics), each with its research-grounded "why". Called once per mtn_* grow beat, AFTER that
+  // Disc's own work: state.mountainIdx (set from MOUNTAIN_GROW at render time) is the Disc that just
+  // rose; the stack shows every Disc up to it (base at the bottom), so the mountain visibly grows one
+  // earned Disc at a time until it stands whole at Academics. Strengths are echoed under Connection
+  // (INV-2); the learner's named values stay on the closer-look Purpose step (see the echo note
+  // below). A reveal - nothing captured. Metaphor + copy per Europa 2026-07-23; interleaved
+  // one-Disc-per-beat per Europa 2026-08-03 (units are "Discs"; matches the parent graphic).
   function renderMountain() {
     const idx = Math.min(state.mountainIdx, MOUNTAIN_DISCS.length - 1);
     const disc = MOUNTAIN_DISCS[idx];
-    const vals = climbValuesList();
     const strengths = climbStrengthsList();
     const last = idx === MOUNTAIN_DISCS.length - 1;
     // Discs revealed so far, drawn apex-first (top-down) so Purpose sits at the bottom as the base.
     const rows = MOUNTAIN_DISCS.slice(0, idx + 1).map((d, di) => ({ d, di })).reverse();
+    // The learner's named values (their "purpose choices") are held back for the closer-look Purpose
+    // step; the mountain-into-view stays on the Disc and what it means (captain 2026-08-03).
     let echo = '';
-    if (disc.echo === 'values' && vals.length) echo = `You named it: ${vals.slice(0, 3).join(', ')}.`;
-    else if (disc.echo === 'strengths' && strengths.length) echo = `Built on the strengths you carry: ${strengths.slice(0, 3).join(', ')}.`;
+    if (disc.echo === 'strengths' && strengths.length) echo = `Built on the strengths you carry: ${strengths.slice(0, 3).join(', ')}.`;
     return `
       <div class="onb-climb onb-climb-mountain">
         <p class="onb-climb-kicker">Vibrant Life's Values</p>
@@ -2793,7 +2804,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
           ${rows.map(({ d, di }) => `
             <li class="onb-mountain-band${di === 0 ? ' base' : ''}${di === idx ? ' active' : ''}" style="--band:${d.color}; width:${100 - di * 12}%">
               <span class="onb-mountain-name">${escapeHtml(d.name)}</span>
-              ${di === 0 && vals.length ? `<span class="onb-mountain-vals">${vals.map((v) => escapeHtml(v)).join(' &middot; ')}</span>` : ''}
             </li>`).join('')}
         </ol>
         <p class="onb-climb-body onb-mountain-why">${escapeHtml(mountainWhy(disc, studio, role))}</p>
@@ -2840,6 +2850,11 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="onb-climb onb-climb-connection">
         <p class="onb-climb-kicker">Connection</p>
         <h3 class="onb-climb-head">You named what matters to you. Now - who do you matter with?</h3>
+        ${strengths.length ? `
+        <div class="onb-climb-box onb-climb-box-strengths">
+          <div class="onb-climb-box-name">Your strengths</div>
+          <div class="onb-climb-box-filled">${climbChips(strengths)}</div>
+        </div>` : ''}
         <p class="onb-climb-body">How you are close to other people and how you move alongside them. Feeling what they feel, telling the truth and truly listening, living awake to the people and world around you, and belonging to something shared. The whole art of being with others, not around them.</p>
         <ul class="onb-climb-subs">
           <li><span class="onb-climb-sub-name">Compassion</span> - feeling with others, and helping them grow.</li>
@@ -2848,7 +2863,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
           <li><span class="onb-climb-sub-name">Community</span> - belonging to something bigger; this is your Life piece.</li>
         </ul>
         <p class="onb-climb-body">Let's dive into <strong>Conscious Living</strong> - how your values and purpose come alive through the character strengths you named, and how those build connection.</p>
-        ${strengths.length ? `<p class="onb-climb-seed-label">This Disc stands on the strengths you already named:</p>${climbChips(strengths)}` : ''}
         <label class="onb-climb-label" for="onb-climb-text">How do these strengths show up in how you treat the people around you?</label>
         <textarea id="onb-climb-text" class="onb-horizon" rows="6" style="min-height: 8.5rem;" placeholder="With the people I care about, I...">${escapeHtml(state.climb.consciousLiving || '')}</textarea>
         <p class="onb-climb-note">Chosen time alone counts here too - solitude you pick is its own kind of full, not a gap in your life.</p>
@@ -3073,19 +3087,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     return setProfileFoundations(profileId, merged);
   }
 
-  // W8 the mountain paging: Continue reveals the next Disc up the stack; only once the whole
-  // mountain stands does Continue advance to the next CLIMB step. Back pages down the stack,
-  // then out. Owns both buttons (wired via the wireStep early-return), so no generic handlers.
-  function wireMountain() {
-    document.getElementById('onb-continue')?.addEventListener('click', async () => {
-      if (state.mountainIdx < MOUNTAIN_DISCS.length - 1) { state.mountainIdx += 1; render(); }
-      else await advance(null);
-    });
-    document.getElementById('onb-back')?.addEventListener('click', () => {
-      if (state.mountainIdx > 0) { state.mountainIdx -= 1; render(); }
-      else back();
-    });
-  }
   // =======================================================================================
 
   function render() {
@@ -3099,7 +3100,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     else if (step === 'pitch') formFields.innerHTML = renderPitch();
     else if (step === 'slice_plan') formFields.innerHTML = renderSlicePlan();
     else if (step === 'compass_intro') formFields.innerHTML = renderCompassIntro();
-    else if (step === 'mountain') formFields.innerHTML = renderMountain();
+    else if (MOUNTAIN_GROW[step] !== undefined) { state.mountainIdx = MOUNTAIN_GROW[step]; formFields.innerHTML = renderMountain(); }
     else if (step === 'purpose') formFields.innerHTML = renderPurpose();
     else if (step === 'connection') formFields.innerHTML = renderConnection();
     else if (step === 'creator_intro') formFields.innerHTML = renderCreatorIntro();
@@ -3112,6 +3113,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     else if (step === 'academics_la') formFields.innerHTML = renderAcademicsLa();
     else if (step === 'threshold') formFields.innerHTML = renderThreshold();
     else formFields.innerHTML = renderHorizon(step);
+    // Each waypoint is a fresh page: scroll the modal box back to the top so the learner sees the
+    // heading first (e.g. their character strengths), not the middle of the copy carried over from
+    // the prior, taller step's scroll (captain 2026-08-03).
+    formFields.closest('.modal-content')?.scrollTo(0, 0);
     wireStep();
     if (HORIZON_PROMPTS[step]) setTimeout(() => document.getElementById('onb-horizon')?.focus(), 50);
   }
@@ -3123,10 +3128,6 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // leave-open wiring, so skip the generic step handlers below. Flag off falls
     // through to the legacy grid wiring unchanged.
     if (currentWheel && step === 'slice_plan') { wireSliceWalk(); return; }
-
-    // W8 the mountain owns its own page-through (Disc by Disc); Continue advances the CLIMB step
-    // only once the whole mountain stands. Handles its own Back/Continue, so skip the generics.
-    if (step === 'mountain') { wireMountain(); return; }
 
     document.getElementById('onb-back')?.addEventListener('click', back);
     document.getElementById('onb-skip')?.addEventListener('click', skipStep);
@@ -3239,8 +3240,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         // to before Stage O: capture the boxes, then upsert non-empty slices as year goals.
         captureSlice();
         await advance(() => upsertYearGoals());
-      } else if (step === 'compass_intro' || step === 'creator_intro' || step === 'curious_intro' || step === 'academics_intro') {
-        await advance(null); // CLIMB reveal - nothing to persist (mountain pages via wireMountain)
+      } else if (step === 'compass_intro' || step === 'creator_intro' || step === 'curious_intro' || step === 'academics_intro'
+                 || MOUNTAIN_GROW[step] !== undefined) {
+        await advance(null); // CLIMB reveal (disc intros + the mtn_* grow beats) - nothing to persist
       } else if (step === 'purpose' || step === 'connection'
                  || step === 'life_skills' || step === 'life_skills_woop'
                  || step === 'academics_math' || step === 'academics_reading' || step === 'academics_la') {
