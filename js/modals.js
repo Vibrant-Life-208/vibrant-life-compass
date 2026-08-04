@@ -3382,12 +3382,19 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 // rejected. Terence is the featured anchor - IDIC from antiquity - chosen by the Council of Seven
 // (decision log 2026-07-23); a learner still freely picks any line, or writes their own (the
 // "add your own" door is an anti-foreclosure requirement, never the curated set alone).
-// The curated anchor set - four quotes, each verified to primary source, chosen
+// The curated anchor set - five quotes, each verified to primary source, chosen
 // by the Council of Seven (decision log 2026-07-23) on the captain's criterion:
 // which best guides a child toward a more Star Trek future. Terence is the
 // featured anchor; Goodall + Tutu are the accessible companions; Kennedy is the
 // stretch line for older learners. Tutu restored to the set by captain call
 // 2026-07-25 (the Council had released him; the captain kept the full four).
+// The "Explore. Dream. Discover." line added by captain call 2026-08-04 - a
+// daring/curiosity anchor that pairs with the CLIMB curious_intro vision beat.
+// Attributed to H. Jackson Brown Jr. (P.S. I Love You, 1990), its documented
+// source. Do NOT "correct" it to Mark Twain: that is a well-known misattribution
+// (Center for Mark Twain Studies; the words appear nowhere in Twain, and the
+// nautical image is one a steamboat pilot would not have written). Brown himself
+// credited his mother, Sarah Frances Brown.
 // "Write my own" is always present - the curated set is a starting place, never
 // a foreclosure (anti-foreclosure, page-spec R2).
 const QUOTE_CHOICES = [
@@ -3395,6 +3402,7 @@ const QUOTE_CHOICES = [
   { text: 'What you do makes a difference, and you have to decide what kind of difference you want to make.', author: 'Jane Goodall' },
   { text: "Do your little bit of good where you are; it's those little bits of good put together that overwhelm the world.", author: 'Desmond Tutu' },
   { text: 'Each time a person stands up for an ideal, or acts to improve the lot of others, or strikes out against injustice, they send forth a tiny ripple of hope, and crossing each other from a million different centers of energy and daring, those ripples build a current that can sweep down the mightiest walls of oppression and resistance.', author: 'Robert F. Kennedy' },
+  { text: "Twenty years from now you will be more disappointed by the things that you didn't do than by the ones you did do. So throw off the bowlines. Sail away from the safe harbor. Catch the trade winds in your sails. Explore. Dream. Discover.", author: 'H. Jackson Brown Jr.' },
 ];
 
 // Quote flow (2026-06-24): the quote anchors the top of the page for the cycle.
