@@ -135,3 +135,9 @@ textarea.onb-horizon {
 }
 textarea.onb-horizon:focus { outline: none; border-color: var(--sage); }
 #onb-horizon { min-height: 9rem; }   /* the 10/5/1 vision ladder - room to imagine wide */
+
+/* Growth Mindset (W11b) - the 10/5/1 vision recapped above the one-goal commitment. */
+.onb-gm-recap { display: flex; flex-direction: column; gap: 0.45rem; margin: 0.3rem 0 0.9rem; }
+.onb-gm-recap-row { padding-left: 0.7rem; border-left: 2px solid var(--border, #cdbfa6); }
+.onb-gm-recap-label { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--sage); margin-bottom: 0.1rem; }
+.onb-gm-recap-text { margin: 0; font-size: 0.92rem; color: var(--text); line-height: 1.45; }

@@ -1436,10 +1436,14 @@ const CLIMB_FULL = [
                        //   not commitment (reveal, no text box), before the 10/5/1 screens
   'beyond_5yr',        // W11 - Curiosity: the vision ladder (10yr)
   'within_5yr',        // W11 - (5yr)
-  'within_1yr',        // W11 - (1yr; becomes operative, feeds W12 + Threshold)
-  'current_state',     // the mirror (kept)
-  'halfway',           // halfway (kept)
-  'slice_plan',        // W12 - one real goal (existing slice walk)
+  'within_1yr',        // W11 - (1yr; becomes operative, feeds the commitment + Threshold)
+  'growth_mindset',    // W11b - GROWTH MINDSET (Europa 2026-08-04): recap the 10/5/1 curiosity vision,
+                       //   then commit to ONE goal for next year. Path A - captured to foundations
+                       //   (state.climb.yearGoal); the formal goal object + finer breakdown are
+                       //   formalised later on the main page (pairs with Item 2, goals-by-pillar).
+                       //   Replaces the per-slice slice_plan walk inside CLIMB.
+  'current_state',     // where are you now, toward that goal (climb-reframed copy)
+  'halfway',           // halfway -> the Session 3 marker for that goal (climb-reframed copy)
   'life_skills',       // W14 - Life Skills env, pick one skill
   'life_skills_woop',  // W15 - break it down (WOOP: obstacle + if-then)
   'mtn_lifeskills',    // W8  - the mountain grows to four (+ Life Skills)
@@ -1460,7 +1464,7 @@ const CLIMB_FULL = [
 const NON_RESUME_STEPS = new Set([
   'pitch', 'slice_plan', 'strengths_why', 'values_why',
   'compass_intro', 'mtn_purpose', 'mtn_connection', 'mtn_creator', 'mtn_lifeskills', 'mtn_academics',
-  'purpose', 'connection', 'creator_intro', 'curious_intro',
+  'purpose', 'connection', 'creator_intro', 'curious_intro', 'growth_mindset',
   'life_skills', 'life_skills_woop',
   'academics_intro', 'academics_math', 'academics_reading', 'academics_la', 'threshold',
 ]);
@@ -1640,7 +1644,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // hasSlicePlan) never walked it because this branch deleted it - the missed-vision bug.
   // Restore within_1yr + current_state as the load-bearing pivot before the slices; only the
   // per-goal `halfway` stays dropped here (the slice walk asks it per slice). 10yr + 5yr stay.
-  if (currentWheel && hasSlicePlan) {
+  // CLIMB (Europa 2026-08-04): the slice walk is replaced by the single Growth Mindset commitment,
+  // so `halfway` is NOT dropped in climb - it becomes the goal's Session 3 marker.
+  if (currentWheel && hasSlicePlan && !climb) {
     for (const s of ['halfway']) {
       const at = steps.indexOf(s);
       if (at >= 0) steps.splice(at, 1);
@@ -2124,7 +2130,15 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   }
 
   function renderHorizon(step) {
-    const p = HORIZON_PROMPTS[step];
+    let p = HORIZON_PROMPTS[step];
+    // CLIMB (Europa 2026-08-04): current_state + halfway follow the Growth Mindset commitment and
+    // reframe around that one goal - "where are you now" toward it, and the halfway that becomes the
+    // Session 3 marker. Legacy (non-climb) telescope copy is unchanged.
+    if (climb && step === 'current_state') {
+      p = { ...p, heading: 'Where are you now?', body: 'With that goal in view - where are you today? This is the honest starting line, not the dream. Take your time; there are no wrong answers.', placeholder: 'Right now, toward this goal, I am...' };
+    } else if (climb && step === 'halfway') {
+      p = { ...p, heading: 'Halfway through the year.', body: "Halfway to next year - what would you need to have accomplished to feel confident you'll own that goal? This becomes your Session 3 marker.", placeholder: 'Halfway, I will have...' };
+    }
     // Progressive context stack: prior horizon answers shown as compact
     // full-text cards above the box, so the thread the person has been building
     // stays in view as they narrow in. The halfway step prunes the far horizons
@@ -2158,9 +2172,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // In CLIMB, the vision ladder + mirror + halfway are the Creator Mindset disc's work, so tag
     // them with the disc kicker - the 10/5/1 belongs to Creator, not a free-floating telescope.
     // (Europa 2026-08-03.) Legacy (non-climb) horizons render without it, unchanged.
-    const climbKicker = climb
-      ? `<p class="onb-climb-kicker">Creator Mindset${['beyond_5yr', 'within_5yr', 'within_1yr'].includes(step) ? ' &middot; Curiosity' : ''}</p>`
-      : '';
+    const climbSub = ['beyond_5yr', 'within_5yr', 'within_1yr'].includes(step) ? ' &middot; Curiosity'
+      : ['current_state', 'halfway'].includes(step) ? ' &middot; Growth Mindset' : '';
+    const climbKicker = climb ? `<p class="onb-climb-kicker">Creator Mindset${climbSub}</p>` : '';
     return `
       ${wheel}
       ${stack}
@@ -2912,6 +2926,35 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       </div>`;
   }
 
+  // W11b - GROWTH MINDSET (Europa 2026-08-04). Creator Mindset's commitment beat: recap the 10/5/1
+  // curiosity vision, frame growth-through-practice, then commit to ONE goal for next year. Path A -
+  // captured to foundations (state.climb.yearGoal); the formal goal object + finer breakdown are
+  // formalised later on the main page (pairs with Item 2, goals-by-pillar). current_state + halfway
+  // follow, reframed around this goal (see renderHorizon's climb overrides).
+  function renderGrowthMindset() {
+    const h = state.horizons || {};
+    const ladder = [
+      ['In 10 years', h.beyond_5yr],
+      ['In 5 years', h.within_5yr],
+      ['In 1 year', h.within_1yr],
+    ].filter(([, v]) => (v || '').trim());
+    const recap = ladder.length
+      ? `<div class="onb-gm-recap">${ladder.map(([label, v]) => `<div class="onb-gm-recap-row"><span class="onb-gm-recap-label">${escapeHtml(label)}</span><p class="onb-gm-recap-text">${escapeHtml(v.trim())}</p></div>`).join('')}</div>`
+      : '';
+    const goal = state.climb.yearGoal || '';
+    const mandatory = role === 'learner' || role === 'guide';
+    return `
+      <div class="onb-climb onb-climb-growth">
+        <p class="onb-climb-kicker">Creator Mindset &middot; Growth Mindset</p>
+        <h3 class="onb-climb-head">Growing through challenge.</h3>
+        <p class="onb-climb-body">You get better with practice - that is the whole idea. You are not stuck where you start; how you meet a hard thing can be learned. So let's turn what you imagined into one thing to grow toward this year.</p>
+        ${recap ? `<p class="onb-climb-seed-label">What you imagined:</p>${recap}` : ''}
+        <label class="onb-climb-label" for="onb-gm-goal">What goal would you like to commit to having accomplished by next year at this time?</label>
+        <textarea id="onb-gm-goal" class="onb-horizon" rows="4" placeholder="By next year, I will have...">${escapeHtml(goal)}</textarea>
+        ${navButtons({ skippable: !mandatory, continueLabel: terminalLabel(isLast()), continueDisabled: mandatory && !goal.trim() })}
+      </div>`;
+  }
+
   // W14 - The Life Skills environment: pick one skill to work on this year. One active at a time;
   // the others are held for reference, never shown as "not chosen" (banned-word gate).
   function renderLifeSkills() {
@@ -3074,6 +3117,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       state.climb.contribution = val('onb-climb-contribution');
       state.climb.hero = val('onb-climb-hero');
     } else if (step === 'connection') state.climb.consciousLiving = val('onb-climb-text');
+    else if (step === 'growth_mindset') state.climb.yearGoal = val('onb-gm-goal');
     else if (step === 'life_skills_woop') {
       state.climb.woop = {
         setup: val('onb-woop-setup'), obstacle: val('onb-woop-obstacle'),
@@ -3122,6 +3166,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     else if (step === 'connection') formFields.innerHTML = renderConnection();
     else if (step === 'creator_intro') formFields.innerHTML = renderCreatorIntro();
     else if (step === 'curious_intro') formFields.innerHTML = renderCuriousIntro();
+    else if (step === 'growth_mindset') formFields.innerHTML = renderGrowthMindset();
     else if (step === 'life_skills') formFields.innerHTML = renderLifeSkills();
     else if (step === 'life_skills_woop') formFields.innerHTML = renderLifeSkillsWoop();
     else if (step === 'academics_intro') formFields.innerHTML = renderAcademicsIntro();
@@ -3153,6 +3198,12 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // live as they type, since there is no "Not now" to fall back on.
     if (HORIZON_PROMPTS[step] && (role === 'learner' || role === 'guide')) {
       const ta = document.getElementById('onb-horizon');
+      const cont = document.getElementById('onb-continue');
+      ta?.addEventListener('input', () => { if (cont) cont.disabled = !ta.value.trim(); });
+    }
+    // Growth Mindset goal commitment - same live-enable (mandatory for learners, no "Not now").
+    if (step === 'growth_mindset' && (role === 'learner' || role === 'guide')) {
+      const ta = document.getElementById('onb-gm-goal');
       const cont = document.getElementById('onb-continue');
       ta?.addEventListener('input', () => { if (cont) cont.disabled = !ta.value.trim(); });
     }
@@ -3260,6 +3311,12 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       } else if (step === 'compass_intro' || step === 'creator_intro' || step === 'curious_intro' || step === 'academics_intro'
                  || MOUNTAIN_GROW[step] !== undefined) {
         await advance(null); // CLIMB reveal (disc intros + the mtn_* grow beats) - nothing to persist
+      } else if (step === 'growth_mindset') {
+        captureClimb();
+        // The one committed goal is a mandatory step for learners (like the vision ladder), but
+        // captured to foundations (Path A) - the formal goal object is created later on the main page.
+        if ((role === 'learner' || role === 'guide') && !(state.climb.yearGoal || '').trim()) return;
+        await advance(saveClimb);
       } else if (step === 'purpose' || step === 'connection'
                  || step === 'life_skills' || step === 'life_skills_woop'
                  || step === 'academics_math' || step === 'academics_reading' || step === 'academics_la') {
