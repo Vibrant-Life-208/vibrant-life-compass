@@ -131,7 +131,8 @@ export function getWheelAreas() {
 // learner's needle, per-region icon + question + LIFE/GROWS pair, and the
 // "author your own life" center. Scalable via viewBox so it drops into the
 // #life-wheel container at any size. Matches design v5 (2026-07-21).
-function lifeCompassSvg() {
+function lifeCompassSvg(opts = {}) {
+  const { bare = false } = opts;
   const cx = 360, cy = 408, R = 272, hub = 92;
   const d = R * 0.7071;
   const NW = [cx - d, cy - d], NE = [cx + d, cy - d], SE = [cx + d, cy + d], SW = [cx - d, cy + d];
@@ -208,10 +209,20 @@ function lifeCompassSvg() {
     t(cx, cy + 8, 'SOVEREIGNTY', { size: 12, weight: 700, ls: 2, fill: '#b8892f' }) +
     t(cx, cy + 30, 'author your own life', { size: 12, italic: true, fill: '#8a7a5f' });
 
-  return `<svg viewBox="0 0 720 792" class="life-wheel-svg" role="img" aria-label="The Vibrant Life Compass: Self inward, Making onward, World outward, Others together, with Voice and sovereignty at the center">
-    <rect x="0" y="0" width="720" height="792" fill="#fbf9f4"/>
-    ${t(cx, 42, 'The Vibrant Life Compass', { size: 30, weight: 800, fill: '#2f2a20' })}
-    ${t(cx, 70, 'four ways of growing - one sovereign center', { size: 15, italic: true, fill: '#7a7060' })}
+  // bare (onboarding pin, Europa 2026-08-04): crop the viewBox to the wheel itself
+  // (arrow tip y88 -> wheel bottom y714), drop the cream background rect and the
+  // title/footer chrome - so the circle reads big and clean with no white box. The
+  // full titled compass (Growth Record, #life-wheel) is unchanged.
+  const viewBox = bare ? '48 84 624 632' : '0 0 720 792';
+  const bgRect = bare ? '' : `<rect x="0" y="0" width="720" height="792" fill="#fbf9f4"/>`;
+  const titleBlock = bare ? '' :
+    `${t(cx, 42, 'The Vibrant Life Compass', { size: 30, weight: 800, fill: '#2f2a20' })}
+    ${t(cx, 70, 'four ways of growing - one sovereign center', { size: 15, italic: true, fill: '#7a7060' })}`;
+  const footer = bare ? '' :
+    t(cx, 776, "Working draft - the needle is the learner's. We evoke, we never extract.", { size: 12, italic: true, fill: '#9a8f7c' });
+  return `<svg viewBox="${viewBox}" class="life-wheel-svg" role="img" aria-label="The Vibrant Life Compass: Self inward, Making onward, World outward, Others together, with Voice and sovereignty at the center">
+    ${bgRect}
+    ${titleBlock}
     ${northArrow}
     <circle cx="${cx}" cy="${cy}" r="${R + 34}" fill="none" stroke="#ded3bd" stroke-width="1.5"/>
     ${ticks}
@@ -221,14 +232,14 @@ function lifeCompassSvg() {
     ${needle}
     ${self}${making}${world}${others}
     ${center}
-    ${t(cx, 776, "Working draft - the needle is the learner's. We evoke, we never extract.", { size: 12, italic: true, fill: '#9a8f7c' })}
+    ${footer}
   </svg>`;
 }
 
 // The compass SVG as a string, for inlining elsewhere (e.g. pinned atop the
 // onboarding telescope, or in the Growth Record).
-export function lifeWheelSvgFor() {
-  return lifeCompassSvg();
+export function lifeWheelSvgFor(opts = {}) {
+  return lifeCompassSvg(opts && typeof opts === 'object' ? opts : {});
 }
 
 // Render the compass into #life-wheel. One shared four-region map for every

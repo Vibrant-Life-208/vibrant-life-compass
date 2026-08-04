@@ -2146,7 +2146,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // Wheel pinned atop the telescope (captain 2026-07-09; MAC review 2026-07-10):
     // "hold your whole life in view" as you narrow from 10 years to now. It drops
     // away at the halfway step, with the far horizons.
-    const wheel = step !== 'halfway' ? `<div class="onb-wheel-pin">${lifeWheelSvgFor(studio)}</div>` : '';
+    const wheel = step !== 'halfway' ? `<div class="onb-wheel-pin">${lifeWheelSvgFor({ bare: true })}</div>` : '';
     // Mandatory vision flow for learners (captain 2026-07-15): the telescope steps
     // (10yr/5yr/1yr/mirror/halfway) must be answered - no "Not now," Continue is
     // disabled until the box has text. Narrows the 2026-06-22 walk-once decision
@@ -2448,7 +2448,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       pitchTargetStudio: state.pitchOptedIn ? pitchTarget : null,
       currentWheel,
     });
-    const wheel = `<div class="onb-wheel-pin">${lifeWheelSvgFor(plan.wheelStudio)}</div>`;
+    const wheel = `<div class="onb-wheel-pin">${lifeWheelSvgFor({ bare: true })}</div>`;
     const placedLine = plan.pitching && plan.ratified
       ? ' Some of your thresholds are already placed where they belong - refine them, or leave them as they are.'
       : '';
@@ -2554,7 +2554,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const banner = plan.pitching && targetName
       ? `<p class="onb-slice-context">Working toward moving up to <strong>${escapeHtml(targetName)}</strong>, planned across your <strong>${escapeHtml(wheelName)}</strong> year.</p>`
       : '';
-    return { wheelName, targetName, banner, wheel: `<div class="onb-wheel-pin">${lifeWheelSvgFor(plan.wheelStudio)}</div>` };
+    return { wheelName, targetName, banner, wheel: `<div class="onb-wheel-pin">${lifeWheelSvgFor({ bare: true })}</div>` };
   }
 
   // A slice's carried thresholds, broken out read-only AS A FIELD (§2 field-not-sequence;
