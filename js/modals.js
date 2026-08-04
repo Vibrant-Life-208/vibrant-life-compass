@@ -1429,6 +1429,9 @@ const CLIMB_FULL = [
   'connection',        // W9  - Connection + Conscious Living (seeded from W2 strengths)
   'mtn_connection',    // W8  - the mountain grows to two (Purpose + Connection)
   'creator_intro',     // W10 - Creator Mindset environment (reveal, no capture)
+  'mtn_creator',       // W8  - grow to three RIGHT AT THE REVEAL (Europa 2026-08-04, "B"): the disc
+                       //   sets root, the mountain rises to it, THEN the 10/5/1 + goal work happens
+                       //   inside the already-planted Creator disc. Keeps the reveal->grow rhythm tight.
   'curious_intro',     // W11a - "Let's get curious": frames the vision ladder as imagination,
                        //   not commitment (reveal, no text box), before the 10/5/1 screens
   'beyond_5yr',        // W11 - Curiosity: the vision ladder (10yr)
@@ -1437,7 +1440,6 @@ const CLIMB_FULL = [
   'current_state',     // the mirror (kept)
   'halfway',           // halfway (kept)
   'slice_plan',        // W12 - one real goal (existing slice walk)
-  'mtn_creator',       // W8  - the mountain grows to three (+ Creator Mindset)
   'life_skills',       // W14 - Life Skills env, pick one skill
   'life_skills_woop',  // W15 - break it down (WOOP: obstacle + if-then)
   'mtn_lifeskills',    // W8  - the mountain grows to four (+ Life Skills)
