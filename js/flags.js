@@ -66,3 +66,17 @@ export function isClimbBuild() {
     return localStorage.getItem(CLIMB_LS_KEY) !== 'off';
   } catch (_) { return false; }
 }
+
+// Life Skills "where to start" course surface (Europa 2026-08-04). Dark by default;
+// opt in with ?lscourse=on, remembered in localStorage. Off unless explicitly turned on.
+const LSCOURSE_LS_KEY = 'vlc_lscourse';
+export function isLifeSkillsCourse() {
+  try {
+    const p = new URLSearchParams(location.search).get('lscourse');
+    if (p === 'on' || p === 'off') {
+      localStorage.setItem(LSCOURSE_LS_KEY, p);
+      return p === 'on';
+    }
+    return localStorage.getItem(LSCOURSE_LS_KEY) === 'on';
+  } catch (_) { return false; }
+}

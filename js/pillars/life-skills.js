@@ -14,6 +14,7 @@
 
 import { shell, section, emptyNote, escapeHtml, escapeAttr } from './_scaffold.js';
 import { getProfileFoundations, setProfileFoundations } from '../store.js';
+import { isLifeSkillsCourse } from '../flags.js';
 
 const SKILLS = {
   leadership: 'Leadership',
@@ -21,6 +22,88 @@ const SKILLS = {
   financial: 'Financial Literacy',
   wellness: 'Wellness',
 };
+
+// "Where to start" (Europa 2026-08-04, flag-gated ?lscourse=on): the staged path behind each
+// Life Skill, so a learner who picked a skill isn't left staring at a blank goal. The FIRST step
+// is the universal, same-day-doable, no-capital / no-permission entry - what they drop into their
+// goal to begin. NO placement quiz (the money-ethics ruling warns against "you're behind"): one
+// clear first move, the arc visible behind it. Financial Literacy is fully drafted
+// (docs/design/2026-08-04-financial-literacy-course-v0.1.md - grounded in the 2026-07-31
+// money-books research + the 2026-07-20 money-ethics ruling: capacity not a number, beneficence
+// keystone, "millionaire" never appears). The other three carry only a v0.1 first step pending
+// their own research pass (draft: true) - no fabricated full arc.
+const COURSES = {
+  financial: {
+    arc: ['Keep', 'Earn', 'Grow & Guard'],
+    start: {
+      title: 'The tenth',
+      body: 'Set aside a part of any money you have now - however small. A jar, an account. The act, not the amount, is the lesson.',
+      goal: 'Set aside a part of any money I get - my tenth.',
+    },
+    stages: [
+      { name: 'Keep', gloss: '"A part of all you earn is yours to keep."', steps: [
+        'The tenth - set aside a part of any money you have now.',
+        'Need vs want, one week - sort what you spend on, no judgment.',
+        "Find one leak - redirect one thing you don't value into the tenth.",
+        'Name your "free with" - what would enough set aside let you not worry about?',
+      ] },
+      { name: 'Earn', gloss: '"Find a need and fill it."', steps: [
+        'Find a real need someone around you actually has.',
+        'Fill it once, for real - earning is serving.',
+        'The honest test: does an offer sell a capacity, or just a feeling? The tell is the promise about effort.',
+        'Give one back - set aside a part of what you earn for someone beyond you.',
+      ] },
+      { name: 'Grow & Guard', gloss: 'Make it work without gambling.', steps: [
+        'Make a coin work - put a small amount where it grows.',
+        'Circle of competence - only put money into what you understand.',
+        "Margin of safety - never risk what you can't get back.",
+        'Spot the trickster - name one "fast / easy / guaranteed" pitch. Real growth is slow on purpose.',
+      ] },
+    ],
+  },
+  leadership: { draft: true, start: {
+    title: 'Go first',
+    body: 'Do one small thing that helps a group before anyone asks. Leading starts with going first, once.',
+    goal: 'Do one small thing that helps a group before anyone asks.',
+  } },
+  entrepreneurship: { draft: true, start: {
+    title: 'Find one need',
+    body: 'Notice one real thing someone around you needs done or made. Just spot it - that is where every venture starts.',
+    goal: 'Notice one real need someone around me has, and name it.',
+  } },
+  wellness: { draft: true, start: {
+    title: 'One small tending',
+    body: 'Pick one small thing that tends your body or mind - water, a walk, a real breath - and do it today. Wellness is built from small, repeated care.',
+    goal: 'One small thing that tends me - and I do it today.',
+  } },
+};
+
+// The "Where to start" section: the arc (when researched), the universal first step as a
+// card, and a button that drops that first step into the goal below. Read-only guidance -
+// no course-progress persistence yet (deferred); the goal (WOOP) is the persisted object.
+function whereToStartSection(activeKey) {
+  const c = activeKey && COURSES[activeKey];
+  if (!c || !c.start) return '';
+  const arc = Array.isArray(c.arc) && c.arc.length
+    ? `<ol class="ls-arc">${c.arc.map((s, i) => `<li class="ls-arc-step"><span class="ls-arc-num">${i + 1}</span>${escapeHtml(s)}</li>`).join('')}</ol>`
+    : '';
+  const path = Array.isArray(c.stages)
+    ? `<details class="ls-path"><summary>See the whole path</summary>${c.stages.map((st) => `
+        <div class="ls-stage"><p class="ls-stage-name">${escapeHtml(st.name)} <span class="ls-stage-gloss">${escapeHtml(st.gloss || '')}</span></p>
+        <ul class="ls-stage-steps">${st.steps.map((x) => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`).join('')}</details>`
+    : '<p class="ls-draft-note">The full path is still being written - for now, this first step is where to begin.</p>';
+  const body = `
+    <p class="pillar-prompt">Not sure where to begin? Start with one small, real thing, then let it grow. ${arc ? 'Here is the path:' : ''}</p>
+    ${arc}
+    <div class="ls-start-card">
+      <p class="ls-start-kicker">Start here</p>
+      <p class="ls-start-title">${escapeHtml(c.start.title)}</p>
+      <p class="ls-start-body">${escapeHtml(c.start.body)}</p>
+      <button type="button" class="btn btn-text ls-start-use" data-ls-goal="${escapeAttr(c.start.goal || c.start.title)}">Use this as my start</button>
+    </div>
+    ${path}`;
+  return section('Where to start', body);
+}
 
 // The four WOOP fields, in order, with concrete-behaviour framing on the wish.
 const WOOP_FIELDS = [
@@ -65,13 +148,31 @@ export async function renderLifeSkills(learnerId) {
     <ul class="pillar-list">${others.map(([, label]) => `<li>${escapeHtml(label)}</li>`).join('')}</ul>`);
 
   const goalSection = skillGoalSection(activeLabel, climb.woop);
+  // "Where to start" sits between the active skill and the goal editor, so its first step
+  // flows straight into the goal. Flag-gated (dark) and only when a skill is active.
+  const startSection = (isLifeSkillsCourse() && activeKey) ? whereToStartSection(activeKey) : '';
 
   el.innerHTML = shell(
     { color: 'lifeskills', title: 'Life Skills', subtitle: 'The capacities you build for a life you run yourself.' },
-    [activeSection, othersSection, goalSection],
+    [activeSection, startSection, goalSection, othersSection].filter(Boolean),
   );
 
   wireSkillGoal(learnerId, foundations || {}, climb);
+  wireWhereToStart();
+}
+
+// "Use this as my start" - drop the course's first step into the goal's first field and save
+// it (via the existing change-triggered wireSkillGoal handler). Client-only; no new persistence.
+function wireWhereToStart() {
+  document.querySelectorAll('[data-ls-goal]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const ta = document.getElementById('ls-woop-setup');
+      if (!ta) return;
+      ta.value = btn.dataset.lsGoal || '';
+      ta.dispatchEvent(new Event('change'));
+      ta.focus();
+    });
+  });
 }
 
 // Save the WOOP fields back to foundations.climb.woop on edit. Self-only reflective
