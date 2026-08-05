@@ -8,9 +8,10 @@
 //   - tasks.plannedFor   -> planned-day markers dotted onto the calendar cells
 // Visual conventions follow the Year Map (year-map.js) and the sage/earth palette.
 
-import { getLearner, getGoals, getTasksForRange } from './store.js';
+import { getLearner, getGoals, getTasksForRange, saveLearner } from './store.js';
 import { getPlanningCalendar, getStudioName, getSchoolEvents } from './studios.js';
 import { taskColorStyle } from './wheel.js';
+import { encryptField, decryptField } from './crypto.js';
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -170,6 +171,33 @@ export async function renderCalendarView(learnerId) {
     });
   }
   host.appendChild(summary);
+
+  // One line for the year (Kirk, MAC 2026-08-04): a single optional, private reflective line -
+  // "the story the grid prepared them to tell." This is the calendar's first WRITE, so it is held
+  // to the capture rules Salus + Jake set: optional, skippable, self-only, no count, and encrypted
+  // at rest with the learner's own key (a raw profile read is ciphertext). Keyed by cycle year, so
+  // each year keeps its own line. Local-only for now, like the book shelf. Folds into the
+  // Salus + Jake walk as a minor-facing capture (Calendar is Launch Pad 15-17 + staff only).
+  const cycleKey = String(yearStart.getFullYear());
+  const notes = (learner && learner.yearNotes) || {};
+  const noteText = notes[cycleKey] ? await decryptField(learner.id, notes[cycleKey]) : '';
+  const noteCard = document.createElement('div');
+  noteCard.className = 'calendar-yearnote';
+  noteCard.innerHTML = `
+    <h3 class="calendar-yearnote-title">One line for your year</h3>
+    <p class="calendar-yearnote-hint">If you want to. A quiet line to close your year - just for you.</p>
+    <textarea class="calendar-yearnote-input slice-box" rows="2" placeholder="This year I learned that...">${escapeHtml(noteText)}</textarea>`;
+  host.appendChild(noteCard);
+  const noteInput = noteCard.querySelector('.calendar-yearnote-input');
+  if (noteInput) {
+    noteInput.addEventListener('change', async () => {
+      const enc = await encryptField(learner.id, noteInput.value.trim());
+      const nextNotes = { ...((learner && learner.yearNotes) || {}) };
+      if (enc) nextNotes[cycleKey] = enc; else delete nextNotes[cycleKey];
+      if (learner) learner.yearNotes = nextNotes;
+      await saveLearner({ id: learner.id, yearNotes: nextNotes });
+    });
+  }
 }
 
 function buildMonth(year, month, ctx) {

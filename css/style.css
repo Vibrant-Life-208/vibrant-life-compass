@@ -4245,6 +4245,12 @@ body.landscape-mountain {
 }
 .cal-task-dot.is-multi { box-shadow: 4px 0 0 var(--earth-light); }
 
+/* One line for the year (Kirk, MAC 2026-08-04) - a quiet reflective close, optional + private. */
+.calendar-yearnote { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--earth-pale); }
+.calendar-yearnote-title { font-size: 1.05rem; color: var(--text); margin: 0 0 0.25rem; }
+.calendar-yearnote-hint { color: var(--text-muted); font-size: 0.85rem; font-style: italic; margin: 0 0 0.5rem; }
+.calendar-yearnote-input { width: 100%; }
+
 .calendar-sessions-title { font-size: 1.05rem; color: var(--text); margin: 0 0 0.75rem; }
 .calendar-empty { color: var(--text-muted); font-size: 0.88rem; }
 .cal-session-row {
