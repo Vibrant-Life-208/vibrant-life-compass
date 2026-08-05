@@ -91,20 +91,33 @@ export async function renderCalendarView(learnerId) {
   const intro = document.createElement('div');
   intro.className = 'calendar-intro';
   const who = learner?.studio ? getStudioName(learner.studio) : '';
+  // No tally of the learner's goals/tasks in the header (MAC review 2026-08-04, unanimous, and a
+  // consistency fix with the no-count discipline everywhere else in Compass). The header names the
+  // year's SHAPE, not a score. Naming the session count describes the container, not the learner.
+  const sessionCount = ranges.length;
   intro.innerHTML = `
-    <h2 class="calendar-title">Your year at a glance</h2>
-    <p class="calendar-sub">${escapeHtml(who ? who + ' · ' : '')}${yearStart.getFullYear()}–${yearEnd.getFullYear()} cycle. ${yearGoals.length} year goal${yearGoals.length === 1 ? '' : 's'}, ${tasks.length} planned task${tasks.length === 1 ? '' : 's'}. Read-only overview.</p>`;
+    <h2 class="calendar-title">The shape of your year</h2>
+    <p class="calendar-sub">${escapeHtml(who ? who + ' · ' : '')}${yearStart.getFullYear()}–${yearEnd.getFullYear()}. ${sessionCount} session${sessionCount === 1 ? '' : 's'} and the breaks between them - where you are now, and what's ahead. Yours to look over; nothing here to keep up with.</p>`;
   host.appendChild(intro);
 
   // Legend
   const legend = document.createElement('div');
   legend.className = 'calendar-legend';
+  // Two layers (MAC/Ishka 2026-08-04): WHERE you are in time vs WHAT is on a day. The split
+  // teaches the reading order - locate yourself in the year first, then read the day's content.
   legend.innerHTML = `
-    <span class="cal-legend-item"><span class="cal-swatch cal-swatch-session"></span>In session</span>
-    <span class="cal-legend-item"><span class="cal-swatch cal-swatch-start"></span>Session begins</span>
-    <span class="cal-legend-item"><span class="cal-swatch cal-swatch-today"></span>Today</span>
-    <span class="cal-legend-item"><span class="cal-task-dot"></span>Planned task</span>
-    <span class="cal-legend-item"><span class="cal-swatch cal-swatch-event"></span>School event</span>`;
+    <div class="cal-legend-group">
+      <span class="cal-legend-label">Where you are in time</span>
+      <span class="cal-legend-item"><span class="cal-swatch cal-swatch-session"></span>In session</span>
+      <span class="cal-legend-item"><span class="cal-swatch cal-swatch-start"></span>Session begins</span>
+      <span class="cal-legend-item"><span class="cal-swatch cal-swatch-break"></span>Break</span>
+      <span class="cal-legend-item"><span class="cal-swatch cal-swatch-today"></span>Today</span>
+    </div>
+    <div class="cal-legend-group">
+      <span class="cal-legend-label">What's on a day</span>
+      <span class="cal-legend-item"><span class="cal-task-dot"></span>Planned task</span>
+      <span class="cal-legend-item"><span class="cal-swatch cal-swatch-event"></span>School event</span>
+    </div>`;
   host.appendChild(legend);
 
   // Month grids from the cycle's first month through its last.
@@ -163,6 +176,11 @@ function buildMonth(year, month, ctx) {
   const { ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay } = ctx;
   const wrap = document.createElement('div');
   wrap.className = 'cal-month';
+  // Calm entrance: the month holding today gets a gentle bloom (MAC/Chapel 2026-08-04). The
+  // motion itself lives in CSS, with a prefers-reduced-motion fallback.
+  if (todayISO && todayISO.startsWith(`${year}-${String(month + 1).padStart(2, '0')}`)) {
+    wrap.classList.add('is-current-month');
+  }
 
   const title = document.createElement('div');
   title.className = 'cal-month-title';
@@ -201,6 +219,10 @@ function buildMonth(year, month, ctx) {
     if (sIdx != null) {
       cell.classList.add('in-session');
       cell.classList.add(sIdx % 2 === 0 ? 'session-even' : 'session-odd');
+    } else if (inCycle) {
+      // In the cycle but between sessions - a break. Named explicitly (captain 2026-08-04) so
+      // the year reads as session / break / session, not session / blank / session.
+      cell.classList.add('is-break');
     }
     if (startDayISO.has(dISO)) cell.classList.add('is-session-start');
     if (dISO === todayISO) cell.classList.add('is-today');

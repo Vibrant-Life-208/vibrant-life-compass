@@ -4179,13 +4179,19 @@ body.landscape-mountain {
 .calendar-sub { margin: 0 0 1rem; color: var(--text-soft); font-size: 0.9rem; }
 
 .calendar-legend {
-  display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem;
+  display: flex; flex-direction: column; gap: 0.4rem;
   margin: 0 0 1.25rem; font-size: 0.8rem; color: var(--text-soft);
+}
+.cal-legend-group { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1rem; }
+.cal-legend-label {
+  font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--text-muted); font-weight: 600; margin-right: 0.1rem;
 }
 .cal-legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
 .cal-swatch { width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--earth-light); display: inline-block; }
 .cal-swatch-session { background: var(--sage-pale); border-color: var(--sage-light); }
 .cal-swatch-start { background: #fff; border: 2px solid var(--sage); }
+.cal-swatch-break { background: #f4f1ea; border-color: var(--earth-pale); }
 .cal-swatch-today { background: var(--earth-pale); border: 2px solid var(--earth); }
 
 .calendar-months {
@@ -4210,8 +4216,24 @@ body.landscape-mountain {
 .cal-cell.out-of-cycle { color: var(--text-muted); opacity: 0.45; }
 .cal-cell.in-session.session-odd { background: var(--sage-pale); border-color: var(--sage-light); }
 .cal-cell.in-session.session-even { background: var(--earth-pale); border-color: var(--earth-light); }
+/* A break: in the cycle, between sessions. A warm neutral, distinct from either session shade,
+   so the year reads session / break / session at a glance (captain + MAC 2026-08-04). */
+.cal-cell.is-break { background: #f4f1ea; border-color: var(--earth-pale); color: var(--text-muted); }
 .cal-cell.is-session-start { border: 2px solid var(--sage); font-weight: 600; color: var(--text); }
 .cal-cell.is-today { border: 2px solid var(--earth); font-weight: 700; color: var(--text); }
+
+/* Calm entrance (MAC/Chapel 2026-08-04): a gentle rise for the whole set, a soft bloom + sage
+   ring on the month holding today, and a slow settle for task dots. Never celebratory; still-
+   register. Fully disabled under prefers-reduced-motion. */
+@keyframes cal-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes cal-bloom { from { opacity: 0; transform: scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes cal-settle { from { opacity: 0; } to { opacity: 1; } }
+.calendar-months { animation: cal-rise 0.5s ease both; }
+.cal-month.is-current-month { animation: cal-bloom 0.8s ease both; box-shadow: 0 0 0 2px var(--sage-light), var(--shadow); }
+.cal-task-dots { animation: cal-settle 0.9s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  .calendar-months, .cal-month.is-current-month, .cal-task-dots { animation: none; }
+}
 .cal-num { line-height: 1; }
 .cal-session-tag {
   position: absolute; bottom: 2px; right: 3px; font-size: 0.55rem;
