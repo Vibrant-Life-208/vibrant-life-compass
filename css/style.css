@@ -4245,6 +4245,18 @@ body.landscape-mountain {
 }
 .cal-task-dot.is-multi { box-shadow: 4px 0 0 var(--earth-light); }
 
+/* Mark-a-day presence (Vic, MAC 2026-08-04): a quiet mirror, never a trophy case. A soft dot
+   top-right on marked days, a one-breath bloom on the tap, then it settles. No count anywhere. */
+.calendar-mark-hint { margin: -0.5rem 0 1.25rem; font-size: 0.8rem; font-style: italic; color: var(--text-muted); }
+.cal-cell[data-iso] { cursor: pointer; }
+.cal-cell.is-present::after {
+  content: ''; position: absolute; top: 3px; right: 3px;
+  width: 5px; height: 5px; border-radius: 50%; background: var(--sage);
+}
+@keyframes cal-present-pop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.7); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+.cal-cell.just-marked::after { animation: cal-present-pop 0.6s ease both; }
+@media (prefers-reduced-motion: reduce) { .cal-cell.just-marked::after { animation: none; } }
+
 /* One line for the year (Kirk, MAC 2026-08-04) - a quiet reflective close, optional + private. */
 .calendar-yearnote { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--earth-pale); }
 .calendar-yearnote-title { font-size: 1.05rem; color: var(--text); margin: 0 0 0.25rem; }

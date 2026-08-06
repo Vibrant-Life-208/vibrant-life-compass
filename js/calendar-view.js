@@ -68,6 +68,11 @@ export async function renderCalendarView(learnerId) {
   const todayISO = isoOf(new Date());
   const startDayISO = new Set(ranges.map((r) => r.startISO));
 
+  // Mark-a-day presence (Vic, MAC 2026-08-04): the learner can mark days they showed up - a
+  // quiet mirror, never a trophy case. Just ISO dates (not intimate text), so plaintext + self-
+  // only. NO count, NO streak, fully reversible. Local-only for now, like the book shelf.
+  const presenceSet = new Set(Array.isArray(learner?.presenceDays) ? learner.presenceDays : []);
+
   // Tasks bucketed by planned day (count + titles for the tooltip).
   const tasksByDay = {};
   for (const t of tasks) {
@@ -121,6 +126,14 @@ export async function renderCalendarView(learnerId) {
     </div>`;
   host.appendChild(legend);
 
+  // Mark-a-day hint (Vic): discoverable, warm, no productivity language.
+  if (learner) {
+    const markHint = document.createElement('p');
+    markHint.className = 'calendar-mark-hint';
+    markHint.textContent = 'Tap a day you showed up - a quiet mark, just for you. No streaks, nothing counted.';
+    host.appendChild(markHint);
+  }
+
   // Month grids from the cycle's first month through its last.
   const monthsWrap = document.createElement('div');
   monthsWrap.className = 'calendar-months';
@@ -130,12 +143,34 @@ export async function renderCalendarView(learnerId) {
   while (cursor <= lastMonth) {
     monthsWrap.appendChild(
       buildMonth(cursor.getFullYear(), cursor.getMonth(), {
-        ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay,
+        ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay, presenceSet,
       }),
     );
     cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
   }
   host.appendChild(monthsWrap);
+
+  // Toggle presence on tap (delegated - only in-cycle days carry data-iso, so out-of-cycle and
+  // blank cells are inert). Reversible; persists the sorted date set. A brief "just-marked" bloom
+  // plays once on marking (CSS), then settles to the quiet persistent dot.
+  if (learner) {
+    monthsWrap.addEventListener('click', async (e) => {
+      const cell = e.target.closest('.cal-cell');
+      if (!cell || !cell.dataset.iso) return;
+      const iso = cell.dataset.iso;
+      if (presenceSet.has(iso)) {
+        presenceSet.delete(iso);
+        cell.classList.remove('is-present', 'just-marked');
+      } else {
+        presenceSet.add(iso);
+        cell.classList.add('is-present', 'just-marked');
+        setTimeout(() => cell.classList.remove('just-marked'), 900);
+      }
+      const next = Array.from(presenceSet).sort();
+      learner.presenceDays = next;
+      try { await saveLearner({ id: learner.id, presenceDays: next }); } catch (err) { console.warn('presence save:', err); }
+    });
+  }
 
   // Per-session goal summary (session goals grouped under their session number).
   const summary = document.createElement('div');
@@ -201,7 +236,7 @@ export async function renderCalendarView(learnerId) {
 }
 
 function buildMonth(year, month, ctx) {
-  const { ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay } = ctx;
+  const { ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay, presenceSet } = ctx;
   const wrap = document.createElement('div');
   wrap.className = 'cal-month';
   // Calm entrance: the month holding today gets a gentle bloom (MAC/Chapel 2026-08-04). The
@@ -242,6 +277,11 @@ function buildMonth(year, month, ctx) {
 
     const inCycle = d >= yearStart && d <= new Date(yearEnd.getFullYear(), yearEnd.getMonth(), yearEnd.getDate(), 23, 59, 59);
     if (!inCycle) cell.classList.add('out-of-cycle');
+    // Only real, in-cycle days are markable (Vic's presence gesture); data-iso is the click hook.
+    if (inCycle) {
+      cell.dataset.iso = dISO;
+      if (presenceSet && presenceSet.has(dISO)) cell.classList.add('is-present');
+    }
 
     const sIdx = inCycle ? sessionForDay(d.getTime(), ranges) : null;
     if (sIdx != null) {
