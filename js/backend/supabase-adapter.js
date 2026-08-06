@@ -139,6 +139,37 @@ export async function getLearners() {
   }));
 }
 
+// Studio -> guide-of-the-tribe resolution (2026-08-05 fleet decision). A learner's
+// studio (their "tribe") maps to a guide via profiles.tribes. When EXACTLY one guide
+// runs the studio, we name them (e.g. Rose for Discovery, Ben for Adventure) instead of
+// the generic "your guide"; 0 or >1 -> null -> generic label (also the non-shaming path
+// for a learner with no assigned guide, Bareil's requirement). guideName is a DISPLAY
+// LABEL only: the guide is named as witness/receiver, never impersonated (Hoshi/Wesley
+// boundary, no "Rose says..." copy).
+//
+// RLS: a learner cannot read a guide's profile row (profiles is self/family-only), so a
+// client-side getGuides() returns [] for a learner. We resolve the name via the v0.38
+// SECURITY DEFINER function guide_name_for_studio(), which returns ONLY the name (no
+// email/anchor/id) and only on an exact-one match. Falls back to null on error or an
+// unmigrated DB, so the copy safely stays generic pre-migration.
+// Refs: agents/meetings/2026/08/2026-08-05-discovery-adventure-climbs-guides.md
+const _guideNameByStudio = new Map();
+async function guideForStudio(studio) {
+  if (!studio) return null;
+  if (_guideNameByStudio.has(studio)) {
+    const cached = _guideNameByStudio.get(studio);
+    return cached ? { name: cached } : null;
+  }
+  let name = null;
+  try {
+    const { data, error } = await getClient().rpc('guide_name_for_studio', { p_studio: studio });
+    if (!error && typeof data === 'string' && data) name = data;
+  } catch (_) { name = null; }
+  // Cache per studio (a handful of studios) so a roster loop doesn't re-RPC per learner.
+  _guideNameByStudio.set(studio, name);
+  return name ? { name } : null;
+}
+
 export async function getLearner(id) {
   const c = getClient();
   let { data, error } = await c
@@ -157,11 +188,14 @@ export async function getLearner(id) {
       .single());
     if (error) return null;
   }
+  // Guide-of-the-tribe display label (studio-match, generic fallback). See guideForStudio.
+  const guide = await guideForStudio(data.studio);
   return {
     id: data.id,
     name: data.profiles?.name,
     email: data.profiles?.email,
     studio: data.studio,
+    guideName: guide?.name ?? null,
     setupCompletedAt: data.setup_completed_at ?? null,
     // Stage P3: slices the learner chose to leave open (invitation, not missing-data).
     // Dormant until Stage O writes it; [] when the column/value is absent.
@@ -1017,7 +1051,7 @@ export async function linkParentToLearner(parentId, learnerId) {
 // ============================================================================
 export async function getGuides() {
   const { data } = await getClient().from('profiles').select('*').eq('role', 'guide');
-  return (data || []).map((g) => ({ id: g.id, name: g.name, email: g.email, heroName: g.email?.split('@')[0] }));
+  return (data || []).map((g) => ({ id: g.id, name: g.name, email: g.email, heroName: g.email?.split('@')[0], tribes: Array.isArray(g.tribes) ? g.tribes : [] }));
 }
 
 export async function getGuide(id) {
