@@ -1082,6 +1082,10 @@ export async function openGoalArcModal({ goal, learnerId = null, lifeArea = null
 export async function openGoalSetupModal({ goal = null, category = null, learnerId = null, onDone = null }) {
   const catId = category?.id || goal?.categoryId;
   const catName = category?.name || goal?.lifeArea || 'this goal';
+  // Guide-of-the-tribe display label (2026-08-05 fleet decision): name the real guide
+  // (Rose/Ben) as the one who would witness the learner's growth, never impersonated.
+  const gsGuide = learnerId ? await getLearner(learnerId) : null;
+  const gsGuideName = gsGuide?.guideName ? escapeHtml(gsGuide.guideName) : null;
   const dnow = new Date();
   const todayISO = `${dnow.getFullYear()}-${String(dnow.getMonth() + 1).padStart(2, '0')}-${String(dnow.getDate()).padStart(2, '0')}`;
   const MAX_ITEMS = 3; // up to three per phase; a FEW, never the full ladder (Decision 2 + captain 2026-07-18)
@@ -1145,7 +1149,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         <textarea id="gs-yeargoal" class="slice-box" rows="3" placeholder="This year, in ${escapeAttr(catName)}, I am growing into…">${escapeHtml(s.yeargoal)}</textarea>`
       : `
         <h3 class="onb-horizon-heading">${escapeHtml(catName)} - your year goal</h3>
-        <p class="onb-horizon-body">A year from now, what's different about you in ${escapeHtml(catName)}? How would your guide know you got there?</p>
+        <p class="onb-horizon-body">A year from now, what's different about you in ${escapeHtml(catName)}? How would ${gsGuideName || 'your guide'} know you got there?</p>
         <textarea id="gs-yeargoal" class="slice-box" rows="3" placeholder="By next year, in ${escapeAttr(catName)}, I want to…">${escapeHtml(s.yeargoal)}</textarea>`;
     } else if (st === 'detail') {
       // Doing-only wide brainstorm before the mirror (option a, captain 2026-07-21). The skip is the
@@ -1578,6 +1582,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // (e.g. an adult onboarding with no learnerId) resolves false = the legacy flow, unchanged.
   const onbLearner = learnerId ? await getLearner(learnerId) : null;
   const currentWheel = isCurrentWheelBuild(onbLearner);
+  // Guide-of-the-tribe display label for the climb (2026-08-05 fleet decision). Named as
+  // the guide who helps/confirms, never impersonated (no "Rose says..." copy). Generic
+  // "your guide" fallback when the studio has no single matching guide.
+  const onbGuideName = onbLearner?.guideName ? escapeHtml(onbLearner.guideName) : null;
   // Cascade selection: Sparks (tots) stay screen-free always. Otherwise, ?climb=on walks
   // THE CLIMB; flag-off keeps the legacy telescope cascade byte-for-byte. The strengths_why
   // / values_why splices below still fire (ids match in both arrays). CLIMB is the LEARNER
@@ -2088,7 +2096,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       return `
         <div class="onb-horizon-prompt">
           <h3 class="onb-horizon-heading">Want to start getting ready?</h3>
-          <p class="onb-horizon-body">You could spend this year working toward moving up to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
+          <p class="onb-horizon-body">You could spend this year working toward moving up to <strong>${escapeHtml(targetName)}</strong>. ${onbGuideName || 'Your guide'} will help you get there.</p>
         </div>
         <div class="onb-pitch-choices">
           <button type="button" class="btn btn-primary" data-pitch="optin-yes">Yes, let's go</button>
@@ -2110,7 +2118,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       return `
         <div class="onb-horizon-prompt">
           <h3 class="onb-horizon-heading">You're on your way.</h3>
-          <p class="onb-horizon-body">Your <strong>${escapeHtml(targetName)}</strong> pitch is open, and your guide has been asked to confirm. Let's set your year.</p>
+          <p class="onb-horizon-body">Your <strong>${escapeHtml(targetName)}</strong> pitch is open, and ${onbGuideName || 'your guide'} has been asked to confirm. Let's set your year.</p>
         </div>
         ${navButtons({ skippable: false, continueLabel: 'Continue' })}
       `;
@@ -3642,13 +3650,15 @@ export function openPitchOptInModal(learner, onDone) {
   setModalTitle(`Moving up to ${targetName}?`);
   const fields = document.getElementById('form-fields');
   if (!fields) return;
+  // Guide-of-the-tribe display label (2026-08-05 fleet decision); generic fallback.
+  const pitchGuideName = learner?.guideName ? escapeHtml(learner.guideName) : null;
   let stage = 'ask-age';
   const render = () => {
     if (stage === 'ask-optin') {
       fields.innerHTML = `
         <div class="onb-horizon-prompt">
           <h3 class="onb-horizon-heading">Want to start getting ready?</h3>
-          <p class="onb-horizon-body">You could spend this year working toward moving up to <strong>${escapeHtml(targetName)}</strong>. Your guide will help you get there.</p>
+          <p class="onb-horizon-body">You could spend this year working toward moving up to <strong>${escapeHtml(targetName)}</strong>. ${pitchGuideName || 'Your guide'} will help you get there.</p>
         </div>
         <div class="onb-pitch-choices">
           <button type="button" class="btn btn-primary" data-pitch="optin-yes">Yes, let's go</button>

@@ -69,6 +69,16 @@ export async function getLearners() {
   return read(KEYS.learners) || [];
 }
 
+// Studio -> guide-of-the-tribe resolution (parity with the supabase adapter; see the
+// comment there). Exactly one guide running the learner's studio -> name them; else the
+// generic "your guide" fallback (also the non-shaming no-guide path).
+async function guideForStudioLocal(studio) {
+  if (!studio) return null;
+  const guides = read(KEYS.guides) || [];
+  const matches = guides.filter((g) => Array.isArray(g.tribes) && g.tribes.includes(studio));
+  return matches.length === 1 ? matches[0] : null;
+}
+
 export async function getLearner(id) {
   const learners = await getLearners();
   const learner = learners.find((l) => l.id === id);
@@ -76,11 +86,15 @@ export async function getLearner(id) {
   // current_wheel_test defaults to false (v0.23). NB: local dev is always current-wheel via
   // the BACKEND_TYPE gate in isCurrentWheelBuild, so this value is not consulted locally - it
   // is carried only for adapter parity.
-  if (learner) return {
-    ...learner,
-    openByChoice: Array.isArray(learner.openByChoice) ? learner.openByChoice : [],
-    current_wheel_test: Boolean(learner.current_wheel_test),
-  };
+  if (learner) {
+    const g = await guideForStudioLocal(learner.studio);
+    return {
+      ...learner,
+      openByChoice: Array.isArray(learner.openByChoice) ? learner.openByChoice : [],
+      current_wheel_test: Boolean(learner.current_wheel_test),
+      guideName: g?.name ?? null,
+    };
+  }
   // Guide-as-protagonist fallback (Captain 2026-05-15): when a guide is
   // signed in and their own id is being used as the protagonist id,
   // return the guide record with a synthetic studio so all the learner-
@@ -94,6 +108,8 @@ export async function getLearner(id) {
       // Guides skip the first-run setup gate by being implicitly setup-complete
       setupCompletedAt: guide.setupCompletedAt || guide.createdAt || new Date().toISOString(),
       priorityGoalIds: guide.priorityGoalIds || [],
+      // Shape parity with the learner branch; a guide-as-protagonist has no "their guide".
+      guideName: null,
     };
   }
   return null;

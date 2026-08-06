@@ -159,7 +159,7 @@ export async function renderSetupView(learnerId) {
         <div class="form-field">
           ${learner.studio
             ? `<p class="setup-studio-readonly"><strong>${escapeHtml(STUDIOS[learner.studio]?.name || learner.studio)}</strong>${STUDIOS[learner.studio]?.ageRange ? ` (${escapeHtml(STUDIOS[learner.studio].ageRange)})` : ''}</p>
-               <p class="setup-hint">Your studio is set by your guide. If it looks wrong, ask them to change it — you can't change it here.</p>`
+               <p class="setup-hint">Your studio is set by ${learner.guideName ? escapeHtml(learner.guideName) : 'your guide'}. If it looks wrong, ask them to change it — you can't change it here.</p>`
             : `<p class="setup-hint">No studio assigned yet. Ask your guide to set your studio before you start.</p>`}
         </div>
       </div>
@@ -471,6 +471,6 @@ async function renderPartnerZoneInSetup(learner, ctx) {
   // this zone just shows the calm waiting state until then. (The active / pending branches
   // above still render if a guide has already paired the learner.)
   zone.innerHTML = `
-    <p class="learners-empty">Your guide will pair you with an accountability partner - by hand or by shuffle - so this one is off your plate. Once you are paired, they will sign off on your year plan.</p>
+    <p class="learners-empty">${learner.guideName ? escapeHtml(learner.guideName) : 'Your guide'} will pair you with an accountability partner - by hand or by shuffle - so this one is off your plate. Once you are paired, they will sign off on your year plan.</p>
   `;
 }

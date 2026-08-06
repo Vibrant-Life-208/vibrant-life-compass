@@ -35,9 +35,10 @@ export async function renderPartnerSection(learnerId) {
     return;
   }
 
-  const [active, pending] = await Promise.all([
+  const [active, pending, learner] = await Promise.all([
     getActivePartnerOf(learnerId),
     getPendingProposalsFor(learnerId),
+    getLearner(learnerId),
   ]);
 
   let html = '';
@@ -77,7 +78,7 @@ export async function renderPartnerSection(learnerId) {
     html += `
       <div class="partner-empty-card">
         <p class="partner-label">No accountability partner yet</p>
-        <p class="partner-empty-text">Your guide will pair you with an accountability partner. Once you're paired, you'll approve each other's year-goal check-offs here.</p>
+        <p class="partner-empty-text">${learner?.guideName ? escapeHtml(learner.guideName) : 'Your guide'} will pair you with an accountability partner. Once you're paired, you'll approve each other's year-goal check-offs here.</p>
       </div>
     `;
   }
@@ -333,10 +334,11 @@ async function renderProposalUI(learnerId) {
   // Guide-assigned partners (captain 2026-07-21): the learner self-pick is retired.
   // A guide pairs learners from the Tribe tab, by randomizer or by hand. This page
   // shows the calm "waiting to be paired" state until a guide assigns a partner.
+  const learner = await getLearner(learnerId);
   return `
     <div class="partner-empty-card">
       <p class="partner-label">Waiting to be paired</p>
-      <p class="partner-empty-text">Your guide will pair you with an accountability partner - someone to walk alongside this year. Once you're paired, you'll approve each other's year plan and year-goal check-offs right here.</p>
+      <p class="partner-empty-text">${learner?.guideName ? escapeHtml(learner.guideName) : 'Your guide'} will pair you with an accountability partner - someone to walk alongside this year. Once you're paired, you'll approve each other's year plan and year-goal check-offs right here.</p>
     </div>
   `;
 }
