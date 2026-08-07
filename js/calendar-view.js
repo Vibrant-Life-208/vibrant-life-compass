@@ -1,12 +1,18 @@
-// Calendar view - a read-only, month-by-month picture of the academic-year cycle.
-// Available to Launch Pad learners and staff adults (guides / owners) only; the tab
-// itself is gated in app.js (young tiers - Sparks / Discovery / Adventure - and parents
-// never see it). This view renders over EXISTING data only - it writes nothing and adds no
-// schema:
+// Calendar view - a month-by-month picture of the academic-year cycle.
+// Shown to ALL learners (Discovery, Adventure, Launch Pad) + staff adults (guides / owners);
+// gated in app.js by isLearner / isStaff (NOT launchpad-only). Sparks is parent-only (no learner
+// login) and parents don't get the tab.
+//   AUDIENCE CORRECTED 2026-08-07: an earlier comment here wrongly claimed "Launch Pad only /
+//   Discovery never see it." The gate never restricted it, and the captain confirmed it is for
+//   everyone. Because the real audience includes 8-11 (Discovery) learners, the copy and the two
+//   captures below still owe a young-register + Salus/Jake pass.
+// Mostly renders over EXISTING data:
 //   - getYearCalendar()  -> the cycle's session start dates + week counts (studios.js)
 //   - goals.sessionIndex -> per-session goals, grouped under their session
 //   - tasks.plannedFor   -> planned-day markers dotted onto the calendar cells
-// Visual conventions follow the Year Map (year-map.js) and the sage/earth palette.
+// It now also carries two small learner-owned WRITES, held to the capture rules (optional, no
+// count, self-only): the year-note (one reflective line, encrypted at rest) and mark-a-day
+// presence (ISO dates). Visual conventions follow the Year Map (year-map.js) and sage/earth palette.
 
 import { getLearner, getGoals, getTasksForRange, saveLearner } from './store.js';
 import { getPlanningCalendar, getStudioName, getSchoolEvents } from './studios.js';
@@ -212,7 +218,9 @@ export async function renderCalendarView(learnerId) {
   // to the capture rules Salus + Jake set: optional, skippable, self-only, no count, and encrypted
   // at rest with the learner's own key (a raw profile read is ciphertext). Keyed by cycle year, so
   // each year keeps its own line. Local-only for now, like the book shelf. Folds into the
-  // Salus + Jake walk as a minor-facing capture (Calendar is Launch Pad 15-17 + staff only).
+  // Salus + Jake walk as a minor-facing capture. NOTE (2026-08-07): the calendar is shown to ALL
+  // learners incl. Discovery (8-11), not Launch Pad only - so this reflective line reaches young
+  // learners and owes a young-register pass; watch it in the walk.
   const cycleKey = String(yearStart.getFullYear());
   const notes = (learner && learner.yearNotes) || {};
   const noteText = notes[cycleKey] ? await decryptField(learner.id, notes[cycleKey]) : '';
