@@ -1,9 +1,17 @@
 // js/pillars/creator.js — the yellow pillar.
+// The four named dispositions of Creator Mindset (per the family-playbook pyramid,
+// updated 2026-08-07): Growth Mindset, Self Efficacy, Curiosity, Responsibility.
+// Self Efficacy is the pillar's throughline - "you find out you can build" - framed
+// as copy over the goals, NOT a disposition-goal (the 2026-07-16 verdict forbids that).
+// Emotional Regulation is a TOOLS/practice layer beneath the dispositions, not one of
+// the four named items (it moved out of the named set when Self Efficacy came in) - but
+// per the SSC glance (2026-08-07) it stays NAMED as a strength, never a reactive gadget,
+// and the self-efficacy framing rests on agency (choosing to try), not achievement.
+// OLDER-tier only; the younger tier (Wave 2) keeps Emotional Regulation named pending SSC re-review.
 // The Curiosity vision (10/5/1 horizons) and the year goals it feeds - each goal
 // with its halfway point. Academic (core) goals live on the Academics pillar, so
 // Creator shows the NON-core year goals (the maker/mindset goals). Responsibilities
-// is a self-owned list (foundations.climb.responsibilities). Emotional Regulation
-// tools are still Phase 2.
+// is a self-owned list (foundations.climb.responsibilities).
 
 import { shell, section, emptyNote, goalCard, escapeHtml, escapeAttr } from './_scaffold.js';
 import { getLearner, getGoals, getProfileHorizons, getProfileFoundations, setProfileFoundations } from '../store.js';
@@ -68,9 +76,10 @@ export async function renderCreatorMindset(learnerId) {
     ? section('Your vision', horizonRows)
     : section('Your vision', emptyNote('Your 10 / 5 / 1 year vision appears here once you set it.'));
 
-  const goalsSection = makerGoals.length
-    ? section('Your goals', makerGoals.map(goalCard).join(''))
-    : section('Your goals', emptyNote('The goals you set from your vision will land here.'));
+  const efficacyPrompt = `<p class="pillar-prompt">This is where you find out what you're capable of. You get to try things that stretch you - and every time you choose to try, you're building a quiet trust in yourself. That trust is <strong>self-efficacy</strong>.</p>`;
+  const goalsSection = section('Your goals', efficacyPrompt + (makerGoals.length
+    ? makerGoals.map(goalCard).join('')
+    : emptyNote('The goals you set from your vision will land here.')));
 
   const toolsSection = section('Emotional Regulation', regToolsHtml());
 
