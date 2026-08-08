@@ -30,8 +30,12 @@ const SKILLS = {
 // clear first move, the arc visible behind it. Financial Literacy is fully drafted
 // (docs/design/2026-08-04-financial-literacy-course-v0.1.md - grounded in the 2026-07-31
 // money-books research + the 2026-07-20 money-ethics ruling: capacity not a number, beneficence
-// keystone, "millionaire" never appears). The other three carry only a v0.1 first step pending
-// their own research pass (draft: true) - no fabricated full arc.
+// keystone, "millionaire" never appears). Leadership is now also fully drafted
+// (docs/design/2026-08-06-leadership-course-v0.1.md - grounded in the 2026-08-06 leadership-books
+// research: capacity not a title, Greenleaf's servant-first + best test, worth-following vs
+// make-others-follow, Greene/Machiavelli specimen-firewalled). The remaining two (Entrepreneurship,
+// Wellness) carry only a v0.1 first step pending their own research pass (draft: true) - no
+// fabricated full arc.
 const COURSES = {
   financial: {
     arc: ['Keep', 'Earn', 'Grow & Guard'],
@@ -61,11 +65,34 @@ const COURSES = {
       ] },
     ],
   },
-  leadership: { draft: true, start: {
-    title: 'Go first',
-    body: 'Do one small thing that helps a group before anyone asks. Leading starts with going first, once.',
-    goal: 'Do one small thing that helps a group before anyone asks.',
-  } },
+  leadership: {
+    arc: ['Serve', 'Steady', 'Gather'],
+    start: {
+      title: 'Go first',
+      body: 'Do one small thing that helps a group before anyone asks - pick up what got dropped, start the dull job, welcome the new person. Leading starts with going first, once.',
+      goal: 'Do one small thing that helps a group before anyone asks.',
+    },
+    stages: [
+      { name: 'Serve', gloss: '"The servant-leader is servant first."', steps: [
+        'Go first - do one small thing that helps a group before anyone asks.',
+        'Serve the real need - find the thing your group actually needs done, and do it.',
+        'Serve without the credit - help once where no one will know it was you.',
+        "Name who you'd serve - what group or cause would you carry something hard for?",
+      ] },
+      { name: 'Steady', gloss: 'Be someone a group can rely on.', steps: [
+        'Keep one word - promise your group one small thing and do it, exactly.',
+        'Stay steady when it\'s hard - be the one who asks "what now?" instead of blaming.',
+        'Own one miss - when you get it wrong, say so plainly and fix it.',
+        "Lift, don't push - the honest test: worth following, or making others follow?",
+      ] },
+      { name: 'Gather', gloss: 'The group chooses the one who has served.', steps: [
+        'Make room for another voice - draw out someone quieter, and mean it.',
+        'Organize one real thing - pull a few people together to help beyond yourselves.',
+        'Ask the best test - did the people I served grow more capable and free, or did I just get my way?',
+        'Hand it on - give away a piece of what you lead; teach someone else to carry it.',
+      ] },
+    ],
+  },
   entrepreneurship: { draft: true, start: {
     title: 'Find one need',
     body: 'Notice one real thing someone around you needs done or made. Just spot it - that is where every venture starts.',
