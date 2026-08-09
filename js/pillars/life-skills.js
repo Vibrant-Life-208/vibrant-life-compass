@@ -37,8 +37,13 @@ const SKILLS = {
 // (docs/design/2026-08-09-wellness-course-v0.1.md - grounded in the 2026-08-09 wellbeing research:
 // connection is the strongest predictor, self-compassion not self-optimization, tending not fixing;
 // no tracking/weight/metrics by design; AED/AAP eating-disorder safety guardrail baked in, Salus/Jake
-// review owed). The remaining one (Entrepreneurship) carries only a v0.1 first step pending its own
-// research pass (draft: true, owned by a parallel session) - no fabricated full arc.
+// review owed). Entrepreneurship completes the set (docs/design/2026-08-09-entrepreneurship-course-v0.1.md
+// - reuses the 2026-07-31 money report's Wardlaw "find a need that EXISTS and fill it" spine + the
+// Karbo/Hill extraction fork, extended to ventures: capacity not "be your own boss / get rich",
+// See -> Make -> Serve, the venture-level firewall "does it fill a real need or manufacture/capture
+// one?", no hustle-culture; admission gate logged "graph not needed" - single-pass, smallest-graph
+// outcome). All FOUR Life Skills courses are now fully drafted + wired behind ?lscourse=on. Salus/Jake
+// developmental pass is owed across all four (the 8-11 young register is the Wave-2 rewrite).
 const COURSES = {
   financial: {
     arc: ['Keep', 'Earn', 'Grow & Guard'],
@@ -96,11 +101,34 @@ const COURSES = {
       ] },
     ],
   },
-  entrepreneurship: { draft: true, start: {
-    title: 'Find one need',
-    body: 'Notice one real thing someone around you needs done or made. Just spot it - that is where every venture starts.',
-    goal: 'Notice one real need someone around me has, and name it.',
-  } },
+  entrepreneurship: {
+    arc: ['See', 'Make', 'Serve'],
+    start: {
+      title: 'Find one real need',
+      body: "Notice one thing someone around you actually needs done or made - real, already there, not one you'd have to talk them into. Just spot it. Every honest venture starts at a need that already exists, not one you manufacture.",
+      goal: 'Notice one real need someone around me already has, and name it.',
+    },
+    stages: [
+      { name: 'See', gloss: '"Filling needs that exist."', steps: [
+        "Spot a real need - one someone actually has, already there, not one you'd have to talk them into.",
+        'Ask the person, don\'t guess - talk to someone who has the need and ask what would actually help.',
+        "Check it's real, not manufactured - would you have to create the worry to sell the fix? If so, drop it.",
+        "Pick the one you'd be glad to fill - a direction, not a business plan.",
+      ] },
+      { name: 'Make', gloss: 'Build the smallest real thing, ship it, improve it.', steps: [
+        'Make the smallest real thing - the version one person could use this week, not the dream version.',
+        'Put it in front of one real person - real use, not your imagination, tells you the truth.',
+        "Improve from what happened, not what you hoped - change one thing based on what they actually did.",
+        'Refuse the extraction shortcut - the honest test: does it leave people better off, or just harder to leave?',
+      ] },
+      { name: 'Serve', gloss: 'Does it leave people genuinely better? Serve, don\'t hustle.', steps: [
+        'Ask the capacity test - do they walk away with a real good, or only a feeling you sold them?',
+        'Trade fair, both sides ahead - a fair trade leaves both richer; extraction leaves them emptier.',
+        'Give some of it back - a part of what you make, for someone beyond you. A business is a way to serve.',
+        'Refuse the hustle story - name what "crush it / grind / be your own boss" is selling. Real building is slow.',
+      ] },
+    ],
+  },
   wellness: {
     arc: ['Tend', 'Be Kind', 'Connect'],
     start: {
