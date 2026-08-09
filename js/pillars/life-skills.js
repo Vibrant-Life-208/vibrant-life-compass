@@ -33,9 +33,12 @@ const SKILLS = {
 // keystone, "millionaire" never appears). Leadership is now also fully drafted
 // (docs/design/2026-08-06-leadership-course-v0.1.md - grounded in the 2026-08-06 leadership-books
 // research: capacity not a title, Greenleaf's servant-first + best test, worth-following vs
-// make-others-follow, Greene/Machiavelli specimen-firewalled). The remaining two (Entrepreneurship,
-// Wellness) carry only a v0.1 first step pending their own research pass (draft: true) - no
-// fabricated full arc.
+// make-others-follow, Greene/Machiavelli specimen-firewalled). Wellness is fully drafted too
+// (docs/design/2026-08-09-wellness-course-v0.1.md - grounded in the 2026-08-09 wellbeing research:
+// connection is the strongest predictor, self-compassion not self-optimization, tending not fixing;
+// no tracking/weight/metrics by design; AED/AAP eating-disorder safety guardrail baked in, Salus/Jake
+// review owed). The remaining one (Entrepreneurship) carries only a v0.1 first step pending its own
+// research pass (draft: true, owned by a parallel session) - no fabricated full arc.
 const COURSES = {
   financial: {
     arc: ['Keep', 'Earn', 'Grow & Guard'],
@@ -98,11 +101,34 @@ const COURSES = {
     body: 'Notice one real thing someone around you needs done or made. Just spot it - that is where every venture starts.',
     goal: 'Notice one real need someone around me has, and name it.',
   } },
-  wellness: { draft: true, start: {
-    title: 'One small tending',
-    body: 'Pick one small thing that tends your body or mind - water, a walk, a real breath - and do it today. Wellness is built from small, repeated care.',
-    goal: 'One small thing that tends me - and I do it today.',
-  } },
+  wellness: {
+    arc: ['Tend', 'Be Kind', 'Connect'],
+    start: {
+      title: 'One small tending',
+      body: 'Pick one small thing that tends your body or mind - water, a walk, a real breath - and do it today. Wellness is built from small, repeated care - not from buying, counting, or fixing anything.',
+      goal: 'One small thing that tends me - and I do it today.',
+    },
+    stages: [
+      { name: 'Tend', gloss: 'Care for your body with small, real, free things.', steps: [
+        'Sleep one night well - a real wind-down tonight, screens down early.',
+        'Move because it feels good - for how it feels, not to burn or count anything.',
+        'Get outside - a little green or open air today.',
+        'Eat something that nourishes you - no "good/bad" food, no counting. Food is care, not a scoreboard.',
+      ] },
+      { name: 'Be Kind', gloss: 'Treat yourself like someone you\'re helping, not a project to fix.', steps: [
+        "Talk to yourself like a friend - say what you'd tell a friend who felt that way.",
+        'Rest your attention - a few real minutes to breathe and notice, nothing to fix or scroll.',
+        'The honest test: is a "wellness" message helping you tend yourself, or selling you as a project that\'s never fixed?',
+        'Drop one number - step away from one thing you track about your body, and feel how it actually feels.',
+      ] },
+      { name: 'Connect', gloss: 'The strongest thing for a good life is people.', steps: [
+        'Reach one person - message or sit with someone you like, today.',
+        'Tend one relationship - listen fully, say thanks, show up. Quality, not count.',
+        'Ask for or offer help - both ends of care are wellbeing.',
+        'Belong to something - show up once for a group or place you are part of.',
+      ] },
+    ],
+  },
 };
 
 // The "Where to start" section: the arc (when researched), the universal first step as a
