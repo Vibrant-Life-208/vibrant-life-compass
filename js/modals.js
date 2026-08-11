@@ -1972,10 +1972,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="onb-strengths-why">
         <ul class="strength-pill-list">${chips}</ul>
         <h3 class="onb-why-heading">Tools you already have</h3>
-        <p class="onb-why-body">Meet your strengths. These are some of the best parts of who you are. You use them every day, in your own way - maybe you help a friend, ask a great question, make someone laugh, or keep going when something gets tricky.</p>
-        <p class="onb-why-body">Your strengths are like tools you carry with you everywhere. When you want to learn something new or change something, you don't have to start from nothing. You get to use what you are already good at.</p>
-        <p class="onb-why-body">These make you, you. And when something feels hard, you can stop and ask: which of my strengths can help me right now?</p>
-        <p class="onb-why-body">The more you use them, the stronger they grow - and that is how they help you grow, a little more every day.</p>
+        <p class="onb-why-body">Meet your strengths - some of the best parts of who you are. You use them every day: helping a friend, asking a good question, making someone laugh, keeping going when things get tricky.</p>
+        <p class="onb-why-body">They're tools you already carry. When something feels hard, ask: which of my strengths can help me right now? The more you use them, the stronger they grow.</p>
       </div>
       ${navButtons({ skippable: false, continueLabel: terminalLabel(isLast()) })}
     `;
