@@ -85,14 +85,18 @@ better opinion of yourself. This stage holds the firewall.
 The single strongest predictor of wellbeing, over a whole life and inside adolescence, is the quality of
 your relationships. This is where wellness turns outward.
 
-1. **Reach one person.** Message or sit with someone you like, today. (Connection predicts wellbeing more
-   strongly than sleep, food, or exercise.)
+1. **Reach one person.** Message or sit with someone you like, today. If today is too much, that's not a
+   failure - wanting to counts, and there's always another day. (Connection predicts wellbeing more
+   strongly than sleep, food, or exercise.) *(SSC pre-review fix W-1, 2026-08-10: the reassurance sits
+   beside the pressure, not in fine print - "reach one person today" must not read as a measure-of-failure
+   for an isolated teen who can't.)*
 2. **Tend one relationship.** Do one small thing for a bond that matters - listen fully, say thanks, show
    up. (It's the quality, not the count, that matters.)
 3. **Ask for or offer help.** Let someone help you with one thing, or help someone with theirs. Both ends
    of care are wellbeing.
-4. **Belong to something.** Show up once for a group or place you're part of. Being present for others is
-   part of being well yourself.
+4. **Belong to something.** Show up once, when you're ready, for a group or place you're part of. Being
+   present for others is part of being well yourself. *(SSC pre-review fix W-1, 2026-08-10: "when you're
+   ready" so belonging is an open door, not a due date.)*
 
 ---
 

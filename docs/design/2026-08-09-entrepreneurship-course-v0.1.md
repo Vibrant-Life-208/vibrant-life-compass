@@ -92,14 +92,20 @@ version beats the perfect imagined one. This stage holds the firewall.
    version, the one a real person could use this week. (Shipping something real beats planning
    something perfect.)
 2. **Put it in front of one real person.** Give it to one actual person with the need and watch what
-   happens. Real use, not your imagination, tells you the truth about what you made.
+   happens. Real use, not your imagination, tells you the truth about what you made. If they don't want
+   it, that's data about the thing, never a verdict on you. *(SSC pre-review fix E-1, 2026-08-10:
+   failure-as-data shock-absorber sits beside the exposure step - a thing people don't want is
+   information, not a judgment on the child.)*
 3. **Improve from what happened, not what you hoped.** Change one thing based on what the real person
    actually did or said - not what you wish they'd wanted. That's the whole loop: make, ship, learn,
    make again.
 4. **Refuse the extraction shortcut (the honest test).** Notice one way you *could* make it
    "stickier" - a hook, an anxiety, something that makes it hard to leave - and choose not to. The
-   test: does it leave people better off, or just harder to escape? *Fill a need, never capture
-   attention.* (Evoke, never extract - at company scale.)
+   test: does it leave people better off, or just harder to escape? And never make *yourself* the
+   product: build something that serves a need - don't sell yourself or farm an audience. *Fill a
+   need, never capture attention.* (Evoke, never extract - at company scale.) *(SSC pre-review fix E-2,
+   2026-08-10: explicit "you are not the product" beat against the kidfluencer / self-as-product pull -
+   HARMFUL for minors if it ever creeps in.)*
 
 ## Stage 3 - SERVE  ·  Does it leave people genuinely better? Serve, don't hustle.
 

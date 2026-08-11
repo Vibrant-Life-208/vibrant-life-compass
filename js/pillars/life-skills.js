@@ -49,12 +49,12 @@ const COURSES = {
     arc: ['Keep', 'Earn', 'Grow & Guard'],
     start: {
       title: 'The tenth',
-      body: 'Set aside a part of any money you have now - however small. A jar, an account. The act, not the amount, is the lesson.',
-      goal: 'Set aside a part of any money I get - my tenth.',
+      body: "Decide your tenth - the part of any money you get that you keep first. Set it aside now if you have any; if you don't yet, the decision still counts and waits for your first coin. The act, not the amount, is the lesson.",
+      goal: 'Decide my tenth - the part I keep first from any money I get.',
     },
     stages: [
       { name: 'Keep', gloss: '"A part of all you earn is yours to keep."', steps: [
-        'The tenth - set aside a part of any money you have now.',
+        'The tenth - decide the part you keep first; set it aside now, or let the decision wait for your first coin.',
         'Need vs want, one week - sort what you spend on, no judgment.',
         "Find one leak - redirect one thing you don't value into the tenth.",
         'Name your "free with" - what would enough set aside let you not worry about?',
@@ -117,9 +117,9 @@ const COURSES = {
       ] },
       { name: 'Make', gloss: 'Build the smallest real thing, ship it, improve it.', steps: [
         'Make the smallest real thing - the version one person could use this week, not the dream version.',
-        'Put it in front of one real person - real use, not your imagination, tells you the truth.',
+        "Put it in front of one real person - real use tells you the truth. If they don't want it, that's data about the thing, never a verdict on you.",
         "Improve from what happened, not what you hoped - change one thing based on what they actually did.",
-        'Refuse the extraction shortcut - the honest test: does it leave people better off, or just harder to leave?',
+        "Refuse the extraction shortcut - does it leave people better off, or just harder to leave? And never make yourself the product: serve a need, don't sell yourself or farm an audience.",
       ] },
       { name: 'Serve', gloss: 'Does it leave people genuinely better? Serve, don\'t hustle.', steps: [
         'Ask the capacity test - do they walk away with a real good, or only a feeling you sold them?',
@@ -150,10 +150,10 @@ const COURSES = {
         'Drop one number - step away from one thing you track about your body, and feel how it actually feels.',
       ] },
       { name: 'Connect', gloss: 'The strongest thing for a good life is people.', steps: [
-        'Reach one person - message or sit with someone you like, today.',
+        "Reach one person - message or sit with someone you like, today. If today is too much, that's not a failure; wanting to counts, and there's always another day.",
         'Tend one relationship - listen fully, say thanks, show up. Quality, not count.',
         'Ask for or offer help - both ends of care are wellbeing.',
-        'Belong to something - show up once for a group or place you are part of.',
+        "Belong to something - show up once, when you're ready, for a group or place you are part of.",
       ] },
     ],
   },
