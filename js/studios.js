@@ -437,7 +437,7 @@ export function getStudioName(studioId) {
 // The learner tiers a person moves UP through. Sparks is parent-only in Compass,
 // so the in-app pitch targets are adventure and launchpad only.
 const STUDIO_ORDER = ['sparks', 'discovery', 'adventure', 'launchpad'];
-const STUDIO_ENTRY_AGE = { adventure: 11, launchpad: 15 };
+const STUDIO_ENTRY_AGE = { adventure: 11, launchpad: 16 };
 
 // The studio one tier up that a learner could pitch INTO, or null (top tier,
 // or a studio with no in-app pitch target).
