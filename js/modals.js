@@ -1548,6 +1548,29 @@ const HORIZON_PROMPTS = {
   },
 };
 
+// Young-register (Discovery ~8-11) horizon copy - reframed as imagination, not planning, to match
+// curious_intro's warmth (a concrete-operational 8yo holds "picture your life" but not a genuine
+// 10-year backward-plan). Selected by the shared `young` signal in renderHorizon; both registers
+// held together so they can't drift. current_state + halfway young copy live in renderHorizon's
+// climb-override branch (Discovery is always climb). Hoshi draft + Jake register-check, Wave-2.
+const HORIZON_PROMPTS_YOUNG = {
+  beyond_5yr: {
+    heading: 'Imagine your life in 10 years.',
+    body: "Ten years from now - picture it, really picture it. Where do you live, and who's there with you? What's your home like? What do your days feel like? Where do you go? What do you do just because it's fun? And under all of it: what do you really want your life to be like? Let yourself imagine. There's no wrong answer.",
+    placeholder: 'In ten years, I...',
+  },
+  within_5yr: {
+    heading: 'Now picture yourself in 5 years.',
+    body: 'Bring it a little closer. Five years from now - what do you hope is true for you?',
+    placeholder: 'In five years...',
+  },
+  within_1yr: {
+    heading: 'Now picture yourself in 1 year.',
+    body: "One year from now - what do you hope you've grown into?",
+    placeholder: 'By this time next year...',
+  },
+};
+
 // Telescope order for the stacked "what you've said so far" context. Each
 // horizon step shows the prior answers as compact full-text cards above its box,
 // so the thread stays in view as the person narrows from 10 years down to now.
@@ -1602,6 +1625,13 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // Wave-2 young rewrite lands (see the OLDER-tier copy note ~renderClimb). Sparks (tots) stay
   // screen-free, gated below.
   const climb = isClimbBuild() && studio !== 'sparks' && role === 'learner';
+  // Wave-2 young-register signal (Discovery ~8-11): reuse the SAME tier signal as the mountain
+  // Disc whyYoung split (MOUNTAIN_YOUNG_STUDIOS) - do NOT invent a second signal. Selects the 8-11
+  // copy on the non-summit CLIMB waypoints below (purpose, connection, creator, life_skills,
+  // academics_intro, compass_intro, threshold, horizons). Hoshi draft + Jake register-check,
+  // 2026-08 Wave-2 work order. STILL OWED: the consented young-learner walk (Salus + Jake) ratifies
+  // these strings before they are cleared for a real child - voice calibration is not verification.
+  const young = role === 'learner' && MOUNTAIN_YOUNG_STUDIOS.has(studio);
   const baseCascade = studio === 'sparks' ? CASCADE_SPARKS : (climb ? CLIMB_FULL : CASCADE_FULL);
   const steps = [...baseCascade];
   // After the VIA strengths import, a short "why your strengths matter" page with
@@ -2136,14 +2166,20 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   }
 
   function renderHorizon(step) {
-    let p = HORIZON_PROMPTS[step];
+    // Young (Discovery ~8-11) horizon copy reframes the vision ladder as imagination (Wave-2).
+    let p = (young && HORIZON_PROMPTS_YOUNG[step]) ? HORIZON_PROMPTS_YOUNG[step] : HORIZON_PROMPTS[step];
     // CLIMB (Europa 2026-08-04): current_state + halfway follow the Growth Mindset commitment and
-    // reframe around that one goal - "where are you now" toward it, and the halfway that becomes the
-    // Session 3 marker. Legacy (non-climb) telescope copy is unchanged.
+    // reframe around that one goal. Young variants convert the mid-point progress-audit into a
+    // low-stakes, changeable intention (Jake: recalibrate-not-verdict; no scheduled check-back, and
+    // "starting line"/"sure you're on your way" evaluation frames removed). Legacy copy unchanged.
     if (climb && step === 'current_state') {
-      p = { ...p, heading: 'Where are you now?', body: 'With that goal in view - where are you today? This is the honest starting line, not the dream. Take your time; there are no wrong answers.', placeholder: 'Right now, toward this goal, I am...' };
+      p = young
+        ? { ...p, heading: 'Where are you right now?', body: "With all that in mind - where are you today? This is where you're starting from, right now. Take your time. There's no wrong answer.", placeholder: 'Right now, toward this goal, I am...' }
+        : { ...p, heading: 'Where are you now?', body: 'With that goal in view - where are you today? This is the honest starting line, not the dream. Take your time; there are no wrong answers.', placeholder: 'Right now, toward this goal, I am...' };
     } else if (climb && step === 'halfway') {
-      p = { ...p, heading: 'Halfway through the year.', body: "Halfway to next year - what would you need to have accomplished to feel confident you'll own that goal? This becomes your Session 3 marker.", placeholder: 'Halfway, I will have...' };
+      p = young
+        ? { ...p, heading: 'A little way along.', body: "After a while, what's one thing you'd be happy to have tried? Not a test - just something to look forward to. You can change it anytime.", placeholder: "Something I'd like to try..." }
+        : { ...p, heading: 'Halfway through the year.', body: "Halfway to next year - what would you need to have accomplished to feel confident you'll own that goal? This becomes your Session 3 marker.", placeholder: 'Halfway, I will have...' };
     }
     // Progressive context stack: prior horizon answers shown as compact
     // full-text cards above the box, so the thread the person has been building
@@ -2475,8 +2511,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       ? ' Some of your thresholds are already placed where they belong - refine them, or leave them as they are.'
       : '';
     const lead = plan.pitching
-      ? `You said yes to moving up to <strong>${escapeHtml(getStudioName(plan.wheelStudio))}</strong>. Here is your year, held across the parts of your life.${placedLine}`
-      : `Here is your year, held across the parts of your life.`;
+      ? `You said yes to moving up to <strong>${escapeHtml(getStudioName(plan.wheelStudio))}</strong>. Here is your year, ${young ? 'spread across the different parts of your life' : 'held across the parts of your life'}.${placedLine}`
+      : `Here is your year, ${young ? 'spread across the different parts of your life' : 'held across the parts of your life'}.`;
     const intro = `
       <div class="onb-horizon-prompt">
         <h3 class="onb-horizon-heading">Your year, slice by slice.</h3>
@@ -2795,14 +2831,14 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       <div class="onb-climb onb-climb-mountain onb-climb-compass-intro">
         <p class="onb-climb-kicker">Welcome to your compass</p>
         <h3 class="onb-climb-head">Vibrant Life's Values</h3>
-        <p class="onb-climb-body">This is the mountain you'll build - five values, from the base you stand on to the peak. You'll walk it one part at a time. Let's start at the base.</p>
+        <p class="onb-climb-body">${young ? "This is the mountain you'll build - five values, from the ground you stand on all the way to the top. You'll climb it one part at a time. Let's start at the bottom." : "This is the mountain you'll build - five values, from the base you stand on to the peak. You'll walk it one part at a time. Let's start at the base."}</p>
         <ol class="onb-mountain" aria-label="Vibrant Life's values, base to apex">
           ${rows.map(({ d, di }) => `
             <li class="onb-mountain-band${di === 0 ? ' base' : ''}" style="--band:${d.color}; width:${100 - di * 12}%">
               <span class="onb-mountain-name">${escapeHtml(d.name)}</span>
             </li>`).join('')}
         </ol>
-        ${navButtons({ skippable: false, continueLabel: 'Start at the base' })}
+        ${navButtons({ skippable: false, continueLabel: young ? 'Start at the bottom' : 'Start at the base' })}
       </div>`;
   }
 
@@ -2845,6 +2881,22 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // the other three (Passion / Contribution / Hero's Journey) are fill-any-time, never required.
   function renderPurpose() {
     const vals = climbValuesList();
+    // Both registers held together so they can't drift (Wave-2). Young = Discovery ~8-11.
+    const c = young ? {
+      kicker: 'Purpose - where you start',
+      head: 'The ground you stand on.',
+      body1: "This is what matters to you, and the way you choose to go because of it. The things you believe. The stuff that pulls you in and makes you lose track of time. What you want to leave behind for other people. And the big story of your whole life - the one where you're the main character.",
+      body2: "There's no answer to get right here. Just name the values that already feel like you. The rest are here whenever you want them.",
+      heroHint: "The big story of your life - and you're the main character.",
+      note: "Your Values are already here, in your own words. The big-story part is where your Purpose meets who you are. The three open pieces are yours to fill any time - you don't have to fill them to keep going.",
+    } : {
+      kicker: 'Purpose - the foundation',
+      head: 'The base you stand on.',
+      body1: 'What matters to you, and the direction you move because of it. The things you hold as true, the work that pulls you in, the mark you want to leave for other people, and the long story you are living as its hero. Not a place to arrive - a compass you already carry.',
+      body2: 'Your values point somewhere. Name any of these that feel ready - there is no polished answer to reach for, and the rest are yours to open any time.',
+      heroHint: 'The long story you are the hero of - your Self, your North.',
+      note: "Your Values are already here, in your own words. Hero's Journey is where Purpose meets your Self - your North. The three open pieces are yours to fill any time from your Purpose - there is no need to fill them to move on.",
+    };
     const box = (key, name, hint, val) => `
       <div class="onb-climb-box">
         <div class="onb-climb-box-name">${escapeHtml(name)}</div>
@@ -2854,17 +2906,17 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       </div>`;
     return `
       <div class="onb-climb onb-climb-purpose">
-        <p class="onb-climb-kicker">Purpose - the foundation</p>
-        <h3 class="onb-climb-head">The base you stand on.</h3>
-        <p class="onb-climb-body">What matters to you, and the direction you move because of it. The things you hold as true, the work that pulls you in, the mark you want to leave for other people, and the long story you are living as its hero. Not a place to arrive - a compass you already carry.</p>
-        <p class="onb-climb-body">Your values point somewhere. Name any of these that feel ready - there is no polished answer to reach for, and the rest are yours to open any time.</p>
+        <p class="onb-climb-kicker">${c.kicker}</p>
+        <h3 class="onb-climb-head">${c.head}</h3>
+        <p class="onb-climb-body">${c.body1}</p>
+        <p class="onb-climb-body">${c.body2}</p>
         <div class="onb-climb-boxes">
           ${box('values', 'Values', '', null)}
           ${box('passion', 'Passion', 'What pulls you in?', state.climb.passion)}
           ${box('contribution', 'Contribution', 'The mark you want to leave for others?', state.climb.contribution)}
-          ${box('hero', "Hero's Journey", 'The long story you are the hero of - your Self, your North.', state.climb.hero)}
+          ${box('hero', "Hero's Journey", c.heroHint, state.climb.hero)}
         </div>
-        <p class="onb-climb-note">Your Values are already here, in your own words. Hero's Journey is where Purpose meets your Self - your North. The three open pieces are yours to fill any time from your Purpose - there is no need to fill them to move on.</p>
+        <p class="onb-climb-note">${c.note}</p>
         ${navButtons({ skippable: true })}
       </div>`;
   }
@@ -2875,6 +2927,26 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // loneliness - "being with others, not around them" - rather than a stated clause (PDC).
   function renderConnection() {
     const strengths = climbStrengthsList();
+    // Both registers held together (Wave-2). Young = Discovery ~8-11. The chosen-solitude line is
+    // KEPT but with the app-verdict tail cut (Jake): it reads "my choice counts," not "the app says
+    // being alone is fine." Loneliness is never named on-screen (embodied, not stated - PDC).
+    const c = young ? {
+      body: "This is how you're close to other people, and how you move through the world beside them. Feeling what they feel. Telling the truth and really listening. Paying attention to the people and world around you. And belonging to something you share with others. It's being with people, not just near them.",
+      compassion: 'feeling what someone else feels, and helping them grow.',
+      communication: "your voice - saying what's true, and really listening.",
+      conscious: 'paying attention to the people and world you share.',
+      community: 'belonging to something bigger than just you; this is your Life piece.',
+      dive: "Let's look at <strong>Conscious Living</strong> - how your values and the strengths you named come alive with other people, and help you build real connections.",
+      solitude: "Time by yourself that YOU chose counts too. It's its own kind of full.",
+    } : {
+      body: 'How you are close to other people and how you move alongside them. Feeling what they feel, telling the truth and truly listening, living awake to the people and world around you, and belonging to something shared. The whole art of being with others, not around them.',
+      compassion: 'feeling with others, and helping them grow.',
+      communication: 'your voice: saying what is true, and truly listening.',
+      conscious: 'living awake to the people and world you share.',
+      community: 'belonging to something bigger; this is your Life piece.',
+      dive: "Let's dive into <strong>Conscious Living</strong> - how your values and purpose come alive through the character strengths you named, and how those build connection.",
+      solitude: 'Chosen time alone counts here too - solitude you pick is its own kind of full, not a gap in your life.',
+    };
     return `
       <div class="onb-climb onb-climb-connection">
         <p class="onb-climb-kicker">Connection</p>
@@ -2884,17 +2956,17 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
           <div class="onb-climb-box-name">Your strengths</div>
           <div class="onb-climb-box-filled">${climbChips(strengths)}</div>
         </div>` : ''}
-        <p class="onb-climb-body">How you are close to other people and how you move alongside them. Feeling what they feel, telling the truth and truly listening, living awake to the people and world around you, and belonging to something shared. The whole art of being with others, not around them.</p>
+        <p class="onb-climb-body">${c.body}</p>
         <ul class="onb-climb-subs">
-          <li><span class="onb-climb-sub-name">Compassion</span> - feeling with others, and helping them grow.</li>
-          <li><span class="onb-climb-sub-name">Communication</span> - your voice: saying what is true, and truly listening.</li>
-          <li><span class="onb-climb-sub-name">Conscious Living</span> - living awake to the people and world you share.</li>
-          <li><span class="onb-climb-sub-name">Community</span> - belonging to something bigger; this is your Life piece.</li>
+          <li><span class="onb-climb-sub-name">Compassion</span> - ${c.compassion}</li>
+          <li><span class="onb-climb-sub-name">Communication</span> - ${c.communication}</li>
+          <li><span class="onb-climb-sub-name">Conscious Living</span> - ${c.conscious}</li>
+          <li><span class="onb-climb-sub-name">Community</span> - ${c.community}</li>
         </ul>
-        <p class="onb-climb-body">Let's dive into <strong>Conscious Living</strong> - how your values and purpose come alive through the character strengths you named, and how those build connection.</p>
+        <p class="onb-climb-body">${c.dive}</p>
         <label class="onb-climb-label" for="onb-climb-text">How do these strengths show up in how you treat the people around you?</label>
         <textarea id="onb-climb-text" class="onb-horizon" rows="6" style="min-height: 8.5rem;" placeholder="With the people I care about, I...">${escapeHtml(state.climb.consciousLiving || '')}</textarea>
-        <p class="onb-climb-note">Chosen time alone counts here too - solitude you pick is its own kind of full, not a gap in your life.</p>
+        <p class="onb-climb-note">${c.solitude}</p>
         ${navButtons({ skippable: true })}
       </div>`;
   }
@@ -2902,18 +2974,38 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // W10 - The Creator Mindset environment. Reveal only. Carries the mudita note in the OLDER-tier
   // self-managed form (sting-first, invitation-never-command; SSC-ruled). No capture, nothing logged.
   function renderCreatorIntro() {
+    // Both registers held together (Wave-2). Young = Discovery ~8-11. KEEP the honesty: the pinch
+    // is real, everybody feels it, and if it stays "that's allowed too" (Jake: model screen). The
+    // comparison-axis "pull ahead" is softened to "do something really well" for the young register.
+    const c = young ? {
+      head: "You know what matters to you, and who's with you. Here's where you find out you can build.",
+      body: "This is how you meet learning, and how you treat yourself when something is hard. A little bit about the world you're in, and a little bit about the kind of maker you're becoming. You're the one shaping it.",
+      growth: 'getting better through practice - your brain grows when you keep going.',
+      emotional: "steadying big feelings so they don't steer you.",
+      curiosity: 'following what pulls you, and asking the next question.',
+      responsibility: "taking care of what's yours to take care of.",
+      pinch: "One honest thing first. When you see someone else do something really well, it can pinch a little. Everybody feels that - it's normal. Sometimes that pinch can turn into being glad for them AND glad for yourself, with neither one taking away from the other. See if that happens for you. And if you still feel the pinch - that's allowed too.",
+    } : {
+      head: 'You know what matters and who is with you. Here is where you find out you can build.',
+      body: 'Your inner stance toward learning and toward yourself - a bit of the world you live in, a bit of the maker you are becoming. You are the one shaping it.',
+      growth: 'growing through challenge; the belief you get better with practice.',
+      emotional: 'steadying big feelings so they do not steer you.',
+      curiosity: 'following what pulls you, and asking the next question.',
+      responsibility: 'carrying what is yours to carry.',
+      pinch: 'One honest thing before we go on: noticing someone move ahead can pinch, and everybody feels it. Some people find that pinch can loosen into being glad for them and glad for yourself, without one taking from the other. See if that is true for you. And if you still feel the pinch - that is allowed too.',
+    };
     return `
       <div class="onb-climb onb-climb-creator">
         <p class="onb-climb-kicker">Creator Mindset</p>
-        <h3 class="onb-climb-head">You know what matters and who is with you. Here is where you find out you can build.</h3>
-        <p class="onb-climb-body">Your inner stance toward learning and toward yourself - a bit of the world you live in, a bit of the maker you are becoming. You are the one shaping it.</p>
+        <h3 class="onb-climb-head">${c.head}</h3>
+        <p class="onb-climb-body">${c.body}</p>
         <ul class="onb-climb-subs">
-          <li><span class="onb-climb-sub-name">Growth Mindset</span> - growing through challenge; the belief you get better with practice.</li>
-          <li><span class="onb-climb-sub-name">Emotional Regulation</span> - steadying big feelings so they do not steer you.</li>
-          <li><span class="onb-climb-sub-name">Curiosity</span> - following what pulls you, and asking the next question.</li>
-          <li><span class="onb-climb-sub-name">Responsibility</span> - carrying what is yours to carry.</li>
+          <li><span class="onb-climb-sub-name">Growth Mindset</span> - ${c.growth}</li>
+          <li><span class="onb-climb-sub-name">Emotional Regulation</span> - ${c.emotional}</li>
+          <li><span class="onb-climb-sub-name">Curiosity</span> - ${c.curiosity}</li>
+          <li><span class="onb-climb-sub-name">Responsibility</span> - ${c.responsibility}</li>
         </ul>
-        <p class="onb-climb-note">One honest thing before we go on: noticing someone move ahead can pinch, and everybody feels it. Some people find that pinch can loosen into being glad for them and glad for yourself, without one taking from the other. See if that is true for you. And if you still feel the pinch - that is allowed too.</p>
+        <p class="onb-climb-note">${c.pinch}</p>
         ${navButtons({ skippable: false })}
       </div>`;
   }
@@ -2974,9 +3066,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     return `
       <div class="onb-climb onb-climb-lifeskills">
         <p class="onb-climb-kicker">Life Skills</p>
-        <h3 class="onb-climb-head">The capacities you build for a life you run yourself.</h3>
-        <p class="onb-climb-body">Leading alongside people, turning an idea into something real, making money make sense, and tending your own wellbeing. Grown-up powers, started now.</p>
-        <p class="onb-climb-label">Which is most important to you at this stage of life - what would you like to work on this year?</p>
+        <h3 class="onb-climb-head">${young ? 'The powers you build for a life you get to run.' : 'The capacities you build for a life you run yourself.'}</h3>
+        <p class="onb-climb-body">${young ? 'Leading alongside other people. Turning an idea into something real. Making your money make sense. Taking good care of yourself. Grown-up powers, started now.' : 'Leading alongside people, turning an idea into something real, making money make sense, and tending your own wellbeing. Grown-up powers, started now.'}</p>
+        <p class="onb-climb-label">${young ? "Which one are you most curious about right now? You can look at any of them - pick one to start, or just explore." : 'Which is most important to you at this stage of life - what would you like to work on this year?'}</p>
         <div class="onb-climb-choices">
           ${skills.map((s) => `
             <button type="button" class="onb-climb-choice${chosen === s.id ? ' selected' : ''}" data-climb-skill="${escapeAttr(s.id)}">
@@ -3015,9 +3107,9 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     return `
       <div class="onb-climb onb-climb-academics-intro">
         <p class="onb-climb-kicker">Academics - the apex</p>
-        <h3 class="onb-climb-head">Name where you are, so you can watch yourself climb.</h3>
-        <p class="onb-climb-body">The tools you use to understand the world and shape your own thinking. Reading closely, writing to say what you mean, working with numbers, and reasoning things through for yourself. Where you are standing now, with plenty of country still ahead.</p>
-        <p class="onb-climb-note">This is a starting altitude, not a grade. What comes next is you locating yourself on your own map.</p>
+        <h3 class="onb-climb-head">${young ? "See where you're starting from, so the climb ahead is yours." : 'Name where you are, so you can watch yourself climb.'}</h3>
+        <p class="onb-climb-body">${young ? "These are the tools you use to understand the world and do your own thinking. Reading closely. Writing to say what you really mean. Working with numbers. And figuring things out for yourself. This is where you're standing right now, with plenty still ahead of you." : 'The tools you use to understand the world and shape your own thinking. Reading closely, writing to say what you mean, working with numbers, and reasoning things through for yourself. Where you are standing now, with plenty of country still ahead.'}</p>
+        <p class="onb-climb-note">${young ? "This is just where you're starting from - your own map, no marks, no scores. What comes next is yours to find." : 'This is a starting altitude, not a grade. What comes next is you locating yourself on your own map.'}</p>
         ${navButtons({ skippable: false })}
       </div>`;
   }
@@ -3048,7 +3140,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // "Deep book" gloss (captain 2026-08-03): define it, don't assume it. The six deep-reading
     // reflection questions (books.js REFLECTION_QUESTIONS) are the full practice surface on North;
     // this is the short definition. Young register for Discovery (~8-11).
-    const young = role === 'learner' && studio === 'discovery';
+    // young: shared MOUNTAIN_YOUNG_STUDIOS signal from openOnboardingModal scope (Wave-2 unify).
     const deepGloss = young
       ? 'A deep book is one you can really think about. When you read one, you can ask: Why did the author write it? Was a character a bit like you? Did they change? Did the book change how you think? A book that gives you those is a deep one.'
       : "A deep book is one you can really think about - one you can ask real questions of: what the author was trying to do, whether a character felt like you or changed in a way you recognized, whether reading it shifted how you see things. A book that gives you those is a deep one.";
