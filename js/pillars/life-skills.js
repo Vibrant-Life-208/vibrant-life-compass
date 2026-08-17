@@ -13,7 +13,7 @@
 // Mindset pillar — are a category error to goal-shape and are NOT built here.)
 
 import { shell, section, emptyNote, escapeHtml, escapeAttr } from './_scaffold.js';
-import { getProfileFoundations, setProfileFoundations } from '../store.js';
+import { getLearner, getProfileFoundations, setProfileFoundations } from '../store.js';
 import { isLifeSkillsCourse } from '../flags.js';
 
 const SKILLS = {
@@ -42,8 +42,13 @@ const SKILLS = {
 // Karbo/Hill extraction fork, extended to ventures: capacity not "be your own boss / get rich",
 // See -> Make -> Serve, the venture-level firewall "does it fill a real need or manufacture/capture
 // one?", no hustle-culture; admission gate logged "graph not needed" - single-pass, smallest-graph
-// outcome). All FOUR Life Skills courses are now fully drafted + wired behind ?lscourse=on. Salus/Jake
-// developmental pass is owed across all four (the 8-11 young register is the Wave-2 rewrite).
+// outcome). All FOUR Life Skills courses are now fully drafted + wired behind ?lscourse=on.
+// Register tiering (SSC pass, Salus + Jake, 2026-08-13): the step copy ships in two registers keyed
+// off learner.studio - Launch Pad (16-18) = the standard text; Adventure (11-15) = a lowered floor on
+// a few abstract steps (see registerFor / stepText below). Discovery (8-11) is a separate course
+// (Wave-2, not yet authored); a Discovery learner falls back to the gentler Adventure text until then.
+// The owed reviews still stand: a human trauma-informed pass (Wellness is HOLD-FOR-HUMAN) + the binding
+// consented real-learner walk before any register fronts a real child; nothing here lifts the flag.
 const COURSES = {
   financial: {
     arc: ['Keep', 'Earn', 'Grow & Guard'],
@@ -67,8 +72,10 @@ const COURSES = {
       ] },
       { name: 'Grow & Guard', gloss: 'Make it work without gambling.', steps: [
         'Make a coin work - put a small amount where it grows.',
-        'Circle of competence - only put money into what you understand.',
-        "Margin of safety - never risk what you can't get back.",
+        { launchpad: 'Circle of competence - only put money into what you understand.',
+          adventure: "Only put money into what you understand - if you can't explain it, don't buy it." },
+        { launchpad: "Margin of safety - never risk what you can't get back.",
+          adventure: "Never risk money you can't get back - keep what you can't replace safe." },
         'Spot the trickster - name one "fast / easy / guaranteed" pitch. Real growth is slow on purpose.',
       ] },
     ],
@@ -85,7 +92,8 @@ const COURSES = {
         'Go first - do one small thing that helps a group before anyone asks.',
         'Serve the real need - find the thing your group actually needs done, and do it.',
         'Serve without the credit - help once where no one will know it was you.',
-        "Name who you'd serve - what group or cause would you carry something hard for?",
+        { launchpad: "Name who you'd serve - what group or cause would you carry something hard for?",
+          adventure: "Name who you'd help - who or what would you do something hard for, even when it's not easy?" },
       ] },
       { name: 'Steady', gloss: 'Be someone a group can rely on.', steps: [
         'Keep one word - promise your group one small thing and do it, exactly.',
@@ -119,11 +127,14 @@ const COURSES = {
         'Make the smallest real thing - the version one person could use this week, not the dream version.',
         "Put it in front of one real person - real use tells you the truth. If they don't want it, that's data about the thing, never a verdict on you.",
         "Improve from what happened, not what you hoped - change one thing based on what they actually did.",
-        "Refuse the extraction shortcut - does it leave people better off, or just harder to leave? And never make yourself the product: serve a need, don't sell yourself or farm an audience.",
+        { launchpad: "Refuse the extraction shortcut - does it leave people better off, or just harder to leave? And never make yourself the product: serve a need, don't sell yourself or farm an audience.",
+          adventure: "Refuse the extraction shortcut - does it leave people better off, or just harder to leave? And don't sell yourself or chase followers - make something that helps." },
       ] },
       { name: 'Serve', gloss: 'Does it leave people genuinely better? Serve, don\'t hustle.', steps: [
-        'Ask the capacity test - do they walk away with a real good, or only a feeling you sold them?',
-        'Trade fair, both sides ahead - a fair trade leaves both richer; extraction leaves them emptier.',
+        { launchpad: 'Ask the capacity test - do they walk away with a real good, or only a feeling you sold them?',
+          adventure: "Ask honestly: did the person end up with a real thing they needed - or did you just make them feel like they should buy it?" },
+        { launchpad: 'Trade fair, both sides ahead - a fair trade leaves both richer; extraction leaves them emptier.',
+          adventure: "If you trade or sell, make it fair - both of you should be glad afterward, not just you." },
         'Give some of it back - a part of what you make, for someone beyond you. A business is a way to serve.',
         'Refuse the hustle story - name what "crush it / grind / be your own boss" is selling. Real building is slow.',
       ] },
@@ -146,8 +157,10 @@ const COURSES = {
       { name: 'Be Kind', gloss: 'Treat yourself like someone you\'re helping, not a project to fix.', steps: [
         "Talk to yourself like a friend - say what you'd tell a friend who felt that way.",
         'Rest your attention - a few real minutes to breathe and notice, nothing to fix or scroll.',
-        'The honest test: is a "wellness" message helping you tend yourself, or selling you as a project that\'s never fixed?',
-        'Drop one number - step away from one thing you track about your body, and feel how it actually feels.',
+        { launchpad: 'The honest test: is a "wellness" message helping you tend yourself, or selling you as a project that\'s never fixed?',
+          adventure: 'The honest test: is a "wellness" message helping you take care of yourself, or telling you something is wrong with you that you have to fix or buy?' },
+        { launchpad: 'Drop one number - step away from one thing you track about your body, and feel how it actually feels.',
+          adventure: "If you ever count or check something about your body, take a day off from it and just notice how your body feels." },
       ] },
       { name: 'Connect', gloss: 'The strongest thing for a good life is people.', steps: [
         "Reach one person - message or sit with someone you like, today. If today is too much, that's not a failure; wanting to counts, and there's always another day.",
@@ -159,10 +172,25 @@ const COURSES = {
   },
 };
 
+// Register resolution for course copy (SSC pass, Salus + Jake, 2026-08-13). The courses ship at
+// the Launch Pad (16-18) register; Adventure (11-15) gets a lowered floor on a few abstract steps
+// (drop the finance jargon, plain fair-trade, gentler self-compassion + the "you are not the
+// product" beat in plainest words). A step is either a plain string (same for everyone) or a
+// { launchpad, adventure } variant. Discovery (8-11) is its own course (Wave-2, not yet authored);
+// until it exists a Discovery learner falls back to the gentler Adventure text - never text above
+// their register. Unknown/guide/owner/adult -> the standard Launch Pad text (books.js idiom: standard
+// is default, the young register is the explicit exception).
+function registerFor(studio) {
+  return (studio === 'adventure' || studio === 'discovery') ? 'adventure' : 'launchpad';
+}
+function stepText(step, register) {
+  return typeof step === 'string' ? step : (step[register] || step.launchpad);
+}
+
 // The "Where to start" section: the arc (when researched), the universal first step as a
 // card, and a button that drops that first step into the goal below. Read-only guidance -
 // no course-progress persistence yet (deferred); the goal (WOOP) is the persisted object.
-function whereToStartSection(activeKey) {
+function whereToStartSection(activeKey, register) {
   const c = activeKey && COURSES[activeKey];
   if (!c || !c.start) return '';
   const arc = Array.isArray(c.arc) && c.arc.length
@@ -171,7 +199,7 @@ function whereToStartSection(activeKey) {
   const path = Array.isArray(c.stages)
     ? `<details class="ls-path"><summary>See the whole path</summary>${c.stages.map((st) => `
         <div class="ls-stage"><p class="ls-stage-name">${escapeHtml(st.name)} <span class="ls-stage-gloss">${escapeHtml(st.gloss || '')}</span></p>
-        <ul class="ls-stage-steps">${st.steps.map((x) => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`).join('')}</details>`
+        <ul class="ls-stage-steps">${st.steps.map((x) => `<li>${escapeHtml(stepText(x, register))}</li>`).join('')}</ul></div>`).join('')}</details>`
     : '<p class="ls-draft-note">The full path is still being written - for now, this first step is where to begin.</p>';
   const body = `
     <p class="pillar-prompt">Not sure where to begin? Start with one small, real thing, then let it grow. ${arc ? 'Here is the path:' : ''}</p>
@@ -213,7 +241,11 @@ function skillGoalSection(activeLabel, woop) {
 export async function renderLifeSkills(learnerId) {
   const el = document.getElementById('lifeskills-view');
   if (!el) return;
-  const foundations = await getProfileFoundations(learnerId);
+  const [foundations, learner] = await Promise.all([
+    getProfileFoundations(learnerId),
+    getLearner(learnerId),
+  ]);
+  const register = registerFor(learner?.studio);
   const climb = (foundations && foundations.climb && typeof foundations.climb === 'object' && !Array.isArray(foundations.climb))
     ? foundations.climb : {};
   const activeKey = climb.lifeSkill;
@@ -231,7 +263,7 @@ export async function renderLifeSkills(learnerId) {
   const goalSection = skillGoalSection(activeLabel, climb.woop);
   // "Where to start" sits between the active skill and the goal editor, so its first step
   // flows straight into the goal. Flag-gated (dark) and only when a skill is active.
-  const startSection = (isLifeSkillsCourse() && activeKey) ? whereToStartSection(activeKey) : '';
+  const startSection = (isLifeSkillsCourse() && activeKey) ? whereToStartSection(activeKey, register) : '';
 
   el.innerHTML = shell(
     { color: 'lifeskills', title: 'Life Skills', subtitle: 'The capacities you build for a life you run yourself.' },

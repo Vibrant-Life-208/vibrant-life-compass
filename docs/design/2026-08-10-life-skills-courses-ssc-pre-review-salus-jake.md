@@ -205,4 +205,25 @@ sw v157 → v158) and the sibling course drafts:
 binding **C-ALL-1 real-learner walk** and the **Wellness HOLD-FOR-HUMAN** clinical pass remain owed.
 The flag stays. Applying the copy fixes narrows what the human inherits; it does not discharge the
 walk or the clinical read.
+
+---
+
+## Addendum 2 — Adventure (11-15) register WIRED 2026-08-17 (Europa direction)
+
+The register floor was lowered to 11 (Adventure = 11-15; Launch Pad = 16-18; the 15/16 code seam in
+`js/studios.js STUDIO_ENTRY_AGE` is still open for reconciliation). Wiring follows the house pattern
+(`learner.studio` → register-keyed copy variant, same idiom as `js/books.js` `young:`): each varying
+step is a `{ launchpad, adventure }` object; `registerFor(studio)` + `stepText()` resolve it.
+
+Eight steps got an Adventure lower-floor variant (Salus + Jake, approved by Europa): Financial ×2
+(drop "circle of competence" / "margin of safety" jargon), Leadership ×1 (soften the identity-weight),
+Wellness ×2 (plain firewall; the "drop a number" step made *conditional* so it never plants tracking
+in a literal 11-year-old), Entrepreneurship ×3 (plain capacity-test + fair-trade; the "you are not the
+product" beat in plainest words — the kidfluencer pull is strongest at eleven). Launch Pad keeps the
+standard text; a Discovery (8-11) learner falls back to the gentler Adventure text until the Discovery
+course is authored (Wave-2). Verified end-to-end: the register selects the correct variant per studio.
+
+**Unchanged and still binding:** Wellness stays HOLD-FOR-HUMAN — the Adventure-11 Wellness surface is
+what the human clinician most needs to read. The consented real-learner walk still gates every register.
+Discovery (8-11) is next, and it is a *different course*, not a further-lowered floor. The flag stays.
 </content>
