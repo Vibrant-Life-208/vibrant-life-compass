@@ -226,4 +226,35 @@ course is authored (Wave-2). Verified end-to-end: the register selects the corre
 **Unchanged and still binding:** Wellness stays HOLD-FOR-HUMAN — the Adventure-11 Wellness surface is
 what the human clinician most needs to read. The consented real-learner walk still gates every register.
 Discovery (8-11) is next, and it is a *different course*, not a further-lowered floor. The flag stays.
+
+---
+
+## Addendum 3 — Discovery (8-11) course AUTHORED + WIRED 2026-08-17 (Europa direction)
+
+Discovery is authored as its own course set (`COURSES_DISCOVERY`), not a further-lowered floor —
+a genuinely different, simpler course for the concrete-operational child, approved by Europa.
+`courseFor(activeKey, studio)` selects it when `learner.studio === 'discovery'`; everyone else keeps
+the shared course at Launch Pad / Adventure register. Also this session: Launch Pad pitch-entry age
+15 → 16 (`js/studios.js`), closing the band seam (Adventure 11-15, Launch Pad 16-18). sw v159 → v160.
+
+Developmental shape (Salus + Jake): **three concrete steps a stage** (working memory), plain
+8-year-old words, one doing each; same arc names so the ladder grows *with* the child. Abstractions
+that aren't a capacity at eight left entirely:
+- **Financial** — "Grow & Guard" becomes **Guard** (spot tricks, save slowly); no markets, no risk-math.
+- **Wellness** — carries **no body / number / tracking content at all**, not even to criticize it. The
+  firewall and drop-a-number steps are Adventure-and-up only. *Salus: introducing the idea to an
+  eight-year-old is itself the harm; the safe default never plants what it's protecting against.* The
+  food step was dropped from Tend (don't isolate food as a wellness "task" at eight) — flagged for the
+  human reviewer's judgment.
+- **Entrepreneurship** — the honest lemonade stand (make one thing, serve one real person); the
+  kidfluencer guard survives in kid words: *"you don't need lots of likes or followers - you need one
+  happy person."*
+- **Leadership** — maps cleanly at 8-11, nearly untouched.
+
+Verified end-to-end: Discovery renders 9 steps (3×3) with its own arc/copy; the shared course renders
+12 (3×4); the register/course selection is correct per studio.
+
+**Still binding, unchanged:** Wellness HOLD-FOR-HUMAN (the Discovery Wellness surface — no body content
+— is part of what the clinician reads); the consented real-learner walk gates *every* register,
+Discovery most of all (*eight is more vulnerable than sixteen*). Nothing here lifts the flag.
 </content>

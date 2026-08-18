@@ -43,12 +43,14 @@ const SKILLS = {
 // See -> Make -> Serve, the venture-level firewall "does it fill a real need or manufacture/capture
 // one?", no hustle-culture; admission gate logged "graph not needed" - single-pass, smallest-graph
 // outcome). All FOUR Life Skills courses are now fully drafted + wired behind ?lscourse=on.
-// Register tiering (SSC pass, Salus + Jake, 2026-08-13): the step copy ships in two registers keyed
-// off learner.studio - Launch Pad (16-18) = the standard text; Adventure (11-15) = a lowered floor on
-// a few abstract steps (see registerFor / stepText below). Discovery (8-11) is a separate course
-// (Wave-2, not yet authored); a Discovery learner falls back to the gentler Adventure text until then.
-// The owed reviews still stand: a human trauma-informed pass (Wellness is HOLD-FOR-HUMAN) + the binding
-// consented real-learner walk before any register fronts a real child; nothing here lifts the flag.
+// Register tiering (SSC pass, Salus + Jake): course copy is chosen from learner.studio. The shared
+// COURSES ship in two registers - Launch Pad (16-18) = standard text; Adventure (11-15) = a lowered
+// floor on a few abstract steps (see registerFor / stepText). Discovery (8-11) has its OWN course set
+// (COURSES_DISCOVERY, authored 2026-08-17) - a genuinely different, simpler course (3 concrete steps a
+// stage), not a lowered floor. courseFor() picks the set + register. The owed reviews still stand: a
+// human trauma-informed pass (Wellness is HOLD-FOR-HUMAN, the Discovery Wellness surface carries no
+// body/number content by design) + the binding consented real-learner walk before any register fronts
+// a real child; nothing here lifts the flag.
 const COURSES = {
   financial: {
     arc: ['Keep', 'Earn', 'Grow & Guard'],
@@ -172,14 +174,126 @@ const COURSES = {
   },
 };
 
-// Register resolution for course copy (SSC pass, Salus + Jake, 2026-08-13). The courses ship at
+// Discovery (8-11) course set - the Wave-2 young register, authored 2026-08-17 (Salus + Jake,
+// approved by Europa). NOT a lowered floor: a genuinely different, simpler course for the
+// concrete-operational child - three concrete steps a stage (working-memory), plain 8-year-old
+// words, one doing each. Some Adventure abstractions leave entirely: Financial "Grow & Guard"
+// becomes "Guard" (no markets / risk-math); Wellness carries NO body / number / tracking content at
+// all, not even to criticize it (Salus: introducing the idea to an 8-year-old is itself the harm -
+// the firewall + drop-a-number steps are Adventure-and-up only). The kidfluencer guard survives in
+// kid words ("one happy person, not lots of followers"). Same arc names as Adventure / Launch Pad so
+// the ladder grows WITH the child. Selected when learner.studio === 'discovery' (see courseFor).
+const COURSES_DISCOVERY = {
+  financial: {
+    arc: ['Keep', 'Earn', 'Guard'],
+    start: {
+      title: 'Keep some of it',
+      body: 'When you get any money, keep a little before you spend the rest. Put it somewhere safe. Keeping a bit is the first money habit.',
+      goal: 'Keep a little of any money I get, before I spend the rest.',
+    },
+    stages: [
+      { name: 'Keep', gloss: 'Keep a little before you spend.', steps: [
+        'Keep a little of any money you get, before you spend the rest.',
+        'Notice the difference between something you need and something you just want.',
+        'Save up for one thing you really want, a little at a time.',
+      ] },
+      { name: 'Earn', gloss: 'Money comes from helping.', steps: [
+        'Find one real job someone needs done, and do it.',
+        'A real job for real money feels good - that is earning.',
+        'Give a little of what you earn to someone who needs it.',
+      ] },
+      { name: 'Guard', gloss: 'Keep it safe from tricks.', steps: [
+        'If money sounds too easy - a free prize, quick riches - it is probably a trick. Ask a grown-up.',
+        'Money grows slowly. Saving a little, again and again, adds up.',
+        'Keep your saved money somewhere safe, not loose in your pocket.',
+      ] },
+    ],
+  },
+  leadership: {
+    arc: ['Serve', 'Steady', 'Gather'],
+    start: {
+      title: 'Help before anyone asks',
+      body: 'Do one kind thing for your group before anyone asks you to. That is how leading starts.',
+      goal: 'Do one kind thing for my group before anyone asks.',
+    },
+    stages: [
+      { name: 'Serve', gloss: 'Leading starts with helping.', steps: [
+        'Help before anyone asks - pick up what fell, welcome the new kid.',
+        'Do a job nobody wants to do.',
+        'Help someone without needing a thank-you.',
+      ] },
+      { name: 'Steady', gloss: 'Be someone people can count on.', steps: [
+        'Keep a promise, even a small one.',
+        'When something goes wrong, stay calm and ask "what do we do now?"',
+        'When you mess up, say sorry and help fix it.',
+      ] },
+      { name: 'Gather', gloss: 'Bring people with you.', steps: [
+        'Ask a quiet kid what they think - and really listen.',
+        'Get a few friends together to do something kind.',
+        'Let someone else have a turn being the leader.',
+      ] },
+    ],
+  },
+  entrepreneurship: {
+    arc: ['See', 'Make', 'Serve'],
+    start: {
+      title: 'Find one thing to help with',
+      body: 'Notice one thing someone around you needs or would like. Just notice it - that is where making starts.',
+      goal: 'Notice one thing someone around me needs or would like.',
+    },
+    stages: [
+      { name: 'See', gloss: 'Start with a real need.', steps: [
+        'Notice one thing someone around you needs or would like.',
+        'Ask them what would actually help.',
+        "Pick one you'd be happy to make.",
+      ] },
+      { name: 'Make', gloss: 'Make one real thing.', steps: [
+        'Make one real thing - draw it, build it, bake it, do it.',
+        'Give it to the person and see if it helps.',
+        "If they don't want it, that's okay - you learned something. Try again.",
+      ] },
+      { name: 'Serve', gloss: 'Did it really help?', steps: [
+        'Ask if it really helped them.',
+        'If you trade or sell, be fair - you should both be happy.',
+        "You don't need lots of likes or followers - you need one happy person. Making something that helps feels good.",
+      ] },
+    ],
+  },
+  wellness: {
+    arc: ['Tend', 'Be Kind', 'Connect'],
+    start: {
+      title: 'One kind thing for you',
+      body: 'Do one small kind thing for your body or your feelings today - a drink of water, a stretch, a big breath.',
+      goal: 'One small kind thing for me today.',
+    },
+    stages: [
+      { name: 'Tend', gloss: 'Be good to your body.', steps: [
+        'Sleep enough - your body grows and feels better when you rest.',
+        'Move your body in a way that is fun - run, dance, play.',
+        'Play outside a little.',
+      ] },
+      { name: 'Be Kind', gloss: 'Be good to yourself.', steps: [
+        'Talk to yourself like you would talk to a friend.',
+        'Rest - doing nothing for a bit is allowed.',
+        "You're not a problem to fix. You're already okay.",
+      ] },
+      { name: 'Connect', gloss: 'People matter most.', steps: [
+        'Spend a little time with someone you like.',
+        'Be kind to a friend - or let a friend be kind to you.',
+        "Ask for help when you need it - that's brave. And you belong here.",
+      ] },
+    ],
+  },
+};
+
+// Register resolution for course copy (SSC pass, Salus + Jake, 2026-08-13). The shared courses ship at
 // the Launch Pad (16-18) register; Adventure (11-15) gets a lowered floor on a few abstract steps
 // (drop the finance jargon, plain fair-trade, gentler self-compassion + the "you are not the
 // product" beat in plainest words). A step is either a plain string (same for everyone) or a
-// { launchpad, adventure } variant. Discovery (8-11) is its own course (Wave-2, not yet authored);
-// until it exists a Discovery learner falls back to the gentler Adventure text - never text above
-// their register. Unknown/guide/owner/adult -> the standard Launch Pad text (books.js idiom: standard
-// is default, the young register is the explicit exception).
+// { launchpad, adventure } variant. Discovery (8-11) has its OWN course set (COURSES_DISCOVERY above,
+// selected in courseFor); registerFor's discovery -> 'adventure' is only a safety fallback if a
+// Discovery course entry were ever missing. Unknown / guide / owner / adult -> the standard Launch Pad
+// text (books.js idiom: standard is default, the young register is the explicit exception).
 function registerFor(studio) {
   return (studio === 'adventure' || studio === 'discovery') ? 'adventure' : 'launchpad';
 }
@@ -187,11 +301,19 @@ function stepText(step, register) {
   return typeof step === 'string' ? step : (step[register] || step.launchpad);
 }
 
+// Pick the course set + register for a learner. Discovery (8-11) has its own course; everyone else
+// uses the shared course at the Launch Pad (16-18) or Adventure (11-15) register.
+function courseFor(activeKey, studio) {
+  if (studio === 'discovery' && COURSES_DISCOVERY[activeKey]) {
+    return { course: COURSES_DISCOVERY[activeKey], register: 'discovery' };
+  }
+  return { course: COURSES[activeKey], register: registerFor(studio) };
+}
+
 // The "Where to start" section: the arc (when researched), the universal first step as a
 // card, and a button that drops that first step into the goal below. Read-only guidance -
 // no course-progress persistence yet (deferred); the goal (WOOP) is the persisted object.
-function whereToStartSection(activeKey, register) {
-  const c = activeKey && COURSES[activeKey];
+function whereToStartSection(c, register) {
   if (!c || !c.start) return '';
   const arc = Array.isArray(c.arc) && c.arc.length
     ? `<ol class="ls-arc">${c.arc.map((s, i) => `<li class="ls-arc-step"><span class="ls-arc-num">${i + 1}</span>${escapeHtml(s)}</li>`).join('')}</ol>`
@@ -245,7 +367,6 @@ export async function renderLifeSkills(learnerId) {
     getProfileFoundations(learnerId),
     getLearner(learnerId),
   ]);
-  const register = registerFor(learner?.studio);
   const climb = (foundations && foundations.climb && typeof foundations.climb === 'object' && !Array.isArray(foundations.climb))
     ? foundations.climb : {};
   const activeKey = climb.lifeSkill;
@@ -262,8 +383,13 @@ export async function renderLifeSkills(learnerId) {
 
   const goalSection = skillGoalSection(activeLabel, climb.woop);
   // "Where to start" sits between the active skill and the goal editor, so its first step
-  // flows straight into the goal. Flag-gated (dark) and only when a skill is active.
-  const startSection = (isLifeSkillsCourse() && activeKey) ? whereToStartSection(activeKey, register) : '';
+  // flows straight into the goal. Flag-gated (dark) and only when a skill is active. The course set
+  // + register are chosen from the learner's studio (Discovery gets its own course; see courseFor).
+  let startSection = '';
+  if (isLifeSkillsCourse() && activeKey) {
+    const { course, register } = courseFor(activeKey, learner?.studio);
+    if (course) startSection = whereToStartSection(course, register);
+  }
 
   el.innerHTML = shell(
     { color: 'lifeskills', title: 'Life Skills', subtitle: 'The capacities you build for a life you run yourself.' },
