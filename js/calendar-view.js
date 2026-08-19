@@ -224,12 +224,23 @@ export async function renderCalendarView(learnerId) {
   const cycleKey = String(yearStart.getFullYear());
   const notes = (learner && learner.yearNotes) || {};
   const noteText = notes[cycleKey] ? await decryptField(learner.id, notes[cycleKey]) : '';
+  // Young register (Discovery 8-11), Hoshi draft Option C via the Salus + Jake post-ship walk
+  // (2026-08-11 revise item). "This year I learned that..." makes "learned" - a report-card /
+  // acquisition verb - the frame; to a concrete-operational child it reads "did I learn enough to
+  // write here?", a performance prompt. "Noticed" is un-gradable present-tense attention a child is
+  // always already doing, keeping the verdict with the child. Hint is UNCHANGED for all tiers - it
+  // already welcomes without evaluating. Adventure (12-18) + adults keep the standard register.
+  // STILL OWED: the consented young-learner walk ratifies this before it is cleared for a real
+  // child - voice calibration is not verification.
+  const yearnoteYoung = learner?.studio === 'discovery';
+  const yearnoteTitle = yearnoteYoung ? 'One thing you noticed' : 'One line for your year';
+  const yearnotePlaceholder = yearnoteYoung ? 'One thing I noticed this year...' : 'This year I learned that...';
   const noteCard = document.createElement('div');
   noteCard.className = 'calendar-yearnote';
   noteCard.innerHTML = `
-    <h3 class="calendar-yearnote-title">One line for your year</h3>
+    <h3 class="calendar-yearnote-title">${escapeHtml(yearnoteTitle)}</h3>
     <p class="calendar-yearnote-hint">If you want to. A quiet line to close your year - just for you.</p>
-    <textarea class="calendar-yearnote-input slice-box" rows="2" placeholder="This year I learned that...">${escapeHtml(noteText)}</textarea>`;
+    <textarea class="calendar-yearnote-input slice-box" rows="2" placeholder="${escapeHtml(yearnotePlaceholder)}">${escapeHtml(noteText)}</textarea>`;
   host.appendChild(noteCard);
   const noteInput = noteCard.querySelector('.calendar-yearnote-input');
   if (noteInput) {
