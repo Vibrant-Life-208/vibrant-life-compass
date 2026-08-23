@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Your Year on the Launch Pad</title>
+<style>
+  @page { size: letter landscape; margin: 0.5in; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+    color: #1a1a2e; background: #fbf7ef; margin: 0; padding: 24px;
+    max-width: 1000px; margin-inline: auto; line-height: 1.45;
+  }
+  h1 { font-size: 30px; color: #0b3d5c; margin: 0 0 4px; text-align: center; }
+  .sub { text-align: center; color: #555; margin: 0 0 20px; font-size: 15px; }
+  .seasons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .season { border: 2px solid #d8c9a6; border-radius: 12px; padding: 14px; background: #fff; }
+  .season.now { border-color: #9a6a12; box-shadow: 0 0 0 3px #f3ead7; }
+  .season h2 { margin: 0 0 2px; color: #0b3d5c; font-size: 20px; }
+  .q { font-style: italic; color: #333; margin: 0 0 8px; }
+  .tag { display: inline-block; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; font-weight: 700; color: #9a6a12; }
+  .harvest { font-size: 13px; color: #444; margin-top: 8px; }
+  h3 { color: #0b3d5c; margin: 24px 0 8px; }
+  .week { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; text-align: center; }
+  .day { border-radius: 10px; padding: 10px 6px; font-size: 14px; }
+  .guide { background: #0b3d5c; color: #fff; }
+  .self { background: #e7dcc2; color: #1a1a2e; }
+  .fallow { background: #cfe3d6; color: #16402a; }
+  .day b { display: block; font-size: 15px; margin-bottom: 2px; }
+  .thread { margin-top: 18px; background: #f3ead7; border-radius: 10px; padding: 12px 16px; font-size: 15px; }
+</style>
+</head>
+<body>
+  <h1>Your Year on the Launch Pad</h1>
+  <p class="sub">Three expeditions. You walk all three before you launch.</p>
+
+  <div class="seasons">
+    <div class="season now">
+      <span class="tag">This year</span>
+      <h2>Origin</h2>
+      <p class="q">Who am I?</p>
+      <div>Know your story - your dreams, your roots, your own hand on the wheel.</div>
+      <div class="harvest"><strong>Ends with:</strong> The Unveiling - "This Is Me."</div>
+    </div>
+    <div class="season">
+      <span class="tag">Later</span>
+      <h2>The Forge</h2>
+      <p class="q">What is worth solving?</p>
+      <div>Find real work that matters to you, and act on it.</div>
+      <div class="harvest"><strong>Ends with:</strong> The Call to Action.</div>
+    </div>
+    <div class="season">
+      <span class="tag">Later</span>
+      <h2>The Helm</h2>
+      <p class="q">What do I do when there is no easy answer?</p>
+      <div>Make the hard call from principle - and love the life around it.</div>
+      <div class="harvest"><strong>Ends with:</strong> The Council.</div>
+    </div>
+  </div>
+
+  <h3>Your week</h3>
+  <div class="week">
+    <div class="day self"><b>Mon</b>Your own hours</div>
+    <div class="day guide"><b>Tue</b>Together, deep</div>
+    <div class="day self"><b>Wed</b>Your own hours</div>
+    <div class="day guide"><b>Thu</b>Together, deep</div>
+    <div class="day fallow"><b>Fri</b>Fallow - rest, play</div>
+  </div>
+
+  <div class="thread">
+    <strong>One thread the whole way through:</strong> your <strong>Captain's Log</strong> - yours alone, no one reads it to judge you. It grows with you across all three years.
+  </div>
+</body>
+</html>

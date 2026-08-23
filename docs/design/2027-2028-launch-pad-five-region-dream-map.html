@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Map of Me - Where Your Dreams Live</title>
+<style>
+  @page { size: letter; margin: 0.5in; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+    color: #1a1a2e; background: #fbf7ef; margin: 0; padding: 24px;
+    max-width: 760px; margin-inline: auto; line-height: 1.45;
+  }
+  h1 { font-size: 28px; color: #0b3d5c; text-align: center; margin: 0 0 2px; }
+  .sub { text-align: center; color: #555; margin: 0 0 18px; font-size: 14px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .region { border: 2px solid #d8c9a6; border-radius: 14px; padding: 16px; background: #fff; }
+  .region h2 { margin: 0 0 8px; color: #0b3d5c; font-size: 22px; }
+  .prompts { display: flex; flex-wrap: wrap; gap: 7px; }
+  .prompts span { background: #f3ead7; border-radius: 18px; padding: 5px 13px; font-size: 15px; }
+  .center { grid-column: 1 / -1; border: 2px solid #9a6a12; border-radius: 14px; padding: 16px; background: #0b3d5c; color: #fff; text-align: center; }
+  .center h2 { color: #fff; margin: 0 0 6px; font-size: 22px; }
+  .center .prompts { justify-content: center; }
+  .center .prompts span { background: rgba(255,255,255,.15); color: #fff; }
+  .note { margin-top: 18px; background: #f3ead7; border-radius: 10px; padding: 12px 16px; font-size: 14px; }
+</style>
+</head>
+<body>
+  <h1>The Map of Me</h1>
+  <p class="sub">Where your dreams live. Dream freely first - sort them here later.</p>
+
+  <div class="grid">
+    <div class="region">
+      <h2>Self</h2>
+      <div class="prompts"><span>Body</span><span>Inner Life</span><span>Heart</span></div>
+    </div>
+    <div class="region">
+      <h2>Others</h2>
+      <div class="prompts"><span>Family</span><span>Friends</span><span>Love</span></div>
+    </div>
+    <div class="region">
+      <h2>Making</h2>
+      <div class="prompts"><span>Money &amp; Freedom</span><span>Craft</span><span>Things I Want</span></div>
+    </div>
+    <div class="region">
+      <h2>World</h2>
+      <div class="prompts"><span>Learning</span><span>Adventure</span></div>
+    </div>
+    <div class="center">
+      <h2>Voice</h2>
+      <div class="prompts"><span>Soul</span><span>Legacy</span><span>Character</span></div>
+      <div style="font-size:13px; margin-top:6px; opacity:.9;">The center - the you that authors all the rest.</div>
+    </div>
+  </div>
+
+  <div class="note">
+    These words are <strong>doorways, not filing rules</strong>. A dream can live in more than one region, and an empty region is worth noticing - "what would a fuller one look like?"
+  </div>
+</body>
+</html>
