@@ -87,7 +87,7 @@ The feast: everyone brings a dish and (if they wish) a story - the "where you co
 - **The family interview can surface rupture** - estrangement, loss, adoption questions, unknown parents. The empty-state paths and the "family = who made you" frame exist for exactly this; keep them visible, not buried.
 - **Insider sovereignty at the potluck** - a learner from a marginalized or painful lineage is never the exhibit; they set the terms.
 - **Naming discipline** - specific peoples, always; each family names itself.
-- **The potluck's inclusion floor** ties to the Closing Feast v0.2 (base provided, no cover charge, allergen/ED-safe) - it applies even to the "bring a dish" potluck: no learner is exposed for what they can or cannot bring.
+- **The potluck's inclusion floor** ties to the Closing Feast v0.2 (base provided, no cover charge, allergen/ED-safe) - it applies even to the "bring a dish" potluck: no learner is exposed for what they can or cannot bring. **The material-poverty path** *(Polaris, evoked-polish)*: the studio-provided base dish can quietly *be* a learner's contribution - pre-arranged so a learner who brings nothing is indistinguishable from one who brought a dish. Presence, not provision.
 - **Still owed, not lifted here:** the consented Salus + Jake real-learner walk; the coach-not-therapist referral pathway in the guide spec.
 
 *"We evoke - we never extract."*

@@ -8,7 +8,7 @@
 
 - **Arc:** OPEN (why the whole life, unshaped, first) → DEEPEN (the five scaffolding prompts + listening models) → APPLY (write it all) → HARVEST (the full draft complete, and being witnessed).
 - **The thread underneath:** *claim your whole life on the page - all of it, before you choose what to keep. You cannot shape a story you haven't yet dared to tell in full.*
-- **Lens:** Who am I? (now: the whole of it). **Joy-flavor:** the relief and catharsis of claiming a whole life; being witnessed.
+- **Lens:** Who am I? (now: the whole of it). **Joy-flavor (the guide's private hope, never the aim):** some learners feel the relief and catharsis of claiming a whole life; some feel tired, flat, or unfinished - both are true, and no one is asked to perform the feeling. Being witnessed is a gift, never a deliverable.
 - **Why the full draft comes first (the design's own logic):** they need the relief of getting it all down before they can bear to start choosing what to keep. Shaping (Session 6) only works after the whole thing exists.
 - **The five-region tie:** the full draft is the whole self on the page - every region at once. It's the raw material Session 6 will shape and the Unveiling (S7) will declare.
 
@@ -19,6 +19,7 @@ Memory-writing surfaces loss, rupture, and hard things. Hold all of this, all se
 - **The draft is private by default - it lives in the Captain's Log, which a guide never reads for assessment.** What a learner shares aloud is entirely their choice. This is where the Log's privacy promise is most load-bearing; do not weaken it.
 - **You choose what goes on the page and what stays private.** A hard thing can be *named* without being *detailed*; "what it taught me" is enough - no one has to relive anything to belong here.
 - **Coach, not therapist.** The guide holds the container and witnesses; the guide does not treat. Anything clinical routes to real help via the referral pathway. (This is exactly the boundary the life-coaching brief and the fleet's HOLD-FOR-HUMAN concern point at - it is most live in this session.)
+- **BINDING GATE - do not run S5 with a real learner until both are true** *(Cura, Polaris, Naomi)*: (1) the coach-not-therapist **referral pathway is built** - a real in-the-moment crisis container (a designated quiet space, who the crying learner actually goes to, and the honest limit that a solo guide with a worn baby has finite holding capacity) *plus* the clinical hand-off; and (2) the **consented Salus + Jake real-learner walk is done.** A trauma-informed floor with an unbuilt trap door is not yet trauma-informed. See *The Guide's Own Floor*.
 - **Being witnessed is a gift, never a demand** - the catharsis is in the *claiming*, not in performing pain for the room.
 
 ## The winter reality (Deanna + Keiko, applied here)

@@ -83,7 +83,7 @@ Work of the Day: sort the 100 by Kelly's three horizons - within 12 months / 1-5
 Re-entry. Sorting into the Log; core Block 1; project/writing Block 2; witnessed-quiet; Log. Credit-map work continues.
 
 ### Day 9 · Thu Aug 26 · Guide-led - map across the five regions
-Work of the Day: map the dreams across the **five Compass regions** (Self / Others / Making / World / Voice), using the warm nested prompts to make sure no part of life gets missed. Notice which regions are *full* and which are *empty* - the gap is the data. *"What would a fuller [thin region] even look like?"* Because it's the same five regions they navigate all year, the dream-map becomes their Compass at higher resolution - not a foreign taxonomy. **Bridge:** Monday - sketch into the thin regions; re-entry note.
+Work of the Day: map the dreams across the **five Compass regions** (Self / Others / Making / World / Voice), using the warm nested prompts to make sure no part of life gets missed. Notice which regions are *full* and which are *quiet* - **the quiet regions are the invitation, not a lack** ("a thin region is a door you haven't walked through yet"). *"What would a fuller [quiet region] even look like?"* Because it's the same five regions they navigate all year, the dream-map becomes their Compass at higher resolution - not a foreign taxonomy. **Bridge:** Monday - sketch into the thin regions; re-entry note.
 
 ### Day 10 · Fri Aug 27 · Fallow / hearth
 
@@ -101,7 +101,7 @@ Work of the Day: *"Which of these scares you a little? Courage points there."* T
 Re-entry. Choose candidate within-12-months dreams; core; Log; come ready Thursday to name three.
 
 ### Day 14 · Thu Sep 2 · Guide-led - HARVEST: choose 3 season goals + bridge to The Lineage
-Work of the Day: each learner picks **3 within-12-months dreams** as the season's orienting goals (these become the proximal goals that feed later WOOP work). A small voluntary share - the map made real. Close Session 1. **Bridge into Session 2 (The Lineage):** *"Start thinking about where you come from - the people who made you. Not just blood; anyone who left a mark."*
+Work of the Day: each learner picks **3 within-12-months dreams** as the season's orienting goals (these become the proximal goals that feed later WOOP work) - **any goal can be changed, dropped, or outgrown at any checkpoint with no failure attached; the dream you no longer want is data about who you're becoming, not a missed target.** A small voluntary share - the map made real, and *"I have nothing to declare yet" is a true and honored harvest.* Close Session 1. **Bridge into Session 2 (The Lineage):** *"Start thinking about where you come from - the people who made you. Not just blood; anyone who left a mark."*
 
 **The Closing Feast** (session-close ritual - see `2027-2028-launch-pad-closing-feast-boise-tables-v0.2.md`): the tribe closes the session by sharing a neighbor's table - a family who cooks near us - honoring the cook and their craft (never anyone's journey unless freely offered), reciprocal (pay real custom; return-patronage), inclusion-floored, and built to be *returned to*, not toured. **Binding gate:** the Kira/Stirps cultural-respect sign-off + a real owner/broker in the room before the first feast. S1's is the tribe's first table; the year widens the circle of "us."
 
