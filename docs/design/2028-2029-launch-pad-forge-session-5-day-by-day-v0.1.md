@@ -19,7 +19,7 @@
 - **Mon - Self-guided** - core; is my problem a system? map its parts; Log. Check-in.
 - **Tue - Guided (lighter)** - the Impossible Question at full strength; clowning/play intro (failing-forward, "yes-and"). *Toddler-flexible.*
 - **Wed - Self-guided** - core; where's the leverage in my system? Log. Check-in.
-- **Thu - Guided (deep)** - can big problems be solved? Systems not single acts; no hero alone; leverage points. Bridge: find one leverage point in your problem.
+- **Thu - Guided (deep)** - can big problems be solved? Systems not single acts; no hero alone. **The leverage-ladder** (Vuna): tweak-a-number -> change-a-rule / who-enforces-it -> change-the-goal -> change-the-story everyone believes - *and the obvious levers (a rule, more funding, more awareness) are usually the weakest.* Bridge: find a leverage point - and name which rung it's on, and the higher rung you might be avoiding.
 
 ## Week 14 - DEEPEN (proximal goals)
 - **Mon - Self-guided** - core; break the impossible into the next doable step; Log. Check-in.
@@ -37,13 +37,13 @@
 - **Mon - Self-guided** - core; what's the uncomfortable truth inside your issue? Log. Check-in.
 - **Tue - Guided (lighter)** - Impossible Question; light, held play after the shadow prep. *Toddler-flexible.*
 - **Wed - Self-guided** - core; sit with the shadow *of the problem*; Log. Check-in.
-- **Thu - Guided (deep): the shadow** - the uncomfortable truth most big problems stay unsolved because everyone avoids. **Of the problem, never the self.** Opt-out, lightest touch, invitational. Bridge: what does naming the shadow open?
+- **Thu - Guided (deep): the shadow** - the uncomfortable truth most big problems stay unsolved because everyone avoids. **Of the problem, never the self.** Opt-out, lightest touch, invitational. **Accountability with compassion** (Winona): the people inside the shadow are also inside the system - repair includes them, it doesn't just defeat them (guard against the shadow hardening into contempt for a villain). Bridge: what does naming the shadow open?
 
 ## Week 17 - APPLY (prototype)
 - **Mon - Self-guided** - core; build the smallest real prototype of a solution-step; Log. Check-in.
 - **Tue - Guided (lighter)** - Impossible Question; prototyping in company; iterate from what happened, not what you hoped. *Toddler-flexible.*
 - **Wed - Self-guided** - core; test your prototype; Log. Check-in.
-- **Thu - Guided (deep)** - iteration and failing-forward; change one thing based on what actually happened. Bridge: refine toward a real plan.
+- **Thu - Guided (deep)** - iteration and failing-forward; change one thing based on what actually happened. **And "if your action works, what pushes back?"** (Vuna): name one likely unintended consequence of your own plan - the antidote to the savior posture, which requires believing your fix does only what you meant it to. Bridge: refine toward a real plan.
 
 ## Week 18 - HARVEST (a plan + a prototype)
 - **Mon - Self-guided** - core; consolidate your plan; Log. Check-in.
