@@ -151,7 +151,7 @@ Plus the **right to refuse the structure itself**: a learner who declines a ques
 ## SEASON ONE: ORIGIN (the set-up) - deep build
 
 *Lens: Who am I? Joy-flavor: roots & belonging.*
-*"The soul never thinks without a picture." - Aristotle*
+*"The soul never thinks without a mental image." - Aristotle*
 
 **What your learner walks away with** *(share with parents at the start of the year):*
 - A **story-of-self portfolio**, with a one-page resume inside it
@@ -165,9 +165,9 @@ Plus the **right to refuse the structure itself**: a learner who declines a ques
 The 7 sessions (4 short at 3-4 weeks, 3 long at about 6 weeks; Session 7 is the harvest):
 
 ### Session 1 - "The Map of Me" *(short)*
-- **Focus:** The 100 Dreams meeting. Dream big dreams with courage. First sort the 100 by time horizon - more than 5 years out, within 5 years, and within 1 year - then map them across all 12 life categories, so it is not only career but friendship, health, adventure, family, faith, learning, contribution.
+- **Focus:** The 100 Dreams meeting - from Matthew Kelly's *The Dream Manager* (2007). Dream 100 personal dreams with courage; sort them by time horizon - more than 5 years out, within 5 years, and within 1 year (Kelly's three categories); and map them across the **five Compass regions** the learner already navigates - Self, Others, Making, World, Voice - with warm dream-prompts nested inside each (Kelly's evocative words, teen-relabeled). *(Fleet decision 2026-08-21: the five-region spine keeps one coherent map and honors the 2026-07-21 retirement of the per-studio multi-area wheel; Kelly's warm words fill the prompt layer. See decision log.)* Then the **dream session** (Kelly's practice): share dreams aloud in a circle, where dreams prove contagious - hearing another's dream makes you reach for your pen and add it to your own.
 - **Anchor:** Covey - created twice, begin with the end in mind. This dream-set is the mental creation the whole cycle will physically build toward. The far-horizon dreams are the "end" to begin with; the within-1-year dreams become the season's first proximal goals.
-- **Launches:** Guide runs the 100 Dreams practice (write 100, no filtering); sort them by horizon (more than 5 years / within 5 years / within 1 year); then map across the 12 life categories; a Socratic courage pass - "which of these scares you a little? Courage points there."
+- **Launches:** the 100 Dreams practice (write 100, no filtering - assigned ahead so the session opens with material to discuss); the **dream session** (share aloud; dreams are contagious); sort by horizon (more than 5 years / within 5 years / within 1 year); map across the five Compass regions (Self/Others/Making/World/Voice, with nested dream-prompts); a Socratic courage pass - "which of these scares you a little? Courage points there."
 - **Project days:** begin the Captain's Log; start core academics / HS requirements rhythm.
 - **Joy:** the thrill of permission to dream without a ceiling; wonder at possibility.
 
@@ -204,7 +204,7 @@ The 7 sessions (4 short at 3-4 weeks, 3 long at about 6 weeks; Session 7 is the 
   - *The people:* "Who made you? Not just family - anyone who left a mark."
   - *The hard and the best:* the worst day, the best day, and what each taught.
   - *A slice of life:* "Write one ordinary day at age ___, start to finish." (This is the "slices of life.")
-- **Listening models (how an ordinary life becomes a story):** StoryCorps (three-minute real lives), memoir excerpts, the *Midnight Gospel* episode. Coming-of-age songs as **mirrors, not molds** - "which line is about you?" then back to their own words.
+- **Listening models (how an ordinary life becomes a story):** StoryCorps (recorded real lives - a full interview runs ~40 min; their animated shorts distill them to a few minutes), memoir excerpts, the *Midnight Gospel* episode. Coming-of-age songs as **mirrors, not molds** - "which line is about you?" then back to their own words.
 - **Joy:** the relief and catharsis of claiming a whole life; being witnessed.
 - **Safety:** the same family-story net applies - some lives carry loss; opt-out on any memory.
 
@@ -232,7 +232,7 @@ Every session runs the same two-day skeleton - a Launch day (9:00 to 1:30, with 
 
 | Session | Launch "Work of the Day" (across the session's weeks) | Project-day focus |
 |---|---|---|
-| S1 The Map of Me | 100 Dreams unfiltered; sort by horizon (5+ years / within 5 years / within 1 year); then map across the 12 life categories; "which dreams scare you?" courage pass; Covey's created-twice frame | Draft the 100 dreams; open the Captain's Log; pick 3 within-1-year dreams to orient the season; reading, core / HS |
+| S1 The Map of Me | 100 Dreams (Matthew Kelly, *The Dream Manager*) assigned Day 1; the **dream session** (share aloud - dreams are contagious); sort by horizon (5+ / within 5 / within 1 yr); map across the five Compass regions (nested dream-prompts); "which dreams scare you?" courage pass; Covey's created-twice frame | Write the 100 dreams (homework from Day 1); open the Captain's Log; pick 3 within-1-year dreams to orient the season; reading, core / HS |
 | S2 The Lineage | How to gather a story and interview someone you love; the Midnight Gospel listen (previewed, exit open); map the family mythos; the family-story potluck | Conduct family interviews; gather recipes; write family stories into the Log; reading, core / HS |
 | S3 The Power of Choice | Daily choice games; the responsibility-freedom-choice knot; "where did a choice change everything?" | Choice journaling in the Log; personal project; goal-setting practice; core / HS |
 | S4 Running My Own Ship | Build a routine that fits you (routine = freedom); communication practice; midpoint reflection on S1-3 | Catch up or get ahead on HS requirements; design your own routine; refine the personal-project plan |
@@ -289,7 +289,7 @@ The 7 sessions (4 short, 3 long; Session 7 is the harvest):
 - **Joy:** company and play; teens love this.
 
 ### Session 3 - "My Arena" *(short)*
-- **Focus:** right-sizing. Covey's **Circle of Concern / Influence / Control.** Energy spent only in the Concern ring burns out into cynicism; the shift is to find the arena where action actually moves something.
+- **Focus:** right-sizing. Covey's **Circle of Concern / Influence** (his original two-circle model; **Circle of Control** is a common later third-ring extension, not Covey's own). Energy spent only in the Concern ring burns out into cynicism; the shift is to find the arena where action actually moves something.
 - **What it looks like:**
   - *The Three Circles map* - list everything you worry about; sort into Control / Influence / Concern-only; watch where the energy can actually act.
   - *Agency inventory* - what you concretely have right now: skills, time, relationships, resources.
@@ -357,7 +357,7 @@ Same two-day skeleton; only the Work of the Day and project focus change:
 ## SEASON THREE: THE HELM (the resolution) - deep build
 
 *Lens: what do I do when there is no easy answer? Joy-flavor: expression & camaraderie.*
-*"The first duty of every officer is to the truth." / The Kobayashi Maru: the test was never how to win - it was how to face a no-win scenario without losing yourself.*
+*"The first duty of every Starfleet officer is to the truth." / The Kobayashi Maru: the test was never how to win - it was how to face a no-win scenario without losing yourself.*
 
 **What your learner walks away with** *(share with parents at the start of the year):*
 - The capacity to **make a hard call from principle** - and live with it
