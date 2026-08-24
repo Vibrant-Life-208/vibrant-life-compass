@@ -12,14 +12,14 @@
 ## Care points
 - **Safety:** do not place teenagers in emotionally over-their-head situations with vulnerable populations without support. Service should **stretch, not wound.** Match the mode to the learner's readiness; the guide (and any partner adult) stays close.
 - **Service expeditions are off-site** - toddler coverage travels/planned per outing (as in S4).
-- **Reciprocity (from the Closing Feast lens):** if service touches a community, it honors and includes, never uses; design *with*, and let the benefit flow to the people served.
+- **The community-standing gate (BINDING - Kasidy, mirrors the Closing Feast):** no project touches real people until a named community member is *invited and agrees* (not just interviewed for empathy-data) to the project, its terms, and a way to say "stop." **Benefit-flows-to-them is named up front** (if the honest answer is "they're part of my learning project," that's the savior trap, caught early). The harvest sits with **the community's verdict** ("did this serve *you*?"), not the learner's guess. A **repair clause** mirrors the empty-basket: if a project lands wrong on the people it touched, there's a calm, named way to make it right - repair is part of the service, not its failure. **Affected voices lead early**, not consult at week 20. And **no one's story enters the S7 Call to Action without their consent.** Route vulnerable-population contact to the SSC (Salus/Bashir), and the graceful-ending/continuity of the relationship to Ācārya Nhất.
 - Coach-not-therapist and deficit-guard carry.
 
 ## Week 19 - OPEN (choose your mode)
 - **Mon - Self-guided** - core; which mode of serving fits you and your problem? Log. Check-in.
 - **Tue - Guided (lighter)** - Impossible Question; **the service-choice menu** presented - direct service / advocacy / philanthropy / building / teaching; each learner chooses. *Toddler-flexible.*
 - **Wed - Self-guided** - core; plan your action; Log. Check-in.
-- **Thu - Guided (deep)** - empathy as the core skill; design *with*, never *for*; who are the real people with this problem? Bridge: talk to one of them.
+- **Thu - Guided (deep)** - empathy as the core skill; design *with*, never *for*; who are the real people with this problem? Bridge: **invite** one of them (not just interview) - ask whether this should happen, and let them shape it.
 - **Fri - Fallow / hearth.**
 
 ## Week 20 - DEEPEN (design with)

@@ -18,14 +18,14 @@
 - **Mon - Self-guided** - core; begin gathering facts about your own dragon (from S1); Log. Check-in.
 - **Tue - Guided (lighter)** - Impossible Question; **the cohort picks the format** (ready / build-your-own / speakeasy) and the mystery begins - e.g. "A Death at Greywater Manor" (six guests, each a motive; every suspect looks guilty in turn - that's the trap). *Toddler-flexible.*
 - **Wed - Self-guided** - investigate (in-mystery); core; Log. Check-in.
-- **Thu - Guided (deep)** - introduce **the 5 Whys**; investigation as separating symptom from cause; keep asking *why* until bedrock. Bridge: keep digging.
+- **Thu - Guided (deep)** - introduce **the 5 Whys** - but run it *three times* from the same symptom, a *different* root each pass, then look for the **loop** where the roots feed each other (a system is a web, not a ladder; a single chain flattens it). Investigation as separating symptom from cause. Bridge: keep digging - find more than one root.
 - **Fri - Fallow / hearth.**
 
 ## Week 5 - DEEPEN (the twist)
 - **Mon - Self-guided** - core; run a first 5-Whys pass on your own dragon; Log. Check-in.
 - **Tue - Guided (lighter)** - Impossible Question; continue the mystery / immersive play; the Iceberg revisited. *Toddler-flexible.*
 - **Wed - Self-guided** - core; deepen your root-cause dig; Log. Check-in.
-- **Thu - Guided (deep): the twist** - run the 5 Whys to the end of the mystery -> *"no one murdered her; a system did."* The obvious villain is a symptom; the root is the rot underneath. Then the transfer: name the obvious "suspect" for your own dragon, and the system beneath it. Bridge: trace your dragon to its root.
+- **Thu - Guided (deep): the twist, and the return trip** - run the 5 Whys to the end -> *"no one murdered her; a system did."* The obvious villain is a symptom. **Then teach the arrow *both* ways** (Winona): a system is made of choices people keep making - so ask *"is anyone still accountable? Where does the system stop being an excuse - for the powerful, and for you?"* Cause AND accountability together is the whole of justice; the systemic half alone graduates cynics. Then the transfer to your own dragon: the system beneath it *and* the choices (including yours) inside it. Bridge: trace your dragon to its roots.
 - **Fri - Fallow / hearth.**
 
 ## Week 6 - APPLY -> HARVEST (trace your own dragon)

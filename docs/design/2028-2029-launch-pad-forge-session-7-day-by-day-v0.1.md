@@ -15,6 +15,9 @@
 - **The family-less learner is named and held:** the audience is a warm one - the tribe is your people; a chosen witness is honored equally, never a consolation.
 - **Advocacy, not a TED-performance:** the guide holds *testimony* over applause; vulnerability is the force, not polish. Never coach for the room's reaction over the learner's conviction.
 - Coach-not-therapist carries; empty-basket honored.
+- **No one's story enters the talk without their consent** (Kasidy): a vulnerable community's pain must never become the learner's persuasive Story without that person's yes. *"Is this your Ask, or theirs? Whose voice are you carrying to this room?"*
+- **The honest partial finding is the high-status Call, not a tolerated empty basket** (Vuna): *"Here is what I learned about why this is hard, and here is the smaller, truer ask"* is often the braver, more systems-literate talk. The guide holds it up, not merely permits it.
+- **A Call to *Repair*, not only a Call to Action** (Winona): *"here is what I owe, here is who leads this, here is how you join *them*"* - lands the year on cause-and-accountability together, not the lone fixer's ask.
 
 ## Week 25 - OPEN (what a Call to Action is)
 - **Mon - Self-guided** - core; what's the one thing you'd ask a room to do? Log. Check-in.
@@ -48,7 +51,7 @@ Each week, same shape:
 - **Mon - Self-guided** - core; final touches; rest. Check-in.
 - **Tue - Guided (lighter)** - Impossible Question; set the room for the feast; last nerves held. *Toddler-flexible.*
 - **Wed - Self-guided** - final prep; rest. Check-in.
-- **Thu - THE CALL TO ACTION + FEAST** - a real celebration with a real audience: each learner makes the case (as much, and in whatever shape, they choose). Advocacy, not a judged presentation; the cohort cheers each other. *Being seen is a gift, never a demand.* This is The Forge's harvest.
+- **Thu - THE CALL TO ACTION + FEAST** - a real celebration with a real audience: each learner makes their case (as much, and in whatever shape, they choose), **and the cohort gives the *chorus* Call for the shared Commons Problem - a we, not five solos** (Ibn). Advocacy - or a Call to Repair - not a judged presentation; the cohort cheers each other. *Being seen is a gift, never a demand.* This is The Forge's harvest.
 - **Fri - Fallow / hearth - closes Session 7 and the Forge year.**
 
 ## The year-close (carry the Year-1 evoked-polish)

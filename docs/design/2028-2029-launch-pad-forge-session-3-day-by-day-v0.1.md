@@ -17,7 +17,7 @@
 - **Mon - Self-guided** - core; list everything about your dragon you worry about; Log. Check-in.
 - **Tue - Guided (lighter)** - Impossible Question; **the Three Circles map** (Concern / Influence / Control) - sort your worries; watch where energy can actually act. *Toddler-flexible.*
 - **Wed - Self-guided** - core; sit with your map; Log. Check-in.
-- **Thu - Guided (deep)** - right-sizing, Socratically: where does your energy move something, and where does it just burn? Concern-only -> cynicism. Bridge: what do you actually have to act with?
+- **Thu - Guided (deep)** - right-sizing, Socratically: where does your energy move something, and where does it just burn? Concern-only -> cynicism. **The standpoint question (the mapper is in the map):** *"where are you standing inside this system? What does that let you see, and what does it hide?"* Bridge: what do you actually have to act with?
 - **Fri - Fallow / hearth.**
 
 ## Week 8 - DEEPEN (agency inventory + starter quest)

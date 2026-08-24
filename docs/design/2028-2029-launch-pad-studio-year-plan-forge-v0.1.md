@@ -1,7 +1,7 @@
 # The Launch Pad - Studio Year 2028-2029 (Year 2: The Forge)
 
 **An operating plan for the 16-18 studio, second year**
-**Status:** v0.1 working draft - built on the 2026-08-23 five-voice upstream panel (Keiko, Ben, Cura, Jake, Ezri)
+**Status:** v0.1 + **2026-08-24 fresh-eyes elevation pass** (Vuna Aris, Ibn Khaldūn, Kasidy, Mae Jemison-Palmer, Winona Kirk) - built on the 2026-08-23 upstream panel (Keiko, Ben, Cura, Jake, Ezri)
 **Year opens:** ~mid-August 2028 (exact calendar mapped like Year 1, once set)
 **Guide:** Erin (solo, with a ~15-month-old toddler - mobile, one afternoon nap)
 **Cohort:** 4-7, target 5 - the founding cohort moves together into The Forge; new learners join in progress
@@ -94,10 +94,29 @@ The Log "deepens" only if the mechanism is built: **The Forge opens by reaching 
 ## What carries unchanged from Year 1
 The six refusals; the Captain's Log thread; the self-management scaffold + per-learner readiness; the credit rule; the Table (inclusion floor); the coach-not-therapist referral pathway (built for Y1, carries); the Two-Way Deal / discussion culture; the accessibility doors; the fallow Friday.
 
+## Forge v0.2 elevation (2026-08-24 fresh-eyes panel)
+
+Five fresh voices converged on one finding: **The Forge positioned the learner *outside/above* the web - the mapper outside the map, the visitor not the member, the server not the served-alongside, the fixer vs the harmed, the technician above the living whole. The elevation weaves the learner *in*.** The same lesson the Closing Feast learned ("widening the table of us"), applied to the whole outward turn.
+
+**Cross-cutting principle - the mapper is in the map:** wherever the learner meets a problem, add the standpoint question - *"Where are you inside this system? What does it let you see, and what does it hide? What do the people who live it see that you can't?"* Design-*with* becomes a truth understood, not a rule obeyed. (S3-S6.)
+
+1. **The Commons Problem** (Ibn) - alongside each personal problem, the cohort deliberates ONE shared problem into being (S4) and carries it together to a *chorus* Call (S7). Civic formation by structure - a we, not five solos.
+2. **The community-standing reciprocity gate** (Kasidy, mirrors the Closing Feast) - S6 service doesn't touch real people until a named community member is *invited and agrees*; the harvest sits with *their* verdict; benefit-flows-to-them named up front; a repair clause; affected voices lead early; no story in the S7 Call without consent.
+3. **Love before heartbreak** (Mae) - S4 opens with *"what do you love about being alive on this planet?"* before the problems. Agency cures powerlessness; only love cures despair. + a living-system expedition site + grief honored (route to SSC).
+4. **The 100-year relay** (Mae) - threaded S4-S7: *"one hand in a relay that began before you and continues after"* - "carry it my distance," not "I must solve it."
+5. **S2's return trip** (Winona) - the arrow both ways: cause -> system AND system -> the choices and people who can answer (including you). Cause + accountability = the whole of justice.
+6. **Systems rigor** (Vuna) - S2: 5 Whys *three times*, then find the *loop* (a system is a web, not a ladder). S5: a leverage-ladder (the obvious levers are weakest) + "if your action works, what pushes back?" (name an unintended consequence - the anti-savior antidote).
+7. **Accountability-with-compassion + Call to Repair** (Winona) - S5 shadow: the people inside the shadow are inside the system too (repair, don't just defeat). S7: a *Call to Repair* ("here's what I owe, who leads, how you join them"), and the honest partial finding is the *high-status* Call, not a tolerated empty basket.
+
+*Routing: service + grief pieces -> SSC (Salus/Bashir); community-relationship endings/continuity -> Ācārya Nhất.*
+
+---
+
 ## Preconditions to open (Year 2)
 1. **Light single-morning toddler coverage** for the Thu deep hour (informal is fine; named, not hoped).
 2. **The joiner scaffold built** (Fast-Origin seed, Log day one, peer-witness pairing, shared threshold) - before any mid-cycle joiner arrives.
 3. Carries from Y1: the counsel ruling on Mon/Wed presence; the whole-absence bench; the coach-not-therapist pathway (already built); and - if any Wellness-adjacent or heavy memory work recurs - the Salus + Jake real-learner walk.
+4. **The community-standing reciprocity gate (S6)** built before any service touches real people - consent-in, their-verdict-out (see the elevation section). Route vulnerable-population contact to the SSC (Salus/Bashir) and community-relationship endings to Ācārya Nhất.
 
 ## Notes and open items
 - **Calendar** - map the 2028-2029 dates and holiday observances like Year 1, once the school calendar is set.
