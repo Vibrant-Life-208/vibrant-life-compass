@@ -1,0 +1,40 @@
+# Launch Pad Year 3 (The Helm) - Session 1 "The Mantle" - Day by Day
+
+**Status:** v0.1 working draft | **When:** weeks 1-3 (short session; opens the year)
+**Companions:** Year 3 studio-year plan (Helm); three-year spec (Season Three); coach-not-therapist referral pathway
+
+## The session at a glance
+- **Arc:** OPEN (imposter feeling, named) -> DEEPEN ("Why not you?"; the Evidence File) -> HARVEST (the Mantle ceremony - worthiness chosen, not earned).
+- **The thread:** *imposter feeling is the felt sensation of reaching past your current competence toward the self you are becoming. It is a signal of growth, not a defect. You do not wait to feel ready; you take up the mantle, and the feeling of worthiness follows the acting.*
+- **The frame to teach (simply):** the imposter's lie is "everyone else belongs here and I snuck in." The truth is that accomplished people feel it too - and it fades not by proving yourself but by acting anyway.
+- **Helm rhythm:** Tue guided-lighter (imposter games, "Why not you?", the Evidence File build - toddler-flexible), Thu guided-deep (the Mantle work and ceremony). Mon/Wed self-guided; Fri fallow.
+
+## Care points
+- **This is the rebuilt session.** The old "Fraud Confession - everyone shares" is gone. Shame and imposter feeling are not the same emotion: imposter feeling ("I don't belong here yet") is generative; public shame disclosure in a peer group can wound lastingly. The dissolving power comes from *adults modeling, learners receiving* - not from any learner being required to confess. (Bashir + Jake, independently identical.)
+- **The rebuilt structure (BINDING):** the guide and an invited mentor share genuinely and specifically ("here is a time I felt like a fraud"). Learners *receive* - that alone teaches "accomplished people feel this too." No circle-round, no going-around. If a learner wishes to share, it is **non-attributed** (written on a card, read aloud by the guide with no author named: "someone here once felt..."). **Abstention is invisible** - in a receive-then-optionally-write-a-card structure, no one can see who chose not to write. That is the only real opt-out in a peer room.
+- **The Evidence File is sequenced immediately after, same session** - never leave a room having surfaced shame without building the counterweight (real evidence of competence). Stabilization inside the session, not only across it.
+- **Somatic care:** shame lives in the body (dorsal-vagal collapse - heat, dropped gaze, curled spine). Open with the settle; keep the exposure titrated (receive first, low-stakes); close with a return. A learner who dips into shame needs the room to catch it as normal, and a physical exit ramp they can use without asking.
+- Coach-not-therapist carries: a genuine shame disclosure can shade toward "past coaching" - the referral pathway is live before this session runs.
+
+## Week 1 - OPEN (imposter feeling, named)
+- **Mon - Self-guided** - core / HS credits; the season opens - what does "I don't belong here yet" feel like for you? (private, in the Log). Check-in ~12:00.
+- **Tue - Guided (lighter)** - the Kobayashi Maru frame introduced (the year's ritual); imposter feeling named as universal and as a *growth signal*; light games that surface the lie without demanding disclosure. *Toddler-flexible.*
+- **Wed - Self-guided** - core; where in your life are you reaching past your current competence? Log. Check-in.
+- **Thu - Guided (deep)** - the guide and an invited mentor model imposter feeling (genuine, specific); learners receive; the frame lands ("accomplished people feel it too"). Optional non-attributed cards. Bridge: begin your Evidence File.
+- **Fri - Fallow / hearth.**
+
+## Week 2 - DEEPEN ("Why not you?" + the Evidence File)
+- **Mon - Self-guided** - core; gather evidence of your competence (work, moments, others' words); Log. Check-in.
+- **Tue - Guided (lighter)** - "Why not you?" - the question turned from doubt to permission; build the Evidence File together (the Year-1 portfolio pulled forward - the cycle paying off). *Toddler-flexible.*
+- **Wed - Self-guided** - core; add to your Evidence File; name one place you have been waiting to feel ready. Log. Check-in.
+- **Thu - Guided (deep)** - the gap between feeling ready and being ready; worthiness is chosen, not earned; act-before-you-feel-it. Bridge: what mantle are you ready to take up?
+- **Fri - Fallow / hearth.**
+
+## Week 3 - HARVEST (the Mantle ceremony)
+- **Mon - Self-guided** - core; name the mantle you are taking up this year; Log. Check-in.
+- **Tue - Guided (lighter)** - prepare the ceremony together; the cohort as witnesses (warm, not evaluative). *Toddler-flexible.*
+- **Wed - Self-guided** - final prep; rest. Check-in.
+- **Thu - THE MANTLE** - each learner takes up their mantle before the cohort's warm witness; the Evidence File held close. *Being seen is a gift, never a demand.* Bridge into Session 2 (No Easy Answers): *"You have taken up the mantle. Now: the hard calls it will ask of you."*
+- **Fri - Fallow / hearth - closes Session 1.**
+
+*"We evoke - we never extract."*
