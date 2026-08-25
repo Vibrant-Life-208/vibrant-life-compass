@@ -1,13 +1,16 @@
 # Launch Pad Year 3 (The Helm) - Session 6 "The Bridge" - Day by Day
 
-**Status:** v0.1 working draft | **When:** weeks 22-24 (short session)
+**Status:** v0.2 working draft (fresh-eyes elevation) | **When:** weeks 22-24 (short session)
 **Companions:** Year 3 studio-year plan (Helm); Helm Sessions 1-5; three-year spec (Season Three)
 
 ## The session at a glance
-- **Arc:** OPEN (what leadership actually is) -> DEEPEN (rotating command; find-your-style; the hard parts) -> HARVEST (a real act of leading peers - and of being led).
+- **Arc:** OPEN (what leadership actually is) -> DEEPEN (rotating command AND rotating facilitation; find-your-style; the hard parts) -> HARVEST (a real act of leading peers - and of being led).
 - **The thread:** *leadership is stewardship, not command. The best captains lead toward their own unnecessity - they build a crew that no longer needs them. You practice both seats: leading, and being led well.*
-- **The work:** rotating command (everyone takes the chair); find-your-captain-style (which captain do you lead like - and which do you want to grow toward?); leadership as service; the hard parts (holding a decision, disappointing someone, being disagreed with); honoring the quiet leaders (leadership is not volume).
-- **Helm rhythm:** Tue guided-lighter (leadership games, rotating command, expedition leadership - toddler-flexible), Thu guided-deep (the hard parts of leading; stewardship). Mon/Wed self-guided; Fri fallow.
+- **This is where the Mantle is worn (Bareil)** - the mantle taken up in S1 is now tested in the chair: you lead, you are led, you learn what the weight actually feels like. Literally put it on when you take the chair.
+- **The work:** rotating command (everyone takes the chair); **rotating facilitation (Curzon) - the different, nearly opposite skill S7 needs;** find-your-captain-style; leadership as service; the hard parts; honoring the quiet leaders (leadership is not volume).
+- **Feeds S7 directly (Curzon):** command teaches you to sit in the chair and decide; *facilitation* teaches you to hold the room from beside it, refusing to decide so the group can. The Council needs the second, so S6 must build it.
+- **The loneliness of command (Kirk):** name what no one warns you about - when the hard call comes, you make it *alone*; the crew can advise, the crew cannot decide. And its answer: the captain who has a life to go home to (the vineyard, the crew you love) makes better hard calls than the captain who has only the chair.
+- **Helm rhythm:** Tue guided-lighter (leadership games, rotating command, expedition leadership - toddler-flexible), Thu guided-deep (the hard parts; stewardship; rotating facilitation). Mon/Wed self-guided; Fri fallow. The Vineyard runs alongside.
 - **Collaborative and safe by design** - no second adult needed.
 
 ## Care points
@@ -28,7 +31,7 @@
 - **Mon - Self-guided** - core; take a turn leading a peer task; notice your instincts; Log. Check-in.
 - **Tue - Guided (lighter)** - find-your-captain-style (which captain do you lead like?); expedition leadership - plan and lead a real outing together. *Toddler-flexible.*
 - **Wed - Self-guided** - core; a time leading asked something hard of you; Log. Check-in.
-- **Thu - Guided (deep)** - the hard parts: holding a decision, disappointing someone, being disagreed with; honoring the quiet leaders. Bridge: what kind of captain are you becoming?
+- **Thu - Guided (deep)** - the hard parts: the loneliness of the final call (yours alone to make); disappointing someone; being disagreed with; honoring the quiet leaders. **Rotating facilitation:** each learner takes the convener's chair for a low-stakes *real* cohort disagreement and practices holding the question without answering it (debriefed warmly - "here's the moment you reached for the answer when your job was to hold the question"). Bridge: what kind of captain are you becoming?
 - **Fri - Fallow / hearth.**
 
 ## Week 24 - HARVEST (leading, and being led)
