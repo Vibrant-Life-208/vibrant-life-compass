@@ -3817,6 +3817,55 @@ body.landscape-mountain {
   margin: 0 0 0.4rem;
 }
 
+/* Guide-surface shape toggle (finish vs becoming). Dark flag, guide-only.
+   PROVISIONAL visual - Comes + Accord to finalize before flip. (2026-08-24) */
+.gs-shape {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.85rem;
+  background: var(--earth-pale);
+  border-radius: var(--radius-sm);
+}
+.gs-shape-q {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.gs-shape-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.gs-shape-opt {
+  flex: 1 1 12rem;
+  padding: 0.55rem 0.7rem;
+  background: var(--warm-white);
+  border: 1px solid var(--earth-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-soft);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.gs-shape-opt:hover { border-color: var(--sage); color: var(--text); }
+.gs-shape-opt.is-sel {
+  border-color: var(--sage);
+  background: var(--sage-pale);
+  color: var(--sage);
+  font-weight: 500;
+}
+.gs-shape-opt:focus-visible {
+  outline: 2px solid var(--sage);
+  outline-offset: 1px;
+}
+.gs-shape-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
 .onb-horizon-body {
   color: var(--text);
   line-height: 1.6;
