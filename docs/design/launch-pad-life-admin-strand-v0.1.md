@@ -1,7 +1,7 @@
 # The Launch Pad - Life Admin Strand (do-it-for-real, just-in-time)
 
 **A cross-year companion strand for the 16-18 studio - the practical "adulting" layer**
-**Status:** v0.2 working draft - from the 2026-08 Europa + Cura brainstorm; pressure-tested live (v0.2 adds the no-silent-dodge engagement model, the cross-year sequencing, the capability/resilience cluster, and currency-as-a-taught-skill)
+**Status:** v0.3 working draft - from the 2026-08 Europa + Cura brainstorm; pressure-tested live (v0.2 added the no-silent-dodge engagement model, the cross-year sequencing, the capability/resilience cluster, and currency-as-a-taught-skill; v0.3 adds the guide-has-no-veto rule and the full Studio Commons supportive-micro-economy design)
 **Runs:** all three years (Origin / The Forge / The Helm), on the self-guided project days - a light exposure-touch on every item distributed across the three years, with deeper do-it-for-real dives pulled just-in-time and front-loaded into the launch year
 **Companions:** the three studio-year plans; Helm S5 "The Arena of Voices" (real adults); the Growth Record; the existing dark-shipped Compass Life Skills / Financial Literacy courses
 
@@ -24,8 +24,9 @@ The resolution to the completeness-vs-sovereignty tension, and the heart of v0.2
 - **Exposure is non-negotiable; depth is sovereign.** Every learner *learns what each item is* (the distributed exposure-days below). Whether they then do the deeper, real dive is theirs to choose.
 - **The rule: you may decline the dive, but you name why.** Not a graded checkbox and not a free pass - a *reasoned refusal.* "I've looked at this, and I'm not diving deeper because ___." This is a Kohlberg-Level-6 move; it plugs straight into the S2 Reasoning Standard (name your principle, own the cost).
 - **It marries the "right kind of scared."** The reasoned "why" surfaces the difference between a genuine path-choice ("I will never drive, so car insurance is not mine to chase" - honored) and avoidance-fear ("this scares me"). If it is the right kind of scared - bigger than you, and you keep circling it - the honest naming *is* the nudge to do it anyway. If it is a real no, the reasoning honors it. Fear-as-compass, applied to the learner's own life-admin.
+- **The guide has a voice, never a veto (Europa).** The guide cannot reject or overrule a learner's reasoning - they may only Socratically question it ("what happens the first time you *do* need this and no one is beside you?"). The learner's reasoned no stands after the questioning. A guide who can reject a reason has turned decline-with-reasoning back into compliance; the Socratic question is a mirror, not a gate.
 
-This keeps sovereignty whole (no one is forced to *do*) while ensuring no one dodges out of unexamined avoidance - and it turns the readiness map from a compliance tracker into a record of *reasoned choices*.
+This keeps sovereignty whole (no one is forced to *do*, and no reason is adjudicated) while ensuring no one dodges out of unexamined avoidance - and it turns the readiness map from a compliance tracker into a record of *reasoned choices*.
 
 ## The three triggers (how "now" gets decided)
 
@@ -84,7 +85,7 @@ These run purely just-in-time / by interest, never as a Floor:
 
 Every item gets a light exposure-touch on a learner-day somewhere across the three years, so nothing is met for the first time at the launch cliff; the deeper do-it-for-real dive is then pulled just-in-time. Placement principle: earlier years get what a 15-16-year-old can act on now, the foundational, and the mind-opening; later years get the launch-critical and the legally-adult. Items that share a day are paired.
 
-**The early-trigger engine (so "across three years" is real, not a launch-year cram):** a **studio micro-economy** - a real (small) paid role, a real cohort budget the learners steward, a real fund or dues they manage - manufactures a real pay stub, a real W-4, a real budget, and a real "where did the money go" *at 15-16*, years before the outside world hands them one. It turns the first money items from simulation into genuine do-it-for-real early. (Cost: more for a solo guide to run; flagged as an open item.)
+**The early-trigger engine (so "across three years" is real, not a launch-year cram):** the **Studio Commons** - a supportive micro-economy that manufactures a real pay stub, W-4, budget, and "where did the money go" *at 15-16*, years before the outside world hands them one. Designed to *support, not destroy* (full design below).
 
 | Year | Exposure-days (paired) | Why here |
 |---|---|---|
@@ -95,6 +96,32 @@ Every item gets a light exposure-touch on a learner-day somewhere across the thr
 **The pairings** (items that share a learner-day because they share a muscle): Documents + the bureaucracy call (dealing with officialdom); Spot-the-trap + tech-updating (digital hygiene/security); Money-that-grows + the first-job match (the 401k bridges them); Taxes + paycheck (your money and the government's cut); Grants + civics (the systems that fund and serve you); Wider-world-of-work + terminal + radio (the expand-what's-possible/capability cluster).
 
 *Reconciling the year plans (open item):* this table is the strand's own placement; the three year-plan docs can cross-reference it rather than each re-listing the items. Editing the placement into each year plan (Origin/Forge/Helm) is a later, optional pass.
+
+## The Studio Commons - the supportive micro-economy (support, not destroy)
+
+The micro-economy is the engine that makes "across three years" real, and it carries the strand's sharpest values trap: a careless "studio economy" teaches money-competence *and* quietly teaches "my worth is my output." That is the exact anti-lesson - productivity-as-worth, refusal #5. The design below is built to teach the machinery of money while teaching the opposite of extraction: that an economy can run on **stewardship and reciprocity**, and that a person's worth is never their earnings.
+
+**The governing principle:** money is a *tool the crew stewards together*, never a *scoreboard that ranks its members.* Every design choice serves that line.
+
+Three layers:
+
+1. **The Commons Fund (shared, stewarded - the heart).** A real pooled fund the cohort stewards for shared goods: expeditions, materials, the Table, guest-speaker honoraria, a community-benefit project. Learners rotate *real* financial roles - **Treasurer** (track and reconcile the budget), **Grant-writer** (write for real money - ties to the grants strand), **Purchaser** (make real buys, read invoices/receipts), **Allocator-facilitator** (leads the deliberation on how to spend - ties to the Council/facilitation muscle). Teaches budgeting, reconciliation, real money-handling, and *allocation-as-governance* - with no individual earnings and no ranking. The money serves the crew.
+
+2. **The Role Stipend (equal, for the machinery - the trigger).** To generate the real pay stub + W-4 + year-end tax experience, whoever holds a rotating studio role receives a **small, equal, flat stipend** run through real (or realistic) payroll mechanics. Paid for *stewardship and showing up*, never by output; everyone rotates through, everyone gets the same. The point is the *machinery* (getting paid, reading the stub, filling the W-4, the tax at year-end) - never the amount, never a comparison. Flat-and-equal is the guardrail that keeps the paycheck from becoming a scoreboard.
+
+3. **The Micro-Venture (optional, cooperative - the deeper lesson).** If the cohort wants to grow the Commons Fund, they may run a real *cooperative* venture (a service, a product, a stall) - cooperatively owned, proceeds to the Commons, not to individuals. Teaches revenue and entrepreneurship *and* cooperative economics - a live experience of the anti-extraction economic story Evoked exists to tell. Optional, interest-driven.
+
+**The values guardrails (support-not-destroy), explicit:**
+- **Flat, equal stipends; a shared fund.** No individual earnings ranked against each other; no productivity-as-worth.
+- **Money is a tool, not a verdict** - named out loud, often. The Commons is a laboratory for the *machinery*, deliberately insulated from market-worth.
+- **Teach the alternative economic story** - stewardship, cooperation, reciprocity (Kasidy's and Amanda's ground) alongside the individual machinery, so a teenager meets an economy that is not extraction.
+- **Stewardship over accumulation** - the win is tending the shared thing well, not accumulating personally. The six refusals hold: no ranking, no productivity-as-worth, no surveillance of who "contributed most."
+
+**What it manufactures (the whole point - real do-it-for-real, early):** a real pay stub (item 1), a real W-4 (item 8), a real budget (items 1-2), real year-end taxes (item 1), real grant-writing (grants strand), real allocation/governance (civics + the Council muscle), real invoicing/purchasing - and, optionally, real cooperative revenue.
+
+**The honest operational tension (open item):** *real* payroll for tiny stipends is genuine admin burden for a solo guide (withholding, filing). Two ways to hold it: run the pay-stub/W-4/tax learning on the **real-artifact rung** (the studio "runs payroll" as a real-mechanics exercise producing real forms, without full employer-payroll liability), and put **real dollars** where it is feasible (the Commons Fund, the cooperative venture). The do-it-for-real ladder already licenses this - the learning is real even where the dollars are simulated.
+
+**Natural reviewers before build:** Kasidy (reciprocity), Amanda (commons/licensing), Rom (cooperative/federated economics), and a psyche check from Beverly or Naomi (Living Seed) that the productivity-as-worth guard actually holds in the room.
 
 ## Real adults (plugs into Helm S5)
 
@@ -128,7 +155,7 @@ No grades, no ranking, no banking-model deposit, no external deadline, no produc
 4. **Legal-for-minors pass** - confirm which "real" tasks a minor can do independently vs. which need the real-artifact/simulated rung or family consent.
 5. **The privacy line** - own-data default; family data only with family consent.
 6. **Sequencing table** - built (above); the open piece is the optional pass to cross-reference it into each year-plan doc.
-7. **The studio micro-economy** - design the real paid role / cohort budget / fund that manufactures the early money triggers; weigh the run-cost against a solo guide's capacity.
+7. **The Studio Commons** - build the supportive micro-economy (Commons Fund + flat role stipend + optional cooperative venture) per the design above; resolve the real-vs-realistic-payroll question against a solo guide's capacity; route through the natural reviewers (Kasidy, Amanda, Rom, + a psyche check from Beverly/Naomi) before it runs with real learners.
 8. **The currency owner + annual sweep** - name who checks the do-it-for-real kits before each tax/FAFSA/enrollment season; wire the learner-update-check into how each item is presented.
 9. **The capability/resilience kits** - the update-check walkthrough, a terminal starter set, and the radio lesson (and whether to pursue an amateur-radio license as the do-it-for-real).
 
