@@ -124,4 +124,15 @@ Five fresh voices converged on one finding: **The Forge positioned the learner *
 - **Which guide-day is deep** (here: Thu) is adjustable to whichever morning coverage is easiest.
 - **Reconcile** the guide-day weekday with the three-year spec's Mon/Wed (a standing note since Year 1).
 
+## The Life Admin strand this year (The Forge's exposure-days)
+
+The cross-year Life Admin strand (do-it-for-real, just-in-time; see `launch-pad-life-admin-strand-v0.1.md`) places a light exposure-touch on its items across all three years. **The Forge carries the long-game and outward-turned touches** - funding, systems, the working world - at home in "what is worth solving":
+- **Money-that-grows** (compound / index / the match) - fits S5 "The Long Game"; the earlier a teen meets compounding, the more time works for them.
+- **Taxes** (file a realistic return; calendar-anchored to tax season).
+- **Grants + reachable civics** - the shame-free ask and local government (where problems actually get solved); the guide models a real grant hunt (curriculum-lived).
+- **First-job paperwork + rights** - the W-4, at-will, reading an offer, and *know-your-worth / negotiate-without-shame* (anti-extraction is not anti-prosperity).
+- **Radio** - emergency/off-grid comms; fits the expeditions/hands-on register.
+
+The Studio Commons (launched in Origin) continues here, deepening toward the optional cooperative Micro-Venture. Placement, engagement, and design live in the strand spec; this is the cross-reference.
+
 *"We evoke - we never extract." - the founder chose the sustainable shape; that choice is the curriculum, lived.*
