@@ -174,4 +174,14 @@ Weekly Plan and Credit/Path Map handouts carry forward from v0.2 (accessible red
 - **Still owed, NOT lifted by this plan:** the consented Salus + Jake real-learner walk (including the Table's ED-safety and a neurodivergent test learner); Wellness stays HOLD-FOR-HUMAN.
 - **Open from the three-year spec:** the 15-18 span in one room (the small cohort is part of the answer); mixed-age rotation mechanics.
 
+## The Life Admin strand this year (Origin's exposure-days)
+
+The cross-year Life Admin strand (do-it-for-real, just-in-time; see `launch-pad-life-admin-strand-v0.1.md`) places a light exposure-touch on its items across all three years, with deeper dives pulled just-in-time. **Origin carries the foundational, do-it-now, and mind-opening touches** (what a 15-16-year-old can act on, and what opens the aperture):
+- **Paycheck + banking** - the **Studio Commons** micro-economy launches here (the early-trigger engine: a real pay stub, W-4, and budget at 15-16, years before the outside world hands them one).
+- **The documents that are you + the real bureaucracy call** (dealing with officialdom).
+- **Spot-the-trap + keep-your-tech-updated** (digital hygiene / security).
+- **The wider world of work (jobs you've never heard of) + the command line** - the mind-opening / capability cluster, at home in Origin's "who am I / what's possible."
+
+Placement, engagement (exposure-for-all, depth-by-choice with a reasoned decline), and the Studio Commons design all live in the strand spec; this line is the cross-reference, not a re-listing.
+
 *"We evoke - we never extract." - and that includes the Guide, and her baby.*
