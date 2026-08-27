@@ -1,17 +1,21 @@
 // Edge Function: reset-account-password  (Phase 2, Component 1)
 // STATUS: DRAFT-FOR-TCC. Not deployed. See ../README.md.
 //
-// A guide (or owner) resets the password of a learner/parent ON THEIR ROSTER.
+// A guide (or owner) resets the password of a learner ON THEIR ROSTER (owner: any).
 // Replaces scripts/bulk-import.mjs --reset: the service_role key lives here as a
-// secret instead of in a shell, the reset is roster-scoped + TOTP-gated, and every
-// reset writes a password_resets audit row.
+// secret instead of in a shell, the reset is roster-scoped + TOTP-gated + rate-limited,
+// and every reset writes a password_resets audit row (fatal if it cannot be written).
 //
 // Spec: docs/phase2-guide-password-reset-spec.md (Component 1)
-// Owed before deploy: Tutela/TCC review, Salus+Jake walk, TOTP wiring (O3), captain go.
+// TCC 2026-08-26 (Tutela): applies F3 (constant-work auth), F4 (fatal audit),
+// F5 (rate limit), F7 (record roster vs owner path). Owed before deploy: TOTP (O3),
+// parent-reset scope decision (F6, currently owner-only), Salus+Jake walk, captain go.
 
 import {
-  callerIdFromRequest,
+  assertUnderRateLimit,
+  callerFromRequest,
   genericDenied,
+  insertAuditOrThrow,
   json,
   serviceClient,
   tempPassword,
@@ -22,48 +26,41 @@ Deno.serve(async (req: Request): Promise<Response> => {
   if (req.method !== "POST") return json({ ok: false, error: "method" }, 405);
 
   try {
-    const callerId = await callerIdFromRequest(req);
-    if (!callerId) return genericDenied();
+    const caller = await callerFromRequest(req);
+    if (!caller) return genericDenied();
 
     const { subjectId, totp } = await req.json().catch(() => ({}));
     if (!subjectId || typeof subjectId !== "string" || !totp) return genericDenied();
 
-    // Second factor FIRST (fail-closed until O3 is wired). A missing/invalid factor
-    // blocks the reset before any account state is touched.
-    await verifyTotpOrThrow(callerId, String(totp));
+    // Second factor FIRST (fail-closed until O3). Blocks before any account state is touched.
+    await verifyTotpOrThrow(caller.id, String(totp));
 
     const svc = serviceClient();
 
-    // Authorize the caller: must be a guide, and either an owner (any account) or a
-    // guide whose roster includes the subject. Mirrors the v0.32
-    // year_plans_update_by_guide policy (guide_learner_assignment).
-    const { data: caller } = await svc
-      .from("profiles")
-      .select("role, is_owner")
-      .eq("id", callerId)
-      .maybeSingle();
-    if (!caller || caller.role !== "guide") return genericDenied();
+    // Rate limit before doing work (F5): a compromised session cannot mass-reset a roster.
+    await assertUnderRateLimit(svc, caller.id);
 
-    if (!caller.is_owner) {
-      const { data: assignment } = await svc
-        .from("guide_learner_assignment")
-        .select("learner_id")
-        .eq("guide_id", callerId)
-        .eq("learner_id", subjectId)
-        .maybeSingle();
-      if (!assignment) return genericDenied();
-    }
+    // CONSTANT-WORK AUTHORIZATION (F3): resolve caller role, roster membership, and subject
+    // existence with the SAME queries regardless of outcome, then decide on a single boolean
+    // at the end. This closes the timing/enumeration oracle (a caller must not be able to tell
+    // "off my roster" from "does not exist" by latency). Mirrors the v0.32 roster relation.
+    const [callerRes, assignRes, subjectRes] = await Promise.all([
+      svc.from("profiles").select("role, is_owner").eq("id", caller.id).maybeSingle(),
+      svc.from("guide_learner_assignment").select("learner_id").eq("guide_id", caller.id).eq("learner_id", subjectId).maybeSingle(),
+      svc.from("profiles").select("id").eq("id", subjectId).maybeSingle(),
+    ]);
 
-    // Confirm the subject exists as an auth user. (Kept AFTER auth so an
-    // unauthorized caller can never use this to probe existence.)
-    const { data: subject } = await svc
-      .from("profiles")
-      .select("id")
-      .eq("id", subjectId)
-      .maybeSingle();
-    if (!subject) return genericDenied();
+    const isGuide = callerRes.data?.role === "guide";
+    const isOwner = Boolean(callerRes.data?.is_owner);
+    const onRoster = Boolean(assignRes.data);
+    const subjectExists = Boolean(subjectRes.data);
+    // Record which path authorized this, for oversight (F7). Owner cross-roster is a
+    // whole-school capability and should be distinguishable in the audit from a roster reset.
+    const via = isGuide && isOwner ? "owner" : "roster";
+    const authorized = isGuide && subjectExists && (isOwner || onRoster);
+    if (!authorized) return genericDenied();
 
-    // Perform the reset via the Auth admin API, flag the forced change, audit it.
+    // Perform the reset via the Auth admin API, flag the forced change, audit it (fatal).
     const temp = tempPassword();
     const { error: pwErr } = await svc.auth.admin.updateUserById(subjectId, { password: temp });
     if (pwErr) throw pwErr;
@@ -74,10 +71,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
       .eq("id", subjectId);
     if (flagErr) throw flagErr;
 
-    await svc.from("password_resets").insert({
-      actor_id: callerId,
+    // Audit is fatal (F4): if it cannot be written, the operation fails loudly.
+    await insertAuditOrThrow(svc, {
+      actor_id: caller.id,
       subject_id: subjectId,
       action: "reset",
+      via,
     });
 
     // Shown once to the resetting guide (parity with today's model). Never persisted.

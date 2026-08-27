@@ -19,6 +19,10 @@ create table if not exists password_resets (
   actor_id    uuid references profiles(id) on delete set null,   -- who performed it
   subject_id  uuid references profiles(id) on delete set null,   -- whose password
   action      text not null check (action in ('reset', 'self-change')),
+  -- which path authorized it (TCC F7, 2026-08-26): 'roster' = a guide reset a learner on
+  -- their roster; 'owner' = an owner cross-roster reset (a whole-school capability - must be
+  -- distinguishable for oversight); 'self' = a self-change. Nullable for forward-compat.
+  via         text check (via in ('roster', 'owner', 'self')),
   created_at  timestamptz not null default now()
   -- NO secret column, ever. If a future migration wants to add one, it is wrong.
 );

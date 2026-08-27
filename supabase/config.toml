@@ -1,0 +1,17 @@
+# Supabase project config - Phase 2 security posture (DRAFT-FOR-TCC).
+#
+# Added per TCC finding F2 (Tutela, 2026-08-26): the password-reset Edge Functions
+# rely on app-layer JWT verification (callerFromRequest -> auth.getUser). This file
+# makes the platform-edge verification EXPLICIT and ON, so both walls stand (belt and
+# suspenders) and no later "simplification" can silently drop edge verification by
+# defaulting it off.
+#
+# These functions must NEVER be set verify_jwt = false: an unauthenticated caller must
+# not reach the reset logic at all. The app-layer check is defense-in-depth, not the
+# only gate.
+
+[functions.reset-account-password]
+verify_jwt = true
+
+[functions.set-my-password]
+verify_jwt = true
