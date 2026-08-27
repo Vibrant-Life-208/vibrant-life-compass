@@ -232,4 +232,14 @@ The six refusals; the Captain's Log thread; the self-management scaffold + per-l
 - **Where the Captain's Log physically lives** and how it leaves - resolve (a physical notebook is the cleanest).
 - **The real-world residuals** that gate *running*, not designing: the named therapist, the mentor background-check process + written policy + counsel review, and the Growth Record v1 export. Track these as build work with owners.
 
+## The Life Admin strand this year (The Helm's exposure-days + the launch sweep)
+
+The cross-year Life Admin strand (do-it-for-real, just-in-time; see `launch-pad-life-admin-strand-v0.1.md`) places a light exposure-touch on its items across all three years. **The Helm carries the launch-critical, legally-adult, threshold items** - and the sweep that ensures nothing was missed:
+- **Health coverage** (the aging-off transition; decode the jargon; urgent care vs ER).
+- **Renting** (read a real lease; tenant rights; the deposit wall; renters insurance).
+- **The launch-year sweep** - confirm every item on the eight-item Launch Floor has been met at the exposure layer, and invite the deeper do-it-for-real dive; a learner may decline a dive **with a reasoned why** (the guide questions Socratically, never vetoes). Offered as care, part of being handed the keys - never graded.
+- **Deeper dives** on anything not yet done for real, pulled just-in-time as the launch approaches.
+
+This threads into the Launch rite itself (the Growth Record handoff; the readiness map as a record of reasoned choices). Placement, the Launch Floor, and the engagement model live in the strand spec; this is the cross-reference.
+
 *"We evoke - we never extract." - the honesty is the gift; the container is the care. Held, this season transforms.*
