@@ -112,6 +112,16 @@ const STATE_LABEL = {
   living: 'You keep returning to this. It’s alive in your practice.',
 };
 
+// Short state words for the glyph-tile accessible name. The sky conveys state by
+// COLOR ONLY (dormant vs tended is 1.01:1), and the glyph span is aria-hidden - so
+// without this a screen-reader, low-vision, or colour-blind guide cannot tell which
+// characteristics are alive. (Pervius, guide-surface a11y audit, 2026-08-28.)
+const STATE_WORD = {
+  dormant: 'not tended lately',
+  tended: 'tended this season',
+  living: 'alive in your practice',
+};
+
 // ==================== RENDER ====================
 
 export async function renderPractice() {
@@ -159,7 +169,7 @@ function renderSky(crossings, present, share) {
 
 function glyph(star, state, isCenter) {
   return `
-    <button class="glyph-tile ${isCenter ? 'center' : ''}" data-action="open-star" data-star="${star.id}">
+    <button class="glyph-tile ${isCenter ? 'center' : ''}" data-action="open-star" data-star="${star.id}" aria-label="${esc(star.title)}, ${STATE_WORD[state] || ''}">
       <span class="glyph ${state}" aria-hidden="true"></span>
       <span class="glyph-title">${esc(star.title)}</span>
     </button>`;
