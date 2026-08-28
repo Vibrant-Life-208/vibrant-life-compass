@@ -567,12 +567,47 @@ async function buildTabs(role) {
   // duplicate copies. Clearing immediately before the non-yielding forEach makes each rebuild
   // atomic, so the nav always ends with exactly one set. (2026-08-03: duplicate-tabs fix.)
   nav.innerHTML = '';
+  // ARIA tablist semantics: the strip is a tablist, each button a tab controlling its
+  // panel. Without this a screen reader hears "button, button, button..." with no cue
+  // for which section is current. (Pervius, 2026-08-23 guide-surface a11y audit.)
+  nav.setAttribute('role', 'tablist');
+  nav.setAttribute('aria-label', 'Sections');
+  // Arrow-key roving between tabs (ARIA tablist pattern). Bound once - #tab-nav persists
+  // across rebuilds (only its innerHTML is cleared), so a per-build listener would stack.
+  if (!nav.dataset.kbBound) {
+    nav.dataset.kbBound = '1';
+    nav.addEventListener('keydown', (e) => {
+      const tabEls = [...nav.querySelectorAll('[role="tab"]')];
+      const cur = tabEls.indexOf(document.activeElement);
+      if (cur < 0) return;
+      let next = -1;
+      if (e.key === 'ArrowRight') next = (cur + 1) % tabEls.length;
+      else if (e.key === 'ArrowLeft') next = (cur - 1 + tabEls.length) % tabEls.length;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = tabEls.length - 1;
+      if (next < 0) return;
+      e.preventDefault();
+      tabEls[next].focus();
+      tabEls[next].click();
+    });
+  }
   tabs.forEach((t, i) => {
     const btn = document.createElement('button');
     const pillarClass = pillarColorById[t.id] ? ` pillar-${pillarColorById[t.id]}` : '';
     btn.className = 'tab' + (i === 0 ? ' active' : '') + pillarClass;
     btn.dataset.tab = t.id;
+    btn.id = `tab-${t.id}`;
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    btn.setAttribute('aria-controls', t.id);
+    btn.tabIndex = i === 0 ? 0 : -1;
     btn.innerHTML = escapeHtml(t.label);
+    // Pair the controlled panel back to this tab for assistive tech.
+    const panel = document.getElementById(t.id);
+    if (panel) {
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', `tab-${t.id}`);
+    }
     if (t.id === 'partner-view' && partnerNotifCount > 0) {
       const dot = document.createElement('span');
       dot.className = 'tab-notif-dot';
@@ -591,7 +626,10 @@ async function buildTabs(role) {
 
 async function showTab(tabId, learnerId) {
   document.querySelectorAll('.tab').forEach((t) => {
-    t.classList.toggle('active', t.dataset.tab === tabId);
+    const sel = t.dataset.tab === tabId;
+    t.classList.toggle('active', sel);
+    t.setAttribute('aria-selected', sel ? 'true' : 'false');
+    t.tabIndex = sel ? 0 : -1;
   });
   document.querySelectorAll('.tab-content').forEach((c) => {
     c.classList.toggle('active', c.id === tabId);

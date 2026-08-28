@@ -10,6 +10,10 @@
   --text: #2c2c2c;
   --text-soft: #5a5a5a;
   --text-muted: #8a8a8a;
+  /* Inactive tab labels: --text-muted (#8a8a8a) is only 3.25:1 on --warm-white
+     and fails WCAG 1.4.3 (4.5:1). Scoped darker token for the tab strip -> ~5.1:1.
+     (Pervius, 2026-08-23 guide-surface a11y audit.) */
+  --tab-inactive: #6a6a6a;
   --danger: #b04a4a;
   --radius: 12px;
   --radius-sm: 8px;
@@ -733,7 +737,7 @@ header h1 {
 .tab {
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: var(--tab-inactive);
   padding: 0.85rem 1rem;
   cursor: pointer;
   font-size: 0.95rem;
@@ -744,6 +748,14 @@ header h1 {
 }
 
 .tab:hover { color: var(--sage); }
+
+/* Keyboard focus ring - was absent, so keyboard/switch users had no position cue.
+   Sage on warm-white is 5.99:1, well over the 3:1 non-text minimum. (Pervius, 2026-08-23.) */
+.tab:focus-visible {
+  outline: 2px solid var(--sage);
+  outline-offset: -2px;
+  border-radius: var(--radius-sm);
+}
 
 .tab.active {
   color: var(--sage);
