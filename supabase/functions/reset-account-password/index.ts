@@ -3,15 +3,18 @@
 //
 // A guide (or owner) resets the password of a learner ON THEIR ROSTER (owner: any).
 // Replaces scripts/bulk-import.mjs --reset: the service_role key lives here as a
-// secret instead of in a shell, the reset is roster-scoped + TOTP-gated + rate-limited,
-// and every reset writes a password_resets audit row (fatal if it cannot be written).
+// secret instead of in a shell, the reset is roster-scoped + MFA-gated (AAL2) +
+// rate-limited, and every reset writes a password_resets audit row (fatal if it cannot).
 //
 // Spec: docs/phase2-guide-password-reset-spec.md (Component 1)
 // TCC 2026-08-26 (Tutela): applies F3 (constant-work auth), F4 (fatal audit),
-// F5 (rate limit), F7 (record roster vs owner path). Owed before deploy: TOTP (O3),
-// parent-reset scope decision (F6, currently owner-only), Salus+Jake walk, captain go.
+// F5 (rate limit), F7 (record roster vs owner path). O3 DECIDED 2026-08-28: native MFA
+// (AAL2 asserted off the caller JWT; the client elevates its session first). Owed before
+// deploy: guide MFA enrollment UI (in onboarding), parent-reset scope (F6, owner-only),
+// Salus+Jake walk, captain go.
 
 import {
+  assertAAL2OrThrow,
   assertUnderRateLimit,
   callerFromRequest,
   genericDenied,
@@ -19,7 +22,6 @@ import {
   json,
   serviceClient,
   tempPassword,
-  verifyTotpOrThrow,
 } from "../_shared/reset-common.ts";
 
 Deno.serve(async (req: Request): Promise<Response> => {
@@ -29,11 +31,12 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const caller = await callerFromRequest(req);
     if (!caller) return genericDenied();
 
-    const { subjectId, totp } = await req.json().catch(() => ({}));
-    if (!subjectId || typeof subjectId !== "string" || !totp) return genericDenied();
+    const { subjectId } = await req.json().catch(() => ({}));
+    if (!subjectId || typeof subjectId !== "string") return genericDenied();
 
-    // Second factor FIRST (fail-closed until O3). Blocks before any account state is touched.
-    await verifyTotpOrThrow(caller.id, String(totp));
+    // Second factor FIRST: the caller's session must be AAL2 (they completed an MFA/TOTP
+    // challenge client-side before calling). Fail-closed - blocks before any state is touched.
+    assertAAL2OrThrow(caller);
 
     const svc = serviceClient();
 

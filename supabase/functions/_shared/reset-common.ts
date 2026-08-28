@@ -5,7 +5,8 @@
 // TCC review 2026-08-26 (Tutela): CLEARED-WITH-CONDITIONS. This revision applies
 // findings F1 (reauth), F2 (verify_jwt config), F3 (constant-work auth ordering),
 // F4 (fatal audit), F5 (rate limit), F7 (record reset path).
-// Review owed before deploy: TOTP wiring (O3), Salus+Jake walk, captain go.
+// Review owed before deploy: guide MFA enrollment UI (O3 mechanism decided = native MFA,
+// asserted as AAL2 here), Salus+Jake walk, captain go.
 
 import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 
@@ -99,13 +100,34 @@ export function tempPassword(): string {
   return s;
 }
 
-// TOTP second factor. FAIL-CLOSED: throws until the TOTP enrollment/verification
-// mechanism is chosen (spec O3) and wired here. The reset surface is only safe to
-// expose in-app BECAUSE it is 2FA-gated, so an un-wired factor must block, never wave through.
-// TODO(O3): integrate the chosen guide TOTP verification; verify `code` against the
-// caller's enrolled factor; return only on a valid, unused code.
-export async function verifyTotpOrThrow(_callerId: string, _code: string): Promise<void> {
-  throw new Error("TOTP verification not wired (spec O3) - reset blocked fail-closed");
+// Decode a JWT payload WITHOUT verifying the signature. Safe here only because
+// callerFromRequest already validated the token via auth.getUser; we read claims off
+// an already-trusted token, we do not authenticate with it.
+function decodeJwtPayload(jwt: string): Record<string, unknown> {
+  const parts = jwt.split(".");
+  if (parts.length < 2) throw new Error("bad_jwt");
+  const b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+  const padded = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
+  return JSON.parse(atob(padded));
+}
+
+// Second factor (spec O3 - DECIDED 2026-08-28: Supabase native MFA). FAIL-CLOSED.
+// The council chose native MFA over custom TOTP; Lux's load-bearing point is that MFA
+// verify is session/AAL-bound, so we do NOT re-verify a code server-side. Instead the
+// client elevates its own session to AAL2 (auth.mfa.challenge + verify with the guide's
+// enrolled TOTP factor) BEFORE calling, and we assert the assurance level off the
+// already-verified JWT. No AAL2 claim => no MFA this session => reset blocked.
+//
+// Still effectively fail-closed until guide MFA enrollment ships (in guide onboarding):
+// an un-enrolled guide can never reach AAL2, so can never pass this gate.
+export function assertAAL2OrThrow(caller: Caller): void {
+  let claims: Record<string, unknown>;
+  try {
+    claims = decodeJwtPayload(caller.jwt);
+  } catch {
+    throw new Error("aal_unverifiable"); // fail-closed on any parse failure
+  }
+  if (claims.aal !== "aal2") throw new Error("mfa_required"); // fail-closed
 }
 
 export function json(body: unknown, status = 200): Response {

@@ -8,9 +8,9 @@ Full design: `../../docs/phase2-guide-password-reset-spec.md`.
 
 | Function | Component | Who calls it | What it does |
 |----------|-----------|--------------|--------------|
-| `reset-account-password/` | 1 | a guide (roster) / owner (any) | Resets a roster **learner's** password. Constant-work roster-scoped auth (v0.32 pattern), TOTP-gated, rate-limited, writes a fatal `password_resets` audit row recording the path (roster vs owner). Replaces `scripts/bulk-import.mjs --reset` (moves the service_role key off the shell). **Parents: owner-only** (F6 - guides reset learners only; the roster relation has no parent edge). |
+| `reset-account-password/` | 1 | a guide (roster) / owner (any) | Resets a roster **learner's** password. Constant-work roster-scoped auth (v0.32 pattern), MFA-gated (AAL2), rate-limited, writes a fatal `password_resets` audit row recording the path (roster vs owner). Replaces `scripts/bulk-import.mjs --reset` (moves the service_role key off the shell). **Parents: owner-only** (F6 - guides reset learners only; the roster relation has no parent edge). |
 | `set-my-password/` | 2 | any signed-in user | Reauth (verify current password) then sets the caller's **own** password, revokes other sessions, clears `must_change_password` server-side, writes a fatal audit row. Lets migration v0.40 lock the flag against client writes. |
-| `_shared/reset-common.ts` | - | - | Service client, caller resolution (id+email+jwt), reauth, other-session revocation, fatal audit, rate limit, CSPRNG temp password, fail-closed TOTP gate, uniform-denial helpers. |
+| `_shared/reset-common.ts` | - | - | Service client, caller resolution (id+email+jwt), reauth, other-session revocation, fatal audit, rate limit, CSPRNG temp password, fail-closed AAL2/MFA gate, uniform-denial helpers. |
 
 Paired migrations: `../migrations/2026-08-24-v0.39-password-resets-audit.sql`
 (audit table + `via` path column, additive, safe now) and
@@ -27,10 +27,13 @@ no timing/enumeration oracle), **F4** (fatal audit - a skippable audit is not an
 
 ## Owed before the deploy gate clears (do not skip)
 
-1. **TOTP wiring (spec O3).** `verifyTotpOrThrow` is **fail-closed** - it throws until a
-   real factor is wired, so `reset-account-password` cannot run today. Choose the
-   mechanism (Supabase MFA factors, or the fleet TOTP posture), wire it, and decide
-   where guides enrol (ties to the guide-onboarding item, Cura #1). Test fail-closed in practice.
+1. **Guide MFA enrollment (spec O3 - mechanism DECIDED 2026-08-28: Supabase native MFA).**
+   The function side is wired: `assertAAL2OrThrow` reads the AAL2 claim off the caller JWT
+   (the client elevates its session via `auth.mfa.challenge`+`verify` before calling), so
+   the reset is fail-closed until a guide has an enrolled factor. STILL OWED: the enrollment
+   UI (`auth.mfa.enroll`) in guide onboarding - an un-enrolled guide can never reach AAL2, so
+   the surface is dead-blocked until then (correct, but that is what makes reset usable).
+   Recovery = owner-mediated in-person re-enroll, no self-service (Tutela).
 2. **F1 residual (spec O1):** a stolen *temp* password still passes reauth - that is the
    temp-password-delivery exposure. Reform delivery (deliver to the account holder, not
    shown to every staff member) or shorten the temp-password window. v0.40 must not ship
@@ -38,7 +41,7 @@ no timing/enumeration oracle), **F4** (fatal audit - a skippable audit is not an
 3. **F2 residual:** document the JWT lifetime and confirm de-provisioning a guide (role
    flip) revokes reset power promptly.
 4. **O2 (F7 follow-on):** decide whether owner cross-roster reset needs a second factor
-   beyond the shared TOTP. The audit now records the path; the factor decision is open.
+   beyond the shared MFA/AAL2. The audit now records the path; the factor decision is open.
 5. **Salus + Jake** sign that the child-facing effects are safe and honestly framed.
 6. **Captain go.**
 7. **Deploy hygiene (F8):** retire `scripts/bulk-import.mjs --reset` the moment these
@@ -72,5 +75,5 @@ stuck on the change-password screen.
 deno check supabase/functions/**/*.ts
 ```
 
-Type-checks only; a real run needs a Supabase project, the secrets above, and the
-TOTP factor wired (step 2). Do not deploy from a local run.
+Type-checks only; a real run needs a Supabase project, the secrets above, and a guide
+with an enrolled MFA factor (so the caller session can reach AAL2). Do not deploy from a local run.
