@@ -822,14 +822,19 @@ export async function clearSession() {
   await getClient().auth.signOut();
 }
 
-// Set the signed-in user's own password (first-run forced change / self-service)
-// and clear their must_change_password flag.
-export async function updatePassword(newPassword) {
-  const { error } = await getClient().auth.updateUser({ password: newPassword });
+// Set the signed-in user's own password (first-run forced change / self-service).
+// Phase 2: routes through the set-my-password Edge Function so the reauth + flag-clear
+// happen SERVER-SIDE. Once v0.40 locks must_change_password against client writes, the
+// old direct auth.updateUser + client PATCH can no longer clear the flag - the function
+// does it after verifying the current password (F1). currentPassword is required.
+// DEPLOY ORDER (load-bearing): deploy the functions -> ship this client -> verify ->
+// THEN apply v0.40. Reversed, first-time users strand on the change screen.
+export async function updatePassword(newPassword, currentPassword) {
+  const { data, error } = await getClient().functions.invoke('set-my-password', {
+    body: { currentPassword, newPassword },
+  });
   if (error) throw error;
-  const { data } = await getClient().auth.getUser();
-  const id = data?.user?.id;
-  if (id) await getClient().from('profiles').update({ must_change_password: false }).eq('id', id);
+  if (data && data.ok === false) throw new Error(data.error || 'change_failed');
 }
 
 // Guide/owner-run reset. NOT available on Supabase yet: the password lives in

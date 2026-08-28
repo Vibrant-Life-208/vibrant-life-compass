@@ -101,10 +101,12 @@ export function showChangePasswordScreen() {
     screen.classList.add('active');
     screen.style.display = 'flex';
 
+    const current = document.getElementById('cp-current');
     const pw = document.getElementById('cp-password');
     const confirm = document.getElementById('cp-confirm');
     const err = document.getElementById('cp-error');
     const btn = document.getElementById('cp-submit');
+    if (current) current.value = '';
     if (pw) pw.value = '';
     if (confirm) confirm.value = '';
     // Replace the button to clear any prior listeners (one-shot wiring).
@@ -112,14 +114,18 @@ export function showChangePasswordScreen() {
     btn.parentNode.replaceChild(fresh, btn);
 
     fresh.addEventListener('click', async () => {
+      const cur = current?.value || '';
       const a = pw.value || '';
       const b = confirm.value || '';
       const fail = (m) => { err.textContent = m; err.style.display = 'block'; };
+      // Current password is required for the Phase 2 server-side reauth (F1): the person
+      // must prove they hold the current (temp) credential before setting a new one.
+      if (!cur) return fail('Enter your current password.');
       if (a.length < 8) return fail('Use at least 8 characters.');
       if (a !== b) return fail('The two passwords don\'t match.');
       fresh.disabled = true;
       try {
-        await updatePassword(a);
+        await updatePassword(a, cur);
       } catch (e) {
         fresh.disabled = false;
         return fail('Could not set your password. Please try again.');

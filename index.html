@@ -65,6 +65,12 @@
       <h1 class="signin-title">Set your password</h1>
       <p class="signin-sub">You signed in with a temporary password. Choose your own to continue.</p>
       <form id="change-password-form" class="signin-form">
+        <!-- Current (temp) password - required for the Phase 2 server-side reauth (F1).
+             Copy is PROVISIONAL; age-tiered + honest-line framing comes with the Salus+Jake walk. -->
+        <div class="form-field">
+          <label for="cp-current">Current password</label>
+          <input type="password" id="cp-current" autocomplete="current-password" placeholder="The password you just used">
+        </div>
         <div class="form-field">
           <label for="cp-password">New password</label>
           <input type="password" id="cp-password" autocomplete="new-password" placeholder="At least 8 characters">

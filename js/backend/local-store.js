@@ -1070,7 +1070,12 @@ export async function getStrengthRanking(identityId) {
 // and clears it on the session. Resolves the account BY ROLE - never off
 // session.learnerId for a parent, since a parent session also carries the
 // linked child's learnerId (that would reset the child's password by mistake).
-export async function updatePassword(newPassword) {
+// Signature matches the Supabase adapter: (newPassword, currentPassword). The local
+// backend IGNORES currentPassword - here the PBKDF2 hash IS the credential store (no
+// Auth service, no Edge Function, no v0.40 trigger), so the reauth the Supabase path
+// needs has no counterpart locally. The arg is accepted so the shared store.js export
+// has one signature across both backends (Lux, 2026-08-28).
+export async function updatePassword(newPassword, _currentPassword) {
   const session = read(KEYS.session);
   if (!session) return;
   const hashed = await _hashPasswordLocal(newPassword);
