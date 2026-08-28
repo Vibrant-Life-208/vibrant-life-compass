@@ -1,7 +1,7 @@
 # The Launch Pad - Studio Year 2029-2030 (Year 3: The Helm)
 
 **An operating plan for the 16-18 studio, third year - the culmination**
-**Status:** v0.2 working draft - built on the 2026-08-24 six-voice upstream safety panel (Bashir, Jake, K'Ehleyr, Ezri, Riker, Kasidy); elevated by the 2026-08-25 five-voice fresh-eyes panel (Kirk, Spock, Guinan, Curzon, Bareil)
+**Status:** v0.2 working draft - built on the 2026-08-24 six-voice upstream safety panel (Bashir, Jake, K'Ehleyr, Ezri, Riker, Kasidy); elevated by the 2026-08-25 five-voice fresh-eyes panel (Kirk, Spock, Guinan, Curzon, Bareil); **+ Ring-1 applied fixes (2026-08-28)** at the end
 **Year opens:** ~mid-August 2029 (exact calendar mapped like Years 1-2, once the school calendar is set)
 **Guide:** Erin (solo, with a ~2.5-3-year-old - now enrolled in Vibrant Life Tots, Mon/Wed 9:15-11:30)
 **Cohort:** 4-7, target 5 - the founding cohort completes the cycle and launches; new learners still join in progress
@@ -227,8 +227,8 @@ The six refusals; the Captain's Log thread; the self-management scaffold + per-l
 
 - **Calendar** - map the 2029-2030 dates and holiday observances like Years 1-2, once the school calendar is set.
 - **Which guide-day is deep** (here: Thu) is adjustable to whichever morning the coverage + second adult are easiest.
-- **Reconcile** the guide-day weekday with the three-year spec's Mon/Wed (a standing note since Year 1).
-- **The founder's margin** - weigh whatever else 2029-2030 holds for the family against even this container; the "defer the heaviest sessions" option stays honorable, and a further-lightened season is the floor working, not the guide failing.
+- **Guide-day weekday - RESOLVED (Ring-1):** the three-year spec now reads Tue/Thu; the standing contradiction is closed.
+- **The founder's margin** - weigh whatever else 2029-2030 holds for the family against even this container; the "defer the heaviest sessions" option stays honorable, and a further-lightened season is the floor working, not the guide failing. **Ring-1: the *lighter* Helm is the default first pass** - full-intensity S2/S4/S7 is opt-*in* by readiness for a later cohort (after the container has been run once and the child is older), never opt-*out* by exhaustion.
 - **Where the Captain's Log physically lives** and how it leaves - resolve (a physical notebook is the cleanest).
 - **The real-world residuals** that gate *running*, not designing: the named therapist, the mentor background-check process + written policy + counsel review, and the Growth Record v1 export. Track these as build work with owners.
 
@@ -241,5 +241,15 @@ The cross-year Life Admin strand (do-it-for-real, just-in-time; see `launch-pad-
 - **Deeper dives** on anything not yet done for real, pulled just-in-time as the launch approaches.
 
 This threads into the Launch rite itself (the Growth Record handoff; the readiness map as a record of reasoned choices). Placement, the Launch Floor, and the engagement model live in the strand spec; this is the cross-reference.
+
+## Ring-1 applied fixes (2026-08-28) - The Helm's share
+
+The three-year spec carries the canonical Ring-1 doctrine (its "Ring-1 revisions" section); the Helm's concrete applications - the heaviest year, so the safety fixes concentrate here:
+
+- **Scaffolding vs floor - titrate the signal, hold the floor (SSC ruling).** The Helm's stacked container was found to over-*signal* ("we expect you to break"). Titrate the *reassurance signal* - reframe every net as legible trust, not vigilance (the battle-buddy is "a crew that holds each other," never "assigned to watch you flood"); thin the reassurance as the cohort's trust matures. But **hold the floor's actual availability whole** - the exit ramp, discharge/return, de-roling after every embodiment, the second adult on the three heaviest sessions are non-negotiable and are named un-cuttable *in the same breath as the referral pathway* (a tired guide cuts de-roling first because it feels like overhead - it is the floor).
+- **The harden-off, RESEATED (SSC/COC ruling; the PDC's proposal refused as posed).** A learner meeting a hard thing *un-held* before launch is a real and good goal - but grief and moral injury do not "harden off" (that is the frost, not the bracing morning). So it is **refused on the heaviest material (S2/S4/S7), where the floor stays whole**, and reseated onto ordinary-stakes surfaces that are *meant* to be crossed alone: the absent-guide day, the real bureaucracy call, mentor rejection, the no-win case. There, reduce the *visible scaffold* (not the floor's availability), on *medium-weight* material, *chosen and named* never sprung, age/tenure gated (launching 17-18s in their final season only; contraindicated for under-16 / first-season / already-over-hardened learners - Kira).
+- **The closing practice reaches its culmination here.** The learner-held closing/re-crossing practice, seeded in Origin and spiraled, is what the graduate carries out the door to close their own openings after the guide is gone; the Launch rite's Separation -> Liminality -> Reincorporation is the arc-scale instance of it. The design opens faster than it closes - this is the year the closing capacity must be *theirs*.
+- **The export is Tier-3 - binding before Aug 2029, not now (Vuna Aris / Miles).** The Growth Record v1 portable export remains a hard gate on walking the Launch rite, but it is *cold infrastructure built off the guide, before the run-year* - not a present-day burden. "Do not power on any run-year whose build-list still contains cold infrastructure."
+- **The guide is the floor (carried from the spec doctrine):** the cross-year sustainability watch (SSC/Bashir, held externally) and the pre-dated defer blessing govern the Helm year most of all, since this is where the load and the content are heaviest.
 
 *"We evoke - we never extract." - the honesty is the gift; the container is the care. Held, this season transforms.*
