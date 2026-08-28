@@ -1,7 +1,7 @@
 # The Launch Pad - Studio Year 2027-2028 (Year 1: Origin)
 
 **An operating plan for the 16-18 studio**
-**Status:** v0.3 working draft - corrected to the real schedule and the founder's actual plan; **+ 2026-08-23 evoked-polish pass** (5-agent review: Naomi, Polaris, Guinan, Cura, Deanna) folded in below
+**Status:** v0.3 working draft - corrected to the real schedule and the founder's actual plan; **+ 2026-08-23 evoked-polish pass** (5-agent review: Naomi, Polaris, Guinan, Cura, Deanna) folded in below; **+ Ring-1 applied fixes (2026-08-28)** at the end
 **Year opens:** Monday, August 16, 2027
 **Guide:** Erin (solo, with her ~3-month-old worn while she works)
 **Cohort:** open 4-7 (uncertain this far out); target 5, treat 7 as the true ceiling; split the Socratic block at 6+
@@ -177,11 +177,22 @@ Weekly Plan and Credit/Path Map handouts carry forward from v0.2 (accessible red
 ## The Life Admin strand this year (Origin's exposure-days)
 
 The cross-year Life Admin strand (do-it-for-real, just-in-time; see `launch-pad-life-admin-strand-v0.1.md`) places a light exposure-touch on its items across all three years, with deeper dives pulled just-in-time. **Origin carries the foundational, do-it-now, and mind-opening touches** (what a 15-16-year-old can act on, and what opens the aperture):
-- **Paycheck + banking** - the **Studio Commons** micro-economy launches here (the early-trigger engine: a real pay stub, W-4, and budget at 15-16, years before the outside world hands them one).
-- **The documents that are you + the real bureaucracy call** (dealing with officialdom).
+- **Paycheck + banking** - the simplest real-artifact touches only (read a real pay stub, hold a real account). *(Ring-1 fix: the Studio Commons no longer launches in Origin - it moved to Year 2; the newborn year carries only the light touches.)*
+- **Navigating officialdom + the real bureaucracy call** (the paper system, at arm's length - renamed from "the documents that are you").
 - **Spot-the-trap + keep-your-tech-updated** (digital hygiene / security).
 - **The wider world of work (jobs you've never heard of) + the command line** - the mind-opening / capability cluster, at home in Origin's "who am I / what's possible."
 
 Placement, engagement (exposure-for-all, depth-by-choice with a reasoned decline), and the Studio Commons design all live in the strand spec; this line is the cross-reference, not a re-listing.
+
+## Ring-1 applied fixes (2026-08-28) - Origin's share
+
+The three-year spec now carries the canonical Ring-1 doctrine (see its "Ring-1 revisions" section); Origin's concrete applications:
+
+- **Seed the Vineyard in week one.** The un-conscripted joy thread (a thing the learner loves that is never made useful, harvested, or Log-prompted) starts in Origin's first week, not Year 3 - so it is three years old when it matters most. Introduce it plainly: "this is the part of the week that is yours to love." Offer it with a floor - the over-loaded learner whose life has no room for un-useful joy is honored too, never shamed (their full-to-breaking basket is as real as the empty one).
+- **The graduated somatic floor, seeded here.** Origin already opens with the body-first settle; add the mid-work discharge point (a 30-second orient between activations) and an active close-return, plus a standing physical exit ramp ("here is where you step out to, and you don't have to ask"). Anchor the discharge/return especially at S5's full-draft autobiography, where a body will get activated. Train the regulation reflex where the stakes are low.
+- **The learner-held closing practice, introduced at a young register.** Even Origin opens the interior (100 dreams is an opening act); introduce the three-prompt close (*what did I meet / what do I carry / who am I now*) as a light, learner-held, never-read practice that rides the fallow - so the reflex is a year old by the Forge and three by the Launch.
+- **Chosen / forward lineage - alternate doors, natively built (Kira, Tier 1).** The lineage/family work (S2, S5) offers, with *equal light* (not as an opt-out), the learner whose roots are severed, contested, adopted, foster, refugee, or painful: your lineage is who you *choose*, who you are *building*, who you are becoming - the self as first-of-a-line. Not a side-exit; a full front door. (Stirps reads the door copy before it ships.)
+- **Destination named on day one.** Origin's mountain, said in week one: "in ~30 weeks you'll stand and say *this is me* - the Unveiling; everything between now and then is getting ready to mean it."
+- **Fallow is binding.** The fallow Friday, the empty basket, the Vineyard, and Log-fallow-days are precondition-to-open, as un-cuttable as the referral pathway.
 
 *"We evoke - we never extract." - and that includes the Guide, and her baby.*
