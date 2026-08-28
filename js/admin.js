@@ -29,7 +29,7 @@ export async function renderAdminAccounts() {
   const canReset = BACKEND_TYPE === 'local';
   let html = canReset
     ? '<p class="admin-note">Forgot a password? Tap <strong>Reset password</strong> on anyone below to generate a one-time temp password. They set their own the next time they sign in.</p>'
-    : '<p class="admin-note">Password resets are run from the admin reset tool for now - the secure in-app reset (with two-factor) is on the way. Any staff member can help.</p>';
+    : '<p class="admin-note">Password resets are run from the admin reset tool for now - the secure in-app reset (with two-factor) is on the way. Ask the owner if someone needs one.</p>';
 
   html += renderGroup('Hero geniuses (learners)', learners.map(l => ({
     id: l.id,

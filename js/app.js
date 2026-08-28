@@ -688,20 +688,26 @@ async function renderRoleView(role, learnerId) {
         banner.id = 'guide-notif-banner';
         banner.className = 'guide-notif-banner';
         banner.innerHTML = `
-          <p class="guide-notif-label">${unread.length} new ${unread.length === 1 ? 'update' : 'updates'}</p>
+          <p class="guide-notif-label" role="status">${unread.length} new ${unread.length === 1 ? 'update' : 'updates'}</p>
           ${unread.slice(0, 6).map((n) => `
-            <div class="guide-notif-item" data-notif-id="${escapeHtml(n.id)}">
+            <div class="guide-notif-item" role="button" tabindex="0" aria-label="Mark read: ${escapeHtml(n.title)}" data-notif-id="${escapeHtml(n.id)}">
               <span class="guide-notif-title">${escapeHtml(n.title)}</span>
               <p class="guide-notif-body">${escapeHtml(n.body)}</p>
             </div>
           `).join('')}
-          <p class="guide-notif-hint">Tap an item to mark it read.</p>
+          <p class="guide-notif-hint">Tap or press Enter on an item to mark it read.</p>
         `;
         list.parentNode.insertBefore(banner, list.parentNode.firstChild);
+        // Each item is keyboard-operable (role=button + Enter/Space), not click-only.
+        // (Pervius, guide-surface a11y audit, 2026-08-28.)
         banner.querySelectorAll('[data-notif-id]').forEach((el) => {
-          el.addEventListener('click', async () => {
+          const markRead = async () => {
             await markNotificationRead(el.dataset.notifId);
             await renderRoleView('guide', learnerId);
+          };
+          el.addEventListener('click', markRead);
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); markRead(); }
           });
         });
       }
