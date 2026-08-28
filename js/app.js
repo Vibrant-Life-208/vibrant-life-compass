@@ -24,7 +24,7 @@ import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
 import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, getOnboardingState, saveLearner, addNotification } from './store.js';
 import { isNewToTribe } from './tribe-roster.js';
-import { isEnrolled } from './flags.js';
+import { isEnrolled, isGuideOnboarding } from './flags.js';
 import { renderAcademics } from './observatory/academics.js';
 import { PILLARS, renderPillar } from './pillars/index.js';
 import { renderObservatory } from './observatory/observatory-stack.js';
@@ -234,6 +234,14 @@ async function onSignedIn() {
   if (showWelcome) {
     await showWelcomeScreen(session.role);
     console.log('[welcome] showWelcomeScreen Promise resolved');
+  }
+
+  // Guide first-run: name the staff-power boundary + dual identity, then enrol a TOTP
+  // factor (Phase 2 O3). Dark behind ?guideonb=on. Orientation shows once; MFA is
+  // skipped when already enrolled (and always on the local backend).
+  if (session.role === 'guide' && isGuideOnboarding()) {
+    const { showGuideOnboarding } = await import('./guide-onboarding.js');
+    await showGuideOnboarding();
   }
 
   showApp();

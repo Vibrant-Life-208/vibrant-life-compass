@@ -4795,3 +4795,15 @@ body.landscape-mountain {
 .ls-stage-steps { margin: 0.1rem 0 0; padding-left: 1.1rem; }
 .ls-stage-steps li { font-size: 0.92rem; line-height: 1.45; color: var(--text); margin: 0.15rem 0; }
 .ls-draft-note { font-size: 0.9rem; font-style: italic; color: var(--text-soft); margin: 0.3rem 0 0; }
+
+/* Guide first-run onboarding (dark: ?guideonb=on). Reuses .signin-container. */
+.guide-onb { max-width: 30rem; text-align: left; }
+.guide-onb .signin-title, .guide-onb .signin-sub { text-align: center; }
+.guide-onb-block { margin: 1rem 0; padding: 0.85rem 1rem; background: var(--earth-pale); border-radius: var(--radius-sm); }
+.guide-onb-h { margin: 0 0 0.4rem; font-size: 0.98rem; font-weight: 600; color: var(--sage); }
+.guide-onb-block p { margin: 0; font-size: 0.92rem; line-height: 1.55; color: var(--text); }
+.guide-mfa-steps { margin: 0.6rem 0 1rem; padding-left: 1.2rem; font-size: 0.92rem; line-height: 1.5; color: var(--text); }
+.mfa-qr-wrap { display: flex; justify-content: center; margin: 0.5rem 0; }
+.mfa-qr, .mfa-qr-wrap svg { width: 180px; height: 180px; background: #fff; padding: 8px; border-radius: var(--radius-sm); }
+.mfa-secret { text-align: center; font-size: 0.85rem; color: var(--text-soft); margin: 0.3rem 0 0.8rem; }
+.mfa-secret code { font-size: 0.9rem; letter-spacing: 0.05em; color: var(--text); }
