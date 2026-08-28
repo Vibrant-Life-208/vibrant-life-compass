@@ -1,7 +1,7 @@
 # The Launch Pad Story
 
 **A three-year formation for learners ages 15-18**
-**Status:** v0.1 working draft - locked structure, Season One built deep
+**Status:** v0.1 working draft - locked structure, Season One built deep | **+ Ring-1 revisions (2026-08-28)** appended at the end (canonical cross-cutting doctrine: the closing practice, the layer rule, the through-line spine, binding fallow, decline-as-covenant, the graduated safety floor, guide-as-safety-member, the runway tiers) and the Tue/Thu weekly-rhythm reconciliation applied inline
 **Date:** 2026-06-24
 **Origin:** Evoke Passion fleet meeting (8 voices) facilitated for Europa, toward a presentation for Jenna
 
@@ -33,9 +33,11 @@ The three seasons are named **Origin**, **The Forge**, and **The Helm** - an arc
 
 ### The weekly rhythm (all three seasons)
 
-| Mon | Tue | Wed | Thu | Cadence |
+| Mon | Tue | Wed | Thu | Fri |
 |---|---|---|---|---|
-| **Launch** (guide) | Project work | **Launch** (guide) | Project work | **Fallow / hearth day** |
+| Project work | **Launch** (guide) | Project work | **Launch** (guide) | **Fallow / hearth day** |
+
+*(Ring-1 reconciliation, 2026-08-28: guide-led Launch days are **Tuesday & Thursday**, resolving a standing contradiction with the year plans - the operating reason is concrete: the guide is with Vibrant Life Tots on Mon/Wed, so guided studio runs Tue/Thu. Tue/Thu governs; this line supersedes the earlier Mon/Wed placement.)*
 
 - **Two Launch days** with the Launch Pad Guide. The Guide is a **life-coach, not a teacher**: Socratic, holds questions rather than answers, has permission to say "I don't know - let's walk into it together."
 - **Two project days** for self-directed work: core academics and high-school requirements, personal projects, and the season's writing.
@@ -473,5 +475,31 @@ Same two-day skeleton; only the Work of the Day and project focus change:
 ## The room (8 voices)
 
 Jean-Luc Picard, Kathryn Janeway, Jake Sisko, Guinan (USS Enterprise); Fabula, Comes, Salus, Accord (USS Evoke). Facilitated by Claude.
+
+---
+
+## Ring-1 revisions (2026-08-28) - the canonical doctrine
+
+After the full three-year design was built out (Origin/Forge/Helm + the Life Admin strand), Ring 1 (PDC + SSC + COC, 26 agents) reviewed the whole body, and leadership (Picard, Cura, Impetus, Sisko) ratified a set of cross-cutting fixes. These govern all three seasons; the year plans inherit them.
+
+**1. The one addition - the learner-held closing practice.** The single most-converged finding across all three circles: *the design opens the interior faster than it closes it.* World-class opening practices (100 dreams, lineage, the worst-day, imposter work, mortality, the hard call); only local closing (de-roling closes a session, not the arc). The fix, and the *only* thing added: a small, **learner-held closing / integration practice - the emotional twin of the Reasoning Standard** - three prompts, shaped as a re-crossing: *what did I meet? what do I carry back? who am I on this side that I wasn't on the other?* It rides the fallow, is never read, and is taught as a **portable skill** so the learner closes their own openings after the guide is gone. Seeded in Origin, spiraled across all three years, matched to the somatic floor. It resolves the unread-Captain's-Log question: the Log stays sovereign and unread; the learner is taught to read *themselves*. **Rule: open no faster than you teach a person to close.**
+
+**2. The layer rule - how to subtract without harm.** Everything in the design is one of four layers, and cuts run top-down only: **L0 the floor / laws** (the six refusals, the safety floor, decline-with-reasoning, the un-read Log, the un-trapped exit, honest-not-manipulative) - *never cut*; **L1 the arc-grammar** (the through-lines) - *complete, never delete*; **L2 scaffolding** (how loudly the safety nets announce themselves) - *titrate to the minimum that holds*; **L3 content** (specific quests, texts, games) - *cut freely*. The four-question guide test: does removing it stop it being the Launch Pad (L0), is it the thing or its announcement (L2), does it fragment the arc (L1), else cut (L3). *"Less" aimed at the floor or the closing layer is a violation; aimed at content and accretion it is medicine.*
+
+**3. The through-line spine, all three seasons.** Retrofit to every year (only the Helm had them): **name the destination on day one** (Origin -> the Unveiling; Forge -> the Call to Action; Helm -> the Council & Launch); a **carried object** (the Captain's Log is the constant; the Mantle is Helm's); and **the Vineyard - un-conscripted joy, never made useful, never harvested, never Log-prompted - seeded in Origin week one**, so it is three years old when it matters. The **Reasoning Standard** (Spock's five questions) is the connective grammar of the whole arc, learner-held, introduced at a young register in Origin and spiraled.
+
+**4. The fallow is binding, arc-wide.** The fallow day, the empty basket ("nothing to declare is a true harvest"), the Vineyard, and Log-fallow-days are **precondition-to-open, as un-cuttable as the referral pathway** - the clinical counterweight to three years of an examined life. Offered with a floor, never prescribed: the over-loaded learner's *forced* fallow is honored as fully as the chosen one (Kira - un-useful joy is a class-marked luxury for some).
+
+**5. Decline-with-reasoning is a season-opening covenant, every year.** "You may decline any quest; you name why; your reasoned no stands after Socratic questioning - the guide has a voice, never a veto; the question is a mirror, not a test you can fail." The one sealed exception: no Socratic mirror on the paper-system/officialdom surface, where an honest reason might disclose a legal status the guide must not know.
+
+**6. The safety floor is graduated and seeded early; scaffolding is not the floor.** The somatic floor (settle -> mid-work discharge -> close-return, a standing exit ramp) is **seeded in Origin and grown**, not Helm-only - train the regulation reflex where the stakes are low. Separate the *floor's availability* (L0, held whole) from the *scaffolding signal* (L2, titrated and framed as legible trust, not vigilance). The **harden-off** (a learner meeting a hard thing un-held before launch) is *reseated* onto ordinary-stakes surfaces (the absent-guide day, the real bureaucracy call, mentor rejection), age/tenure/trauma-load gated, chosen-not-sprung - and **refused on the heaviest material**, where the floor stays whole (you do not build resilience by withdrawing the floor on grief).
+
+**7. The guide is the floor the learners stand on.** Guide-sustainability is a **safety member wired in series** with every net, not a self-care footnote - held by a cross-year watch *outside* any year plan (SSC/Bashir, with Salus), with a **pre-dated honorable-defer blessing authored while rested.** A depleted guide cannot run the watch-and-pivot the whole floor depends on.
+
+**8. The runway is a gift, not a deadline.** This is a three-year *emergence*, tiered: what must be true before Day 1 (Tier 0), what has Year-1 runway, and Helm-year infrastructure built cold and off the guide before Aug 2029 (the Growth Record export, mentor-track safeguarding, the named therapist). *Do not power on any run-year whose build-list still contains cold infrastructure* (Miles). And the next real step is not another review - it is one real Origin session with real learners.
+
+*(Full deliberation: `agents/meetings/2026/08/2026-08-28-{pdc,ssc,coc}-launch-pad-*.md` and `-leadership-launch-pad-decision-and-priorities.md` in the evoke-agents-backup repo.)*
+
+---
 
 *"We evoke - we never extract."*
