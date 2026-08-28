@@ -141,7 +141,7 @@ export async function renderYearView(learnerId) {
   // private shame loop.
   const resetCue = document.createElement('p');
   resetCue.className = 'compass-reset-cue';
-  resetCue.textContent = 'Sometimes a goal looks impossible. That is information, not failure. Bring it to your partner or your guide.';
+  resetCue.textContent = `Sometimes a goal looks impossible. That is information, not failure. Bring it to your partner or ${learner.guideName || 'your guide'}.`;
   list.appendChild(resetCue);
 
   // Glossary line retired 2026-05-13 — captain spelled out "End of Session"

@@ -46,7 +46,7 @@ export async function renderNorth(learnerId) {
       } else {
         // Pending (guide not yet confirmed) still works the thresholds; approved is the
         // confirmed state. Only the label changes.
-        const suffix = status === 'pending' ? ' - waiting for your guide to confirm' : ' - see your thresholds';
+        const suffix = status === 'pending' ? ` - waiting for ${learner.guideName || 'your guide'} to confirm` : ' - see your thresholds';
         pitchBtn.textContent = `Your move up to ${targetName}${suffix}`;
         pitchBtn.onclick = async () => {
           const { openThresholdsModal } = await import('./modals.js');

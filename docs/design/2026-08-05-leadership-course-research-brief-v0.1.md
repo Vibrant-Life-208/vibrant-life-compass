@@ -7,6 +7,11 @@
   (`docs/design/2026-08-04-financial-literacy-course-v0.1.md`).
 - Precedent shape: `agents/meetings/2026/07/2026-07-31-books-wealthy-credit-money-RESEARCH-REPORT.md`
   (tiered canon + reader-impact-vs-author-profit + the extraction line + primary reads).
+- Method: run as an **Evoked Research Loop** (`agents/meetings/2026/08/2026-08-04-graph-engineering-research-loop.md`)
+  - single-pass admission gate FIRST, skeptic-with-teeth-and-amnesia, durable diffable run dirs,
+  loop-until-dry, captain gate at implementation. This is a **candidate THIRD proof-run** of the loop
+  (2 of 3 banked); it must beat a single-pass baseline to count, and does NOT by itself generalize the
+  loop into a skill. See "Run it as an Evoked Research Loop" below.
 
 ## The question
 
@@ -71,14 +76,43 @@ test, structured to drop into a **3-stage / 4-step** Leadership course - and to 
 the placeholder arc stubbed in code (`js/pillars/life-skills.js` COURSES.leadership: **Serve →
 Steady → Gather**), each step universal and same-day-doable.
 
-## Graph structure (fan-out → skeptic → synthesize; loop if iterating)
+## Run it as an Evoked Research Loop (the apparatus, not a loose fan-out)
 
-- **Searchers, one per facet:** credited canon (before-they-led admissions) · the sold/industry list ·
-  servant-leadership primary sources · power/manipulation specimens (Greene, Machiavelli, the
-  win-friends-and-influence lineage) · developmental child-leadership research · the
+Per the 2026-08-04 Graph Engineering ruling (`agents/meetings/2026/08/2026-08-04-graph-engineering-research-loop.md`):
+the loop is a PILOT - two of three proof-runs banked, NOT yet a generalized skill. So this run carries
+its full discipline.
+
+**Admission gate - do this FIRST (Data's predicate).** Run a single-pass baseline: one deep read that
+answers the question, with pre-registered criteria. **Admit the graph only if the single pass cannot
+verify its own load-bearing claims** (attributions; promise-vs-kept; the extraction-fork placement). If
+a single deep read suffices, **do NOT build the graph** - *smallest graph that improves the work, not the
+biggest* (the *Nature* finding the pilot surfaced: mean multi-agent gain over single-pass = **0.0%**,
+CI -59% to +77%; 3-10x cost). If admitted, this run is the **candidate THIRD proof-run** toward
+generalizing the loop - it must beat the manual baseline to count.
+
+**The graph, if admitted:**
+- **Searchers (fan-out, one per facet):** credited canon (before-they-led admissions) · the sold/industry
+  list · servant-leadership primary sources · power/manipulation specimens (Greene as SPECIMEN,
+  Machiavelli, the win-friends lineage) · developmental child-leadership research · the
   leadership-industry critique.
-- **Skeptic / kill node:** promise-vs-kept + refute soft attributions + flag prestige-over-substance.
+- **Skeptic node - teeth + amnesia:** kill authority (kills claims, never softens); must return FEWER
+  surviving claims than went in, or it didn't fire; **cold re-instanced each round** (a fresh `agent()`
+  per round - never the same instance defending its own prior kills); disconfirmation mandate; **zero
+  kills in round one = broken skeptic → halt and inspect.** Its artifact is a **kill log**, not a vibe.
 - **Synthesizer:** the tiered report + the firewall + the course-ready arc.
+
+**Durable diffable state (precondition for "compare"):** a dated run directory; **one artifact per node
+per run**; each artifact's header = question / inputs consumed / claims emitted / **kill log**. Compare =
+**diff between run directories**, legible to human and agent.
+
+**Stopping oracle - loop-until-dry:** re-run only while the skeptic keeps killing; a full round with **no
+new kills = dry = stop.** ("Good enough" is not computable unless defined this way; guards the
+confirmation spiral - a cyclic loop inherits prior findings and, without a discard rule, converges on
+whatever it said first with rising confidence.)
+
+**Human gate (non-removable):** research + compare may run autonomously; **acting on the finding -
+drafting or shipping the course - requires a captain node.** The expensive, irreversible step here is
+implementation, not research.
 
 ## When this ships a course
 

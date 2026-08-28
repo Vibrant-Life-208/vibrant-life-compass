@@ -33,8 +33,11 @@ they did not have, or only a feeling?** The tell is always the promise about eff
 The foundation. Needs no capital, no talent, no permission. Boring on purpose - which is why it is
 the most honest book in the canon (soil, not seed).
 
-1. **The tenth.** Set aside a part of any money you have now, however small (Arkad's tenth) - a real
-   jar or account. The act, not the amount, is the lesson.
+1. **The tenth.** Decide your tenth - the part of any money you get that you keep first (Arkad's tenth).
+   Set it aside now if you have any; if you don't yet, the decision still counts and waits for your first
+   coin - a real jar or account. The act, not the amount, is the lesson. *(SSC pre-review fix F-1,
+   2026-08-10: never assume the child has money to set aside - the honest path for the child with nothing
+   is deciding the tenth before there is a coin; never moralize the state of having little.)*
 2. **Need vs want, one week.** Sort what money goes toward into *need* / *want* - no judgment, just
    notice. (Babylon: "control thy expenditures.")
 3. **Find one leak.** Spot one thing money quietly slips out on that you do not actually value;

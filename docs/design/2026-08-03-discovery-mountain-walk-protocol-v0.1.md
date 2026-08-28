@@ -169,8 +169,10 @@ No ship on a partial pass. Holding the wall is not delay; it is the condition.
 
 | Owner | Verdict | Date | Notes |
 |-------|---------|------|-------|
-| Salus (safety) | ☐ pass ☐ revise | | |
-| Jake Sisko (developmental) | ☐ pass ☐ revise | | |
+| Salus (safety) | ☑ revise (structural floor SAFE; exposure sign-off WITHHELD) | 2026-08-11 | Post-ship run. Code-verifiable safety floor holds (mark-a-day, deep-reading, mountain reveal). REVISE: year-note reaches Discovery with no young register → Hoshi. Binding gate — a supervised consented child (the wince) — still owed; overridden 2026-08-03, not met; not to be simulated. |
+| Jake Sisko (developmental) | ☑ revise (direction SUPPORTIVE; exposure gate open) | 2026-08-11 | Register lands at 8-11 (whyYoung, deep-reading tiering real). REVISE: year-note young variant → Hoshi. Two mountain walk-questions ("money", "studied happiness") unresolvable without a real child; still owed. Adventure (12-18) reads standard register — age-fit, out of young-scope. |
+
+> **Post-ship note (2026-08-11):** This walk was run after the 2026-08-03 captain override shipped the mountain to Discovery. Salus's + Jake's lanes that do not require a live child were completed and are recorded above. The **sample-of-one live-child observation** (comprehension + the wince) was **not** gathered this session and was not fabricated; it remains owed and must be gathered from the real Y2 cohort under two-layer consent. No clean PASS is recorded because none is honest yet.
 
 ---
 
