@@ -1,7 +1,7 @@
 # The Launch Pad - Studio Year 2028-2029 (Year 2: The Forge)
 
 **An operating plan for the 16-18 studio, second year**
-**Status:** v0.1 + **2026-08-24 fresh-eyes elevation pass** (Vuna Aris, Ibn Khaldūn, Kasidy, Mae Jemison-Palmer, Winona Kirk) - built on the 2026-08-23 upstream panel (Keiko, Ben, Cura, Jake, Ezri)
+**Status:** v0.1 + **2026-08-24 fresh-eyes elevation pass** (Vuna Aris, Ibn Khaldūn, Kasidy, Mae Jemison-Palmer, Winona Kirk) - built on the 2026-08-23 upstream panel (Keiko, Ben, Cura, Jake, Ezri); **+ Ring-1 applied fixes (2026-08-28)** at the end
 **Year opens:** ~mid-August 2028 (exact calendar mapped like Year 1, once set)
 **Guide:** Erin (solo, with a ~15-month-old toddler - mobile, one afternoon nap)
 **Cohort:** 4-7, target 5 - the founding cohort moves together into The Forge; new learners join in progress
@@ -122,7 +122,7 @@ Five fresh voices converged on one finding: **The Forge positioned the learner *
 - **Calendar** - map the 2028-2029 dates and holiday observances like Year 1, once the school calendar is set.
 - **The founder's margin contracts across the year** - weigh whatever else 2028-2029 holds for the family against even the lighter shape; the "defer" option stays honorable if the toddler-plus reality outgrows it.
 - **Which guide-day is deep** (here: Thu) is adjustable to whichever morning coverage is easiest.
-- **Reconcile** the guide-day weekday with the three-year spec's Mon/Wed (a standing note since Year 1).
+- **Guide-day weekday - RESOLVED (Ring-1):** the three-year spec now reads Tue/Thu (the guide is with Tots Mon/Wed); the standing contradiction is closed. Deep day = Thu, adjustable.
 
 ## The Life Admin strand this year (The Forge's exposure-days)
 
@@ -133,6 +133,14 @@ The cross-year Life Admin strand (do-it-for-real, just-in-time; see `launch-pad-
 - **First-job paperwork + rights** - the W-4, at-will, reading an offer, and *know-your-worth / negotiate-without-shame* (anti-extraction is not anti-prosperity).
 - **Radio** - emergency/off-grid comms; fits the expeditions/hands-on register.
 
-The Studio Commons (launched in Origin) continues here, deepening toward the optional cooperative Micro-Venture. Placement, engagement, and design live in the strand spec; this is the cross-reference.
+**The Studio Commons launches HERE, in the Forge** (Ring-1 fix - moved out of the newborn-year Origin) - and only its smallest-true-thing: the pooled Fund + the flat civic-role stipend / pay-stub-W-4 machinery. The Fund is never fed by learner contribution. The cooperative venture, the Charter, the inheritance, and the outward-share are optional deepenings a thriving cohort grows toward, never pre-built. Placement, engagement, and design live in the strand spec; this is the cross-reference.
+
+## Ring-1 applied fixes (2026-08-28) - The Forge's share
+
+The three-year spec carries the canonical Ring-1 doctrine (its "Ring-1 revisions" section); the Forge's concrete applications:
+
+- **The Studio Commons launches here** (cut to smallest-true-thing) - the money-machinery arrives in Year 2, when the founding cohort has a year of trust and the child is in Tots. (Detailed above and in the strand spec.)
+- **The personal-reincorporation beat (T'Pol).** The Forge's arc goes self -> world, and currently returns the learner to the *world's* transformation (the Call to Action) without closing back to the *self*. Add, before the harvest, a small return beat: *"having gone out to the world's problem, what came back changed in you?"* - so the middle year completes its own inward transaction rather than deferring all self-integration to the Launch. This is the learner-held closing practice applied at the season scale.
+- **The through-lines carry** (from the spec doctrine): the Vineyard and binding fallow continue; decline-with-reasoning opens the season as a covenant; the destination is named on day one ("in ~30 weeks, the Call to Action"); the closing practice, a year old now, deepens; the graduated somatic floor continues (discharge points around the shadow-of-the-problem and the service exposure).
 
 *"We evoke - we never extract." - the founder chose the sustainable shape; that choice is the curriculum, lived.*
