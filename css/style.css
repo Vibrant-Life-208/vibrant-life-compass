@@ -732,6 +732,12 @@ header h1 {
   border-bottom: 1px solid var(--earth-pale);
   overflow-x: auto;
   padding: 0 0.5rem;
+  scroll-behavior: smooth;
+  /* Right-edge fade: on a phone the 8-10 tab strip scrolls with no scrollbar
+     affordance, so tail tabs are undiscoverable. Fading the last ~1.5rem hints
+     "more this way." Fades empty padding on wide screens (harmless). (Pervius, 2026-08-28.) */
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
 }
 
 .tab {
