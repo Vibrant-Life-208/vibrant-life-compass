@@ -1,6 +1,6 @@
 # Launch Pad Year 3 (The Helm) - Session 7 "The Council" - Day by Day
 
-**Status:** v0.2 working draft (fresh-eyes elevation) | **When:** weeks 25-30 (long session, 6 weeks; the year's - and the arc's - harvest)
+**Status:** v0.2 working draft (fresh-eyes elevation; + Ring-1 seeds 2026-08-28) | **When:** weeks 25-30 (long session, 6 weeks; the year's - and the arc's - harvest)
 **Companions:** Year 3 studio-year plan (Helm); Helm Sessions 1-6; three-year spec (Season Three); coach-not-therapist referral pathway
 
 ## The session at a glance
@@ -9,6 +9,7 @@
 - **This is the mountain the whole year climbed toward (Kirk)** - named on day one, and here it is. The learner wears the Mantle to hold the room (Bareil).
 - **The Kobayashi Maru at full power (Kirk + Curzon):** the Council must contain *both* kinds of dilemma - at least one with a real third option (find it: skill) **and at least one genuinely no-win** (every path costs something you cannot get back; the harvest is reasoning honestly to a hard call and carrying its weight without self-deceiving). Half the wisdom is the third door; the other half is knowing when there isn't one and choosing anyway, eyes open. This reconciles S2 (sit in the unwinnable) with S7 (find the third option) - they are two halves, not a contradiction.
 - **The exhibition IS the reasoning, not a verdict to be judged.** The Vineyard runs alongside all six weeks.
+- **Ring-1 seed (2026-08-28) - the arc-scale close.** One of the three heaviest sessions - **NO harden-off; the floor stays whole** (second adult, the somatic Council floor). This is where the Closing Practice reaches its **arc-scale culmination**: the public Council is an opening onto the social plane that needs its private re-crossing, and the Launch rite's Separation -> Liminality -> Reincorporation *is* the three-prompt practice made into a ceremony for the whole three years. The graduate carries the practice out the door - the capacity to close their own openings, for life, is the deepest thing the Helm hands them.
 - **Helm rhythm:** Tue guided-lighter (council craft, deliberation games, rehearsal in the tribe - toddler-flexible), Thu guided-deep (the Socratic shaping of the real deliberation). Mon/Wed self-guided; Fri fallow.
 
 ## The Council as a real deliberative form (Curzon) - build the form, or it becomes debate

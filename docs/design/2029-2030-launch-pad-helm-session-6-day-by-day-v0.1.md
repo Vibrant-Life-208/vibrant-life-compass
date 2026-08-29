@@ -1,6 +1,6 @@
 # Launch Pad Year 3 (The Helm) - Session 6 "The Bridge" - Day by Day
 
-**Status:** v0.2 working draft (fresh-eyes elevation) | **When:** weeks 22-24 (short session)
+**Status:** v0.2 working draft (fresh-eyes elevation; + Ring-1 seeds 2026-08-28) | **When:** weeks 22-24 (short session)
 **Companions:** Year 3 studio-year plan (Helm); Helm Sessions 1-5; three-year spec (Season Three)
 
 ## The session at a glance
@@ -9,6 +9,7 @@
 - **This is where the Mantle is worn (Bareil)** - the mantle taken up in S1 is now tested in the chair: you lead, you are led, you learn what the weight actually feels like. Literally put it on when you take the chair.
 - **The work:** rotating command (everyone takes the chair); **rotating facilitation (Curzon) - the different, nearly opposite skill S7 needs;** find-your-captain-style; leadership as service; the hard parts; honoring the quiet leaders (leadership is not volume).
 - **Feeds S7 directly (Curzon):** command teaches you to sit in the chair and decide; *facilitation* teaches you to hold the room from beside it, refusing to decide so the group can. The Council needs the second, so S6 must build it.
+- **Ring-1 seed (2026-08-28) - a home for the reseated harden-off.** Leading peers through a real disagreement (rotating facilitation, the hard parts) is an ordinary-stakes, met-with-ordinary-support challenge - a fitting home for the reseated harden-off (off the heavy material): the learner holds the room with the guide nearby, not hovering, and discovers their roots hold. Gated to the ready learner. Carry the Closing Practice.
 - **The loneliness of command (Kirk):** name what no one warns you about - when the hard call comes, you make it *alone*; the crew can advise, the crew cannot decide. And its answer: the captain who has a life to go home to (the vineyard, the crew you love) makes better hard calls than the captain who has only the chair.
 - **Helm rhythm:** Tue guided-lighter (leadership games, rotating command, expedition leadership - toddler-flexible), Thu guided-deep (the hard parts; stewardship; rotating facilitation). Mon/Wed self-guided; Fri fallow. The Vineyard runs alongside.
 - **Collaborative and safe by design** - no second adult needed.

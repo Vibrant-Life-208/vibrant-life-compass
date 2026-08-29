@@ -1,12 +1,13 @@
 # Launch Pad Year 3 (The Helm) - Session 1 "The Mantle" - Day by Day
 
-**Status:** v0.2 working draft (fresh-eyes elevation) | **When:** weeks 1-3 (short session; opens the year)
+**Status:** v0.2 working draft (fresh-eyes elevation; + Ring-1 seeds 2026-08-28) | **When:** weeks 1-3 (short session; opens the year)
 **Companions:** Year 3 studio-year plan (Helm); three-year spec (Season Three); coach-not-therapist referral pathway
 
 ## The session at a glance
 - **Arc:** OPEN (imposter feeling, named) -> DEEPEN ("Why not you?"; the Evidence File; a real act that scares you) -> HARVEST (the Mantle rite - worthiness claimed, not earned).
 - **The thread:** *imposter feeling is the felt sensation of reaching past your current competence toward the self you are becoming. It is a signal of growth, not a defect. You do not wait to feel ready; you take up the mantle, and the feeling of worthiness follows the acting.*
 - **The frame to teach (simply):** the imposter's lie is "everyone else belongs here and I snuck in." The truth is that accomplished people feel it too - and it fades not by proving yourself but by acting anyway.
+- **Ring-1 seed (2026-08-28):** imposter/shame work is an *opening* - so the Closing Practice (now three years old for returners; `launch-pad-closing-practice-v0.1.md`) closes it, and reaches its arc-scale culmination this year. The Mantle is *held*, not a harden-off surface - the un-held-encounter work lives on ordinary-stakes surfaces (S3/S5/S6), never on the identity/shame material.
 - **The Mantle is the year's through-line object (Bareil).** It is *not* taken off at the end of this session. It is taken up here (lined with the Evidence File), worn into the leadership work (S6) and the Council (S7), and at the Launch the learner decides to keep it or leave it. One ritual object, opening in September and closing at the Launch.
 - **The Vineyard opens here (Guinan) and runs all year** - a standing weekly thread (fallow Friday or the tail of the lighter Tuesday) where each learner tends something they love that has nothing to do with the curriculum, and the cohort delights in it together. No Log prompt, no harvest, no purpose spoken aloud. Introduce it in Week 1: "this is the part of the week that is yours to love." It is what the hard calls are *for*.
 - **Helm rhythm:** Tue guided-lighter (imposter games, "Why not you?", the Evidence File build - toddler-flexible), Thu guided-deep (the Mantle work and rite). Mon/Wed self-guided; Fri fallow.

@@ -1,12 +1,13 @@
 # Launch Pad Year 3 (The Helm) - Session 2 "No Easy Answers" - Day by Day
 
-**Status:** v0.2 working draft (fresh-eyes elevation) | **When:** weeks 4-9 (long session, 6 weeks)
+**Status:** v0.2 working draft (fresh-eyes elevation; + Ring-1 seeds 2026-08-28) | **When:** weeks 4-9 (long session, 6 weeks)
 **Companions:** Year 3 studio-year plan (Helm); Helm Session 1; three-year spec (Season Three); coach-not-therapist referral pathway
 
 ## The session at a glance
 - **Arc:** OPEN (a dilemma has no answer key) -> DEEPEN (real moral dilemmas through allegory; Kohlberg's stages) -> APPLY (reason a dilemma through, out loud, from principle) -> HARVEST (a reasoned position on a hard case - held, not "won").
 - **The thread:** *the world does not hand you the answer key. The win is not the right answer; it is the quality of the reasoning and the honesty about the cost. You learn to stand inside a dilemma long enough to reason from principle rather than reach for the exit.*
 - **What "the captain thinks" - S2's place in the year (Kirk):** this is how the captain who will hold the Council (S7) learns to reason. Name it: the reasoning built here is what you will stand on in thirty weeks.
+- **Ring-1 seed (2026-08-28):** this is one of the three heaviest sessions - **NO harden-off here; the floor stays whole** (second adult, somatic floor, opt-out all intact). Titrate the *reassurance signal* if it over-announces ("legible trust, not vigilance"), never the floor's availability. The dilemma work is an opening; close it with the Closing Practice (the affective twin of the Reasoning Standard that is this session's spine).
 - **The method:** moral dilemmas through TNG allegory tied to real cases - Measure of a Man / Dred Scott (personhood); The Drumhead / McCarthyism (due process under fear); The First Duty / whistleblowing (loyalty vs truth). Kohlberg's stages named as a map, not a ladder to climb for a grade.
 - **The Reasoning Standard (Spock) is the spine of this session** - the instrument that makes reasoning assessable without ever assessing the verdict (below). The Vineyard runs alongside all six weeks.
 - **Helm rhythm:** Tue guided-lighter (dilemma games, the reasoning craft, Kohlberg map - toddler-flexible), Thu guided-deep (the heavy dilemma work). Mon/Wed self-guided; Fri fallow.

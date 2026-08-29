@@ -1,6 +1,6 @@
 # Launch Pad Year 3 (The Helm) - Session 3 "The Ripple" - Day by Day
 
-**Status:** v0.2 working draft (fresh-eyes elevation) | **When:** weeks 10-12 (short session; a lighter beat after S2)
+**Status:** v0.2 working draft (fresh-eyes elevation; + Ring-1 seeds 2026-08-28) | **When:** weeks 10-12 (short session; a lighter beat after S2)
 **Companions:** Year 3 studio-year plan (Helm); Helm Sessions 1-2; three-year spec (Season Three)
 
 ## The session at a glance
@@ -9,6 +9,7 @@
 - **The tools:** the Ripple Board (map the downstream effects of a choice), the Monkey's Paw (the wish granted with a twist - unintended consequences as story), counterfactual history (what if this one thing had gone differently?), the Pre-Mortem (imagine the choice failed - why?).
 - **Helm rhythm:** Tue guided-lighter (what-if games, the Ripple Board, the Monkey's Paw - toddler-flexible), Thu guided-deep (the Pre-Mortem and second/third-order reasoning). Mon/Wed self-guided; Fri fallow.
 - **Deliberately lighter and playful** - a breath between the two heaviest sessions (S2 and S4). Safe by design; no second adult needed.
+- **Ring-1 seed (2026-08-28) - a home for the reseated harden-off.** Because this is medium-weight and safe, it is one of the ordinary-stakes surfaces where the *harden-off* rightly lives (reseated off the heavy material, per the SSC/COC ruling): a hard consequence-call met with the *ordinary* supports (guide present, exit available) rather than the full scaffold - chosen and named, never sprung, gated to the ready launch-year learner. Reduce the visible scaffold, never the floor's availability. Carry the Closing Practice and Vineyard.
 - **The Vineyard runs alongside** (Guinan) - the standing weekly joy-for-its-own-sake thread; this lighter session is a natural place to let it breathe.
 
 ## Care points

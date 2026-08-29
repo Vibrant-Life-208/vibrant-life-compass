@@ -1,6 +1,6 @@
 # Launch Pad Year 3 (The Helm) - Session 5 "The Arena of Voices" - Day by Day
 
-**Status:** v0.2 working draft (fresh-eyes elevation) | **When:** weeks 19-21 (short session; mentor infrastructure precedes it - see below)
+**Status:** v0.2 working draft (fresh-eyes elevation; + Ring-1 seeds 2026-08-28) | **When:** weeks 19-21 (short session; mentor infrastructure precedes it - see below)
 **Companions:** Year 3 studio-year plan (Helm); Helm Sessions 1-4; three-year spec (Season Three)
 
 ## The session at a glance
@@ -9,6 +9,7 @@
 - **The work:** the art of being mentored (prepare, ask, follow up); the informational interview; a pitch (what you are building / where you are headed); Boise guest speakers who have made real hard calls.
 - **Helm rhythm:** Tue guided-lighter (interview craft, pitch practice, guest speakers - toddler-flexible), Thu guided-deep (reflection on what the voices opened). Mon/Wed self-guided; Fri fallow. The Vineyard runs alongside.
 - **"Learning the terrain from those who walked it" (Kirk)** - name S5's place in the year: the mentors and guest speakers are how the captain learns the ground before the Council and the Launch.
+- **Ring-1 seed (2026-08-28) - a home for the reseated harden-off.** The mentor-rejection preload (reaching out and being ignored) is exactly the kind of *ordinary-stakes, met-alone* hard thing the harden-off belongs on (reseated off the heavy material): the learner meets it with ordinary support (the preload, a debrief), discovering their own roots hold - never a manufactured wound, always gated to the ready learner and never for the already-over-hardened one (Kira). Carry the Closing Practice for what a real conversation opens.
 
 ## The two-track design (BINDING - see the operating plan)
 - **Guest speakers (the window):** guide present the whole visit (satisfies never-alone); public/observable setting; a short expectations sheet the speaker acknowledges; parent notification of who and when. **No background check** for a one-time supervised group speaker - the supervision is the control. Watch the conversion point: any speaker who wants to keep contact with a learner routes follow-up through the guide (which moves them to the mentor track).

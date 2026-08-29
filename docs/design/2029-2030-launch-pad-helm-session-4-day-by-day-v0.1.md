@@ -1,6 +1,6 @@
 # Launch Pad Year 3 (The Helm) - Session 4 "The Stage" - Day by Day
 
-**Status:** v0.2 working draft (fresh-eyes elevation) | **When:** weeks 13-18 (long session, 6 weeks)
+**Status:** v0.2 working draft (fresh-eyes elevation; + Ring-1 seeds 2026-08-28) | **When:** weeks 13-18 (long session, 6 weeks)
 **Companions:** Year 3 studio-year plan (Helm); Helm Sessions 1-3; three-year spec (Season Three); coach-not-therapist referral pathway
 
 ## The session at a glance
@@ -9,6 +9,7 @@
 - **The material:** monologue work; archetypes as *doorways not identities* (you try a way of being on, you are not it); *Our Town* ("do any human beings ever realize life while they live it? - every, every minute?"); Forum Theatre (Boal - the audience can stop the scene and change the choice); and the de-roling ritual after every embodiment.
 - **Helm rhythm:** Tue guided-lighter (theatre-as-play, improv, warm-ups - toddler-flexible), Thu guided-deep (monologue, *Our Town*, Forum Theatre). Mon/Wed self-guided; Fri fallow. The Vineyard runs alongside.
 - **A note on joy (Guinan):** the theatre-as-play here is genuine delight, not only a safety warm-up - protect it as such; keep the Vineyard (joy for its own sake) distinct from the de-roling toolkit, which is safety craft.
+- **Ring-1 seed (2026-08-28):** one of the three heaviest sessions - **NO harden-off here; the floor stays whole** (second adult on the *Our Town* death scene; de-roling every embodiment). Two distinct closes, kept separate: **de-roling** closes the *role* ("that wasn't me"); the **Closing Practice** closes a real feeling the role opened ("that was me, and I carry it, and I'm still here") - *never de-role real grief* (Guinan). Titrate the signal, not the floor.
 
 ## Care points (this is one of the three heaviest sessions)
 - **SECOND ADULT REQUIRED on the *Our Town* death-scene deep day** - it is the one place the season's allegory shield does not apply, because death on the stage *is* the real thing, and a grieving learner takes a direct hit. The second adult's only job is to leave with the learner who needs to leave.
