@@ -1,6 +1,6 @@
 # Launch Pad Year 1 - Session 3 "The Power of Choice" - Day by Day
 
-**Status:** v0.1 working draft
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28)
 **Dates:** Sep 27 - Oct 15, 2027 (weeks 7-9 of Origin)
 **Companions:** Sessions 1-2 day-by-day; studio-year-plan v0.3; three-year spec
 
@@ -8,6 +8,7 @@
 
 - **Arc:** OPEN (the knot: choice is the engine) → DEEPEN (where did a choice change everything?) → APPLY (make a real one, deliberately) → HARVEST (a choice I own).
 - **The thread underneath:** *you can't always choose what happens - but the space between what happens and what you do is where your whole freedom lives.*
+- **Ring-1 seeds (2026-08-28):** carry the Closing Practice at each day's close (`launch-pad-closing-practice-v0.1.md`); the Vineyard continues; the graduated somatic floor carries. And name the tie: *decline-with-reasoning is the Power of Choice made real in the studio itself* - the reasoned no that stands (guide has a voice, never a veto) is agency practiced on us, not just discussed.
 - **Lens:** Who am I? (now: the one who chooses). **Joy-flavor:** play - the choice games are genuinely fun; agency feels good in the body.
 - **The core teaching:** responsibility, freedom, and choice are **one knot, not three topics.** You are free to choose; you own what you choose; choosing *is* how freedom gets used.
 - **The five-region tie:** choice is the **Voice** region made active - "the you that authors all the rest." Session 1 mapped the dreams; Session 3 is where *authoring* becomes a practiced muscle.

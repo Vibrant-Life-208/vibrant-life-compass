@@ -1,6 +1,6 @@
 # Launch Pad Year 1 - Session 6 "Chapter One" - Day by Day
 
-**Status:** v0.1 working draft
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28)
 **Dates:** Jan 10 - Feb 18, 2028 (weeks 19-24 of Origin) - a 6-week long session
 **Companions:** Sessions 1-5 day-by-day; studio-year-plan v0.3; three-year spec
 
@@ -8,6 +8,7 @@
 
 - **Arc:** OPEN (become the author) → DEEPEN (find the throughline; choose the load-bearing moments) → APPLY (write Chapter One) → HARVEST (the second distillation - the one-page story-of-self / resume).
 - **The thread underneath:** *you are the author of your own story - and shaping it small is not making your life small, it is declaring there are chapters to come.*
+- **Ring-1 seeds (2026-08-28):** carry the Closing Practice (the shaping *is* a re-crossing of the whole draft - what did I meet, what do I carry, who am I on this side); the Vineyard continues. And hold Janeway's authorship guard: **offer the hero's-journey arc as *one* map, not the frame** - the learner whose life is a garden, a spiral, a set of rooms authors their own shape with equal honor. The learner is the author of their story, never a character in ours.
 - **Lens:** Who am I? (now: the one who shapes the telling). **Joy-flavor:** the craft delight of shaping; the hope of "chapters to come."
 - **The reframe that makes it land** (Janeway called this the strongest craft in the spec): to a 16-year-old, this *is* their whole life - so don't argue with that, flip it. **"Chapter One" is an act of hope - it declares there are chapters coming.** It doesn't make their life small; it makes their future big.
 - **The five-region tie:** the throughline is the **Voice** region at work (the authoring self, first felt in Session 3); the resume distillation touches **Making** (the practical, vocational form).

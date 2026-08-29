@@ -1,6 +1,6 @@
 # Launch Pad Year 1 - Session 7 "This Is Me" / The Unveiling - Day by Day
 
-**Status:** v0.1 working draft
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28)
 **Dates:** Feb 21 - Apr 7, 2028 (weeks 25-30 of Origin) - a 6-week long session spanning spring break; the year's harvest
 **Companions:** Sessions 1-6 day-by-day; studio-year-plan v0.3; Closing Feast v0.2; three-year spec
 
@@ -10,6 +10,7 @@
 - **The thread underneath:** *dreamed in Session 1, drafted in Session 5, shaped in Session 6 - now declared. This is me.*
 - **Lens:** Who am I? - *lived with, and shown* - a truer, bigger question than when the year began (not closed). **Joy-flavor (the guide's private hope, never the aim):** some feel deeply seen; some feel exposed or flat - both are honored, and no one performs the feeling.
 - **The bookend (make the year rhyme):** the 100 Dreams (S1) → the Full Draft (S5) → Chapter One (S6) → the Unveiling (S7). If the closing anthem is "This Is Me," the year rhymes end to end.
+- **Ring-1 seeds (2026-08-28) - the season-scale close.** The Unveiling is a *public harvest* - an opening of the interior onto the social plane (Seven of Nine's plane rule). So it needs its **private re-crossing afterward**: the Closing Practice at season scale (*what did I meet in showing myself; what do I carry; who am I on this side*), so the exhibited self comes back into the sovereign interior and the learner isn't left "on stage." Then a **between-season fallow** before the Forge opens - never walk a new season's opening on a body still activated from the Unveiling feast. The Vineyard's thing-you-love may be part of what's shown, but is never *required* to be. And Origin's close carries the through-line word for the whole year: the self was declared, and there are chapters to come.
 - **The form:** a self-portrait / art piece - "This Is Me" - in whatever medium is true to the learner (art, film, music, writing, spoken word, mixed). Presented with the story-of-self portfolio, the resume page, and Chapter One.
 - **The five-region tie:** the self-portrait declares the whole self - all five regions at once, with **Voice** (the authoring self) at the center.
 

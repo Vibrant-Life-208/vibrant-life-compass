@@ -1,6 +1,6 @@
 # Launch Pad Year 1 - Session 4 "Running My Own Ship" - Day by Day
 
-**Status:** v0.1 working draft
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28)
 **Dates:** Oct 18 - Nov 5, 2027 (weeks 10-12 of Origin)
 **Companions:** Sessions 1-3 day-by-day; studio-year-plan v0.3 (Part 2 self-management; Part 4 credits); three-year spec
 
@@ -8,6 +8,7 @@
 
 - **Arc:** OPEN (the reframe: routine makes freedom possible) → DEEPEN (build a routine that holds + communication practice) → APPLY (run it; the midpoint look-back + credit-pacing check) → HARVEST (a rhythm that fits, and a look at who you're becoming).
 - **The thread underneath:** *freedom you can't hold is just noise. A routine that fits you is how you actually run your own ship.*
+- **Ring-1 seeds (2026-08-28):** carry the Closing Practice at each day's close (`launch-pad-closing-practice-v0.1.md`); the Vineyard continues; the graduated somatic floor carries. The routine a learner builds here should *protect the fallow* - the un-filled cup is part of the rhythm that fits, not a gap to optimize away.
 - **Lens:** Who am I? (now: the one at the helm). **Joy-flavor:** the quiet satisfaction of a rhythm that fits - a clear desk, real momentum.
 - **The core teaching:** routine is **not the opposite of freedom - it is what makes freedom possible.** This is Session 3's choice, lived as a rhythm that fits *you* (not one imposed on you).
 - **The five-region tie:** anchored in **Self** (energy, rhythm) and **Making** (getting real work done), with **Others** (communication) and **Voice** (the midpoint look-back: who am I becoming?).
