@@ -1,11 +1,12 @@
 # Launch Pad Year 2 (The Forge) - Session 3 "My Arena" - Day by Day
 
-**Status:** v0.1 working draft | **When:** weeks 7-9 (short session, 3 weeks)
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28) | **When:** weeks 7-9 (short session, 3 weeks)
 **Companions:** Year 2 studio-year plan (Forge); Forge Sessions 1-2; three-year spec (Season Two)
 
 ## The session at a glance
 - **Arc:** OPEN (right-sizing) -> DEEPEN (the Three Circles + agency inventory) -> APPLY (a starter quest - one small real problem, acted on) -> HARVEST (a win you can feel: "this one is mine, and I can move it").
 - **The thread:** *energy spent only in the Circle of Concern burns out into cynicism; the shift is to find the arena where your action actually moves something.*
+- **Ring-1 seeds (2026-08-28):** through-lines carry (Closing Practice, Vineyard, somatic floor). Right-sizing the arena is where the fallow earns its keep - not every problem is yours to move, and the un-taken one is a reasoned no, not a failure.
 - **Ties back:** to Year 1's Power of Choice - the move from "problems happen to me" to "I can act on this slice." (Returners have it; joiners built the agency-inventory in their Fast-Origin seed - a clean convergence.)
 - **Lighter-Forge week:** Tue guided-lighter (the mapping/inventory + starter-quest planning), Thu guided-deep (the Socratic right-sizing). Mon/Wed self-guided; Fri fallow.
 

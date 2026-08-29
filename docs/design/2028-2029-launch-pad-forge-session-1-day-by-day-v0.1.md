@@ -1,6 +1,6 @@
 # Launch Pad Year 2 (The Forge) - Session 1 "Naming the Dragon" - Day by Day
 
-**Status:** v0.1 working draft
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28)
 **When:** the opening 3 weeks of The Forge (weeks 1-3 of 2028-2029; exact dates mapped to the school calendar once set)
 **Companions:** Year 2 studio-year plan (Forge) v0.1; the three-year spec (Season Two); Year 1 session docs (the format)
 
@@ -8,6 +8,7 @@
 
 - **Arc:** OPEN (the year's threshold + the distinction) -> DEEPEN (name it precisely) -> APPLY (reframe your own) -> HARVEST (name the dragon you'll carry).
 - **The thread underneath:** *a vague dragon ("everything sucks") cannot be fought; a named one can. Naming precisely is half the victory.*
+- **Ring-1 seeds (2026-08-28):** the through-lines carry from Origin - the Closing Practice (now a year old; `launch-pad-closing-practice-v0.1.md`), the Vineyard, the graduated somatic floor; decline-with-reasoning opens the season as a covenant. Name the destination on day one: "in ~30 weeks, the Call to Action." And **this is the year the Studio Commons launches** (its smallest-true-thing - pooled Fund + pay-stub/W-4 machinery; see the strand spec) - the founding cohort now has a year of trust and the child is in Tots.
 - **The distinction this session teaches** (the thing nobody hands teenagers): a **problem** (you can act on it) vs a **fact of life** (accept it) vs a **preference** (you just want it) vs a **mystery** (sit with it). You fight each differently.
 - **Signature ritual begins:** the **Impossible Question** opens each guided day (a question with no clean answer, debated playfully) - replacing Year 1's choice games.
 - **This session also opens the year** - so it carries the shared threshold, the returner reach-back, and the joiner scaffold (below).

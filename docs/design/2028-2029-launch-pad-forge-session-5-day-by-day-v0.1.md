@@ -1,12 +1,13 @@
 # Launch Pad Year 2 (The Forge) - Session 5 "The Long Game" - Day by Day
 
-**Status:** v0.1 working draft | **When:** weeks 13-18 (long session, 6 weeks; likely spans a break)
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28) | **When:** weeks 13-18 (long session, 6 weeks; likely spans a break)
 **Companions:** Year 2 studio-year plan (Forge); Forge Sessions 1-4; three-year spec (Season Two)
 
 ## The session at a glance
 - **Arc:** OPEN (can big problems be solved? systems, not single acts) -> DEEPEN (proximal goals, leverage, collaboration, failing-forward; the three doors) -> APPLY (break the impossible into the next doable step; prototype) -> HARVEST (a real plan + a first prototype).
 - **The thread:** *"Things are only impossible until they're not." Big problems are systems, not single acts - no hero solves them alone. You break the impossible into the next doable step, find the leverage point, and collaborate.*
 - **The Impossible Question at full strength** this season - the ritual intensifies.
+- **Ring-1 seeds (2026-08-28):** the shadow-of-the-problem work (the three doors) is an *opening* - so it gets its close (the Closing Practice) and the somatic floor on the deep days; shadow stays aimed at *the problem, never forced excavation of the self*. The Reasoning Standard is the spine of the systems/leverage work here.
 - **The three doors into the impossible** (the guide chooses how far to open each): **clowning/play** (failing-forward embodied - improv, "yes-and," gloriously wrong; safest, lead with it), **the inner child** ("why not?" - fearless curiosity), **the shadow** (the uncomfortable truth inside a problem nobody wants to name).
 - **Lighter-Forge week:** Tue guided-lighter (clowning/play/improv, prototyping - toddler-flexible), Thu guided-deep (systems, leverage, the shadow work). Mon/Wed self-guided; Fri fallow.
 

@@ -1,11 +1,12 @@
 # Launch Pad Year 2 (The Forge) - Session 4 "The Wider Field" - Day by Day
 
-**Status:** v0.1 working draft | **When:** weeks 10-12 (short session, 3 weeks)
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28) | **When:** weeks 10-12 (short session, 3 weeks)
 **Companions:** Year 2 studio-year plan (Forge); Forge Sessions 1-3; three-year spec (Season Two)
 
 ## The session at a glance
 - **Arc:** OPEN (lift your eyes to the world) -> DEEPEN ("what breaks your heart?") -> APPLY (an expedition; the Problem Gallery) -> HARVEST (commit to the world-problem you'll carry through S5-7).
 - **The thread:** *the finding question is not "what is important?" but "what breaks your heart?"* (Buechner: where your deep gladness meets the world's deep hunger).
+- **Ring-1 seeds (2026-08-28):** "what breaks your heart" is a real *opening* (heartbreak, eco-despair) - so it gets its close: the Closing Practice re-crossing after the expedition/Problem Gallery, plus the somatic floor (pair heartbreak with agency, discharge and return - the day leaves them lit, not crushed). The Vineyard is the counterweight the whole strand is *for* - the life the hard problem is worth solving in service of.
 - **Lighter-Forge week:** Tue guided-lighter (the Problem Gallery + the expedition - out in the world), Thu guided-deep (the "what breaks your heart" Socratic + stakeholder work). Mon/Wed self-guided; Fri fallow.
 
 ## Care points
