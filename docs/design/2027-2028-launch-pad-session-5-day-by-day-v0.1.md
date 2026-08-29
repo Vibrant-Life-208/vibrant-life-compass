@@ -1,6 +1,6 @@
 # Launch Pad Year 1 - Session 5 "The Full Draft" - Day by Day
 
-**Status:** v0.1 working draft
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28)
 **Dates:** Nov 8, 2027 - Jan 7, 2028 (weeks 13-18 of Origin) - a **6-week long session spanning Thanksgiving and Winter breaks**
 **Companions:** Sessions 1-4 day-by-day; studio-year-plan v0.3; three-year spec
 
@@ -21,6 +21,11 @@ Memory-writing surfaces loss, rupture, and hard things. Hold all of this, all se
 - **Coach, not therapist.** The guide holds the container and witnesses; the guide does not treat. Anything clinical routes to real help via the referral pathway. (This is exactly the boundary the life-coaching brief and the fleet's HOLD-FOR-HUMAN concern point at - it is most live in this session.)
 - **BINDING GATE - do not run S5 with a real learner until both are true** *(Cura, Polaris, Naomi)*: (1) the coach-not-therapist **referral pathway is built** - a real in-the-moment crisis container (a designated quiet space, who the crying learner actually goes to, and the honest limit that a solo guide with a worn baby has finite holding capacity) *plus* the clinical hand-off; and (2) the **consented Salus + Jake real-learner walk is done.** A trauma-informed floor with an unbuilt trap door is not yet trauma-informed. See *The Guide's Own Floor*.
 - **Being witnessed is a gift, never a demand** - the catharsis is in the *claiming*, not in performing pain for the room.
+
+### Ring-1 seeds (2026-08-28) - S5 is the anchor session for the somatic floor and the close
+This is the heaviest Origin opening, so the two closing-side threads land hardest here (canonical doctrine in the spec's "Ring-1 revisions"):
+- **The graduated somatic floor is anchored here (K'Ehleyr).** The whole-body review found the somatic floor was Helm-only; S5 is exactly where Origin needs it. On every writing day: the body-first settle to open; **mid-work discharge points** (a 30-second orient - feet on the floor, look around the room, one breath - between hard passages, not only at the end); an **active close-return** (name that the hard thing is over, land back in *now*); and a **standing physical exit ramp** the learner can use without asking. A body that stays in a worst-day memory for an unbroken hour floods; the discharge and return are what make claiming-the-whole-life survivable.
+- **The Closing Practice, at its most needed (see `launch-pad-closing-practice-v0.1.md`).** The worst-day draft is a major opening; it gets its re-crossing - *what did I meet / what do I carry back / who am I on this side that I wasn't on the other.* Learner-held, never read (it rides *into* the private Log, which stays sovereign). This is a "that was me, and I carry it, and I'm still here" close - **never de-role real grief.** When a close meets something bigger than a close can hold, it hands off - warmly, without shame - to the referral pathway (the trap door named in the binding gate above). *Open no faster than you teach a person to close: S5 is where that rule is most literally true.*
 
 ## The winter reality (Deanna + Keiko, applied here)
 

@@ -1,6 +1,6 @@
 # Launch Pad Year 1 - Session 1 "The Map of Me" - Day by Day
 
-**Status:** v0.1 working draft
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28)
 **Dates:** Aug 16 - Sep 3, 2027 (weeks 1-3 of Origin)
 **Companions:** `2027-2028-launch-pad-studio-year-plan-v0.3.md` (the operating plan) and `2026-06-24-launch-pad-three-year-story-cycle-v0.1.md` (the three-year design)
 
@@ -12,6 +12,15 @@
 - **The map (fleet decision 2026-08-21):** dreams sort into the **five Compass regions** the learner already navigates - **Self / Others / Making / World / Voice** - with warm dream-prompts nested in each (Kelly's evocative words, teen-relabeled). One coherent map, not a competing twelve-taxonomy. See the decision log.
 - **Runs through every day:** the Captain's Log (named Day 1, added to daily); core academics build in weeks 2-3; the credit/path-map audit happens weeks 2-3 (after belonging is rooted, never Day 2 morning); accountability partners; the Monday re-entry ritual.
 - **Guide-day structure:** Tue/Thu 9:00-1:00, baby worn, the one deep block ~10:00-11:00 (fed before, timed to the nap, pivot ready). Full structure in studio-plan v0.3, Part 2.
+
+### Ring-1 seeds (2026-08-28) - introduced in week one, carried three years
+
+Session 1 is where four cross-year threads are *planted* (canonical doctrine in the spec's "Ring-1 revisions"; artifacts in the companion docs):
+
+- **The Vineyard opens now.** Introduce the un-conscripted-joy thread plainly on the first lighter day: "there's a part of each week that's just yours to love - a thing you tend because you love it, and no one will ever ask you what it was *for*." Never harvested, never Log-prompted, never made useful. Offered with a floor: the learner whose life is already full to breaking (a job, siblings, caretaking) is honored too - a forced-full basket is as real as an empty one; no one is shamed for having no room for uselessness.
+- **The Closing Practice, at its youngest register.** 100 Dreams is an *opening* act - so it gets its close. Teach the three prompts lightly this session (*what did I meet in my dreams today? what do I carry? who am I on this side?*) and use them at each day's close. See `launch-pad-closing-practice-v0.1.md`. The reflex planted here is a year old by the Forge and three by the Launch. Learner-held, never read.
+- **Name the destination on day one (Kirk).** Say it in week one: "in about thirty weeks you'll stand and say *this is me* - the Unveiling. Everything between now and then is getting ready to mean it." The mountain is visible from the trailhead.
+- **The graduated somatic floor starts here.** Keep the body-first settle that opens each day; add a mid-work discharge point (30 seconds - feet on the floor, look around, one breath - between activations) and an active close-return, plus a standing physical exit ramp ("here's where you can step out to, and you don't have to ask"). Low-stakes reps now build the reflex the heavier years will need.
 
 ### The five-region dream-prompt map (from the fleet decision)
 

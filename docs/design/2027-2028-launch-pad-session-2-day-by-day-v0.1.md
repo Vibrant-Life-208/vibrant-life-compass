@@ -1,6 +1,6 @@
 # Launch Pad Year 1 - Session 2 "The Lineage" - Day by Day
 
-**Status:** v0.1 working draft
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28)
 **Dates:** Sep 6 - Sep 24, 2027 (weeks 4-6 of Origin) - *Mon Sep 6 is Labor Day, off*
 **Companions:** Session 1 day-by-day; studio-year-plan v0.3; Closing Feast v0.2; three-year spec
 
@@ -27,6 +27,12 @@
 
 ### Insider-learner sovereignty
 A learner whose heritage is rich, painful, or on display chooses their own standing - share fully, share a little, or simply be present. Never turned into the exhibit. And **name specific peoples** (Eritrean, Nepali, Basque, Diné), never a regional lump.
+
+### Ring-1 seeds (2026-08-28)
+Building on the empty-state dignity already here (which Kira, Tier 1, affirmed) - three additions:
+- **Forward / chosen lineage as a full front door, equal in light.** Beyond recreating an interrupted past, offer the *forward*-facing frame with the same warmth: *your lineage is also who you choose, who you are building, who you become - you can be the first of a line.* For the adopted, foster, refugee, estranged, or undocumented learner, "whose story am I part of?" is answered forward as fully as backward. Not a fallback; a door built the same size as the others. (Stirps reads the door copy before it ships.)
+- **The somatic floor on the mortality/lineage openings.** This session opens real grief for some. Carry the graduated floor: the previewed exit-*to* (already here) plus a mid-work discharge point and an active close-return on the deep days. Regulate the body before and after, not only the story.
+- **Close what this opens - the Closing Practice.** Lineage and mortality are openings; they get their re-crossing (*what did I meet / what do I carry / who am I on this side*), learner-held and never read (see `launch-pad-closing-practice-v0.1.md`). Do **not** de-role real grief - this is a "that was me, and I carry it, and I'm still here" close, not a "that wasn't me" one. If an opening runs deeper than a close can hold, hand off warmly to the referral pathway.
 
 *Day-shapes and schedule: same two templates as Session 1 (guide-led Tue/Thu 9:00-1:00; self-guided Mon/Wed 9:00-12:30 with your 12:00 check-in; Fri fallow). See the Session 1 day-by-day for the time grids.*
 
