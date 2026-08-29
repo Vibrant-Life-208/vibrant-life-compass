@@ -9,14 +9,26 @@ This is the single pickup point. Every fleet decision below is in `evoke-agents-
 
 ## PR status at a glance
 
-| PR | Feature | Branch | State | Gate |
-|----|---------|--------|-------|------|
-| **#11** | a11y tab-strip fixes | `fix/guide-surface-a11y` | **MERGED + deployed** (sw v163) | done |
-| #12 | Guide becoming/finish toggle | `feat/guide-becoming-toggle` | draft, dark `?becoming=on` | Accord walk |
-| #13 | Phase 2 password reset (2 tracks) | `feat/guide-password-reset-phase2` | draft-for-TCC | see below |
-| #14 | Guide onboarding + MFA enrollment | `feat/guide-onboarding` | draft, dark `?guideonb=on` | copy + Tutela + walk |
+**LIVE on main (deployed, sw v165):**
 
-Nothing except #11 is deployed. All draft PRs carry their owed-lists in the PR body.
+| PR | Feature | Notes |
+|----|---------|-------|
+| #11 | a11y tab-strip (tablist semantics, contrast, focus) | branch deleted |
+| #15 | Practice glyph a11y + notif-banner keyboard/live-region + admin copy honesty | branch deleted |
+| #16 | Tab-strip right-edge fade (tail-tab discoverability) | branch deleted |
+
+**HELD in draft (dark / gated - do NOT push to production yet):**
+
+| PR | Feature | Branch | Gate |
+|----|---------|--------|------|
+| #12 | Guide becoming/finish toggle | `feat/guide-becoming-toggle` | Accord walk |
+| #13 | Phase 2 password reset (2 tracks) | `feat/guide-password-reset-phase2` | see below |
+| #14 | Guide onboarding + MFA enrollment | `feat/guide-onboarding` | copy + Tutela + walk |
+
+**Everything that can safely go live already is.** #12/#13/#14 are dark by design and
+gated on walks, copy sign-offs, and reviews - deploying them now would bypass the
+child-safety and review gates the fleet set. Nothing else is safe to push. All draft
+PRs carry their owed-lists in the PR body.
 
 ---
 
