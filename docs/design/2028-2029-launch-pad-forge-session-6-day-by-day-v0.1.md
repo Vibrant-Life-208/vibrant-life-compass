@@ -1,12 +1,13 @@
 # Launch Pad Year 2 (The Forge) - Session 6 "Hands to Work" - Day by Day
 
-**Status:** v0.1 working draft | **When:** weeks 19-24 (long session, 6 weeks; the finish line)
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28) | **When:** weeks 19-24 (long session, 6 weeks; the finish line)
 **Companions:** Year 2 studio-year plan (Forge); Forge Sessions 1-5; three-year spec (Season Two)
 
 ## The session at a glance
 - **Arc:** OPEN (the service-choice menu) -> DEEPEN (empathy; design *with*) -> APPLY (carry out the project, with real people) -> HARVEST (a real action taken).
 - **The thread:** *assigned service teaches compliance; chosen service teaches contribution. Design *with* the people who have the problem, never *for* them.*
 - **The menu (chosen, never assigned):** direct service / advocacy / philanthropy / building / teaching.
+- **Ring-1 seeds (2026-08-28):** real-people service is an *opening* that can land heavy - carry the Closing Practice and the somatic floor; route anything over-their-head to the referral pathway. The Studio Commons (launched this year) is the reciprocity muscle in miniature - service done *with*, not *for*, is the same lesson at community scale.
 - **Lighter-Forge week:** Tue guided-lighter (the doing/building/service prep + service expeditions - toddler-flexible), Thu guided-deep (empathy, design-with, reflection). Mon/Wed self-guided; Fri fallow.
 
 ## Care points

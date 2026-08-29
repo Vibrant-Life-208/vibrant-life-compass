@@ -1,11 +1,12 @@
 # Launch Pad Year 2 (The Forge) - Session 2 "The Detective" - Day by Day
 
-**Status:** v0.1 working draft | **When:** weeks 4-6 (short session, 3 weeks)
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28) | **When:** weeks 4-6 (short session, 3 weeks)
 **Companions:** Year 2 studio-year plan (Forge); Forge Session 1; three-year spec (Season Two)
 
 ## The session at a glance
 - **Arc:** OPEN (the obvious culprit is rarely the cause) -> DEEPEN (the 5 Whys to bedrock) -> APPLY (run the 5 Whys on your own dragon) -> HARVEST (your dragon traced to its root/system).
 - **The thread:** *investigation as root-cause analysis - the obvious villain is a symptom; the root cause is the rot underneath.*
+- **Ring-1 seeds (2026-08-28):** through-lines carry (Closing Practice, Vineyard, somatic floor); the mystery keeps its opt-out. Name the tie - *the 5 Whys is the Reasoning Standard's cousin* (structured reasoning to bedrock), the concrete-world cousin the Life Admin strand also runs.
 - **The cohort chooses the format** (an act of choice in itself): (a) a ready whodunit, (b) build-your-own mystery for another group, or (c) an immersive roam-the-room speakeasy.
 - **Lighter-Forge week** (from the plan): Tue guided-lighter (the game/immersive play - toddler-flexible), Thu guided-deep (the 5 Whys / systemic reasoning). Mon/Wed self-guided; Fri fallow.
 

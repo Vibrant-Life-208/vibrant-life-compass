@@ -1,12 +1,13 @@
 # Launch Pad Year 2 (The Forge) - Session 7 "The Call to Action" - Day by Day
 
-**Status:** v0.1 working draft | **When:** weeks 25-30 (long session, 6 weeks; the year's harvest)
+**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28) | **When:** weeks 25-30 (long session, 6 weeks; the year's harvest)
 **Companions:** Year 2 studio-year plan (Forge); Forge Sessions 1-6; three-year spec (Season Two)
 
 ## The session at a glance
 - **Arc:** OPEN (what a Call to Action is) -> DEEPEN (Problem -> Stakes -> Story -> The Ask) -> APPLY (build + rehearse the talk) -> HARVEST (the public talk + a feast).
 - **The thread:** *here is a problem worth solving, here is why it broke my heart, here is what I did and learned, here is what I ask of you. Advocacy, not a sales pitch - the art is making a room care.*
 - **The structure to teach (simply):** Problem -> Stakes -> Story -> The Ask. **Vulnerability is the persuasive force, not polish.**
+- **Ring-1 seeds (2026-08-28) - the middle year's close.** The Call to Action is a *public harvest* (an opening onto the social plane) - so it gets its **private re-crossing afterward** (the Closing Practice at season scale). And add the **personal-reincorporation beat (T'Pol)** *before* the harvest: the Forge's arc goes self -> world and currently returns the learner to the *world's* transformation; close it back to the self - *"having gone out to the world's problem, what came back changed in you?"* - so the middle year completes its own inward transaction rather than deferring all self-integration to the Launch. Then a between-season fallow before The Helm.
 - **Lighter-Forge week:** Tue guided-lighter (talk-building, structure games, rehearsal in the tribe - toddler-flexible), Thu guided-deep (the Socratic shaping - what makes a room actually care). Mon/Wed self-guided; Fri fallow.
 
 ## Care points (carry the Year-1 S7 evoked-polish)
