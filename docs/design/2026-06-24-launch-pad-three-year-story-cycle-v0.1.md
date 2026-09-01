@@ -1,7 +1,7 @@
 # The Launch Pad Story
 
 **A three-year formation for learners ages 15-18**
-**Status:** v0.1 working draft - locked structure, Season One built deep
+**Status:** v0.1 working draft - locked structure, Season One built deep | **+ Ring-1 revisions (2026-08-28)** and **Ring-2 revisions (2026-08-31)** appended at the end (canonical cross-cutting doctrine: the closing practice, the layer rule, the through-line spine, binding fallow, decline-as-covenant, the graduated safety floor, guide-as-safety-member, the runway tiers; then the Ring-2 buildable subset - fixed closing prompts, Vineyard-in-Origin, season-scale re-crossing, the Curious No, the two-worlds hinge, the daily-ritual through-line, crew-not-watch, and the "deliberately NOT built" refusal architecture) and the Tue/Thu weekly-rhythm reconciliation applied inline
 **Date:** 2026-06-24
 **Origin:** Evoke Passion fleet meeting (8 voices) facilitated for Europa, toward a presentation for Jenna
 
@@ -33,9 +33,11 @@ The three seasons are named **Origin**, **The Forge**, and **The Helm** - an arc
 
 ### The weekly rhythm (all three seasons)
 
-| Mon | Tue | Wed | Thu | Cadence |
+| Mon | Tue | Wed | Thu | Fri |
 |---|---|---|---|---|
-| **Launch** (guide) | Project work | **Launch** (guide) | Project work | **Fallow / hearth day** |
+| Project work | **Launch** (guide) | Project work | **Launch** (guide) | **Fallow / hearth day** |
+
+*(Ring-1 reconciliation, 2026-08-28: guide-led Launch days are **Tuesday & Thursday**, resolving a standing contradiction with the year plans - the operating reason is concrete: the guide is with Vibrant Life Tots on Mon/Wed, so guided studio runs Tue/Thu. Tue/Thu governs; this line supersedes the earlier Mon/Wed placement.)*
 
 - **Two Launch days** with the Launch Pad Guide. The Guide is a **life-coach, not a teacher**: Socratic, holds questions rather than answers, has permission to say "I don't know - let's walk into it together."
 - **Two project days** for self-directed work: core academics and high-school requirements, personal projects, and the season's writing.
@@ -132,7 +134,7 @@ Plus the **right to refuse the structure itself**: a learner who declines a ques
 
 ## Locked decisions
 
-1. **Three lenses, not three grades.** Each season is a complete hero's journey containing identity + problem + resolution at its own altitude; rotation works because no season is a prerequisite.
+1. **Three lenses, not three grades.** Each season is a complete hero's journey containing identity + problem + resolution at its own altitude; rotation works because the seasons rotate around a *portable* foundation, not because they are order-independent. *(Refined 2026-08-31, MAC/Kirk - see Ring-2 revision #6: the honest claim is foundation-dependence-with-a-portable-foundation, not season-independence. Origin's three functions - a self named, agency claimed, a routine that holds - are the keel every other season sails on; the Fast-Origin seed for mid-cycle joiners exists precisely because that keel is a prerequisite. A learner can enter at any season, but not without carrying a compressed Origin as ballast.)*
 2. **One constant thread.** The learner-owned Captain's Log, deepened across all three seasons, surviving rotation. Doubles as Jenna's one tangible object.
 3. **Joy & rest are structural.** Regular fallow/hearth day; body-first settle + "how are you, really?" to open; harvests are real celebrations.
 4. **Resume reframed.** The Set-Up produces a "story-of-self portfolio"; the resume is one true page inside it, framed as a sovereignty tool, not the season's reduction.
@@ -151,7 +153,7 @@ Plus the **right to refuse the structure itself**: a learner who declines a ques
 ## SEASON ONE: ORIGIN (the set-up) - deep build
 
 *Lens: Who am I? Joy-flavor: roots & belonging.*
-*"The soul never thinks without a picture." - Aristotle*
+*"The soul never thinks without a mental image." - Aristotle*
 
 **What your learner walks away with** *(share with parents at the start of the year):*
 - A **story-of-self portfolio**, with a one-page resume inside it
@@ -165,9 +167,9 @@ Plus the **right to refuse the structure itself**: a learner who declines a ques
 The 7 sessions (4 short at 3-4 weeks, 3 long at about 6 weeks; Session 7 is the harvest):
 
 ### Session 1 - "The Map of Me" *(short)*
-- **Focus:** The 100 Dreams meeting. Dream big dreams with courage. First sort the 100 by time horizon - more than 5 years out, within 5 years, and within 1 year - then map them across all 12 life categories, so it is not only career but friendship, health, adventure, family, faith, learning, contribution.
+- **Focus:** The 100 Dreams meeting - from Matthew Kelly's *The Dream Manager* (2007). Dream 100 personal dreams with courage; sort them by time horizon - more than 5 years out, within 5 years, and within 1 year (Kelly's three categories); and map them across the **five Compass regions** the learner already navigates - Self, Others, Making, World, Voice - with warm dream-prompts nested inside each (Kelly's evocative words, teen-relabeled). *(Fleet decision 2026-08-21: the five-region spine keeps one coherent map and honors the 2026-07-21 retirement of the per-studio multi-area wheel; Kelly's warm words fill the prompt layer. See decision log.)* Then the **dream session** (Kelly's practice): share dreams aloud in a circle, where dreams prove contagious - hearing another's dream makes you reach for your pen and add it to your own.
 - **Anchor:** Covey - created twice, begin with the end in mind. This dream-set is the mental creation the whole cycle will physically build toward. The far-horizon dreams are the "end" to begin with; the within-1-year dreams become the season's first proximal goals.
-- **Launches:** Guide runs the 100 Dreams practice (write 100, no filtering); sort them by horizon (more than 5 years / within 5 years / within 1 year); then map across the 12 life categories; a Socratic courage pass - "which of these scares you a little? Courage points there."
+- **Launches:** the 100 Dreams practice (write 100, no filtering - assigned ahead so the session opens with material to discuss); the **dream session** (share aloud; dreams are contagious); sort by horizon (more than 5 years / within 5 years / within 1 year); map across the five Compass regions (Self/Others/Making/World/Voice, with nested dream-prompts); a Socratic courage pass - "which of these scares you a little? Courage points there."
 - **Project days:** begin the Captain's Log; start core academics / HS requirements rhythm.
 - **Joy:** the thrill of permission to dream without a ceiling; wonder at possibility.
 
@@ -204,7 +206,7 @@ The 7 sessions (4 short at 3-4 weeks, 3 long at about 6 weeks; Session 7 is the 
   - *The people:* "Who made you? Not just family - anyone who left a mark."
   - *The hard and the best:* the worst day, the best day, and what each taught.
   - *A slice of life:* "Write one ordinary day at age ___, start to finish." (This is the "slices of life.")
-- **Listening models (how an ordinary life becomes a story):** StoryCorps (three-minute real lives), memoir excerpts, the *Midnight Gospel* episode. Coming-of-age songs as **mirrors, not molds** - "which line is about you?" then back to their own words.
+- **Listening models (how an ordinary life becomes a story):** StoryCorps (recorded real lives - a full interview runs ~40 min; their animated shorts distill them to a few minutes), memoir excerpts, the *Midnight Gospel* episode. Coming-of-age songs as **mirrors, not molds** - "which line is about you?" then back to their own words.
 - **Joy:** the relief and catharsis of claiming a whole life; being witnessed.
 - **Safety:** the same family-story net applies - some lives carry loss; opt-out on any memory.
 
@@ -232,7 +234,7 @@ Every session runs the same two-day skeleton - a Launch day (9:00 to 1:30, with 
 
 | Session | Launch "Work of the Day" (across the session's weeks) | Project-day focus |
 |---|---|---|
-| S1 The Map of Me | 100 Dreams unfiltered; sort by horizon (5+ years / within 5 years / within 1 year); then map across the 12 life categories; "which dreams scare you?" courage pass; Covey's created-twice frame | Draft the 100 dreams; open the Captain's Log; pick 3 within-1-year dreams to orient the season; reading, core / HS |
+| S1 The Map of Me | 100 Dreams (Matthew Kelly, *The Dream Manager*) assigned Day 1; the **dream session** (share aloud - dreams are contagious); sort by horizon (5+ / within 5 / within 1 yr); map across the five Compass regions (nested dream-prompts); "which dreams scare you?" courage pass; Covey's created-twice frame | Write the 100 dreams (homework from Day 1); open the Captain's Log; pick 3 within-1-year dreams to orient the season; reading, core / HS |
 | S2 The Lineage | How to gather a story and interview someone you love; the Midnight Gospel listen (previewed, exit open); map the family mythos; the family-story potluck | Conduct family interviews; gather recipes; write family stories into the Log; reading, core / HS |
 | S3 The Power of Choice | Daily choice games; the responsibility-freedom-choice knot; "where did a choice change everything?" | Choice journaling in the Log; personal project; goal-setting practice; core / HS |
 | S4 Running My Own Ship | Build a routine that fits you (routine = freedom); communication practice; midpoint reflection on S1-3 | Catch up or get ahead on HS requirements; design your own routine; refine the personal-project plan |
@@ -289,7 +291,7 @@ The 7 sessions (4 short, 3 long; Session 7 is the harvest):
 - **Joy:** company and play; teens love this.
 
 ### Session 3 - "My Arena" *(short)*
-- **Focus:** right-sizing. Covey's **Circle of Concern / Influence / Control.** Energy spent only in the Concern ring burns out into cynicism; the shift is to find the arena where action actually moves something.
+- **Focus:** right-sizing. Covey's **Circle of Concern / Influence** (his original two-circle model; **Circle of Control** is a common later third-ring extension, not Covey's own). Energy spent only in the Concern ring burns out into cynicism; the shift is to find the arena where action actually moves something.
 - **What it looks like:**
   - *The Three Circles map* - list everything you worry about; sort into Control / Influence / Concern-only; watch where the energy can actually act.
   - *Agency inventory* - what you concretely have right now: skills, time, relationships, resources.
@@ -357,7 +359,7 @@ Same two-day skeleton; only the Work of the Day and project focus change:
 ## SEASON THREE: THE HELM (the resolution) - deep build
 
 *Lens: what do I do when there is no easy answer? Joy-flavor: expression & camaraderie.*
-*"The first duty of every officer is to the truth." / The Kobayashi Maru: the test was never how to win - it was how to face a no-win scenario without losing yourself.*
+*"The first duty of every Starfleet officer is to the truth." / The Kobayashi Maru: the test was never how to win - it was how to face a no-win scenario without losing yourself.*
 
 **What your learner walks away with** *(share with parents at the start of the year):*
 - The capacity to **make a hard call from principle** - and live with it
@@ -473,5 +475,55 @@ Same two-day skeleton; only the Work of the Day and project focus change:
 ## The room (8 voices)
 
 Jean-Luc Picard, Kathryn Janeway, Jake Sisko, Guinan (USS Enterprise); Fabula, Comes, Salus, Accord (USS Evoke). Facilitated by Claude.
+
+---
+
+## Ring-1 revisions (2026-08-28) - the canonical doctrine
+
+After the full three-year design was built out (Origin/Forge/Helm + the Life Admin strand), Ring 1 (PDC + SSC + COC, 26 agents) reviewed the whole body, and leadership (Picard, Cura, Impetus, Sisko) ratified a set of cross-cutting fixes. These govern all three seasons; the year plans inherit them.
+
+**1. The one addition - the learner-held closing practice.** The single most-converged finding across all three circles: *the design opens the interior faster than it closes it.* World-class opening practices (100 dreams, lineage, the worst-day, imposter work, mortality, the hard call); only local closing (de-roling closes a session, not the arc). The fix, and the *only* thing added: a small, **learner-held closing / integration practice - the emotional twin of the Reasoning Standard** - three prompts, shaped as a re-crossing: *what did I meet? what do I carry back? what's different in me now - even a little?* (three fixed spoken lines, no artifact ever - see the Ring-2 revision below, and the closing-practice doc). It rides the fallow, is never read, and is taught as a **portable skill** so the learner closes their own openings after the guide is gone. Seeded in Origin, spiraled across all three years, matched to the somatic floor. It resolves the unread-Captain's-Log question: the Log stays sovereign and unread; the learner is taught to read *themselves*. **Rule: open no faster than you teach a person to close.**
+
+**2. The layer rule - how to subtract without harm.** Everything in the design is one of four layers, and cuts run top-down only: **L0 the floor / laws** (the six refusals, the safety floor, decline-with-reasoning, the un-read Log, the un-trapped exit, honest-not-manipulative) - *never cut*; **L1 the arc-grammar** (the through-lines) - *complete, never delete*; **L2 scaffolding** (how loudly the safety nets announce themselves) - *titrate to the minimum that holds*; **L3 content** (specific quests, texts, games) - *cut freely*. The four-question guide test: does removing it stop it being the Launch Pad (L0), is it the thing or its announcement (L2), does it fragment the arc (L1), else cut (L3). *"Less" aimed at the floor or the closing layer is a violation; aimed at content and accretion it is medicine.*
+
+**3. The through-line spine, all three seasons.** Retrofit to every year (only the Helm had them): **name the destination on day one** (Origin -> the Unveiling; Forge -> the Call to Action; Helm -> the Council & Launch); a **carried object** (the Captain's Log is the constant; the Mantle is Helm's); and **the Vineyard - un-conscripted joy, never made useful, never harvested, never Log-prompted - seeded in Origin week one**, so it is three years old when it matters. The **Reasoning Standard** (Spock's five questions) is the connective grammar of the whole arc, learner-held, introduced at a young register in Origin and spiraled.
+
+**4. The fallow is binding, arc-wide.** The fallow day, the empty basket ("nothing to declare is a true harvest"), the Vineyard, and Log-fallow-days are **precondition-to-open, as un-cuttable as the referral pathway** - the clinical counterweight to three years of an examined life. Offered with a floor, never prescribed: the over-loaded learner's *forced* fallow is honored as fully as the chosen one (Kira - un-useful joy is a class-marked luxury for some).
+
+**5. Decline-with-reasoning is a season-opening covenant, every year.** "You may decline any quest; you name why; your reasoned no stands after Socratic questioning - the guide has a voice, never a veto; the question is a mirror, not a test you can fail." The one sealed exception: no Socratic mirror on the paper-system/officialdom surface, where an honest reason might disclose a legal status the guide must not know.
+
+**6. The safety floor is graduated and seeded early; scaffolding is not the floor.** The somatic floor (settle -> mid-work discharge -> close-return, a standing exit ramp) is **seeded in Origin and grown**, not Helm-only - train the regulation reflex where the stakes are low. Separate the *floor's availability* (L0, held whole) from the *scaffolding signal* (L2, titrated and framed as legible trust, not vigilance). The **harden-off** (a learner meeting a hard thing un-held before launch) is *reseated* onto ordinary-stakes surfaces (the absent-guide day, the real bureaucracy call, mentor rejection), age/tenure/trauma-load gated, chosen-not-sprung - and **refused on the heaviest material**, where the floor stays whole (you do not build resilience by withdrawing the floor on grief).
+
+**7. The guide is the floor the learners stand on.** Guide-sustainability is a **safety member wired in series** with every net, not a self-care footnote - held by a cross-year watch *outside* any year plan (SSC/Bashir, with Salus), with a **pre-dated honorable-defer blessing authored while rested.** A depleted guide cannot run the watch-and-pivot the whole floor depends on.
+
+**8. The runway is a gift, not a deadline.** This is a three-year *emergence*, tiered: what must be true before Day 1 (Tier 0), what has Year-1 runway, and Helm-year infrastructure built cold and off the guide before Aug 2029 (the Growth Record export, mentor-track safeguarding, the named therapist). *Do not power on any run-year whose build-list still contains cold infrastructure* (Miles). And the next real step is not another review - it is one real Origin session with real learners.
+
+*(Full deliberation: `agents/meetings/2026/08/2026-08-28-{pdc,ssc,coc}-launch-pad-*.md` and `-leadership-launch-pad-decision-and-priorities.md` in the evoke-agents-backup repo.)*
+
+---
+
+## Ring-2 revisions (2026-08-31) - the applied buildable subset
+
+*Ring 2 (OIG infrastructure, TCC security 9/9, MAC mythic-arts 8/8) reviewed the Ring-1-applied design against the live code and the felt mythic shape. Leadership v2 (Picard/Sisko/Cura/Impetus) folded it in and closed the review body: the call does not change (the pen-and-paper pilot has zero attack surface, confirmed by all six circles); the software gates are downstream on their own clock; the MAC buildable subset below is light, mostly relocation-and-fixing, and seeds into the Origin build. These are the design-doc edits leadership approved for application.*
+
+**1. The closing practice's three lines are FIXED, and prompt 3 is rewritten (MAC/Hoshi + Ishka).** The prompts are said the same way, in the same order, at every scale, for three years - the fixed form *is* the symbol, and the repetition is what lets a learner run it alone. Prompt 3 becomes **"What's different in me now - even a little?"** (with "I don't know yet" a valid close) - the old "who am I on this side" asked the learner to certify their own transformation, the productivity reflex entering through the reflection door. **No artifact, ever** - spoken, unrecorded; the instant it has a form to fill in it becomes another opening-for-display. (Applied in the closing-practice doc.)
+
+**2. Plant the Vineyard in the Origin BUILD, not only the doctrine (MAC/Kirk + Bareil + Ishka - the most-converged MAC finding).** The doctrine already seats the Vineyard in Origin week one (Ring-1 #3/#4); the *year-plan and session build* still birthed it in the Helm. The fix: name the Vineyard-thing on **Origin Session 1, Day 1, as the quiet twin of the Captain's Log** - two carried objects from morning one, the self *examined* (Log) and the self *delighted* (Vineyard, un-harvested, forever) - running as a standing thread through all three years, and *coming to fruition* (not being born) in the Helm as the natural "gift left for the room." Its un-usefulness is written as un-cuttable (as the referral pathway): the moment a guide adds a "Vineyard reflection prompt," the symbol is dead. This makes "love your life" a three-year through-line instead of a Year-3 afterthought - the whole thesis is *make the hard call **and still love your life***, and that half of the thesis must not rest on one unprotected thread in the heaviest year.
+
+**3. Seat the season-scale re-crossing on each season's last fallow day (MAC/Bareil + Chapel).** The arc breathes right at the day and whole-arc scales but held its breath at the *season* scale - each season opens with a felt rite and closes with a *public harvest, which is itself an opening outward.* Seat the closing practice's season-scale prompt on the last fallow day of every season, named in each day-by-day, symmetrical to the season-opening covenant. A naming, not a new ceremony. (Applied in the closing-practice doc; day-level wording owed per season plan.)
+
+**4. "The Curious No" - the decline covenant's one rehearsed interaction primitive (MAC/Vic + Hoshi).** Decline-with-reasoning (Ring-1 #5) lives or dies at the moment a learner actually says no, and that moment was unrehearsed - the session scripts kept collapsing it into *invisible opt-out* (silence, the activity continues around them), which protects the learner by *removing the encounter.* Replace the scattered opt-out phrasings with one three-beat move the guide can run under load: **(1) receive the no, whole** ("Okay. You're not doing this one." - honor *before* any curiosity, so curiosity is never a lever); **(2) offer the door once, don't push it** ("if you ever want to tell me what's behind that, I'd genuinely like to know - no rush, no owed"); **(3) keep them inside the encounter** ("come sit with me, you don't have to do the thing"). The guide's *voice* that structurally cannot become a *veto.* Paired: the Socratic question stays a mirror, never fear-leverage ("when do you think you'll first run into this for real?", not "what happens the first time you need this and no one is beside you?"); and "the right kind of scared" is the learner's to name about themselves, never the guide's to assign. (Curious No applies here at the covenant; the Socratic-prompt fix applies in the life-admin strand.)
+
+**5. One sentence in Origin joins the two metaphor-worlds (MAC/Ishka).** The Compass app ("Pillared Observatory" - you read the sky) and the Launch Pad (nautical - you steer the ship) are *one world joined at celestial navigation*: you steer the ship by the stars. Install the hinge once, in Origin, when the Captain's Log is first named alongside the Compass regions: **"The Compass is how you read your sky; the Log is how you steer - same voyage. You'll navigate by the chart you're building right now."** Without it, the Star Chart handed at the Launch reads as a graduation slide instead of the threshold-object it is. (The year-names Origin/Forge/Helm are ruled a true triad - agency *given -> forged -> steered* - and kept as-is; "two skies" stays retired in favor of the "fourth room of the same house" move-mapping.)
+
+**6. Name the daily-ritual through-line as ONE deepening muscle (MAC/Kirk).** The three season rituals - Origin's **choice games** -> the Forge's **Impossible Question** -> the Helm's **Kobayashi Maru** - are presented as replacements; they are one continuous muscle (*make small choices -> stand inside questions too big to close -> make the hard call inside a no-win*), and the continuity must be *named* at each handoff or the three-year payoff goes silent. Say it plainly when each ritual begins: "it is the same muscle you have been building since Origin." (This is the through-line spine, Ring-1 #3, applied to the daily rituals; the cycle reframe in Locked-decision #1 is its companion - the keel is portable, the muscle is continuous.)
+
+**7. Protagonist-preservation is a standing check on the whole safety architecture (MAC/Kirk).** The more elaborately the room is engineered to catch the learner, the more the room can quietly become the hero and the learner the fragile thing it protects. Every net is phrased as **crew, never as watch** - "a hero surrounded by a crew is still the hero; a patient surrounded by a ward is a patient." The battle-buddy is "a crew that holds each other," never "assigned to watch you flood." (Extends Ring-1 #6's scaffolding-is-not-the-floor: titrate not just the *volume* of the safety signal but its *grammar*.)
+
+**8. "Deliberately NOT built" - the infrastructure refusal architecture (Ring 2's single highest-leverage output; OIG/Chakotay + TCC/Sulu, ratified by leadership v2).** The infrastructure sibling of the six refusals and the "deliberately NOT on the Floor" list. Restraint that lives only in a reviewer's head is a good intention waiting for a busy session to overwrite it; written as a refusal, it is architecture. The Launch Pad will **never** build: a **digital Captain's Log** (paper is the reference implementation of sovereignty - a notebook has no read endpoint); a **closing-practice capture surface** (#1); **in-app mentor/learner messaging** (metadata-only contact ledger + observable transport - CC'd email or a calendared session - is the ceiling; a private channel between an adult and a minor is the thing we refuse); **any IRS / ACA / bank / payroll integration** (the real government site *is* the "do it for real"; Evoked ships kits, not pipes); **any AI in a minor's session** (the five named refusals - no AI coach/tutor, no dream-sorter, no mentor-matcher, no graded reflection, and **no AI safety-monitor of the interior**, refused on principle *and* efficacy: reading a child's private heart to "protect" them is the exact surveillance the design forbids, and the learner-commanded flag to a named human is the more protective answer; the author-time-only exception is fenced to adult-only / primary-source-checked / never live in a minor's session / never reads the interior); a **wrapped-DEK/KEK crypto envelope** at this scale ("crypto that strands a child is dishonor with good intentions" - the artifact is the key); **MFA / key-ceremony / family-key-recovery / user-managed KMS**; and **any re-engagement hook, alumni nudge, or cohort-revenue-vs-Evoked-income benchmarking, ever** (the empty exit is not negotiable under any future revenue pressure - Quark's red line joins Spock's, Tasha's, and Picard's standing markers). *The software gates that guard a real minor's record (TCC's G1-G8) are tracked in the leadership v2 decision and are the fleet's cold-build, off the guide, before software - not the pilot's, and not the operator's.*
+
+*(Full deliberation: `agents/meetings/2026/08/2026-08-29-{oig,tcc}-launch-pad-*.md`, `2026-08-31-mac-launch-pad-mythic-arts-review.md`, and `2026-08-31-leadership-launch-pad-ring2-close-decision.md` in the evoke-agents-backup repo. Guide's-nervous-system finding [six-circle convergence] and the two-clocks / gate-list live in the leadership v2 decision, not repeated here.)*
+
+---
 
 *"We evoke - we never extract."*
