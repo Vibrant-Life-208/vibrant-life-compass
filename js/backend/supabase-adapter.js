@@ -840,6 +840,30 @@ export async function resetPassword(_role, _accountId) {
   throw new Error('In-app password reset is not available on Supabase yet (Phase 2, 2FA-gated). Use the admin reset tool.');
 }
 
+// ── Guide MFA (TOTP) - Phase 2 O3 (native Supabase MFA, council 2026-08-28) ──────
+// Enrol returns a TOTP factor with an SVG QR + secret for an authenticator app.
+// challengeAndVerify activates the factor AND raises this session to AAL2 - which is
+// exactly the claim the reset Edge Function asserts (assertAAL2OrThrow). Recovery is
+// owner-mediated re-enrol, never self-service (Tutela) - not a function here, a policy.
+export async function enrollTotpFactor(friendlyName = 'Guide authenticator') {
+  const { data, error } = await getClient().auth.mfa.enroll({ factorType: 'totp', friendlyName });
+  if (error) throw error;
+  return { factorId: data.id, qrSvg: data.totp?.qr_code, secret: data.totp?.secret, uri: data.totp?.uri };
+}
+
+export async function verifyTotpFactor(factorId, code) {
+  const { data, error } = await getClient().auth.mfa.challengeAndVerify({ factorId, code });
+  if (error) throw error;
+  return Boolean(data);
+}
+
+export async function hasVerifiedTotpFactor() {
+  const { data, error } = await getClient().auth.mfa.listFactors();
+  if (error) throw error;
+  const totp = data?.totp || [];
+  return totp.some((f) => f.status === 'verified');
+}
+
 // ============================================================================
 // Authentication: hero-name + temp password -> Supabase Auth signIn.
 // Synthetic email pattern: `${heroName}@vibrantlife.local` (never sent,
