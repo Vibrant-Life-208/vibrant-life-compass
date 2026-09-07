@@ -10,7 +10,7 @@ import {
   getThresholdAdditions, saveThresholdAdditions,
   getProfileFoundations, setProfileFoundations,
 } from './store.js';
-import { isClimbBuild } from './flags.js';
+import { isClimbBuild, isBecomingToggle } from './flags.js';
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar, lifeAreaForCategory } from './studios.js';
 import { lifeWheelSvgFor, COMPASS_REGIONS, REGION_COLORS, taskBand, taskRegion } from './wheel.js';
@@ -1103,15 +1103,28 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
   // Detection via the goal's life-area (weeklyKindFor === 'presence'). PROVISIONAL presence copy
   // below is Comes' + Accord's to finalize before flip (mirrors the goal-arc.js becoming note).
   const lifeArea = goal?.lifeArea || (category?.id ? lifeAreaForCategory(category.id) : null);
-  const becoming = weeklyKindFor(lifeArea, goal?.isBecoming) === 'presence';  // stored flag wins (v0.35)
+  // Guide-surface author toggle (Accord design item, 2026-08-24): on the guide's OWN
+  // guide-summer goals, behind ?becoming=on, the guide chooses the shape of their goal
+  // (finish vs becoming) instead of inheriting it from the slice label. Dark + guide-only;
+  // never touches BECOMING_SLICES, so learner behavior and the open school-ratification
+  // question stay untouched. Toggle + presence copy signed by Comes + Accord 2026-08-26;
+  // the ?becoming=on flag still awaits Accord's logged-in guide walk before it lifts.
+  const learner = learnerId ? await getLearner(learnerId) : null;
+  const showBecomingToggle = isBecomingToggle() && learner?.studio === 'guide-summer';
+  // `becoming` is DERIVED from the mutable s.isBecoming (tri-state: null = derive from the
+  // slice via weeklyKindFor), so the toggle can re-shape the step flow live.
+  const isBecomingNow = () => weeklyKindFor(lifeArea, s.isBecoming) === 'presence';
+  const computeSteps = () => (goal?.text ? [] : ['yeargoal'])
+    .concat(isBecomingNow() ? ['now', 'presence'] : ['detail', 'now', 'threshold', 'challenges', 'setup']);
 
   const s = {
     // FINISH goals walk: [yeargoal ->] now -> milestones -> challenges -> setup (backward-
     // planning; ends on setup so the learner flows to the North page for daily steps).
     // BECOMING goals walk: [yeargoal ->] now -> presence (no finish sequence). Weekly/daily
     // breakdown is a LATER step (North page), not captured here.
-    steps: (goal?.text ? [] : ['yeargoal']).concat(becoming ? ['now', 'presence'] : ['detail', 'now', 'threshold', 'challenges', 'setup']),
+    steps: [],  // set via computeSteps() right after s exists (the helper reads s.isBecoming)
     idx: 0,
+    isBecoming: goal?.isBecoming ?? null,  // v0.35 stored flag; null = derive from slice label
     yeargoal: goal?.text || '',
     detail: goal?.detail || '',        // doing-only: wide "what will it take" brainstorm before the mirror (captain 2026-07-21)
     now: goal?.baseline || '',
@@ -1120,7 +1133,25 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     setup: threeUp(goal?.setup),                             // finish: set-up-first actions
     presence: goal?.presence || '',                          // becoming: how you'll tend it
   };
+  s.steps = computeSteps();
   const step = () => s.steps[s.idx];
+
+  // Guide-only shape chooser, rendered atop the first step when the dark flag is on.
+  // The person - not the system - names whether this goal is a finish or a becoming, so
+  // it restores authorship rather than classifying (Accord). Defaults reflect the slice.
+  // Copy signed by Comes + Accord 2026-08-26 (flag flip still awaits Accord's guide walk).
+  const becomingToggleHtml = () => {
+    const bec = isBecomingNow();
+    return `
+      <div class="gs-shape" role="group" aria-label="Is this a finish or a becoming?">
+        <p class="gs-shape-q">Is this a finish, or a becoming?</p>
+        <div class="gs-shape-opts">
+          <button type="button" class="gs-shape-opt${bec ? '' : ' is-sel'}" data-shape="finish" aria-pressed="${bec ? 'false' : 'true'}">A finish - something you complete</button>
+          <button type="button" class="gs-shape-opt${bec ? ' is-sel' : ''}" data-shape="becoming" aria-pressed="${bec ? 'true' : 'false'}">A becoming - something you tend</button>
+        </div>
+        <p class="gs-shape-hint">You choose the shape. A finish has a line you cross. A becoming has no line - you tend it, a little at a time. Neither is the deeper one; pick the one that is true for this goal.</p>
+      </div>`;
+  };
 
   function capture() {
     const st = step();
@@ -1143,9 +1174,9 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     const st = step();
     let body = '';
     if (st === 'yeargoal') {
-      body = becoming ? `
+      body = isBecomingNow() ? `
         <h3 class="onb-horizon-heading">${escapeHtml(catName)} - who you are becoming</h3>
-        <p class="onb-horizon-body">A year from now, who are you becoming in ${escapeHtml(catName)}? This is a direction to grow in, not a finish line to cross.</p>
+        <p class="onb-horizon-body">A year from now, who are you becoming in ${escapeHtml(catName)}? Not a line to cross - a direction you're growing in.</p>
         <textarea id="gs-yeargoal" class="slice-box" rows="3" placeholder="This year, in ${escapeAttr(catName)}, I am growing into…">${escapeHtml(s.yeargoal)}</textarea>`
       : `
         <h3 class="onb-horizon-heading">${escapeHtml(catName)} - your year goal</h3>
@@ -1168,13 +1199,26 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         <textarea id="gs-now" class="slice-box" rows="3" placeholder="Starting out, in ${escapeAttr(catName)}, I am…">${escapeHtml(s.now)}</textarea>`;
     } else if (st === 'presence') {
       // Becoming: a single presence reflection - no milestones, no challenges, nothing
-      // sequence-shaped between the destination and the noticing. PROVISIONAL copy (Comes +
-      // Accord to finalize before flip; mirrors the goal-arc.js becoming note).
+      // sequence-shaped between the destination and the noticing (mirrors goal-arc.js).
+      // Copy signed by Comes + Accord 2026-08-26. The presence body varies by relational
+      // register so it points the guide at their OWN showing-up, never the other person's
+      // progress (a relational becoming touches someone who is not in this app). Partner
+      // (singular, mutual) gets its own body; Family/Friends (plural, standing) share one;
+      // everything else (incl. Joy/Home) takes the default. Keys on lifeArea; the flag flip
+      // still awaits Accord's guide walk (see the openGoalSetupModal header note).
+      const presenceBody = lifeArea === 'Partner'
+        ? 'This is a becoming, not a finish - there is no line to cross, and it lives between two people. You only ever hold your half. You tend this not by managing them, but by how you show up. How do you want to show up in this, and what helps you return to it when the season gets busy?'
+        : (lifeArea === 'Family' || lifeArea === 'Friends')
+          ? 'This is a becoming, not a finish - there is no line to cross, and it lives between you and people who are not in this app. You tend this not by watching them, but by how you show up. How do you want to show up in this, and what helps you return to it when the season gets busy?'
+          : 'This is a becoming, not a finish - there is no line to cross. How will you tend it? What helps you keep it in view, and return to it when it slips?';
+      const presencePlaceholder = (lifeArea === 'Partner' || lifeArea === 'Family' || lifeArea === 'Friends')
+        ? 'I will tend this by showing up…'
+        : 'I will tend this by…';
       body = `
         <h3 class="onb-horizon-heading">Tending this</h3>
         ${contextCard('What you are growing toward', s.yeargoal)}
-        <p class="onb-horizon-body">This one is a becoming, not a finish - there is no line to cross. How will you tend it? What helps you notice it growing, and come back to it when you drift?</p>
-        <textarea id="gs-presence" class="slice-box" rows="3" placeholder="I will tend this by…">${escapeHtml(s.presence)}</textarea>`;
+        <p class="onb-horizon-body">${escapeHtml(presenceBody)}</p>
+        <textarea id="gs-presence" class="slice-box" rows="3" placeholder="${escapeAttr(presencePlaceholder)}">${escapeHtml(s.presence)}</textarea>`;
     } else {
       // The three phases, each up to three items. st is 'threshold' | 'challenges' | 'setup'.
       // Halfway language is retained on 'threshold' (captain 2026-07-18). The daily/weekly
@@ -1236,7 +1280,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     const isFirst = s.idx === 0;
     const isLast = s.idx === s.steps.length - 1;
     document.getElementById('form-fields').innerHTML = `
-      <div class="goal-setup">${body}</div>
+      <div class="goal-setup">${isFirst && showBecomingToggle ? becomingToggleHtml() : ''}${body}</div>
       <div class="onb-step-actions">
         <button type="button" class="btn btn-text" id="gs-back">${isFirst ? 'Cancel' : 'Back'}</button>
         <div class="onb-step-actions-right">
@@ -1246,6 +1290,17 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
       </div>`;
     const defaultActions = document.querySelector('#goal-form .modal-actions');
     if (defaultActions) defaultActions.style.display = 'none';
+
+    // Shape toggle: the guide picks finish vs becoming for their own goal. Re-shapes the
+    // step flow live (idx stays 0, always valid). capture() first so nothing typed is lost.
+    document.querySelectorAll('.gs-shape-opt').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        capture();
+        s.isBecoming = btn.dataset.shape === 'becoming';
+        s.steps = computeSteps();
+        renderStep();
+      });
+    });
 
     document.getElementById('gs-item-add')?.addEventListener('click', (e) => {
       capture();
@@ -1279,7 +1334,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
     // BECOMING: save the destination + a presence reflection. NO finish arrays (setup /
     // challenges / threshold), NO halfway marker, NO targetSession, NO Session-3 seed - a
     // becoming has no finish sequence (Accord + Comes carve-out).
-    if (becoming) {
+    if (isBecomingNow()) {
       try {
         await saveGoal({
           id: priorRow?.id,
@@ -1290,6 +1345,9 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
           baseline: (s.now || '').trim() || undefined,
           presence: (s.presence || '').trim() || undefined,
           status: priorRow?.status || 'active',
+          // Persist the guide's explicit shape choice (guide-surface only). v0.35 column;
+          // null elsewhere = derive from slice, so learner goals are untouched.
+          ...(showBecomingToggle ? { isBecoming: s.isBecoming } : {}),
         });
       } catch (e) { /* non-fatal */ }
       return;
@@ -1327,6 +1385,8 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
         challenges: challenges.length ? challenges : undefined,
         threshold: threshold.length ? threshold : undefined,
         detail: (s.detail || '').trim() || undefined, // wide brainstorm - needs adapter field-add before sync, like the phase arrays
+        // Persist the guide's explicit shape choice (guide-surface only); see becoming branch above.
+        ...(showBecomingToggle ? { isBecoming: s.isBecoming } : {}),
       });
     } catch (e) { /* non-fatal */ }
     // 2. The primary halfway marker seeds the Session-3 goal (reuse the seed pattern; Decision 4).

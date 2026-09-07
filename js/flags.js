@@ -80,3 +80,20 @@ export function isLifeSkillsCourse() {
     return localStorage.getItem(LSCOURSE_LS_KEY) === 'on';
   } catch (_) { return false; }
 }
+
+// Guide-surface "is this a finish or a becoming?" author toggle (Accord design item,
+// 2026-08-24). Lets a guide choose the shape of their OWN goal rather than inherit it
+// from the slice label. Dark by default; opt in with ?becoming=on, remembered in
+// localStorage. Guide-summer surface only (gated at the call site in js/modals.js).
+// Must stay off for real guides until Comes + Accord finalize the presence copy.
+const BECOMING_LS_KEY = 'vlc_becoming_toggle';
+export function isBecomingToggle() {
+  try {
+    const p = new URLSearchParams(location.search).get('becoming');
+    if (p === 'on' || p === 'off') {
+      localStorage.setItem(BECOMING_LS_KEY, p);
+      return p === 'on';
+    }
+    return localStorage.getItem(BECOMING_LS_KEY) === 'on';
+  } catch (_) { return false; }
+}
