@@ -42,15 +42,17 @@ const SKILLS = {
 // Karbo/Hill extraction fork, extended to ventures: capacity not "be your own boss / get rich",
 // See -> Make -> Serve, the venture-level firewall "does it fill a real need or manufacture/capture
 // one?", no hustle-culture; admission gate logged "graph not needed" - single-pass, smallest-graph
-// outcome). All FOUR Life Skills courses are now fully drafted + wired behind ?lscourse=on.
+// outcome). All FOUR Life Skills courses are fully drafted + wired; the ?lscourse gate is now
+// LIVE by default (2026-09-10 - see header note below).
 // Register tiering (SSC pass, Salus + Jake): course copy is chosen from learner.studio. The shared
 // COURSES ship in two registers - Launch Pad (16-18) = standard text; Adventure (11-15) = a lowered
 // floor on a few abstract steps (see registerFor / stepText). Discovery (8-11) has its OWN course set
 // (COURSES_DISCOVERY, authored 2026-08-17) - a genuinely different, simpler course (3 concrete steps a
-// stage), not a lowered floor. courseFor() picks the set + register. The owed reviews still stand: a
-// human trauma-informed pass (Wellness is HOLD-FOR-HUMAN, the Discovery Wellness surface carries no
-// body/number content by design) + the binding consented real-learner walk before any register fronts
-// a real child; nothing here lifts the flag.
+// stage), not a lowered floor. courseFor() picks the set + register. The two owed reviews CLEARED
+// (2026-09-10, captain-confirmed): the human trauma-informed pass (incl. Wellness, formerly
+// HOLD-FOR-HUMAN; the Discovery Wellness surface still carries no body/number content by design) and
+// the binding consented real-learner walk both passed. The ?lscourse flag is now LIVE by default
+// (see flags.js isLifeSkillsCourse) - all four courses front real children across every register.
 const COURSES = {
   financial: {
     arc: ['Keep', 'Earn', 'Grow & Guard'],

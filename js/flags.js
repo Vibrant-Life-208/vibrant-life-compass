@@ -67,8 +67,11 @@ export function isClimbBuild() {
   } catch (_) { return false; }
 }
 
-// Life Skills "where to start" course surface (Europa 2026-08-04). Dark by default;
-// opt in with ?lscourse=on, remembered in localStorage. Off unless explicitly turned on.
+// Life Skills "where to start" course surface (Europa 2026-08-04). LIVE by default
+// as of 2026-09-10: the two owed reviews cleared (human trauma-informed pass incl.
+// Wellness HOLD-FOR-HUMAN + the binding consented real-learner walk), so the captain
+// lifted the flag. Opt out with ?lscourse=off, remembered in localStorage. Mirrors the
+// CLIMB default-on pattern above.
 const LSCOURSE_LS_KEY = 'vlc_lscourse';
 export function isLifeSkillsCourse() {
   try {
@@ -77,6 +80,6 @@ export function isLifeSkillsCourse() {
       localStorage.setItem(LSCOURSE_LS_KEY, p);
       return p === 'on';
     }
-    return localStorage.getItem(LSCOURSE_LS_KEY) === 'on';
+    return localStorage.getItem(LSCOURSE_LS_KEY) !== 'off';
   } catch (_) { return false; }
 }
