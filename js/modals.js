@@ -2178,8 +2178,8 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         : { ...p, heading: 'Where are you now?', body: 'With that goal in view - where are you today? This is the honest starting line, not the dream. Take your time; there are no wrong answers.', placeholder: 'Right now, toward this goal, I am...' };
     } else if (climb && step === 'halfway') {
       p = young
-        ? { ...p, heading: 'A little way along.', body: "After a while, what's one thing you'd be happy to have tried? Not a test - just something to look forward to. You can change it anytime.", placeholder: "Something I'd like to try..." }
-        : { ...p, heading: 'Halfway through the year.', body: "Halfway to next year - what would you need to have accomplished to feel confident you'll own that goal? This becomes your Session 3 marker.", placeholder: 'Halfway, I will have...' };
+        ? { ...p, heading: 'A little way along.', body: "After a while, what's one thing you'd be glad you tried - something you could point to and say, 'I did that'? Not a test - just something to look forward to. You can change it anytime.", placeholder: "Something I'd like to try..." }
+        : { ...p, heading: 'Your halfway win.', body: "By the middle of the year, what will you have actually done - something real you could point to, show, or demonstrate? Not how far along you feel, but what you'll have made, finished, or reached on the way to your year goal.", placeholder: 'By the middle of the year, I will have...' };
     }
     // Progressive context stack: prior horizon answers shown as compact
     // full-text cards above the box, so the thread the person has been building
