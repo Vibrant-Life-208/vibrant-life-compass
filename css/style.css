@@ -4221,13 +4221,17 @@ body.landscape-mountain {
   border-radius: var(--radius); box-shadow: var(--shadow); padding: 0.75rem;
 }
 .cal-month-title { font-size: 0.95rem; font-weight: 600; color: var(--sage); margin: 0 0 0.5rem; text-align: center; }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+/* Fixed row height so every week reads the same across all months, regardless of how many
+   school-event labels a month carries. Row 1 (the weekday headers) stays auto; the day rows
+   below are a fixed height that fits a date + a two-line event label (2026-09-10 fix: the old
+   aspect-ratio:1/1 squares blew up any row holding an event label). */
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: auto; grid-auto-rows: 56px; gap: 3px; }
 .cal-dow { text-align: center; font-size: 0.66rem; color: var(--text-muted); padding-bottom: 2px; }
 
 .cal-cell {
-  position: relative; aspect-ratio: 1 / 1; min-height: 30px;
+  position: relative; overflow: hidden;
   border-radius: var(--radius-sm); border: 1px solid transparent;
-  display: flex; align-items: flex-start; justify-content: flex-start;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
   padding: 2px 3px; font-size: 0.72rem; color: var(--text-soft);
 }
 .cal-cell.is-blank { border: none; background: none; }
@@ -4568,7 +4572,7 @@ body.landscape-mountain {
 .yearplan-approval-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
 
 /* School calendar events on the Calendar view (captain 2026-07-21). */
-.cal-school-event { display: block; font-size: 0.6rem; line-height: 1.15; margin-top: 1px; padding: 0 2px; border-radius: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-school-event { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; width: 100%; box-sizing: border-box; font-size: 0.6rem; line-height: 1.15; margin-top: 1px; padding: 0 2px; border-radius: 3px; overflow: hidden; }
 .cal-school-event.is-holiday { background: #f0d9d3; color: #7a3b2c; }
 .cal-school-event.is-break { background: #e8efe5; color: #3f5a34; }
 .cal-school-event.is-event { background: #efe3c9; color: #6b5320; }
