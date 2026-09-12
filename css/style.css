@@ -4241,6 +4241,9 @@ body.landscape-mountain {
 /* A break: in the cycle, between sessions. A warm neutral, distinct from either session shade,
    so the year reads session / break / session at a glance (captain + MAC 2026-08-04). */
 .cal-cell.is-break { background: #f4f1ea; border-color: var(--earth-pale); color: var(--text-muted); }
+/* Recurring weekends (Fri-Sun) sit a notch softer than a holiday-break week, so break weeks stay
+   the more present neutral and ordinary weekends quietly recede (captain 2026-09-12). */
+.cal-cell.is-break.is-weekend { background: #faf8f3; border-color: #efe9de; }
 .cal-cell.is-session-start { border: 2px solid var(--sage); font-weight: 600; color: var(--text); }
 .cal-cell.is-today { border: 2px solid var(--earth); font-weight: 700; color: var(--text); }
 
