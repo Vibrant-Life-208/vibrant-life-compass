@@ -302,14 +302,22 @@ function buildMonth(year, month, ctx) {
       if (presenceSet && presenceSet.has(dISO)) cell.classList.add('is-present');
     }
 
-    const sIdx = inCycle ? sessionForDay(d.getTime(), ranges) : null;
+    // Classes run Monday-Thursday only; Friday / Saturday / Sunday are weekend days that read as
+    // breaks even inside a session week (captain 2026-09-12). So a day counts as a class day only
+    // when it is Mon-Thu AND inside a session range. This is a per-day display distinction the
+    // calendar makes; year-map's week-span session math does not need it.
+    const dow = d.getDay(); // 0=Sun .. 6=Sat
+    const isClassDay = dow >= 1 && dow <= 4;
+    const sIdx = inCycle && isClassDay ? sessionForDay(d.getTime(), ranges) : null;
     if (sIdx != null) {
       cell.classList.add('in-session');
       cell.classList.add(sIdx % 2 === 0 ? 'session-even' : 'session-odd');
     } else if (inCycle) {
-      // In the cycle but between sessions - a break. Named explicitly (captain 2026-08-04) so
-      // the year reads as session / break / session, not session / blank / session.
+      // Between sessions, or a weekend (Fri-Sun) inside the cycle - both read as a break so the
+      // year shows a class / weekend rhythm (captain 2026-08-04, refined 2026-09-12). is-weekend
+      // tags the recurring Fri-Sun days so they can be styled apart from holiday breaks later.
       cell.classList.add('is-break');
+      if (!isClassDay) cell.classList.add('is-weekend');
     }
     if (startDayISO.has(dISO)) cell.classList.add('is-session-start');
     if (dISO === todayISO) cell.classList.add('is-today');
