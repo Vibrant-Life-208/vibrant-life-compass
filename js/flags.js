@@ -99,24 +99,3 @@ export function isCommunityRich() {
     return localStorage.getItem(COMMBOARD_LS_KEY) === 'on';
   } catch (_) { return false; }
 }
-
-// TEMPORARY preview switches for choosing the cork-board look (Europa 2026-09-14). Both remembered
-// in localStorage so they survive in-app navigation. `?cork=a|b|c` picks the board texture;
-// `?corkdemo=on` seeds sample notes so an empty board still shows the look. Preview-only, meaningful
-// only with ?commboard on. Remove once the cork style is chosen and baked as the default.
-const CORK_STYLE_KEY = 'vlc_cork_style';
-export function corkStyle() {
-  try {
-    const p = new URLSearchParams(location.search).get('cork');
-    if (p === 'a' || p === 'b' || p === 'c') { localStorage.setItem(CORK_STYLE_KEY, p); return p; }
-    return localStorage.getItem(CORK_STYLE_KEY) || 'a';
-  } catch (_) { return 'a'; }
-}
-const CORK_DEMO_KEY = 'vlc_cork_demo';
-export function isCorkDemo() {
-  try {
-    const p = new URLSearchParams(location.search).get('corkdemo');
-    if (p === 'on' || p === 'off') { localStorage.setItem(CORK_DEMO_KEY, p); return p === 'on'; }
-    return localStorage.getItem(CORK_DEMO_KEY) === 'on';
-  } catch (_) { return false; }
-}

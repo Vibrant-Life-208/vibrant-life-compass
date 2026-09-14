@@ -14,14 +14,6 @@
 
 import { escapeHtml, escapeAttr } from './pillars/_scaffold.js';
 import { submitCommunityPost, getMyCommunityPosts, getPostedBoard } from './store.js';
-import { corkStyle, isCorkDemo } from './flags.js';
-
-// Sample notes for the ?corkdemo=on preview (choosing the board look). Client-only, never stored.
-const DEMO_NOTES = [
-  { title: 'Pumpkin Farm', category: 'event', body: 'A trip to the pumpkin farm - more details to come.', whenWhere: 'October 21 - Cherry Hill Farms', contact: '', posterImage: '' },
-  { title: 'Chess Group', category: 'club', body: 'Learn openings together and run a friendly ladder.', whenWhere: 'Thursdays after lunch, the Grove', contact: 'a guide', posterImage: '' },
-  { title: 'Park Clean-Up', category: 'volunteer', body: 'Saturday morning at Ann Morrison. Gloves and bags provided.', whenWhere: 'Sat 9am', contact: '', posterImage: '' },
-];
 
 const POST_STATUS = {
   pending_guide: 'Waiting for your guide',
@@ -126,8 +118,6 @@ export async function wireRichCommunity(host, learnerId) {
       getMyCommunityPosts(learnerId).catch(() => []),
       getPostedBoard().catch(() => []),
     ]);
-    const styleClass = ({ b: ' cork-b', c: ' cork-c' })[corkStyle()] || '';
-    const shownBoard = isCorkDemo() ? DEMO_NOTES : board;
     host.innerHTML = `
       <p class="pillar-prompt">Have an idea for the community - a club to start, a way to give back, an event to run? Fill it in and send it to your guide.</p>
       <form class="cork-form" id="cork-form" novalidate>
@@ -156,9 +146,9 @@ export async function wireRichCommunity(host, learnerId) {
       </form>
       ${mine.length ? `<h4 class="pillar-subhead">Your ideas</h4>${mine.map(mineRow).join('')}` : ''}
       <h4 class="pillar-subhead">What's happening around school</h4>
-      ${shownBoard.length
-        ? `<div class="cork-board${styleClass}">${shownBoard.map(boardNote).join('')}</div>`
-        : `<div class="cork-board cork-board-empty${styleClass}"><p class="pillar-empty">Nothing pinned yet - yours could be the first.</p></div>`}`;
+      ${board.length
+        ? `<div class="cork-board">${board.map(boardNote).join('')}</div>`
+        : '<div class="cork-board cork-board-empty"><p class="pillar-empty">Nothing pinned yet - yours could be the first.</p></div>'}`;
 
     const titleEl = host.querySelector('#cork-title');
     const descEl = host.querySelector('#cork-desc');
