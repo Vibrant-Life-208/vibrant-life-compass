@@ -137,6 +137,8 @@ already-posted note. It needs an author (schema requires `learner_id`); attribut
 Learner so it does not appear under a real child's "Your ideas". Run in the Supabase SQL editor:
 
 ```sql
+-- A learner's name lives on the joined profiles row (learners.id is 1:1 with profiles.id).
+-- To see your options first: select l.id, p.name, l.studio from learners l join profiles p on p.id = l.id;
 insert into community_posts
   (learner_id, title, category, body, when_where, status, guide_reviewed_at, owner_reviewed_at)
 select l.id, 'Pumpkin Farm', 'event',
@@ -144,7 +146,8 @@ select l.id, 'Pumpkin Farm', 'event',
        'October 21 - Cherry Hill Farms',
        'posted', now(), now()
 from learners l
-where l.name ilike '%test%'   -- adjust to your Test Learner (or replace this SELECT with a literal learner_id)
+join profiles p on p.id = l.id
+where p.name ilike '%test%'   -- adjust to your Test Learner (or replace this SELECT with a literal learner_id)
 limit 1;
 ```
 
