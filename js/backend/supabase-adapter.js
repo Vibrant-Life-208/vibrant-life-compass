@@ -1438,6 +1438,8 @@ export async function getStudioPracticePulse(tribe) {
 function rowToCommunityPost(r) {
   return {
     id: r.id, learnerId: r.learner_id, body: r.body, status: r.status,
+    title: r.title || '', category: r.category || '', whenWhere: r.when_where || '',
+    contact: r.contact || '', posterImage: r.poster_image || '',
     guideNote: r.guide_note || '',
     guideReviewedBy: r.guide_reviewed_by, guideReviewedAt: r.guide_reviewed_at,
     ownerReviewedBy: r.owner_reviewed_by, ownerReviewedAt: r.owner_reviewed_at,
@@ -1445,11 +1447,24 @@ function rowToCommunityPost(r) {
   };
 }
 
-export async function submitCommunityPost(learnerId, body) {
-  const t = (body || '').trim();
-  if (!t) return null;
-  const { data, error } = await getClient().from('community_posts')
-    .insert({ learner_id: learnerId, body: t.slice(0, 500) }).select().single();
+// input may be a plain string (legacy single-field form) or a rich payload object
+// { title, category, body, whenWhere, contact, posterImage }. body is always required.
+const CP_CATEGORIES = ['club', 'volunteer', 'event', 'other'];
+export async function submitCommunityPost(learnerId, input) {
+  const p = (typeof input === 'string') ? { body: input } : (input || {});
+  const body = (p.body || '').trim();
+  if (!body) return null;
+  const row = { learner_id: learnerId, body: body.slice(0, 500) };
+  if (p.title && p.title.trim()) row.title = p.title.trim().slice(0, 120);
+  if (CP_CATEGORIES.includes(p.category)) row.category = p.category;
+  if (p.whenWhere && p.whenWhere.trim()) row.when_where = p.whenWhere.trim().slice(0, 200);
+  if (p.contact && p.contact.trim()) row.contact = p.contact.trim().slice(0, 120);
+  // Poster is a pre-rendered JPEG data URL (client-side, see community-board.js). Guard the
+  // shape and cap the length so a malformed or oversize value never reaches the DB check.
+  if (typeof p.posterImage === 'string' && p.posterImage.startsWith('data:image/') && p.posterImage.length <= 600000) {
+    row.poster_image = p.posterImage;
+  }
+  const { data, error } = await getClient().from('community_posts').insert(row).select().single();
   if (error) { console.warn('submitCommunityPost:', error.message); return null; }
   return rowToCommunityPost(data);
 }

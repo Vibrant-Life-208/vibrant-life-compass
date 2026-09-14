@@ -102,11 +102,22 @@ async function renderOwnerCommunity(onBack) {
       <p class="picker-sub">Ideas your guides have passed up. Post one to the board, and see what's live.</p>
       <div class="owner-community">
         <h3 class="guide-section-title">Waiting on you</h3>
-        ${pending.length ? pending.map((p) => `
+        ${pending.length ? pending.map((p) => {
+          const poster = (typeof p.posterImage === 'string' && p.posterImage.startsWith('data:image/')) ? p.posterImage : '';
+          const detail = [
+            p.category ? `<p class="community-review-meta"><span class="community-review-k">Kind</span> ${escapeHtml(p.category)}</p>` : '',
+            p.whenWhere ? `<p class="community-review-meta"><span class="community-review-k">When / where</span> ${escapeHtml(p.whenWhere)}</p>` : '',
+            p.contact ? `<p class="community-review-meta"><span class="community-review-k">Talk to</span> ${escapeHtml(p.contact)}</p>` : '',
+          ].join('');
+          return `
           <div class="community-review-card">
+            ${p.title ? `<p class="community-review-title"><strong>${escapeHtml(p.title)}</strong></p>` : ''}
+            ${poster ? `<img class="community-review-poster" src="${poster}" alt="Poster for review">` : ''}
             <p class="community-review-body">${escapeHtml(p.body)}</p>
+            ${detail}
             <div class="community-review-actions"><button type="button" class="btn btn-primary" data-post="${escapeHtml(p.id)}">Post it &#10003;</button></div>
-          </div>`).join('') : '<p class="pillar-empty">Nothing waiting - all clear.</p>'}
+          </div>`;
+        }).join('') : '<p class="pillar-empty">Nothing waiting - all clear.</p>'}
         <h3 class="guide-section-title">On the board</h3>
         ${board.length ? `<ul class="conn-board">${board.map((b) => `<li>${escapeHtml(b.body)}</li>`).join('')}</ul>` : '<p class="pillar-empty">Nothing posted yet.</p>'}
       </div>

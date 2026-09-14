@@ -8,6 +8,8 @@ import { shell, section, chips, emptyNote, escapeHtml, escapeAttr } from './_sca
 import { getProfileStrengths, getViaCharacterStrengths, getProfileFoundations, setProfileFoundations,
   submitCommunityPost, getMyCommunityPosts, getPostedBoard } from '../store.js';
 import { renderPartnerPage } from '../partner.js';
+import { isCommunityRich } from '../flags.js';
+import { wireRichCommunity } from '../community-board.js';
 
 // Community-post status, learner-facing.
 const POST_STATUS = {
@@ -82,6 +84,9 @@ export async function renderConnection(learnerId) {
 async function wireCommunity(learnerId) {
   const host = document.getElementById('conn-community');
   if (!host) return;
+  // Rich cork-board + poster form (dark behind ?commboard=on). Legacy single-field path below
+  // stays the flag-off default until the owed Salus/Jake walk on this surface.
+  if (isCommunityRich()) { await wireRichCommunity(host, learnerId); return; }
   const render = async () => {
     const [mine, board] = await Promise.all([
       getMyCommunityPosts(learnerId).catch(() => []),

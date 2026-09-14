@@ -83,3 +83,19 @@ export function isLifeSkillsCourse() {
     return localStorage.getItem(LSCOURSE_LS_KEY) !== 'off';
   } catch (_) { return false; }
 }
+
+// Rich community board (cork-board look + extended submission form + poster upload,
+// Europa 2026-09-12). Dark by default; opt in with ?commboard=on, remembered in
+// localStorage. Held dark until the owed Salus/Jake young-register + upload-safety walk
+// on this surface (learners including Discovery 8-11 can attach a poster). Off unless on.
+const COMMBOARD_LS_KEY = 'vlc_commboard';
+export function isCommunityRich() {
+  try {
+    const p = new URLSearchParams(location.search).get('commboard');
+    if (p === 'on' || p === 'off') {
+      localStorage.setItem(COMMBOARD_LS_KEY, p);
+      return p === 'on';
+    }
+    return localStorage.getItem(COMMBOARD_LS_KEY) === 'on';
+  } catch (_) { return false; }
+}

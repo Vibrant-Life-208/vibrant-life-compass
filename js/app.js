@@ -803,9 +803,18 @@ async function renderGuideCommunityReview(learners, session, onChange) {
       || await getLearner(post.learnerId).catch(() => null);
     const card = document.createElement('div');
     card.className = 'community-review-card';
+    const poster = (typeof post.posterImage === 'string' && post.posterImage.startsWith('data:image/')) ? post.posterImage : '';
+    const detail = [
+      post.category ? `<p class="community-review-meta"><span class="community-review-k">Kind</span> ${escapeHtml(post.category)}</p>` : '',
+      post.whenWhere ? `<p class="community-review-meta"><span class="community-review-k">When / where</span> ${escapeHtml(post.whenWhere)}</p>` : '',
+      post.contact ? `<p class="community-review-meta"><span class="community-review-k">Talk to</span> ${escapeHtml(post.contact)}</p>` : '',
+    ].join('');
     card.innerHTML = `
       <p class="community-review-who"><strong>${escapeHtml(learner?.name || 'A learner')}</strong> wants to bring this to the community:</p>
+      ${post.title ? `<p class="community-review-title"><strong>${escapeHtml(post.title)}</strong></p>` : ''}
+      ${poster ? `<img class="community-review-poster" src="${poster}" alt="Poster for review">` : ''}
       <p class="community-review-body">${escapeHtml(post.body)}</p>
+      ${detail}
       <div class="community-review-actions">
         <button type="button" class="btn btn-text" data-cr-return="${escapeHtml(post.id)}">Return with a note</button>
         <button type="button" class="btn btn-primary" data-cr-approve="${escapeHtml(post.id)}">Send to owner ✓</button>
