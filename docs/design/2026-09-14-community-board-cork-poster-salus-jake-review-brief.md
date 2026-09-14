@@ -96,3 +96,57 @@ Life Skills lift). It should not flip until both seats clear and migration v0.39
 
 *The story belongs to the person living it; we do not clear a surface for a child until we have
 watched a child meet it.*
+
+---
+
+## Walk script & observation checklist (added 2026-09-14, walk scheduled the week of 2026-09-15)
+
+**Status at walk time:** all review conditions BUILT and deployed dark (compass main, sw v174);
+migrations v0.39 + v0.40 applied. Discovery gets the simpler form; poster accepts a PDF or a
+drawing (image); contact field steers to "ask a guide"; owner can take a posted note down.
+
+**Access (stays dark for everyone else):**
+- On the studio device, load `https://vibrant-life-compass.vercel.app/?commboard=on` once (flag
+  sticks in that browser). Log in as the learner -> Connection pillar -> Community.
+- Guide reviews from their dashboard; owner approves / takes down at Owner -> Community Board.
+- After the walk, load `?commboard=off` on that device to switch it back off.
+
+**Protocol (Salus):** guardian consent; framed as *testing the tool*, not real sharing; witnessed;
+the child can stop anytime; debrief asks **"how did that feel?"**, not "did it work?".
+
+**Watch points — Jake (developmental):**
+- Does the Discovery child understand "what's your idea / tell us more"? Does it feel like
+  *offering*, not a test ("am I doing it right?")?
+- Is the **drawing** option inviting and reachable, or does the poster still read as a bar?
+- Older tiers: do they finish the six fields, or is it too much?
+
+**Watch points — Salus (safety):**
+- The **contact field** - does the child take the "ask a guide" steer, or put their own name?
+  Watch for personal contact surfacing.
+- Do they understand a **guide sees it before it is public**? Any confusion about who is watching?
+- Is "leave it / not now" genuinely available and non-punishing? Any pressure or wince?
+
+**After the walk:** record what surfaced (copy that confused a child, a field to cut, a safety
+wince) here or route to Europa; changes iterate fast on the dark board, then re-walk if a change
+touches the young register, before the flag flips.
+
+### Appendix - optional board seed for the walk
+
+So the board is not empty when the learner arrives, seed the real Pumpkin Farm event as an
+already-posted note. It needs an author (schema requires `learner_id`); attribute it to a Test
+Learner so it does not appear under a real child's "Your ideas". Run in the Supabase SQL editor:
+
+```sql
+insert into community_posts
+  (learner_id, title, category, body, when_where, status, guide_reviewed_at, owner_reviewed_at)
+select l.id, 'Pumpkin Farm', 'event',
+       'A trip to the pumpkin farm - more details to come.',
+       'October 21 - Cherry Hill Farms',
+       'posted', now(), now()
+from learners l
+where l.name ilike '%test%'   -- adjust to your Test Learner (or replace this SELECT with a literal learner_id)
+limit 1;
+```
+
+Remove it afterward with the owner "Take down" button, or `delete from community_posts where title = 'Pumpkin Farm';`.
+(Seed is a text note; attach the poster PDF through the flow if you want the image on it.)
