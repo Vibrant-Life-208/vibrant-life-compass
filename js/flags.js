@@ -99,3 +99,18 @@ export function isCommunityRich() {
     return localStorage.getItem(COMMBOARD_LS_KEY) === 'on';
   } catch (_) { return false; }
 }
+
+// Responsibilities v1 (Creator Mindset): cadence + soft calendar presence + private tending
+// (Europa 2026-09-14). Dark by default; opt in with ?resp=on, remembered in localStorage. Held
+// dark until the Jake/Salus walk (child-facing "did you tend it" surface; notice-never-score).
+const RESP_LS_KEY = 'vlc_resp';
+export function isResponsibilities() {
+  try {
+    const p = new URLSearchParams(location.search).get('resp');
+    if (p === 'on' || p === 'off') {
+      localStorage.setItem(RESP_LS_KEY, p);
+      return p === 'on';
+    }
+    return localStorage.getItem(RESP_LS_KEY) === 'on';
+  } catch (_) { return false; }
+}

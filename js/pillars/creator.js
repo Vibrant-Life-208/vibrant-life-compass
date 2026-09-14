@@ -8,6 +8,8 @@
 import { shell, section, emptyNote, goalCard, escapeHtml, escapeAttr } from './_scaffold.js';
 import { getLearner, getGoals, getProfileHorizons, getProfileFoundations, setProfileFoundations } from '../store.js';
 import { getCategoriesForStudio } from '../studios.js';
+import { isResponsibilities } from '../flags.js';
+import { CADENCES, normalizeResponsibilities, cadenceLabel } from '../responsibilities.js';
 
 const HORIZONS = [
   { key: 'beyond_5yr', label: '10 years from now' },
@@ -104,33 +106,52 @@ function regToolsHtml() {
   return intro + `<div class="pillar-tools">${cards}</div>` + safety;
 }
 
-function readResp(climb) {
-  return Array.isArray(climb.responsibilities) ? climb.responsibilities.filter((x) => typeof x === 'string') : [];
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-function renderRespList(items) {
+// One responsibility row. `rich` (dark ?resp=on) adds the cadence chips + private "tended" tap;
+// otherwise it is the plain carried-item row (unchanged live behaviour).
+function respItemHtml(r, i, rich) {
+  const removeBtn = `<button type="button" class="pillar-resp-remove" data-resp-remove="${i}" aria-label="Remove">×</button>`;
+  if (!rich) {
+    return `<li class="pillar-resp-item"><span>${escapeHtml(r.text)}</span>${removeBtn}</li>`;
+  }
+  const tendedToday = r.tended.includes(todayISO());
+  const cad = cadenceLabel(r);
+  const chips = CADENCES.map((c) => `<button type="button" class="resp-chip${r.cadence === c.id ? ' selected' : ''}" data-resp-cad="${i}" data-cad="${escapeAttr(c.id)}">${escapeHtml(c.label)}</button>`).join('');
+  const tend = r.cadence !== 'off'
+    ? `<button type="button" class="resp-tend${tendedToday ? ' tended' : ''}" data-resp-tend="${i}">${tendedToday ? '🌿 Tended today' : 'Tended today?'}</button>`
+    : '';
+  return `<li class="pillar-resp-item resp-rich">
+    <div class="resp-head"><span class="resp-text">${escapeHtml(r.text)}</span>${removeBtn}</div>
+    <div class="resp-cadence">${chips}</div>
+    ${cad ? `<span class="resp-cad-label">On your calendar: ${escapeHtml(cad)}</span>` : ''}
+    ${tend}
+  </li>`;
+}
+
+function renderRespList(items, rich) {
   const host = document.getElementById('creator-resp');
   if (!host) return;
   if (!items.length) {
     host.innerHTML = '<p class="pillar-empty">Nothing here yet - add what you look after.</p>';
     return;
   }
-  host.innerHTML = `<ul class="pillar-resp-list">${items.map((t, i) => `
-    <li class="pillar-resp-item">
-      <span>${escapeHtml(t)}</span>
-      <button type="button" class="pillar-resp-remove" data-resp-remove="${i}" aria-label="Remove">×</button>
-    </li>`).join('')}</ul>`;
+  host.innerHTML = `<ul class="pillar-resp-list">${items.map((r, i) => respItemHtml(r, i, rich)).join('')}</ul>`;
 }
 
 function wireResponsibilities(learnerId, foundations, climb) {
-  let items = readResp(climb);
-  renderRespList(items);
+  const rich = isResponsibilities();
+  let items = normalizeResponsibilities(climb);
+  renderRespList(items, rich);
 
   const save = async () => {
     const next = { ...foundations, climb: { ...climb, responsibilities: items } };
     try {
       await setProfileFoundations(learnerId, next);
-      climb.responsibilities = [...items];
+      climb.responsibilities = items.map((r) => ({ ...r }));
       foundations.climb = { ...climb };
     } catch (e) { console.warn('responsibilities save failed:', e); }
   };
@@ -140,20 +161,36 @@ function wireResponsibilities(learnerId, foundations, climb) {
   const add = async () => {
     const v = (input?.value || '').trim();
     if (!v) return;
-    items = [...items, v];
+    items = [...items, { text: v, cadence: 'off', weekday: null, tended: [] }];
     if (input) input.value = '';
-    renderRespList(items);
+    renderRespList(items, rich);
     await save();
   };
   addBtn?.addEventListener('click', add);
   input?.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
 
   document.getElementById('creator-resp')?.addEventListener('click', async (e) => {
-    const btn = e.target.closest('[data-resp-remove]');
-    if (!btn) return;
-    const idx = Number(btn.dataset.respRemove);
-    items = items.filter((_, i) => i !== idx);
-    renderRespList(items);
+    const rm = e.target.closest('[data-resp-remove]');
+    const cadBtn = e.target.closest('[data-resp-cad]');
+    const tendBtn = e.target.closest('[data-resp-tend]');
+    if (rm) {
+      items = items.filter((_, i) => i !== Number(rm.dataset.respRemove));
+    } else if (cadBtn && rich) {
+      const idx = Number(cadBtn.dataset.respCad);
+      if (!items[idx]) return;
+      const c = cadBtn.dataset.cad;
+      items[idx] = { ...items[idx], cadence: c };
+      if (c === 'weekly') items[idx].weekday = new Date().getDay(); // anchor weekly to today's weekday
+    } else if (tendBtn && rich) {
+      const idx = Number(tendBtn.dataset.respTend);
+      if (!items[idx]) return;
+      const t = todayISO();
+      const has = items[idx].tended.includes(t);
+      items[idx] = { ...items[idx], tended: has ? items[idx].tended.filter((x) => x !== t) : [...items[idx].tended, t] };
+    } else {
+      return;
+    }
+    renderRespList(items, rich);
     await save();
   });
 }

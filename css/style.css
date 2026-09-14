@@ -4687,6 +4687,21 @@ body.landscape-mountain {
 .pillar-resp-input { flex: 1; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.5rem 0.7rem; font: inherit; color: var(--text); }
 .pillar-resp-input:focus { outline: none; border-color: var(--pc, var(--sage)); }
 
+/* Responsibilities v1 (dark ?resp=on): cadence rhythm + private "tended". A rhythm, never a
+   scoreboard - no count, no streak, missing a day is a non-event. */
+.pillar-resp-item.resp-rich { flex-direction: column; align-items: stretch; gap: 0.4rem; }
+.resp-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+.resp-text { font-weight: 500; }
+.resp-cadence { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.resp-chip { border: 1px solid var(--earth-light, #d9c9a3); background: #fff; color: var(--text-soft); border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.78rem; cursor: pointer; }
+.resp-chip.selected { background: var(--sage-pale, #e8efe5); border-color: var(--sage, #4a6741); color: var(--sage, #4a6741); font-weight: 600; }
+.resp-cad-label { font-size: 0.76rem; color: var(--text-muted); font-style: italic; }
+.resp-tend { align-self: flex-start; border: 1px solid var(--sage-light, #b8ccae); background: #fff; color: var(--sage, #4a6741); border-radius: 999px; padding: 0.2rem 0.7rem; font-size: 0.8rem; cursor: pointer; }
+.resp-tend.tended { background: var(--sage-pale, #e8efe5); font-weight: 600; }
+/* The soft leaf on the calendar: faint when a responsibility is yours that day, fuller once tended. */
+.cal-resp { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 10px; line-height: 1; opacity: 0.4; filter: grayscale(0.5); pointer-events: none; }
+.cal-resp.tended { opacity: 1; filter: none; }
+
 /* Life Skills: WOOP skill-goal fields (2026-07-27). Capacity-goal, editable, no
    score/streak - the goal is the plan, tended. */
 .pillar-woop-field { margin: 0 0 0.7rem; }

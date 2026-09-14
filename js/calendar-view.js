@@ -14,8 +14,10 @@
 // count, self-only): the year-note (one reflective line, encrypted at rest) and mark-a-day
 // presence (ISO dates). Visual conventions follow the Year Map (year-map.js) and sage/earth palette.
 
-import { getLearner, getGoals, getTasksForRange, saveLearner } from './store.js';
+import { getLearner, getGoals, getTasksForRange, saveLearner, getProfileFoundations } from './store.js';
 import { getPlanningCalendar, getStudioName, getSchoolEvents } from './studios.js';
+import { isResponsibilities } from './flags.js';
+import { normalizeResponsibilities, respActiveOn } from './responsibilities.js';
 import { taskColorStyle } from './wheel.js';
 import { encryptField, decryptField } from './crypto.js';
 
@@ -86,6 +88,16 @@ export async function renderCalendarView(learnerId) {
     (tasksByDay[t.plannedFor] ||= []).push(t);
   }
 
+  // Responsibilities as a soft calendar presence (dark ?resp=on): a rhythm, not a deadline. Only
+  // those with a cadence appear; a per-day leaf marks "this is yours today", filled if tended.
+  let responsibilities = [];
+  if (isResponsibilities()) {
+    try {
+      const f = await getProfileFoundations(learnerId);
+      responsibilities = normalizeResponsibilities((f && f.climb) ? f.climb : {}).filter((r) => r.cadence !== 'off');
+    } catch (e) { responsibilities = []; }
+  }
+
   // Session goals grouped under their session; year goals counted for the header.
   const yearGoals = goals.filter((g) => g.scope === 'year' && g.text && g.text.trim());
   const sessionGoals = {};
@@ -149,7 +161,7 @@ export async function renderCalendarView(learnerId) {
   while (cursor <= lastMonth) {
     monthsWrap.appendChild(
       buildMonth(cursor.getFullYear(), cursor.getMonth(), {
-        ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay, presenceSet,
+        ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay, presenceSet, responsibilities,
       }),
     );
     cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
@@ -255,7 +267,7 @@ export async function renderCalendarView(learnerId) {
 }
 
 function buildMonth(year, month, ctx) {
-  const { ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay, presenceSet } = ctx;
+  const { ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay, presenceSet, responsibilities } = ctx;
   const wrap = document.createElement('div');
   wrap.className = 'cal-month';
   // Calm entrance: the month holding today gets a gentle bloom (MAC/Chapel 2026-08-04). The
@@ -363,6 +375,20 @@ function buildMonth(year, month, ctx) {
       cell.appendChild(dots);
       const titles = dayTasks.map((t) => (t.text || '').trim()).filter(Boolean).join(' · ');
       cell.title = `${dayTasks.length} task${dayTasks.length === 1 ? '' : 's'}${titles ? ': ' + titles : ''}`;
+    }
+
+    // Responsibilities (dark ?resp=on): a soft leaf on days a carried thing is yours to tend -
+    // faint by default, filled once tended. A rhythm, never a deadline; no count anywhere.
+    if (inCycle && responsibilities && responsibilities.length) {
+      const active = responsibilities.filter((r) => respActiveOn(r, d.getDay()));
+      if (active.length) {
+        const leaf = document.createElement('span');
+        leaf.className = 'cal-resp' + (active.some((r) => r.tended.includes(dISO)) ? ' tended' : '');
+        leaf.textContent = '🌿';
+        cell.appendChild(leaf);
+        const names = active.map((r) => r.text).join(' · ');
+        cell.title = `${cell.title ? cell.title + ' · ' : ''}${names}`;
+      }
     }
 
     grid.appendChild(cell);
