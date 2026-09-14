@@ -4765,6 +4765,7 @@ body.landscape-mountain {
 .cork-field { display: flex; flex-direction: column; gap: 0.25rem; }
 .cork-label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
 .cork-opt { font-weight: 400; color: var(--text-muted); font-size: 0.8rem; }
+.cork-hint { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin-top: 0.15rem; }
 .cork-form input[type="text"], .cork-form select, .cork-form textarea {
   width: 100%; box-sizing: border-box; padding: 0.5rem 0.6rem;
   border: 1px solid var(--earth-light, #d9c9a3); border-radius: 8px;

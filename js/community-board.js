@@ -1,25 +1,35 @@
 // js/community-board.js — the rich community board (Europa 2026-09-12).
 //
 // The cork-board bulletin: an extended idea-submission form (title, category, description,
-// when/where, who-to-contact, and an optional poster) plus the posted board rendered as an
-// old-school corkboard of pinned notes. Held DARK behind the ?commboard=on flag until the
-// owed Salus/Jake young-register + upload-safety walk (learners incl. Discovery 8-11 can
-// attach a poster). The legacy single-field path in connection.js stays the flag-off default.
+// when/where, who-to-contact, and an optional poster/drawing) plus the posted board rendered as
+// an old-school corkboard of pinned notes. Held DARK behind the ?commboard=on flag until the
+// owed Salus/Jake young-register + upload-safety walk. The legacy single-field path in
+// connection.js stays the flag-off default.
 //
-// Poster handling is entirely on-device: the learner picks a PDF, we render its first page to
-// a downscaled JPEG here and store THAT image (a data URL) via submitCommunityPost. The PDF
-// bytes are never uploaded or kept. pdf.js is the same vendored engine via-import.js uses, and
-// it renders to pixels only (it does not execute a PDF's embedded scripts). Content is still
-// moderated by the existing guide -> owner review before anything reaches the public board.
+// Jake/Salus review conditions (2026-09-14) built in here:
+//  - Discovery (~8-11) gets a SIMPLER form (title + description + optional drawing), not the full
+//    six-field adult form (Jake: don't hand a young child a bar they can't reach).
+//  - The poster accepts a DRAWING (image) as well as a PDF, so a young child who draws - not makes
+//    PDFs - can still add one (Jake).
+//  - The contact field steers to "ask a guide" rather than surfacing a child's own name (Salus).
+//  (The take-down path for posted notes lives on the owner review surface; see owner.js.)
+//
+// Poster handling is entirely on-device: the learner picks a PDF or image, we render it to a
+// downscaled JPEG here and store THAT image (a data URL) via submitCommunityPost. The original
+// bytes are never uploaded or kept. pdf.js is the same vendored engine via-import.js uses, and it
+// renders to pixels only (it does not execute a PDF's embedded scripts). Images are drawn to a
+// canvas (pixels only, no script surface). Content is still moderated by the existing guide ->
+// owner review before anything reaches the public board.
 
 import { escapeHtml, escapeAttr } from './pillars/_scaffold.js';
-import { submitCommunityPost, getMyCommunityPosts, getPostedBoard } from './store.js';
+import { submitCommunityPost, getMyCommunityPosts, getPostedBoard, getLearner } from './store.js';
 
 const POST_STATUS = {
   pending_guide: 'Waiting for your guide',
   pending_owner: 'Your guide said yes - waiting for the school',
   posted: 'Posted to the board',
   denied: 'Not this time',
+  removed: 'Taken down',
 };
 
 // Display labels are learner-facing; the ids are the stable internal tokens the DB stores
@@ -32,7 +42,7 @@ const CATEGORIES = [
 ];
 const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label]));
 
-// --- Poster: render a PDF's first page to a downscaled JPEG data URL, on-device only. ---
+// --- Poster: render a PDF's first page OR an image to a downscaled JPEG data URL, on-device. ---
 let _pdfjs = null;
 async function getPdfjs() {
   if (_pdfjs) return _pdfjs;
@@ -42,17 +52,17 @@ async function getPdfjs() {
   return mod;
 }
 
-const MAX_PDF_BYTES = 10 * 1024 * 1024; // reject anything larger than a plausible poster
-const POSTER_MAX_W = 700;               // downscale the render to this width
-const POSTER_MAX_LEN = 600000;          // matches the DB column cap on the data URL
+const MAX_FILE_BYTES = 15 * 1024 * 1024; // reject anything larger than a plausible poster/photo
+const POSTER_MAX_W = 700;                // downscale to this width
+const POSTER_MAX_LEN = 600000;           // matches the DB column cap on the data URL
 
-async function renderPosterFromPdf(file) {
-  const looksPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
-  if (!looksPdf) return { ok: false, reason: 'Please choose a PDF for the poster.' };
-  if (file.size > MAX_PDF_BYTES) return { ok: false, reason: 'That PDF is too large (10MB max).' };
-  const buf = await file.arrayBuffer();
-  const magic = new TextDecoder().decode(new Uint8Array(buf.slice(0, 5)));
-  if (magic !== '%PDF-') return { ok: false, reason: 'That file is not a valid PDF.' };
+function canvasToPoster(canvas) {
+  let out = canvas.toDataURL('image/jpeg', 0.72);
+  if (out.length > POSTER_MAX_LEN) out = canvas.toDataURL('image/jpeg', 0.55);
+  return out;
+}
+
+async function renderPdfPoster(buf) {
   let doc;
   try {
     const pdfjs = await getPdfjs();
@@ -67,13 +77,54 @@ async function renderPosterFromPdf(file) {
     canvas.width = Math.ceil(viewport.width);
     canvas.height = Math.ceil(viewport.height);
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); // flatten transparency for JPEG
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); // flatten for JPEG
     await page.render({ canvasContext: ctx, viewport }).promise;
-    let out = canvas.toDataURL('image/jpeg', 0.72);
-    if (out.length > POSTER_MAX_LEN) out = canvas.toDataURL('image/jpeg', 0.55);
-    if (out.length > POSTER_MAX_LEN) return { ok: false, reason: 'That poster is too detailed to store - try a simpler PDF.' };
+    const out = canvasToPoster(canvas);
+    if (out.length > POSTER_MAX_LEN) return { ok: false, reason: 'That poster is too detailed to store - try a simpler file.' };
     return { ok: true, image: out };
   } catch (e) { return { ok: false, reason: 'Could not render that poster.' }; }
+}
+
+async function renderImagePoster(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = () => rej(new Error('image'));
+      i.src = url;
+    });
+    const w = img.naturalWidth || POSTER_MAX_W;
+    const scale = Math.min(1, POSTER_MAX_W / w);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(w * scale));
+    canvas.height = Math.max(1, Math.round((img.naturalHeight || w) * scale));
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const out = canvasToPoster(canvas);
+    if (out.length > POSTER_MAX_LEN) return { ok: false, reason: 'That image is too detailed to store - try a smaller one.' };
+    return { ok: true, image: out };
+  } catch (e) {
+    return { ok: false, reason: 'Could not read that image.' };
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function renderPosterFromFile(file) {
+  if (!file) return { ok: false, reason: 'No file chosen.' };
+  if (file.size > MAX_FILE_BYTES) return { ok: false, reason: 'That file is too large (15MB max).' };
+  const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
+  const isImg = /^image\//.test(file.type || '') || /\.(png|jpe?g|webp|gif|heic|heif)$/i.test(file.name || '');
+  if (isPdf) {
+    const buf = await file.arrayBuffer();
+    const magic = new TextDecoder().decode(new Uint8Array(buf.slice(0, 5)));
+    if (magic !== '%PDF-') return { ok: false, reason: 'That file is not a valid PDF.' };
+    return renderPdfPoster(buf);
+  }
+  if (isImg) return renderImagePoster(file);
+  return { ok: false, reason: 'Please choose a PDF or an image (a photo of a drawing works too).' };
 }
 
 // --- Render ---
@@ -111,32 +162,48 @@ function mineRow(p) {
 
 export async function wireRichCommunity(host, learnerId) {
   if (!host) return;
-  let poster = null; // { image } once a PDF is rendered
+  let poster = null; // { image } once a poster/drawing is rendered
+
+  // Discovery (~8-11) gets the simpler form (Jake). Fall back to the full form if studio unknown.
+  let young = false;
+  try {
+    const learner = await getLearner(learnerId);
+    young = (learner && learner.studio === 'discovery');
+  } catch (e) { young = false; }
 
   const render = async () => {
     const [mine, board] = await Promise.all([
       getMyCommunityPosts(learnerId).catch(() => []),
       getPostedBoard().catch(() => []),
     ]);
-    host.innerHTML = `
-      <p class="pillar-prompt">Have an idea for the community - a club to start, a way to give back, an event to run? Fill it in and send it to your guide.</p>
-      <form class="cork-form" id="cork-form" novalidate>
-        <label class="cork-field"><span class="cork-label">Title</span>
-          <input type="text" id="cork-title" maxlength="120" placeholder="Chess club, park clean-up..." required></label>
+
+    // Full-form-only fields (category, when/where, contact) - omitted for the young register.
+    const extraFields = young ? '' : `
         <label class="cork-field"><span class="cork-label">What kind of idea?</span>
           <select id="cork-cat">
             <option value="">Choose one...</option>
             ${CATEGORIES.map((c) => `<option value="${escapeAttr(c.id)}">${escapeHtml(c.label)}</option>`).join('')}
           </select></label>
-        <label class="cork-field"><span class="cork-label">Tell us about it</span>
-          <textarea id="cork-desc" rows="4" maxlength="500" placeholder="What is the idea, and why does it matter to you?" required></textarea></label>
         <label class="cork-field"><span class="cork-label">When &amp; where <span class="cork-opt">(optional)</span></span>
           <input type="text" id="cork-when" maxlength="200" placeholder="Thursdays after lunch, in the Grove..."></label>
         <label class="cork-field"><span class="cork-label">Who can people talk to? <span class="cork-opt">(optional)</span></span>
-          <input type="text" id="cork-contact" maxlength="120" placeholder="Me! Or ask a guide..."></label>
+          <input type="text" id="cork-contact" maxlength="120" placeholder="Ask a guide...">
+          <span class="cork-hint">You can just say "ask a guide" - you don't have to put your own name.</span></label>`;
+
+    host.innerHTML = `
+      <p class="pillar-prompt">${young
+        ? 'Have an idea for everyone? A club, a fun day, a way to help? Tell your guide about it.'
+        : 'Have an idea for the community - a group to start, a way to give back, an event to run? Fill it in and send it to your guide.'}</p>
+      <form class="cork-form" id="cork-form" novalidate>
+        <label class="cork-field"><span class="cork-label">${young ? 'What is your idea?' : 'Title'}</span>
+          <input type="text" id="cork-title" maxlength="120" placeholder="${young ? 'Chess club, art day...' : 'Chess group, park clean-up...'}" required></label>
+        <label class="cork-field"><span class="cork-label">${young ? 'Tell us more' : 'Tell us about it'}</span>
+          <textarea id="cork-desc" rows="4" maxlength="500" placeholder="${young ? 'What is your idea, and why would it be fun?' : 'What is the idea, and why does it matter to you?'}" required></textarea></label>
+        ${extraFields}
         <div class="cork-field">
-          <span class="cork-label">Poster <span class="cork-opt">(optional PDF)</span></span>
-          <input type="file" id="cork-poster" accept="application/pdf">
+          <span class="cork-label">${young ? 'Add a drawing' : 'Poster or drawing'} <span class="cork-opt">(optional)</span></span>
+          <input type="file" id="cork-poster" accept="application/pdf,image/*">
+          <span class="cork-hint">${young ? 'Draw your idea on paper, take a photo, and add it here.' : 'A PDF, or a photo of a drawing.'}</span>
           <p class="cork-poster-status" id="cork-poster-status" hidden></p>
           <div class="cork-poster-preview" id="cork-poster-preview" hidden></div>
         </div>
@@ -165,27 +232,27 @@ export async function wireRichCommunity(host, learnerId) {
       poster = null; previewEl.hidden = true; previewEl.innerHTML = '';
       const file = posterEl.files && posterEl.files[0];
       if (!file) { statusEl.hidden = true; return; }
-      statusEl.hidden = false; statusEl.textContent = 'Reading your poster...'; statusEl.className = 'cork-poster-status';
-      const res = await renderPosterFromPdf(file);
+      statusEl.hidden = false; statusEl.textContent = 'Reading your file...'; statusEl.className = 'cork-poster-status';
+      const res = await renderPosterFromFile(file);
       if (!res.ok) {
         statusEl.textContent = res.reason; statusEl.className = 'cork-poster-status is-error';
         posterEl.value = '';
         return;
       }
       poster = { image: res.image };
-      statusEl.textContent = 'Poster ready.'; statusEl.className = 'cork-poster-status is-ok';
+      statusEl.textContent = young ? 'Drawing ready.' : 'Poster ready.'; statusEl.className = 'cork-poster-status is-ok';
       previewEl.hidden = false;
-      previewEl.innerHTML = `<img class="cork-poster-thumb" src="${escapeAttr(res.image)}" alt="Poster preview">`;
+      previewEl.innerHTML = `<img class="cork-poster-thumb" src="${escapeAttr(res.image)}" alt="Preview">`;
     });
 
     host.querySelector('#cork-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const payload = {
         title: titleEl.value.trim(),
-        category: host.querySelector('#cork-cat').value || '',
+        category: host.querySelector('#cork-cat')?.value || '',
         body: descEl.value.trim(),
-        whenWhere: host.querySelector('#cork-when').value.trim(),
-        contact: host.querySelector('#cork-contact').value.trim(),
+        whenWhere: host.querySelector('#cork-when')?.value.trim() || '',
+        contact: host.querySelector('#cork-contact')?.value.trim() || '',
         posterImage: poster ? poster.image : '',
       };
       if (!payload.title || !payload.body) return;

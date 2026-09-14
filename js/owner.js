@@ -119,12 +119,22 @@ async function renderOwnerCommunity(onBack) {
           </div>`;
         }).join('') : '<p class="pillar-empty">Nothing waiting - all clear.</p>'}
         <h3 class="guide-section-title">On the board</h3>
-        ${board.length ? `<ul class="conn-board">${board.map((b) => `<li>${escapeHtml(b.body)}</li>`).join('')}</ul>` : '<p class="pillar-empty">Nothing posted yet.</p>'}
+        ${board.length ? board.map((b) => `
+          <div class="community-review-card">
+            ${b.title ? `<p class="community-review-title"><strong>${escapeHtml(b.title)}</strong></p>` : ''}
+            <p class="community-review-body">${escapeHtml(b.body)}</p>
+            <div class="community-review-actions"><button type="button" class="btn btn-text" data-takedown="${escapeHtml(b.id)}">Take down</button></div>
+          </div>`).join('') : '<p class="pillar-empty">Nothing posted yet.</p>'}
       </div>
     </div>`;
   screen.querySelector('[data-back]').addEventListener('click', () => onBack());
   screen.querySelectorAll('[data-post]').forEach((btn) => btn.addEventListener('click', async () => {
     await reviewCommunityPost(btn.dataset.post, { status: 'posted', stage: 'owner' });
+    await renderOwnerCommunity(onBack);
+  }));
+  // Take a posted note back down (Salus condition). Sets 'removed' so it leaves the board.
+  screen.querySelectorAll('[data-takedown]').forEach((btn) => btn.addEventListener('click', async () => {
+    await reviewCommunityPost(btn.dataset.takedown, { status: 'removed', stage: 'owner' });
     await renderOwnerCommunity(onBack);
   }));
 }

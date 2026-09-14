@@ -17,6 +17,7 @@ const POST_STATUS = {
   pending_owner: 'Your guide said yes - waiting for the school',
   posted: 'Posted to the board',
   denied: 'Not this time',
+  removed: 'Taken down',
 };
 
 // A gentle, trauma-informed empathy walkthrough. Perspective-taking + common
