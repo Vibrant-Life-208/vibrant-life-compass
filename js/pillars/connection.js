@@ -5,7 +5,7 @@
 // (Phase 2, pending its migration - still a coming-note here).
 
 import { shell, section, chips, emptyNote, escapeHtml, escapeAttr } from './_scaffold.js';
-import { getProfileStrengths, getViaCharacterStrengths, getProfileFoundations, setProfileFoundations,
+import { getStrengthRanking, getViaCharacterStrengths, getProfileFoundations, setProfileFoundations,
   submitCommunityPost, getMyCommunityPosts, getPostedBoard } from '../store.js';
 import { renderPartnerPage } from '../partner.js';
 import { isCommunityRich } from '../flags.js';
@@ -35,11 +35,16 @@ const COMPASSION_STEPS = [
 export async function renderConnection(learnerId) {
   const el = document.getElementById('connection-view');
   if (!el) return;
-  const [strengthIds, lexicon, foundations] = await Promise.all([
-    getProfileStrengths(learnerId),
+  const [ranking, lexicon, foundations] = await Promise.all([
+    getStrengthRanking(learnerId),
     getViaCharacterStrengths(),
     getProfileFoundations(learnerId),
   ]);
+  // Show the learner's top 5 strengths (Europa 2026-09-14). The VIA import stores the top 8, so 5
+  // is available; fall back to whatever top-3 set exists for a learner without the fuller ranking.
+  const strengthIds = (ranking && ranking.top8 && ranking.top8.length)
+    ? ranking.top8.slice(0, 5)
+    : ((ranking && ranking.top3) || []);
   const climb = (foundations && foundations.climb && typeof foundations.climb === 'object' && !Array.isArray(foundations.climb))
     ? foundations.climb : {};
   const labelOf = (id) => {
