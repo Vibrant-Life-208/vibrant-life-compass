@@ -153,3 +153,30 @@ limit 1;
 
 Remove it afterward with the owner "Take down" button, or `delete from community_posts where title = 'Pumpkin Farm';`.
 (Seed is a text note; attach the poster PDF through the flow if you want the image on it.)
+
+---
+
+## Second surface in this walk: Responsibilities v1 (added 2026-09-14)
+
+The same sitting can also walk **Responsibilities** (Creator Mindset), built dark behind `?resp=on`
+(compass main, sw v175). Full design + rationale: `docs/design/2026-09-14-responsibilities-v1-design-note.md`.
+
+**Access:** load `?resp=on` on the studio device, then Creator Mindset -> Responsibilities; give one
+a cadence (Daily / Weekdays / Weekly) and check the Calendar for the soft leaf. `?resp=off` to switch
+it back off.
+
+**Watch points — Jake (developmental):**
+- Does the **cadence** land for a Discovery (~8-11) child, or is Weekdays/Weekly too abstract (simpler
+  young cut needed)?
+- Does it feel like **ownership** ("mine to carry") or tip into **obligation** ("what I'm supposed to
+  do")?
+- Is the tend/leaf loop quietly satisfying without becoming a thing they chase?
+
+**Watch points — Salus (safety):**
+- Does "tended today?" ever read as a **test** they can fail? Watch for a wince on a day they did not
+  tend - it is designed as a non-event; verify that lands.
+- Does "Off" feel like a genuine, unpunished choice?
+- Confirm no count/streak/scoreboard leak anywhere (the Clabough non-negotiable).
+
+*Same gate as the board: conditions built, but neither seat clears it for a real child until the walk
+is watched. Both flags stay dark until then.*
