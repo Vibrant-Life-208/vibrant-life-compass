@@ -49,8 +49,26 @@ function canvasToPoster(canvas) {
 }
 
 // Scale so the canvas fits within BOTH the max width and max height (never upscales).
-function fitScale(w, h) {
+// Exported (with clampDims + posterKind) so the regression suite can test the real decision
+// functions in Node, not drift-prone copies. See scripts/board-regression.sh.
+export function fitScale(w, h) {
   return Math.min(1, POSTER_MAX_W / (w || POSTER_MAX_W), POSTER_MAX_H / (h || POSTER_MAX_H));
+}
+
+// The clamped output dimensions for a source of (w, h): fits within the caps, never upscales, never
+// below 1px. This is THE dimension-cap guard (memory-DoS). Pure; tested in Node.
+export function clampDims(w, h) {
+  const s = fitScale(w, h);
+  return [Math.max(1, Math.min(POSTER_MAX_W, Math.round(w * s))), Math.max(1, Math.min(POSTER_MAX_H, Math.round(h * s)))];
+}
+
+// The allowlist DECISION for a file's (name, type): 'svg' (rejected), 'pdf', 'image' (raster), or
+// 'other' (rejected). Pure; tested in Node. renderPosterFromFile routes on this.
+export function posterKind(name = '', type = '') {
+  if (/svg/i.test(type) || /\.svg$/i.test(name)) return 'svg';
+  if (type === 'application/pdf' || /\.pdf$/i.test(name)) return 'pdf';
+  if (RASTER_MIME_RE.test(type) || (!type && RASTER_EXT_RE.test(name))) return 'image';
+  return 'other';
 }
 
 async function renderPdfPoster(buf) {
@@ -95,10 +113,8 @@ async function renderImagePoster(file) {
     });
     const w = img.naturalWidth || POSTER_MAX_W;
     const h = img.naturalHeight || w;
-    const scale = fitScale(w, h);
     const canvas = document.createElement('canvas');
-    canvas.width = Math.max(1, Math.min(POSTER_MAX_W, Math.round(w * scale)));
-    canvas.height = Math.max(1, Math.min(POSTER_MAX_H, Math.round(h * scale)));
+    [canvas.width, canvas.height] = clampDims(w, h);
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // re-encode: strips EXIF/GPS + active content
@@ -113,21 +129,17 @@ async function renderImagePoster(file) {
 export async function renderPosterFromFile(file) {
   if (!file) return { ok: false, reason: 'No file chosen.' };
   if (file.size > MAX_FILE_BYTES) return { ok: false, reason: 'That file is too large (15MB max).' };
-  const name = file.name || '';
-  const type = file.type || '';
-  // Refuse SVG outright (the one "image" that can carry script), before any allowlist check.
-  if (/svg/i.test(type) || /\.svg$/i.test(name)) {
+  const kind = posterKind(file.name, file.type); // pure, Node-testable allowlist decision
+  if (kind === 'svg') {
+    // SVG is the one "image" that can carry script - refused outright.
     return { ok: false, reason: "SVG files aren't supported - please use a PDF, a photo, or a PNG." };
   }
-  const isPdf = type === 'application/pdf' || /\.pdf$/i.test(name);
-  if (isPdf) {
+  if (kind === 'pdf') {
     const buf = await file.arrayBuffer();
     const magic = new TextDecoder().decode(new Uint8Array(buf.slice(0, 5)));
     if (magic !== '%PDF-') return { ok: false, reason: 'That file is not a valid PDF.' };
     return renderPdfPoster(buf);
   }
-  // Raster only: a known raster MIME, or (when the browser gives no type) a raster extension.
-  const isImg = RASTER_MIME_RE.test(type) || (!type && RASTER_EXT_RE.test(name));
-  if (isImg) return renderImagePoster(file);
+  if (kind === 'image') return renderImagePoster(file);
   return { ok: false, reason: 'Please choose a PDF or a photo/PNG (a photo of a drawing works too).' };
 }

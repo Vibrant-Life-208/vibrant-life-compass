@@ -29,8 +29,9 @@ So "mostly verified" is never mistaken for "verified." Open, by design:
   OWN = PASS, D2 cannot delete ANOTHER's = PASS).
 - **Not verified:** two-guide RLS isolation (B3b/B6b/B11b - only one guide in test data); the real-photo
   EXIF + real-PDF upload spot-checks (Gate F); the live screen-reader read-through (Gate F).
-- **Runs once, not yet repeatable:** the RLS wall-walk + the upload harness are one-time; make them
-  regression checks re-run on any board-touching change (Gate H item 5).
+- **Repeatable now (Gate H item 5 DONE):** `scripts/board-regression.sh` (automated syntax + real-export
+  upload-guard tests) + the browser harness + the RLS walk; cadence in
+  `docs/design/community-board-regression.md`. Re-run before any board-touching lift.
 - **Fast-follows (post-lift):** "your idea is on the board" moment; family board explainer + changelog;
   portability (export/take your posts on leaving).
 
@@ -238,9 +239,11 @@ Minutes: `agents/meetings/2026/09/2026-09-15-community-board-fresh-eyes-strategi
 - [x] **4. Stated board intention** (Guinan) - an in-app line under the board prompt: *"A place to
       offer, not to perform. Every idea is received; none is ranked."* (Also belongs at the top of the
       family explainer, fast-follow #7.)
-- [ ] **5. Deferred-ledger + re-verification cadence** (Data) - ledger done (top of file). Still to
-      formalize: make the RLS wall-walk + upload harness **repeatable regression checks** re-run before
-      any board-touching lift.
+- [x] **5. Deferred-ledger + re-verification cadence** (Data) - DONE. Ledger at top of file. Repeatable
+      suite: `scripts/board-regression.sh` (Lane 1 syntax + Lane 2 upload-guard unit tests against the
+      REAL `poster.js` exports - `posterKind`/`safePosterSrc`/`clampDims`, 21/21 ALL-PASS) + the two
+      manual lanes (browser harness, RLS wall-walk). Triggers + cadence:
+      `docs/design/community-board-regression.md`. Re-run before any board-touching lift.
 
 **FAST-FOLLOWS (post-lift):**
 - [ ] 6. "Your idea is on the board" warm moment on approval (Ezri).
