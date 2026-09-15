@@ -114,3 +114,19 @@ export function isResponsibilities() {
     return localStorage.getItem(RESP_LS_KEY) === 'on';
   } catch (_) { return false; }
 }
+
+// Life Skills "growth" elevations (2026-09-14 fleet review): the skill-goal return loop
+// (what you've done / what you're noticing), the vision tether, and the doing-story - all
+// notice-never-score. Dark by default; opt in with ?lsgrow=on. Held dark for the consented
+// real-learner walk (Salus condition) and Naomi's Living-Seed drift-watch ("a door, never a bell").
+const LSGROW_LS_KEY = 'vlc_lsgrow';
+export function isLifeSkillsGrow() {
+  try {
+    const p = new URLSearchParams(location.search).get('lsgrow');
+    if (p === 'on' || p === 'off') {
+      localStorage.setItem(LSGROW_LS_KEY, p);
+      return p === 'on';
+    }
+    return localStorage.getItem(LSGROW_LS_KEY) === 'on';
+  } catch (_) { return false; }
+}

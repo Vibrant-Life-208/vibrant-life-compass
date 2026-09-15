@@ -13,8 +13,8 @@
 // Mindset pillar — are a category error to goal-shape and are NOT built here.)
 
 import { shell, section, emptyNote, escapeHtml, escapeAttr } from './_scaffold.js';
-import { getLearner, getProfileFoundations, setProfileFoundations } from '../store.js';
-import { isLifeSkillsCourse } from '../flags.js';
+import { getLearner, getProfileFoundations, setProfileFoundations, getProfileHorizons } from '../store.js';
+import { isLifeSkillsCourse, isLifeSkillsGrow } from '../flags.js';
 
 const SKILLS = {
   leadership: 'Leadership',
@@ -346,28 +346,57 @@ const WOOP_FIELDS = [
   { key: 'success', label: 'What it looks like when it is going well', hint: 'It is going well when…' },
 ];
 
-function skillGoalSection(activeLabel, woop) {
+// The "how it's going" return loop (dark ?lsgrow=on, 2026-09-14 fleet review). A living reflective
+// space the learner tends - NOT a dated log or a count (Naomi: a door, never a bell). Two halves:
+// what you did in the world (Kirk) + what you're noticing (Troi/Guinan: notice, never accomplish).
+const RETURN_FIELDS = [
+  { key: 'did', label: 'What have you done so far?', hint: 'A real thing you tried, out in the world...' },
+  { key: 'noticed', label: 'What are you noticing about yourself?', hint: 'Not a test - just what you notice...' },
+];
+
+function skillGoalSection(activeLabel, woop, opts) {
   if (!activeLabel) {
     return section('Your skill goal', emptyNote('Pick the life skill that matters most above, then break it into a goal here - one concrete step, a challenge to watch for, and what going well looks like.'));
   }
+  const grow = opts && opts.grow;
+  const visionLine = opts && opts.vision;
   const w = (woop && typeof woop === 'object' && !Array.isArray(woop)) ? woop : {};
   const fields = WOOP_FIELDS.map((f) => `
     <div class="pillar-woop-field">
       <label class="pillar-woop-label" for="ls-woop-${f.key}">${escapeHtml(f.label)}</label>
       <textarea id="ls-woop-${f.key}" class="pillar-woop-input" data-woop-key="${escapeAttr(f.key)}" rows="2" placeholder="${escapeAttr(f.hint)}">${escapeHtml(w[f.key] || '')}</textarea>
     </div>`).join('');
+  // Vision tether (Guinan/Ezri): the skill as a step toward who they pictured becoming.
+  const tether = (grow && visionLine)
+    ? `<p class="ls-vision-tether"><span class="ls-vision-k">A step toward</span> ${escapeHtml(visionLine)}</p>`
+    : '';
+  // Return loop (Jake's dip / Troi's mirror / Kirk's doing) - always optional, never counted.
+  const returnBlock = grow ? `
+    <div class="ls-return">
+      <p class="ls-return-head">How it's going</p>
+      <p class="ls-return-sub">Come back whenever - there's nothing due here. Just a place to notice.</p>
+      ${RETURN_FIELDS.map((f) => `
+        <div class="pillar-woop-field">
+          <label class="pillar-woop-label" for="ls-woop-${f.key}">${escapeHtml(f.label)}</label>
+          <textarea id="ls-woop-${f.key}" class="pillar-woop-input" data-woop-key="${escapeAttr(f.key)}" rows="2" placeholder="${escapeAttr(f.hint)}">${escapeHtml(w[f.key] || '')}</textarea>
+        </div>`).join('')}
+    </div>` : '';
   const body = `
     <p class="pillar-prompt">Your goal for <strong>${escapeHtml(activeLabel)}</strong> this year - a real, doable step, not the whole skill at once. Change any of it whenever you like; it grows as you do.</p>
-    ${fields}`;
+    ${tether}
+    ${fields}
+    ${returnBlock}`;
   return section('Your skill goal', body);
 }
 
 export async function renderLifeSkills(learnerId) {
   const el = document.getElementById('lifeskills-view');
   if (!el) return;
-  const [foundations, learner] = await Promise.all([
+  const grow = isLifeSkillsGrow();
+  const [foundations, learner, horizons] = await Promise.all([
     getProfileFoundations(learnerId),
     getLearner(learnerId),
+    grow ? getProfileHorizons(learnerId).catch(() => ({})) : Promise.resolve({}),
   ]);
   const climb = (foundations && foundations.climb && typeof foundations.climb === 'object' && !Array.isArray(foundations.climb))
     ? foundations.climb : {};
@@ -395,7 +424,8 @@ export async function renderLifeSkills(learnerId) {
     <p class="pillar-prompt">The rest are here whenever you want to explore them - one active at a time. Tap one to make it your focus.</p>
     <ul class="pillar-list ls-choose-list">${others.map(([k, label]) => `<li><button type="button" class="ls-choose" data-ls-choose="${escapeAttr(k)}">${escapeHtml(label)}</button></li>`).join('')}</ul>`);
 
-  const goalSection = skillGoalSection(activeLabel, activeWoop);
+  const vision = grow ? String((horizons && (horizons.within_1yr || horizons.beyond_5yr)) || '').trim() : '';
+  const goalSection = skillGoalSection(activeLabel, activeWoop, { grow, vision });
   // "Where to start" sits between the active skill and the goal editor, so its first step
   // flows straight into the goal. Flag-gated (dark) and only when a skill is active. The course set
   // + register are chosen from the learner's studio (Discovery gets its own course; see courseFor).
@@ -502,7 +532,9 @@ function wireSkillGoal(learnerId, foundations, climb) {
     // Per-skill: the goal is saved under the active skill, so each skill keeps its own.
     const active = climb.lifeSkill;
     const bySkill = { ...(climb.woopBySkill && typeof climb.woopBySkill === 'object' ? climb.woopBySkill : {}) };
-    if (active) bySkill[active] = woop;
+    // Merge (not replace) so the return-loop fields (did/noticed) and the goal fields coexist, and
+    // toggling the ?lsgrow flag never wipes fields not currently on screen.
+    if (active) bySkill[active] = { ...(bySkill[active] || {}), ...woop };
     const next = { ...foundations, climb: { ...climb, woopBySkill: bySkill } };
     try {
       await setProfileFoundations(learnerId, next);

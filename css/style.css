@@ -4718,6 +4718,13 @@ body.landscape-mountain {
 .pillar-woop-input { width: 100%; box-sizing: border-box; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.5rem 0.7rem; font: inherit; color: var(--text); resize: vertical; }
 .pillar-woop-input:focus { outline: none; border-color: var(--pc, var(--sage)); }
 
+/* Life Skills growth elevations (dark ?lsgrow=on): vision tether + return loop. */
+.ls-vision-tether { margin: 0 0 0.7rem; font-size: 0.85rem; color: var(--text-soft); background: var(--sage-pale, #e8efe5); border-radius: 8px; padding: 0.4rem 0.6rem; line-height: 1.4; }
+.ls-vision-k { font-weight: 600; color: var(--sage, #4a6741); margin-right: 0.25rem; }
+.ls-return { margin-top: 0.9rem; padding-top: 0.8rem; border-top: 1px solid var(--earth-pale, #e3ddd0); }
+.ls-return-head { margin: 0 0 0.2rem; font-weight: 600; color: var(--text); }
+.ls-return-sub { margin: 0 0 0.6rem; font-size: 0.8rem; font-style: italic; color: var(--text-muted); }
+
 /* Creator Mindset: Emotional Regulation tool cards (2026-07-27). */
 .pillar-tools { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.4rem; }
 .pillar-tool { background: #fff; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.55rem 0.75rem; }
