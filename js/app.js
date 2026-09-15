@@ -22,9 +22,9 @@ import { renderGrowthRecord } from './growth-record.js';
 import { renderPractice } from './practice.js';
 import { initModal, openOnboardingModal, openQuoteFlow } from './modals.js';
 import { shouldShowWelcome, showWelcomeScreen } from './welcome.js';
-import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, getOnboardingState, saveLearner, addNotification } from './store.js';
+import { getLearners, getYearQuote, getQuoteState, getYearTraits, setYearTraits, getSession, getPartnerNotificationCount, getNotifications, markNotificationRead, hasCompletedOnboarding, getOnboardingState, saveLearner, addNotification, getProfileFoundations } from './store.js';
 import { isNewToTribe } from './tribe-roster.js';
-import { isEnrolled } from './flags.js';
+import { isEnrolled, isLifeSkillsGrow } from './flags.js';
 import { renderAcademics } from './observatory/academics.js';
 import { PILLARS, renderPillar } from './pillars/index.js';
 import { renderObservatory } from './observatory/observatory-stack.js';
@@ -739,6 +739,17 @@ async function renderRoleView(role, learnerId) {
       list.innerHTML = '<p class="learners-empty">No learners assigned yet.</p>';
       return;
     }
+    // Guide present-state Life Skills window (dark ?lsgrow=on, 2026-09-14 review). A
+    // conversation-starter, NEVER a dashboard (Boothby): the chosen skill + goal only, present
+    // state, no switch-history, no metrics. Read-scope note (TCC): a guide can already open a
+    // learner's compass (which reads their foundations), so this exposes nothing new; and there is
+    // no churn/switch-history in the data to leak.
+    const grow = isLifeSkillsGrow();
+    const foundationsByLearner = {};
+    if (grow) {
+      const fs = await Promise.all(learners.map((l) => getProfileFoundations(l.id).catch(() => null)));
+      learners.forEach((l, i) => { foundationsByLearner[l.id] = fs[i]; });
+    }
     list.innerHTML = '';
     learners.forEach((l) => {
       const card = document.createElement('div');
@@ -750,6 +761,7 @@ async function renderRoleView(role, learnerId) {
           <span class="category-kind">${escapeHtml(l.studio)}</span>
         </div>
         <p class="category-goal">Open their compass to see year + session goals.</p>
+        ${grow ? guideLifeSkillWindow(foundationsByLearner[l.id], l.name) : ''}
         <label class="learner-newtribe">
           <input type="checkbox" data-newtribe="${escapeHtml(l.id)}" ${isNewToTribe(l) ? 'checked' : ''}>
           New to ${escapeHtml(studioNm)} this year
@@ -783,6 +795,26 @@ async function renderRoleView(role, learnerId) {
   if (role === 'parent') {
     import('./parent-view.js').then(m => m.renderParentView());
   }
+}
+
+// Guide present-state Life Skills window (dark ?lsgrow=on). Renders a learner's CURRENT chosen
+// life skill + goal as a conversation-starter - never a dashboard, no switch-history, no metrics
+// (Boothby's insistence, 2026-09-14 review). Empty string if nothing chosen yet.
+const GUIDE_SKILL_NAMES = { leadership: 'Leadership', entrepreneurship: 'Entrepreneurship', financial: 'Financial Literacy', wellness: 'Wellness' };
+function guideLifeSkillWindow(foundations, learnerName) {
+  const climb = (foundations && foundations.climb && typeof foundations.climb === 'object' && !Array.isArray(foundations.climb)) ? foundations.climb : {};
+  const skill = climb.lifeSkill;
+  const label = GUIDE_SKILL_NAMES[skill];
+  if (!label) return '';
+  const w = (climb.woopBySkill && climb.woopBySkill[skill]) || climb.woop || {};
+  const goal = (w && typeof w === 'object' ? (w.setup || '') : '').trim();
+  const first = String(learnerName || 'They').trim().split(/\s+/)[0] || 'They';
+  return `
+    <div class="guide-lifeskill">
+      <p class="guide-lifeskill-focus"><span class="guide-lifeskill-k">Focusing on</span> ${escapeHtml(label)}</p>
+      ${goal ? `<p class="guide-lifeskill-goal">&ldquo;${escapeHtml(goal)}&rdquo;</p>` : ''}
+      <p class="guide-lifeskill-hint">A conversation-starter - ask ${escapeHtml(first)} how it's going.</p>
+    </div>`;
 }
 
 // Community-idea review for the guide (v0.37). A roster learner's submission sits in

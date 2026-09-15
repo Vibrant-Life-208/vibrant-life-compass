@@ -3267,6 +3267,14 @@ body.landscape-mountain {
   margin: 0;
 }
 
+/* Guide present-state Life Skills window (dark ?lsgrow=on): a conversation-starter, not a
+   dashboard. Chosen skill + goal only, no metrics. */
+.guide-lifeskill { margin: 0.6rem 0 0; padding: 0.55rem 0.7rem; background: var(--sage-pale, #e8efe5); border-radius: 10px; }
+.guide-lifeskill-focus { margin: 0; color: var(--text); font-size: 0.9rem; }
+.guide-lifeskill-k { font-weight: 600; color: var(--sage, #4a6741); margin-right: 0.25rem; }
+.guide-lifeskill-goal { margin: 0.25rem 0 0; color: var(--text-soft); font-size: 0.88rem; font-style: italic; line-height: 1.4; }
+.guide-lifeskill-hint { margin: 0.3rem 0 0; color: var(--text-muted); font-size: 0.78rem; }
+
 .category-goal.empty {
   color: var(--text-muted);
   font-style: italic;
