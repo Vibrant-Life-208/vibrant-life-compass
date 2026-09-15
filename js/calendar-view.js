@@ -14,10 +14,10 @@
 // count, self-only): the year-note (one reflective line, encrypted at rest) and mark-a-day
 // presence (ISO dates). Visual conventions follow the Year Map (year-map.js) and sage/earth palette.
 
-import { getLearner, getGoals, getTasksForRange, saveLearner, getProfileFoundations } from './store.js';
+import { getLearner, getGoals, getTasksForRange, saveLearner, getProfileFoundations, setProfileFoundations } from './store.js';
 import { getPlanningCalendar, getStudioName, getSchoolEvents } from './studios.js';
 import { isResponsibilities } from './flags.js';
-import { normalizeResponsibilities, respActiveOn } from './responsibilities.js';
+import { normalizeResponsibilities, respActiveOn, CADENCES } from './responsibilities.js';
 import { taskColorStyle } from './wheel.js';
 import { encryptField, decryptField } from './crypto.js';
 
@@ -91,10 +91,11 @@ export async function renderCalendarView(learnerId) {
   // Responsibilities as a soft calendar presence (dark ?resp=on): a rhythm, not a deadline. Only
   // those with a cadence appear; a per-day leaf marks "this is yours today", filled if tended.
   let responsibilities = [];
+  let respFoundations = null;
   if (isResponsibilities()) {
     try {
-      const f = await getProfileFoundations(learnerId);
-      responsibilities = normalizeResponsibilities((f && f.climb) ? f.climb : {}).filter((r) => r.cadence !== 'off');
+      respFoundations = await getProfileFoundations(learnerId);
+      responsibilities = normalizeResponsibilities((respFoundations && respFoundations.climb) ? respFoundations.climb : {}).filter((r) => r.cadence !== 'off');
     } catch (e) { responsibilities = []; }
   }
 
@@ -150,6 +151,57 @@ export async function renderCalendarView(learnerId) {
     markHint.className = 'calendar-mark-hint';
     markHint.textContent = 'Tap a day you showed up - a quiet mark, just for you. No streaks, nothing counted.';
     host.appendChild(markHint);
+  }
+
+  // Add a responsibility right from the calendar (dark ?resp=on): create one with a cadence here and
+  // it shows as a yellow tab on its days. Tending + removing still live on the Creator pillar.
+  if (isResponsibilities()) {
+    const addWrap = document.createElement('div');
+    addWrap.className = 'cal-add-resp';
+    addWrap.innerHTML = `
+      <button type="button" class="btn btn-text" id="cal-add-resp-btn">+ Add a responsibility</button>
+      <div id="cal-add-resp-form" class="cal-add-resp-form" hidden>
+        <input type="text" id="cal-resp-text" class="pillar-resp-input" placeholder="Something you look after - e.g. clean the litter box">
+        <div class="resp-cadence">${CADENCES.filter((c) => c.id !== 'off').map((c) => `<button type="button" class="resp-chip" data-cadd="${c.id}">${escapeHtml(c.label)}</button>`).join('')}</div>
+        <div class="resp-weekdays" id="cal-resp-weekdays" hidden>${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((n, wd) => `<button type="button" class="resp-wd" data-cwd="${wd}" title="${n}" aria-label="${n}">${n[0]}</button>`).join('')}</div>
+        <button type="button" class="btn btn-primary" id="cal-resp-save" disabled>Add to calendar</button>
+      </div>`;
+    host.appendChild(addWrap);
+
+    let pendingCadence = null;
+    let pendingWeekday = new Date().getDay();
+    const textEl = addWrap.querySelector('#cal-resp-text');
+    const saveEl = addWrap.querySelector('#cal-resp-save');
+    const wdWrap = addWrap.querySelector('#cal-resp-weekdays');
+    const refresh = () => { saveEl.disabled = !(textEl.value.trim() && pendingCadence); };
+    addWrap.querySelector('#cal-add-resp-btn').addEventListener('click', () => {
+      const form = addWrap.querySelector('#cal-add-resp-form');
+      form.hidden = !form.hidden;
+      if (!form.hidden) textEl.focus();
+    });
+    textEl.addEventListener('input', refresh);
+    addWrap.querySelectorAll('[data-cadd]').forEach((b) => b.addEventListener('click', () => {
+      pendingCadence = b.dataset.cadd;
+      addWrap.querySelectorAll('[data-cadd]').forEach((x) => x.classList.toggle('selected', x === b));
+      wdWrap.hidden = pendingCadence !== 'weekly';
+      if (pendingCadence === 'weekly') addWrap.querySelectorAll('[data-cwd]').forEach((x) => x.classList.toggle('selected', Number(x.dataset.cwd) === pendingWeekday));
+      refresh();
+    }));
+    addWrap.querySelectorAll('[data-cwd]').forEach((b) => b.addEventListener('click', () => {
+      pendingWeekday = Number(b.dataset.cwd);
+      addWrap.querySelectorAll('[data-cwd]').forEach((x) => x.classList.toggle('selected', x === b));
+    }));
+    saveEl.addEventListener('click', async () => {
+      const text = textEl.value.trim();
+      if (!text || !pendingCadence) return;
+      const climb = (respFoundations && respFoundations.climb && typeof respFoundations.climb === 'object' && !Array.isArray(respFoundations.climb)) ? respFoundations.climb : {};
+      const list = normalizeResponsibilities(climb);
+      list.push({ text, cadence: pendingCadence, weekday: pendingCadence === 'weekly' ? pendingWeekday : null, tended: [] });
+      const next = { ...(respFoundations || {}), climb: { ...climb, responsibilities: list } };
+      saveEl.disabled = true; saveEl.textContent = 'Adding...';
+      try { await setProfileFoundations(learnerId, next); } catch (e) { console.warn('add responsibility:', e); }
+      await renderCalendarView(learnerId);
+    });
   }
 
   const ctx = { ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay, presenceSet, responsibilities };

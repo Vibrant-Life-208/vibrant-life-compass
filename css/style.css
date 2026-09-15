@@ -4298,6 +4298,10 @@ body.landscape-mountain {
 /* Mark-a-day presence (Vic, MAC 2026-08-04): a quiet mirror, never a trophy case. A soft dot
    top-right on marked days, a one-breath bloom on the tap, then it settles. No count anywhere. */
 .calendar-mark-hint { margin: -0.5rem 0 1.25rem; font-size: 0.8rem; font-style: italic; color: var(--text-muted); }
+/* Add a responsibility right from the calendar (dark ?resp=on). */
+.cal-add-resp { margin: -0.5rem 0 1.25rem; }
+.cal-add-resp-form { display: flex; flex-direction: column; gap: 0.55rem; align-items: flex-start; background: #fff; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 12px; padding: 0.8rem; margin-top: 0.4rem; }
+.cal-add-resp-form .pillar-resp-input { width: 100%; box-sizing: border-box; }
 .cal-cell[data-iso] { cursor: pointer; }
 .cal-cell.is-present::after {
   content: ''; position: absolute; top: 3px; right: 3px;
