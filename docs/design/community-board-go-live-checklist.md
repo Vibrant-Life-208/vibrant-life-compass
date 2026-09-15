@@ -101,9 +101,20 @@ carry-in)".
 
 ## Gate D - Counsel question (owner: Europa + counsel)
 
-- [ ] Route the child-publication-consent question to the existing teen-sandbox age-verify counsel
-      thread: *does a minor publishing an image to an all-families board require guardian consent?*
-      (Tutela raised this; same §7-shape crux.) Get a written answer before lift.
+Packet ready: **`community-board-gate-d-counsel-packet.md`** - a narrow ADDENDUM to the existing Vibrant
+Life child-data engagement (Growth Record brief + teen-sandbox age-verification thread), so it routes
+to the **same counsel**, not a fresh engagement.
+
+- [ ] Send the packet to counsel. Core question: *when an under-13 learner PUBLISHES self-authored
+      content + an image to a board visible to all enrolled families, does it require verifiable
+      parental consent, or does the school-consent lane cover it?* (Publication/disclosure, distinct
+      from the Growth Record's private model.)
+- [ ] Gating answers before lift: **Q1** (consent lane) and **Q3** (image likeness / third-party
+      children). Then Q2 (is moderation load-bearing), Q4 (FERPA in/out), Q5 (contact field for the
+      under-13 register).
+- [ ] Get the answer **in writing**; record the consent lane + any required consent-form / contract
+      language. If direct verified consent is required, that becomes its own build (VPC, both
+      directions) before lift.
 
 ---
 
