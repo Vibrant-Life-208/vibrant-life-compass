@@ -7,10 +7,10 @@
 
 import { shell, section, emptyNote, goalCard, escapeHtml, escapeAttr } from './_scaffold.js';
 import { getLearner, getGoals, getProfileFoundations, setProfileFoundations, saveGoal } from '../store.js';
-import { getCategoriesForStudio } from '../studios.js';
+import { getCategoriesForStudio, getStudioName } from '../studios.js';
 import { getBooks, addBook, setBookmark } from '../books.js';
-import { openGoalSetupModal, openYearGoalModal } from '../modals.js';
-import { isCurrentWheelBuild } from '../thresholds.js';
+import { openGoalSetupModal, openYearGoalModal, openThresholdsModal } from '../modals.js';
+import { isCurrentWheelBuild, getThresholds } from '../thresholds.js';
 
 export async function renderAcademicsPillar(learnerId) {
   const el = document.getElementById('academics-view');
@@ -79,6 +79,37 @@ export async function renderAcademicsPillar(learnerId) {
   const climb = (foundations && foundations.climb && typeof foundations.climb === 'object' && !Array.isArray(foundations.climb))
     ? foundations.climb : {};
 
+  // "Where you're headed this year" (captain 2026-09-14): the learner's programs + baselines to
+  // decide what the end of the year looks like, and - for a learner leveling up (pitchTargetStudio
+  // set) - the next studio's requirements up front, since those ARE the year-end program targets.
+  const progList = [];
+  if (climb.math && (climb.math.program || climb.math.baseline)) progList.push({ subj: 'Math', program: climb.math.program, baseline: climb.math.baseline });
+  if (climb.la && (climb.la.program || climb.la.baseline)) progList.push({ subj: 'Language Arts', program: climb.la.program, baseline: climb.la.baseline });
+  if (climb.reading && climb.reading.current) progList.push({ subj: 'Reading', program: climb.reading.current, baseline: '' });
+  const programRows = progList.map((p) => `<div class="acad-headed-row">
+      <span class="acad-headed-subj">${escapeHtml(p.subj)}</span>${p.program ? ` <span class="acad-headed-prog">${escapeHtml(p.program)}</span>` : ''}
+      ${p.baseline ? `<p class="acad-headed-base">Where you started: ${escapeHtml(p.baseline)}</p>` : ''}
+    </div>`).join('');
+
+  const levelingUp = Boolean(learner?.pitchTargetStudio);
+  let crossingBlock = '';
+  if (levelingUp) {
+    const t = getThresholds(learner.pitchTargetStudio);
+    const targetName = getStudioName(learner.pitchTargetStudio) || learner.pitchTargetStudio;
+    const skills = (t && Array.isArray(t.skills)) ? t.skills : [];
+    crossingBlock = `<div class="acad-crossing">
+      <p class="acad-crossing-head">You're aiming for <strong>${escapeHtml(targetName)}</strong>. To move up, here's what it takes:</p>
+      ${skills.length ? `<ul class="acad-crossing-list">${skills.map((s) => `<li>${escapeHtml(s.name)}</li>`).join('')}</ul>` : ''}
+      <button type="button" class="btn btn-text" id="acad-see-thresholds">See the full requirements</button>
+    </div>`;
+  }
+  const headedSection = (programRows || crossingBlock)
+    ? section("Where you're headed this year", `
+        <p class="pillar-prompt">Look at your programs and decide what the end of the year looks like${levelingUp ? ", and what it takes to move up" : ''} - then set your goals below.</p>
+        ${programRows}
+        ${crossingBlock}`)
+    : '';
+
   const readingSection = section('Deep reading', `
     <p class="pillar-prompt">A book that challenges you - and a place to think on paper about it. Choose one at a time; a book can change you, so the choice matters.</p>
     <div id="acad-book"></div>
@@ -93,8 +124,12 @@ export async function renderAcademicsPillar(learnerId) {
 
   el.innerHTML = shell(
     { color: 'academics', title: 'Academics', subtitle: 'The tools you build for understanding the world - built, not given.' },
-    [...subjectsBlock, readingSection, writingSection],
+    [headedSection, ...subjectsBlock, readingSection, writingSection].filter(Boolean),
   );
+
+  el.querySelector('#acad-see-thresholds')?.addEventListener('click', () => {
+    if (learner?.pitchTargetStudio) openThresholdsModal(learner.pitchTargetStudio, learner);
+  });
 
   el.querySelectorAll('[data-subject-goal]').forEach((btn) => btn.addEventListener('click', () => {
     const cat = coreCats.find((c) => c.id === btn.dataset.subjectGoal);

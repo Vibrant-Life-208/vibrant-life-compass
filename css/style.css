@@ -4765,6 +4765,14 @@ body.landscape-mountain {
 /* Academics: deep reading (book + journal + wishlist) + creative writing (2026-07-27). */
 .pillar-subhead { margin: 1rem 0 0.4rem; font-size: 0.92rem; font-weight: 600; color: var(--text); }
 .acad-goal-actions { margin-top: 0.4rem; display: flex; justify-content: flex-start; }
+/* "Where you're headed this year": programs + baselines + next-studio requirements. */
+.acad-headed-row { margin: 0 0 0.5rem; }
+.acad-headed-subj { font-weight: 600; color: var(--text); }
+.acad-headed-prog { display: inline-block; background: var(--sage-pale, #e8efe5); color: var(--sage, #4a6741); border-radius: 999px; padding: 0.1rem 0.5rem; font-size: 0.82rem; }
+.acad-headed-base { margin: 0.2rem 0 0; font-size: 0.82rem; color: var(--text-soft); font-style: italic; }
+.acad-crossing { margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid var(--earth-pale, #e3ddd0); }
+.acad-crossing-head { margin: 0 0 0.35rem; color: var(--text); }
+.acad-crossing-list { margin: 0 0 0.4rem; padding-left: 1.1rem; color: var(--text-soft); line-height: 1.5; font-size: 0.9rem; }
 .creator-goal-row { margin-bottom: 0.7rem; }
 .creator-add-goal { margin-top: 0.5rem; }
 .creator-cat-choices { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
