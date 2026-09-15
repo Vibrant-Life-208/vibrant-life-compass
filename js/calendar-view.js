@@ -152,18 +152,44 @@ export async function renderCalendarView(learnerId) {
     host.appendChild(markHint);
   }
 
+  const ctx = { ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay, presenceSet, responsibilities };
+  const cycleFirst = new Date(yearStart.getFullYear(), yearStart.getMonth(), 1);
+  const lastMonth = new Date(yearEnd.getFullYear(), yearEnd.getMonth(), 1);
+
+  // A big "This month" calendar at the top (captain 2026-09-14) so today's tasks, school events,
+  // and responsibility leaves are easy to see. Defaults to the month holding today; if today is
+  // outside the cycle (e.g. summer), it clamps to the nearest cycle month. The whole-year grid
+  // stays below for the overview.
+  const nowM = new Date();
+  let heroY = nowM.getFullYear();
+  let heroMo = nowM.getMonth();
+  const heroFirst = new Date(heroY, heroMo, 1);
+  if (heroFirst < cycleFirst) { heroY = cycleFirst.getFullYear(); heroMo = cycleFirst.getMonth(); }
+  else if (heroFirst > lastMonth) { heroY = lastMonth.getFullYear(); heroMo = lastMonth.getMonth(); }
+
+  const heroHead = document.createElement('p');
+  heroHead.className = 'cal-section-head';
+  heroHead.textContent = 'This month';
+  host.appendChild(heroHead);
+  const heroWrap = document.createElement('div');
+  heroWrap.className = 'calendar-hero';
+  const heroMonth = buildMonth(heroY, heroMo, ctx);
+  heroMonth.classList.add('cal-month--hero');
+  heroWrap.appendChild(heroMonth);
+  host.appendChild(heroWrap);
+
+  const yearHead = document.createElement('p');
+  yearHead.className = 'cal-section-head';
+  yearHead.textContent = 'The whole year';
+  host.appendChild(yearHead);
+
   // Month grids from the cycle's first month through its last.
   const monthsWrap = document.createElement('div');
   monthsWrap.className = 'calendar-months';
 
   let cursor = new Date(yearStart.getFullYear(), yearStart.getMonth(), 1);
-  const lastMonth = new Date(yearEnd.getFullYear(), yearEnd.getMonth(), 1);
   while (cursor <= lastMonth) {
-    monthsWrap.appendChild(
-      buildMonth(cursor.getFullYear(), cursor.getMonth(), {
-        ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay, presenceSet, responsibilities,
-      }),
-    );
+    monthsWrap.appendChild(buildMonth(cursor.getFullYear(), cursor.getMonth(), ctx));
     cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
   }
   host.appendChild(monthsWrap);
@@ -172,7 +198,7 @@ export async function renderCalendarView(learnerId) {
   // blank cells are inert). Reversible; persists the sorted date set. A brief "just-marked" bloom
   // plays once on marking (CSS), then settles to the quiet persistent dot.
   if (learner) {
-    monthsWrap.addEventListener('click', async (e) => {
+    const onPresenceTap = async (e) => {
       const cell = e.target.closest('.cal-cell');
       if (!cell || !cell.dataset.iso) return;
       const iso = cell.dataset.iso;
@@ -187,7 +213,9 @@ export async function renderCalendarView(learnerId) {
       const next = Array.from(presenceSet).sort();
       learner.presenceDays = next;
       try { await saveLearner({ id: learner.id, presenceDays: next }); } catch (err) { console.warn('presence save:', err); }
-    });
+    };
+    monthsWrap.addEventListener('click', onPresenceTap);
+    heroWrap.addEventListener('click', onPresenceTap); // the big "This month" is tappable too
   }
 
   // Per-session goal summary (session goals grouped under their session number).

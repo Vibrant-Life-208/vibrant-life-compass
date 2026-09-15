@@ -4229,6 +4229,21 @@ body.landscape-mountain {
   border-radius: var(--radius); box-shadow: var(--shadow); padding: 0.75rem;
 }
 .cal-month-title { font-size: 0.95rem; font-weight: 600; color: var(--sage); margin: 0 0 0.5rem; text-align: center; }
+
+/* Big "This month" hero + section heads (captain 2026-09-14) - today's tasks/events/leaves large
+   and readable at the top, the whole-year grid still below. */
+.cal-section-head { margin: 0.6rem 0 0.45rem; font-weight: 600; color: var(--text); font-size: 0.95rem; }
+.calendar-hero { margin-bottom: 1.4rem; }
+.cal-month--hero { max-width: 560px; margin: 0 auto; padding: 1rem 1.1rem; }
+.cal-month--hero .cal-month-title { font-size: 1.25rem; margin-bottom: 0.7rem; }
+.cal-month--hero .cal-grid { grid-auto-rows: 76px; gap: 5px; }
+.cal-month--hero .cal-dow { font-size: 0.78rem; }
+.cal-month--hero .cal-cell { font-size: 0.85rem; padding: 3px 4px; }
+.cal-month--hero .cal-num { font-size: 0.95rem; }
+.cal-month--hero .cal-school-event { font-size: 0.72rem; -webkit-line-clamp: 3; }
+.cal-month--hero .cal-task-dot { width: 8px; height: 8px; }
+.cal-month--hero .cal-resp { font-size: 15px; bottom: 4px; }
+.cal-month--hero .cal-session-tag { font-size: 0.65rem; }
 /* Fixed row height so every week reads the same across all months, regardless of how many
    school-event labels a month carries. Row 1 (the weekday headers) stays auto; the day rows
    below are a fixed height that fits a date + a two-line event label (2026-09-10 fix: the old
