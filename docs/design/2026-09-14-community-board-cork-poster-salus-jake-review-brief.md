@@ -91,8 +91,51 @@ The open developmental questions on a poster-upload surface reaching an 8-11 chi
   imagery, or do you require an added guardrail (report/remove, guide guidance, contact-field
   handling) before flag-on?
 
+## Ship-blockers from the fresh 8-agent review (2026-09-14)
+
+A second, deliberately fresh panel (Tutela, La'an, Riles O'Berk, Pervius, Tasha, Neelix, Kes, Winona -
+none of them prior board reviewers) reviewed this surface and returned a clear read: **NOT YET set up
+for success on the upload + contact surfaces.** The cork look and the richer form for older tiers are
+strong; the child-upload path is not. Three ship-blockers must clear before ANY lift - these are the
+hard-to-reverse pieces that make this board different from the surfaces lifted live on 2026-09-14.
+Minutes: `agents/meetings/2026/09/2026-09-14-community-board-upload-safety-fresh-review.md`.
+
+1. **Upload hardening, verified** (La'an + Riles + Tutela - convergent signal). Allowlist PDF + raster
+   image types only; re-encode EVERY image through canvas (not just PDFs) to strip **EXIF/GPS** (a
+   child's home coordinates can ride inside a photographed poster) and to kill the **SVG-script**
+   vector; render the stored data URL only via `<img>`, never as markup / an SVG sink; put a page +
+   time budget on pdf.js so a large file cannot hang a young learner's device. Deliverable = a
+   **passing test** (GPS photo -> no coordinates in the stored artifact; SVG -> rejected or
+   rasterized), not a written intention. "Code configured is not code confirmed" (Tutela) - walk the
+   wall, including the RLS on the poster column at every interim state.
+2. **Contact-field restructure** (Tasha + Neelix). The free-text "who can people talk to?" box
+   publishes a child's phone / address / another child's name to a board every family sees. Do not
+   delete it - default it to **"Ask your guide"** so the safe path is the default path; discourage raw
+   PII; give guides explicit review guidance (strip phone, address, other kids' names). Keep the
+   warmth, route the connection through a grown-up.
+3. **Report/remove-with-a-path-back** (Winona). A poster can clear both human gates and still turn out
+   to harm someone once public. Build a take-down path - and it cannot be an exile button: a child
+   whose poster comes down needs a **non-shaming route back** into the community. Prevention (the guide
+   gate) and repair (report/remove) travel together.
+
+**Also owed** (carried / elevations): Jake's consented real-learner walk (the design read does NOT
+discharge it); the a11y pass + a visually *quiet* poster field with the learner's caption as required
+alt text (Pervius); the counsel question - does a minor publishing an image to an all-families board
+need guardian consent? (Tutela, route to the age-verify counsel thread); and a scale-watch note (Kes) -
+the human moderation wall holds at ~15 families and thins as it grows.
+
+**RESOLVED (captain, 2026-09-14): posting to the board is COMPLETELY guide-gated.** Nothing a learner
+submits - text, fields, or poster, at any tier including Discovery (8-11) - reaches the board without a
+guide actively approving it. This settles the gate-vs-cut split in favour of Neelix's position (gate,
+don't cut) and extends it to the whole surface: the guide is the wall for every post, not just young
+posters. Kes's concern folds in as the scale-watch (the guide wall must not thin into a rubber stamp
+as families grow) and the guide-review guidance in blocker 2 (guides actively read the poster + contact
+field, not skim). The upload-hardening blocker (1) still stands regardless - a guide approving a poster
+does not strip EXIF or neutralize an SVG; the machine wall and the human wall are both required.
+
 Turning the feature on is a one-line flag flip (`isCommunityRich` -> default-on, mirroring the
-Life Skills lift). It should not flip until both seats clear and migration v0.39 is applied.
+Life Skills lift). It should not flip until the three ship-blockers clear, both seats plus the fresh
+panel's conditions are met, the real-learner walk is watched, and migration v0.39 is applied.
 
 *The story belongs to the person living it; we do not clear a surface for a child until we have
 watched a child meet it.*
