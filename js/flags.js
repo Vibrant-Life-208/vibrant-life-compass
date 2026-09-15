@@ -101,8 +101,9 @@ export function isCommunityRich() {
 }
 
 // Responsibilities v1 (Creator Mindset): cadence + soft calendar presence + private tending
-// (Europa 2026-09-14). Dark by default; opt in with ?resp=on, remembered in localStorage. Held
-// dark until the Jake/Salus walk (child-facing "did you tend it" surface; notice-never-score).
+// (Europa 2026-09-14). LIVE FOR EVERYONE as of 2026-09-14 by captain override of the Jake/Salus
+// walk gate (the walk still happens next week, but as a review of a live surface, not a ship gate).
+// Default ON; opt OUT with ?resp=off, remembered in localStorage. (notice-never-score throughout.)
 const RESP_LS_KEY = 'vlc_resp';
 export function isResponsibilities() {
   try {
@@ -111,8 +112,8 @@ export function isResponsibilities() {
       localStorage.setItem(RESP_LS_KEY, p);
       return p === 'on';
     }
-    return localStorage.getItem(RESP_LS_KEY) === 'on';
-  } catch (_) { return false; }
+    return localStorage.getItem(RESP_LS_KEY) !== 'off';
+  } catch (_) { return true; }
 }
 
 // Life Skills "growth" elevations (2026-09-14 fleet review): the skill-goal return loop
