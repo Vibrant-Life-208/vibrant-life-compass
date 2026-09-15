@@ -231,16 +231,18 @@ guide-facing, but it is about a learner's data, so it belongs in the same consen
 
 ## Fourth surface in this walk: Academics / goal-setting changes (added 2026-09-14)
 
-**These shipped LIVE, not dark** (sw v185) - no flag needed. They are significant child-facing
+**These shipped LIVE, not dark** (sw v186) - no flag needed. They are significant child-facing
 changes to the goal-setting flow, so they are worth *watching* with the real learner in the same
 sitting even though they are already on. What changed:
 
 1. **Inline "Set a goal" / "Edit goal"** on Academics (per subject) and Creator (per maker goal) -
    opens the SAME rich year-goal flow the Compass wheel uses: a year goal broken in half (halfway =
    End of Session 3), quarter + Session-1 milestones, and weekly bite-size steps.
-2. **"Where you're headed this year"** block at the top of Academics - the learner's programs +
-   baselines (to decide the year-end target), and, for a learner leveling up (`pitchTargetStudio`
-   set only), the next studio's requirements up front.
+2. **Year tools with each subject** (not a top block) - each subject now carries its OWN program +
+   baseline (to decide that subject's year-end target) and, for a learner leveling up
+   (`pitchTargetStudio` set only), the next-studio requirement(s) that belong to that subject
+   (Master Khan -> Math, Finish Lexia/spelling/typing -> Reading, etc.) - inline, right above that
+   subject's goal + Set-a-goal button. The full cross-studio requirements list still lives on North.
 3. **Auto-schedule on goal save** - the moment a goal is saved, its milestones + weekly steps become
    dated tasks on the **Calendar** and **task list** (idempotent; keeps any rearrangement/check-offs).
 
@@ -248,9 +250,10 @@ sitting even though they are already on. What changed:
 saving, check the **Calendar** (big "This month") and the **task list** for the dated steps + milestones.
 
 **Watch points - Jake (developmental):** does the 9-stage goal breakdown (baseline -> halfway ->
-milestones -> weekly steps) feel doable or overwhelming for this learner? Does "Where you're headed"
-*ground* the year-end target (helpful), or does the wall of program targets feel like pressure? Does a
-suddenly-full calendar after saving one goal energize or overwhelm?
+milestones -> weekly steps) feel doable or overwhelming for this learner? Does the per-subject program
++ requirement *ground* that subject's year-end target (helpful), or does seeing "To move up:
+[requirement]" on a subject feel like pressure? Does a suddenly-full calendar after saving one goal
+energize or overwhelm?
 
 **Watch points - Salus (safety):** for a leveling-up learner, do the next-studio requirements read as
 an *invitation* or as a *bar they're failing*? Watch for any wince at the requirements list. The
