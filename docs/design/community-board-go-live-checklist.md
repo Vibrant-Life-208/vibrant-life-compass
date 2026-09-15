@@ -128,14 +128,16 @@ Full audit: **`community-board-gate-e-a11y-audit.md`** (Parts 1-3 + sign-off). S
       Title/description/category/when-where were already properly labeled.
 - [x] **Quiet-poster ordering already met** - the poster field is the LAST field (title + description
       first); no change needed.
-- [ ] **Rendered-surface checks (Pervius runs):** contrast of muted small text (`.cork-hint`/`.cork-opt`
-      /`.cork-report`), touch targets (esp. `.cork-report`, currently ~12px), SR read-throughs of form +
-      board + owner UI, focus order. Reduced-motion is already covered for `.cork-note`.
-- [ ] **Judgment calls:** (a) report-link touch target vs. its intentionally-discreet design (Salus/
-      Neelix) - resize to >=24px without making it loud, or take the 2.5.8 inline exception; (b)
-      **caption-as-alt-text is NOT built** - posted poster `alt` is title-derived; decide build-now vs
-      fast-follow.
-- [ ] Pervius signs (compliance verdict + adoption note) OR names what to fix first.
+- [x] **Rendered-surface fixes applied (Pervius, 2026-09-15, sw v205):** contrast FAIL (muted #8a8a8a
+      = 3.0-3.4:1) fixed -> functional board text now `--text-soft` #5a5a5a (6.1-6.8:1); `.cork-report`
+      touch target FAIL (~12px) fixed -> >=24px tap area via padding, visual weight unchanged.
+      Reduced-motion already covered for `.cork-note`.
+- [x] **Judgment calls resolved:** (a) report-target tension resolved by separating tap-area from
+      prominence (bigger reach, same small quiet link); (b) caption-as-alt-text = named **fast-follow**,
+      NOT a lift-blocker (title-derived alt already meets the AA floor).
+- [ ] **CONDITION (fold into Gate F):** live **screen-reader read-through** with a real AT user (form +
+      board + owner UI announce; focus visible/ordered; focus not lost on the report "Thank you"). Then
+      Pervius's sign-off is complete. Audit: `community-board-gate-e-a11y-audit.md`.
 
 ---
 
@@ -170,8 +172,16 @@ synthetic harness couldn't, on the actual file:
       real PDF; the PDF path uses pdf.js, whose worker loads same-origin, so CSP should be fine - but
       confirm live). It should render its first page as a downscaled JPEG with no error.
 
-- [ ] Jake + Salus sign the walk (memory / decision log) OR name what to change first. If both security
-      spot-checks pass, Gate C also signs off here.
+### Accessibility read-through (Gate E carry-in - Pervius's sign-off condition)
+
+- [ ] **Screen-reader read-through** with a real AT user (VoiceOver/NVDA): every form field + hint
+      announces a name; the poster status announces on change (`aria-live`); each board note reads
+      title -> body -> meta; focus is visible and ordered; focus is not lost when the report "Thank
+      you" replaces the button. (Pervius fixed the measurable contrast + touch-target items in code;
+      this lived read-through completes his sign-off.)
+
+- [ ] Jake + Salus sign the walk (memory / decision log) OR name what to change first. If the security
+      spot-checks AND the screen-reader read-through pass, **Gate C and Gate E also sign off here.**
 
 ---
 

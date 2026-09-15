@@ -4846,8 +4846,10 @@ body.landscape-mountain {
 }
 .cork-field { display: flex; flex-direction: column; gap: 0.25rem; }
 .cork-label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
-.cork-opt { font-weight: 400; color: var(--text-muted); font-size: 0.8rem; }
-.cork-hint { font-size: 0.78rem; color: var(--text-muted); font-style: italic; margin-top: 0.15rem; }
+/* Functional board text uses --text-soft (#5a5a5a ~6.1:1 on cream), not --text-muted (#8a8a8a ~3.0:1)
+   which fails WCAG 1.4.3 AA for normal-size text. (Pervius, Gate E, 2026-09-15.) */
+.cork-opt { font-weight: 400; color: var(--text-soft); font-size: 0.8rem; }
+.cork-hint { font-size: 0.78rem; color: var(--text-soft); font-style: italic; margin-top: 0.15rem; }
 /* Contact field (blocker #2): safe-by-default choice + gentle PII nudge. */
 .cork-contact-field { border: 0; padding: 0; margin: 0; }
 .cork-contact-field legend { padding: 0; }
@@ -4861,7 +4863,10 @@ body.landscape-mountain {
 .community-review-flag-tag { font-size: 0.72rem; font-weight: 600; color: #fff; background: #c4783a; border-radius: 999px; padding: 0.05rem 0.45rem; margin-left: 0.35rem; white-space: nowrap; }
 /* Report affordance on a board note (blocker #3). */
 .cork-report-wrap { margin-top: 0.5rem; }
-.cork-report { background: none; border: 0; padding: 0; font-size: 0.76rem; color: var(--text-muted); text-decoration: underline; cursor: pointer; }
+/* Report link: keep it visually quiet (small underlined text - Salus/Neelix's "present, not
+   prominent"), but give it a >=24px tap area via padding so it clears WCAG 2.5.8 AA. The bigger
+   target is invisible; only the reach grows. --text-soft for contrast. (Pervius, Gate E.) */
+.cork-report { background: none; border: 0; padding: 0.4rem 0.2rem; margin-left: -0.2rem; min-height: 24px; font-size: 0.76rem; color: var(--text-soft); text-decoration: underline; cursor: pointer; }
 .cork-report:hover { color: var(--text); }
 .cork-report-form { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.35rem; }
 .cork-report-why { width: 100%; box-sizing: border-box; padding: 0.4rem 0.5rem; border: 1px solid var(--earth-light); border-radius: 6px; font-size: 0.85rem; }

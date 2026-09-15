@@ -76,13 +76,48 @@ touch-target ruler:
 
 ---
 
+## Pervius's review - 2026-09-15
+
+I measured, I did not guess. Two Part-2 items were real failures, and I have fixed them; the two Part-3
+judgment calls are resolved.
+
+**Contrast (WCAG 1.4.3 AA) - was FAIL, now fixed.** `--text-muted` (#8a8a8a) on the cork note (#fffdf6)
+and the cream surface (#f5f0e8) measures **3.39:1 and 3.04:1** - below the 4.5:1 floor for normal-size
+text. These are not incidental strings: `.cork-hint` carries the "don't put a phone number" safety
+instruction, and `.cork-report` is an actionable control. Fixed: functional board text (`.cork-hint`,
+`.cork-opt`, `.cork-report`) now uses `--text-soft` (#5a5a5a) = **6.1-6.8:1**. Passes AA with room.
+
+**Touch target (WCAG 2.5.8 AA) - was FAIL, now fixed.** `.cork-report` was `padding: 0` at 0.76rem -
+~12px tall, under the 24px minimum. **Resolved the tension with Salus/Neelix's discreet-report intent
+by separating tap-area from visual weight:** added `padding: 0.4rem 0.2rem` + `min-height: 24px` so the
+reachable target clears 24px, while the text stays the same small underlined link. The bigger target is
+invisible; only the reach grew. Reporting is still present-not-prominent.
+
+**Caption-as-alt-text (Part 3b) - deferred, consciously, NOT a lift-blocker.** Every posted poster
+already has a non-empty, meaningful `alt` ("<title> poster"), so the **AA floor is met** - a
+screen-reader user is not met with an unlabeled image. My standing want (the learner's own caption as
+the alt) is a **dignity upgrade above the floor**, not a compliance gap: it lets a blind child know what
+is pinned in the pinner's words, not a system-derived phrase. I name it as a **fast-follow build**
+(a small optional caption input, used as the poster's alt, required when a poster is attached), and I do
+not block lift on it. Compliance is the floor; this is the ceiling, and the ceiling can come after.
+
+**Adoption note (my discipline: did the board USE the accessibility infra, or just have it?):** yes -
+the labels/`aria-describedby`/`aria-live`/allowlist-`accept` are wired into the real rendered markup,
+not sitting unused. The Discovery register genuinely omits the contact + when-where fields (lower
+cognitive floor for 8-11), which is adoption of the age-tiering, not just its architecture.
+
 ## Sign-off
 
-- [ ] Part 2 checks pass (contrast bumped if needed; targets meet 2.5.8; SR read-throughs clean).
-- [ ] Part 3 resolved: report-target decision recorded; caption-alt built OR consciously deferred.
-- [ ] **Pervius signs** (memory + decision log) with the compliance verdict AND the adoption note (did
-      the board actually use the labels/live-region/accept, not just have them). The guardian is
-      included: note it, don't burn out on it.
+- [x] Part 2 code-level failures fixed: contrast (-> --text-soft, measured 6.1-6.8:1) and the
+      `.cork-report` touch target (>=24px tap area, visual weight unchanged). sw v205.
+- [x] Part 3 resolved: report-target tension resolved (tap-area != prominence); caption-as-alt is a
+      named fast-follow, not a lift-blocker (title-derived alt meets the AA floor).
+- [ ] **CONDITION OF SIGN-OFF (fold into the Gate F real-child walk):** a live **screen-reader
+      read-through** with an actual AT user - form fields + hints announce, the poster status announces
+      on change (aria-live), each board note reads title -> body -> meta, focus is visible and ordered,
+      and focus is not lost when the report "Thank you" replaces the button. I signed the measurable,
+      code-level compliance; the lived screen-reader experience is signed when it is walked. The
+      guardian is included in the care - this is noted, not carried to exhaustion.
 
-*44 by 44 is dignity - and a blind child on this board deserves to know what is pinned, in the words of
-the child who pinned it.*
+*44 by 44 is dignity - and I gave the report link its reach without giving it a shout. The blind child
+gets a meaningful alt today; the pinner's own words are the fast-follow. - Pervius*
