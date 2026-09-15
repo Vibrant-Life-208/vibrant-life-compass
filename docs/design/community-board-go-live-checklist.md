@@ -86,19 +86,16 @@ was executed against the deployed harness + module.
 
 ### Step 2 - Real-phone-photo spot-check (belt-and-suspenders)
 
-The harness proves EXIF stripping with a synthetic GPS tag; this confirms it on an actual camera file.
-
-- [ ] Log in as a learner with `?commboard=on`, go to the community board, and upload a **real phone
-      photo that has GPS/location** as the poster. Confirm it renders as a poster (a fresh, downscaled
-      JPEG).
-- [ ] (Optional, strongest) Save the rendered poster image and inspect its metadata - it should have
-      **none**. E.g. `exiftool poster.jpg` shows no GPS/EXIF, or drop it into any "view EXIF" web tool.
-      The original photo's GPS must not survive the canvas re-encode.
+The harness proves EXIF stripping with a synthetic GPS tag on the deployed engine. Two things it can't
+do are confirmed on real files - and they are **folded into the Gate F real-child walk** (below),
+because a child uploading a real drawing IS the walk. See Gate F's "Security spot-checks (Gate C
+carry-in)".
 
 ### Done-condition
 
-- [ ] Harness `STATUS: ALL-PASS` recorded, AND the real-photo spot-check shows no surviving location.
-      Note who ran it and when in the sign-off.
+- [x] Harness `STATUS: ALL-PASS` recorded (16/16, 2026-09-15).
+- [ ] Real-photo EXIF spot-check + real-PDF render spot-check pass (done in Gate F). Then Gate C signs
+      off. Note who ran them and when.
 
 ---
 
@@ -136,7 +133,24 @@ thing. Consented, every screen. Watch specifically:
 - [ ] **Path-back** - if a post were taken down, does the "not a mark against you" copy land as care?
 - [ ] Salus safety read throughout: any wince, any coercive shape, any count/streak leak (there should
       be none).
-- [ ] Jake + Salus sign the walk (memory / decision log) OR name what to change first.
+
+### Security spot-checks (Gate C carry-in - do them with the real upload)
+
+The child in this walk is going to upload a real drawing/photo anyway, so verify the two things the
+synthetic harness couldn't, on the actual file:
+
+- [ ] **Real GPS photo -> no surviving location.** Have the learner (or you) upload a **real phone
+      photo that has GPS/location** as the poster. It should render (a fresh, downscaled JPEG). Then
+      save the rendered poster image and check its metadata is **empty** - `exiftool poster.jpg` shows
+      no GPS/EXIF (or drop it into any "view EXIF" web tool). The original photo's location must not
+      survive the canvas re-encode. *(If it DOES survive, stop - that is a hard blocker, not a walk
+      note.)*
+- [ ] **Real PDF -> renders end-to-end.** Upload an actual PDF as a poster (the harness can't build a
+      real PDF; the PDF path uses pdf.js, whose worker loads same-origin, so CSP should be fine - but
+      confirm live). It should render its first page as a downscaled JPEG with no error.
+
+- [ ] Jake + Salus sign the walk (memory / decision log) OR name what to change first. If both security
+      spot-checks pass, Gate C also signs off here.
 
 ---
 
