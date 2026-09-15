@@ -325,15 +325,22 @@ sitting even though they are already on. What changed:
 5. **Task-list empty state fixed** - the old "Finish your Session-1 plan" message (read as locked to
    Session 1) now says tasks come from goals, that it can be done ANYTIME, and offers a "Bring in my
    goal steps" button. So a learner can build their plan naturally in Session 2 with no pre-seeding.
-6. **Weekly plan starts from the CURRENT session, not always Session 1** (sw v198, 2026-09-15). The
-   9-stage year-goal modal was still asking a learner to fill Session 1's weekly steps (e.g. Aug 17 -
-   Sep 11) even after those weeks had passed. It now detects where today falls - by whether a
-   session's *last week* has already ended, so the break between sessions is handled (Sep 15 is past
-   Session 1's weeks even though Session 2 starts Sep 21) - and skips the weekly stages for any
-   session entirely behind us, jumping from the milestones straight to the current session's weekly
-   plan. Skipped stages' dots + panels are hidden; the review omits past-session week rows; the "Prep
-   for Session 1" add-to-North option disappears once Session 1 has passed. Milestones (Stages 1-5)
-   still cover the whole year. Summer/pre-start planning is unaffected (stays Session 1).
+6. **Goal-setting starts from the CURRENT session, not always Session 1** (sw v198 weekly + v199
+   milestones, 2026-09-15). The 9-stage year-goal modal was asking a learner to fill Session 1's
+   weekly steps (Aug 17 - Sep 11) AND set an "End of Session 1" milestone even after those had passed.
+   It now detects where today falls - by whether a session's *last week* has already ended, so the
+   break between sessions is handled (Sep 15 is past Session 1's weeks even though Session 2 starts
+   Sep 21) - and skips BOTH the weekly stage AND the end-of-session milestone for any session behind
+   us, jumping straight to the current session's plan. **Jake + Salus ruling 2026-09-15** (minutes:
+   `agents/meetings/2026/09/2026-09-15-goal-modal-past-milestones-jake-salus.md`): a passed checkpoint
+   must never be presented as a target ("you missed it" / a notice-never-score wince). So End of
+   Session 1 is skipped once Session 1 passed, End of Session 2 once Session 2 passed; always kept are
+   the year goal, the **Baseline** ("where you are now" - carries the present honestly), and the
+   locked End of Session 3. The review gates the same past rows; the first weekly stage's "starting
+   from (prior session)" hint is hidden when that session was skipped; no copy says a learner
+   "missed" a session. Summer/pre-start planning is unaffected (stays Session 1). *Deferred (its own
+   future pass): an asset-reframe - "what have you already built this year?" - with a drift-guard so
+   it never becomes a "catch up" prompt.*
 
 **Access:** log in as the learner, Academics (or Creator), tap **Set a goal** on a subject; after
 saving, check the **Calendar** (big "This month") and the **task list** for the dated steps +
@@ -343,10 +350,11 @@ milestones (this-week-forward). An empty task list has a "Bring in my goal steps
 milestones -> weekly steps) feel doable or overwhelming for this learner? Does the per-subject program
 + requirement *ground* that subject's year-end target (helpful), or does seeing "To move up:
 [requirement]" on a subject feel like pressure? Does a suddenly-full calendar after saving one goal
-energize or overwhelm? **NEW for this walk:** the walk happens in Session 2, so the modal will now
-skip Session 1 and open on the Session 2 weekly plan - confirm that reads as "start where you are"
-(right) and not as "you missed Session 1" (wrong). Also: is still being asked for the *End of
-Session 1* milestone (a past checkpoint) confusing for a learner starting mid-year?
+energize or overwhelm? **NEW for this walk:** the walk happens in Session 2, so the modal now skips
+BOTH the Session 1 weekly plan AND the "End of Session 1" milestone (Jake + Salus ruling 2026-09-15) -
+it opens on the year goal → baseline → locked End of Session 3 → End of Session 2 → Session 2 weekly.
+Confirm that reads as "start where you are" (right) and not as "you missed Session 1" (wrong), and that
+the Baseline stage lands as the honest "where you are now."
 
 **Watch points - Salus (safety):** for a leveling-up learner, do the next-studio requirements read as
 an *invitation* or as a *bar they're failing*? Watch for any wince at the requirements list. The
