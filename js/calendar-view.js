@@ -153,9 +153,10 @@ export async function renderCalendarView(learnerId) {
     host.appendChild(markHint);
   }
 
-  // Add a responsibility right from the calendar (dark ?resp=on): create one with a cadence here and
-  // it shows as a yellow tab on its days. Tending + removing still live on the Creator pillar.
-  if (isResponsibilities()) {
+  // Add a responsibility right from the calendar: create one with a cadence here and it shows as a
+  // yellow tab on its days. Tending + removing still live on the Creator pillar. Wrapped so a fault
+  // in this optional block can NEVER blank the calendar below it (the big "This month" + year grid).
+  if (isResponsibilities()) try {
     const addWrap = document.createElement('div');
     addWrap.className = 'cal-add-resp';
     addWrap.innerHTML = `
@@ -202,7 +203,7 @@ export async function renderCalendarView(learnerId) {
       try { await setProfileFoundations(learnerId, next); } catch (e) { console.warn('add responsibility:', e); }
       await renderCalendarView(learnerId);
     });
-  }
+  } catch (e) { console.warn('calendar add-responsibility UI failed (calendar still renders):', e); }
 
   const ctx = { ranges, yearStart, yearEnd, todayISO, startDayISO, tasksByDay, eventsByDay, presenceSet, responsibilities };
   const cycleFirst = new Date(yearStart.getFullYear(), yearStart.getMonth(), 1);
@@ -223,12 +224,15 @@ export async function renderCalendarView(learnerId) {
   heroHead.className = 'cal-section-head';
   heroHead.textContent = 'This month';
   host.appendChild(heroHead);
-  const heroWrap = document.createElement('div');
-  heroWrap.className = 'calendar-hero';
-  const heroMonth = buildMonth(heroY, heroMo, ctx);
-  heroMonth.classList.add('cal-month--hero');
-  heroWrap.appendChild(heroMonth);
-  host.appendChild(heroWrap);
+  let heroWrap = null;
+  try {
+    heroWrap = document.createElement('div');
+    heroWrap.className = 'calendar-hero';
+    const heroMonth = buildMonth(heroY, heroMo, ctx);
+    heroMonth.classList.add('cal-month--hero');
+    heroWrap.appendChild(heroMonth);
+    host.appendChild(heroWrap);
+  } catch (e) { console.warn('calendar hero month failed (year grid still renders):', e); heroWrap = null; }
 
   const yearHead = document.createElement('p');
   yearHead.className = 'cal-section-head';
@@ -267,7 +271,7 @@ export async function renderCalendarView(learnerId) {
       try { await saveLearner({ id: learner.id, presenceDays: next }); } catch (err) { console.warn('presence save:', err); }
     };
     monthsWrap.addEventListener('click', onPresenceTap);
-    heroWrap.addEventListener('click', onPresenceTap); // the big "This month" is tappable too
+    if (heroWrap) heroWrap.addEventListener('click', onPresenceTap); // the big "This month" is tappable too
   }
 
   // Per-session goal summary (session goals grouped under their session number).
