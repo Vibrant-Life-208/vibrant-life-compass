@@ -220,18 +220,50 @@ export async function renderCalendarView(learnerId) {
   if (heroFirst < cycleFirst) { heroY = cycleFirst.getFullYear(); heroMo = cycleFirst.getMonth(); }
   else if (heroFirst > lastMonth) { heroY = lastMonth.getFullYear(); heroMo = lastMonth.getMonth(); }
 
-  const heroHead = document.createElement('p');
-  heroHead.className = 'cal-section-head';
-  heroHead.textContent = 'This month';
-  host.appendChild(heroHead);
   let heroWrap = null;
   try {
+    // Nav header: ‹ [Month Year] › so the learner can step months. Defaults to the current month
+    // (auto-advances as real months pass); arrows are clamped to the cycle so they can't wander into
+    // empty months. Stepping re-renders only the hero month in place - the year grid below is untouched.
+    const heroNav = document.createElement('div');
+    heroNav.className = 'cal-hero-nav';
+    const prevBtn = document.createElement('button');
+    prevBtn.type = 'button'; prevBtn.className = 'cal-hero-arrow'; prevBtn.textContent = '‹';
+    prevBtn.setAttribute('aria-label', 'Previous month');
+    const heroLabel = document.createElement('span');
+    heroLabel.className = 'cal-hero-label';
+    const nextBtn = document.createElement('button');
+    nextBtn.type = 'button'; nextBtn.className = 'cal-hero-arrow'; nextBtn.textContent = '›';
+    nextBtn.setAttribute('aria-label', 'Next month');
+    heroNav.append(prevBtn, heroLabel, nextBtn);
+    host.appendChild(heroNav);
+
     heroWrap = document.createElement('div');
     heroWrap.className = 'calendar-hero';
-    const heroMonth = buildMonth(heroY, heroMo, ctx);
-    heroMonth.classList.add('cal-month--hero');
-    heroWrap.appendChild(heroMonth);
     host.appendChild(heroWrap);
+
+    const cycleFirstMs = cycleFirst.getTime();
+    const lastMonthMs = lastMonth.getTime();
+    const renderHero = () => {
+      const cur = new Date(heroY, heroMo, 1);
+      prevBtn.disabled = cur.getTime() <= cycleFirstMs;
+      nextBtn.disabled = cur.getTime() >= lastMonthMs;
+      const isThis = (heroY === nowM.getFullYear() && heroMo === nowM.getMonth());
+      heroLabel.textContent = `${MONTH_NAMES[heroMo]} ${heroY}${isThis ? ' · this month' : ''}`;
+      heroWrap.innerHTML = '';
+      const m = buildMonth(heroY, heroMo, ctx);
+      m.classList.add('cal-month--hero');
+      heroWrap.appendChild(m);
+    };
+    const step = (delta) => {
+      const d = new Date(heroY, heroMo + delta, 1);
+      if (d.getTime() < cycleFirstMs || d.getTime() > lastMonthMs) return;
+      heroY = d.getFullYear(); heroMo = d.getMonth();
+      renderHero();
+    };
+    prevBtn.addEventListener('click', () => step(-1));
+    nextBtn.addEventListener('click', () => step(1));
+    renderHero();
   } catch (e) { console.warn('calendar hero month failed (year grid still renders):', e); heroWrap = null; }
 
   const yearHead = document.createElement('p');
