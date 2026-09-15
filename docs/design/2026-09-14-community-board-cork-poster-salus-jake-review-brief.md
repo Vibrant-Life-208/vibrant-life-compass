@@ -119,6 +119,15 @@ Minutes: `agents/meetings/2026/09/2026-09-14-community-board-upload-safety-fresh
    delete it - default it to **"Ask your guide"** so the safe path is the default path; discourage raw
    PII; give guides explicit review guidance (strip phone, address, other kids' names). Keep the
    warmth, route the connection through a grown-up.
+   **BUILT 2026-09-15 (sw v201).** The older-register field now defaults to **"Ask my guide
+   (recommended)"**; choosing "someone or somewhere specific" reveals a text box that gently
+   discourages raw PII (a phone / email / address triggers an inline nudge - never a hard block), and
+   the submitted contact defaults to "Ask a guide" unless a specific value is typed. The young
+   register still has no contact field. **Owner review** carries a standing guidance note (read the
+   "Talk to" line + text for a phone / address / email / another child's name and remove it before
+   posting) and flags the "Talk to" line with a "check & remove personal info" tag when it looks like
+   PII (heuristic flag, never auto-edits). PII heuristic verified ALL-PASS in Node. (Also tightened the
+   owner review poster sink to `safePosterSrc`, excluding `data:image/svg+xml`.)
 3. **Report/remove-with-a-path-back** (Winona). A poster can clear both human gates and still turn out
    to harm someone once public. Build a take-down path - and it cannot be an exile button: a child
    whose poster comes down needs a **non-shaming route back** into the community. Prevention (the guide
