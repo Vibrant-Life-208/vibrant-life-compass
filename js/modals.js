@@ -96,7 +96,7 @@ async function weekDateLabel(sessionIndex, weekIndex, studioId) {
 // On save, seeds Session 1, 2, 3 goals automatically with End of Session 1, 2, 3
 // respectively. Each tagged autoPopulated=true so learner-edited
 // session goals are preserved on re-save.
-export async function openYearGoalModal({ category, existing, onSave, isFirstTime, studio }) {
+export async function openYearGoalModal({ category, existing, onSave, isFirstTime, studio, requirement = '' }) {
   setModalTitle(`${category.name} - year goal`);
   // Pre-compute date labels for the weekly inputs (studio-aware calendar)
   // Weeks per session come from the calendar (js/studios.js sessionWeeks) so the
@@ -147,6 +147,7 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         <label for="yg-text">Stage 1 · End of Session 6 — Your year goal</label>
         <p class="form-hint">A year from now, what's different about you? How will you know you've gotten there - what would your partner or guide have to see?</p>
         <p class="form-hint-secondary">Think about: what "finished" looks like in plain words. Something specific you could point to. Why it matters to you right now. This builds on the bigger vision you wrote on the Compass page, focused on this category.</p>
+        ${requirement ? `<div class="yg-requirement">${escapeHtml(requirement)}</div>` : ''}
         <textarea id="yg-text" rows="5" data-autogrow placeholder="Write your year-end vision here…">${existing?.text ? escapeAttr(existing.text) : ''}</textarea>
       </div>
       ${category.example ? `<div class="form-example"><span class="form-example-label">Example</span><p>${escapeHtml(category.example)}</p></div>` : ''}
@@ -1079,7 +1080,7 @@ export async function openGoalArcModal({ goal, learnerId = null, lifeArea = null
 // front - a few near-steps only; Sessions 4 & 7 refocus re-open the rest. Sessions are never
 // named to the learner. Store the structure; surface this week; never a scoreboard.
 // Spec: docs/design/2026-07-17-main-page-goal-decomposition-build-spec.md.
-export async function openGoalSetupModal({ goal = null, category = null, learnerId = null, onDone = null }) {
+export async function openGoalSetupModal({ goal = null, category = null, learnerId = null, onDone = null, requirement = '' }) {
   const catId = category?.id || goal?.categoryId;
   const catName = category?.name || goal?.lifeArea || 'this goal';
   // Guide-of-the-tribe display label (2026-08-05 fleet decision): name the real guide
@@ -1150,6 +1151,7 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
       : `
         <h3 class="onb-horizon-heading">${escapeHtml(catName)} - your year goal</h3>
         <p class="onb-horizon-body">A year from now, what's different about you in ${escapeHtml(catName)}? How would ${gsGuideName || 'your guide'} know you got there?</p>
+        ${requirement ? `<div class="yg-requirement">${escapeHtml(requirement)}</div>` : ''}
         <textarea id="gs-yeargoal" class="slice-box" rows="3" placeholder="By next year, in ${escapeAttr(catName)}, I want to…">${escapeHtml(s.yeargoal)}</textarea>`;
     } else if (st === 'detail') {
       // Doing-only wide brainstorm before the mirror (option a, captain 2026-07-21). The skip is the

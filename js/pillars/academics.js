@@ -31,8 +31,12 @@ export async function renderAcademicsPillar(learnerId) {
   // weekly bite-size steps (captain 2026-09-14). Mirrors year-view's per-category handler exactly
   // so Academics is a real create surface, not just a display lens.
   const openSubjectGoal = (cat, existing) => {
+    // Anchor the year goal with this subject's next-studio requirement (shown on Stage 1 of the
+    // modal) when the learner is leveling up - so the requirement IS the year-end target.
+    const reqs = reqsForCat(cat);
+    const requirement = (levelingUp && reqs.length) ? `To move up to ${targetName}: ${reqs.map((r) => r.name).join('; ')}` : '';
     if (currentWheel) {
-      openGoalSetupModal({ goal: existing || null, category: cat, learnerId, onDone: () => renderAcademicsPillar(learnerId) });
+      openGoalSetupModal({ goal: existing || null, category: cat, learnerId, requirement, onDone: () => renderAcademicsPillar(learnerId) });
       return;
     }
     openYearGoalModal({
@@ -40,6 +44,7 @@ export async function renderAcademicsPillar(learnerId) {
       existing,
       isFirstTime: !yearGoals.some((g) => g.text && g.text.trim()),
       studio: learner.studio,
+      requirement,
       onSave: async ({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps }) => {
         await saveGoal({
           id: existing?.id, learnerId, categoryId: cat.id, scope: 'year',
