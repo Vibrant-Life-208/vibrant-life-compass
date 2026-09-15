@@ -279,3 +279,29 @@ calendar fills.
 
 *Live, so no gate blocks it - but the walk is still the moment to catch whether the goal loop
 motivates or overwhelms a real child.*
+
+---
+
+## Fifth surface in this walk: task colour speaks Pillars, not wheel regions (added 2026-09-14)
+
+**Shipped LIVE** (sw v192) - a small, purely cosmetic change worth a glance during the walk.
+
+The add-task modal's "Which part of life? (sets the colour)" picker used to show the five wheel
+**regions** (Self / Others / Making / World / Voice). A learner navigates the app by the pyramid
+**Pillars** (Purpose / Connection / Creator Mindset / Life Skills / Academics), so a task's colour
+never matched the tab it lived under. The picker now shows the pillar names, in nav order, each in
+its pillar colour, so a task painted "Life Skills teal" matches the Life Skills tab. "None" (no
+colour) still available.
+
+Under the hood nothing migrated: regions map 1:1 to pillars (Self=Creator Mindset, Others=Connection,
+Making=Life Skills, World=Academics, Voice=Purpose), so every stored task, the calendar, North, and
+the auto-scheduler keep working untouched - only the palette and the labels moved. The Plan-tab task
+label now reads the pillar name too. (The Growth Record "compass" preview keeps the four-directions
+wheel framing by design.)
+
+**Access:** log in as the learner, add a task anywhere; the colour picker shows the five pillars +
+None.
+
+**Watch points - Jake:** do the pillar names + colours read as more legible than the old
+Self/Others/Making labels for this learner, or does it not register either way? (Low stakes - this is
+a consistency polish, not a new capacity.)
