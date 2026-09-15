@@ -132,6 +132,18 @@ Minutes: `agents/meetings/2026/09/2026-09-14-community-board-upload-safety-fresh
    to harm someone once public. Build a take-down path - and it cannot be an exile button: a child
    whose poster comes down needs a **non-shaming route back** into the community. Prevention (the guide
    gate) and repair (report/remove) travel together.
+   **BUILT 2026-09-15 (sw v202).** The owner-level **Take down** already existed (v0.40, status
+   `removed`). Added: (a) **non-shaming path-back** - a taken-down / not-this-time idea now shows a
+   warm line ("that happens sometimes, and it is not a mark against you") + a **"Revise & share
+   again"** button that reopens the form pre-filled (repair, never exile); (b) a learner **report
+   path** - a discreet "Something wrong? Tell a guide" affordance on each board note opens a small
+   two-step form (never an accidental one-tap takedown) that FILES a report for staff and does NOT
+   change the post's status or hide it (the owner decides); (c) the **owner review** floats reported
+   posted notes to the top with a "someone flagged this (n)" tag + reasons. New table
+   `community_post_reports` (migration **v0.41**): insert-own for learners (only against a POSTED
+   post), staff-select, owner-delete-to-dismiss - a report is its own row, not a cross-row update to
+   `community_posts`, so RLS stays clean. *Owed: migration v0.41 must be APPLIED (like v0.39/v0.40)
+   before the board lifts, and its new RLS enters Tutela's wall-walk.*
 
 **Also owed** (carried / elevations): Jake's consented real-learner walk (the design read does NOT
 discharge it); the a11y pass + a visually *quiet* poster field with the learner's caption as required
