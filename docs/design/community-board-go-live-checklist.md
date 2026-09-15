@@ -11,13 +11,24 @@ none of it code. Do NOT flip the flag until every gate below is cleared.
 - Upload-verify harness: `scripts/verify-poster-upload.html`
 - Migrations: `supabase/migrations/2026-09-12-v0.39-*`, `2026-09-14-v0.40-*`, `2026-09-15-v0.41-*`
 
-**Built state (sw v202, dark):**
+**Built state (sw v205, dark):**
 - Blocker #1 - upload hardening (SVG reject, canvas re-encode strips EXIF/GPS, dimension cap, pdf.js
-  budget, `safePosterSrc` sink guard). Pipeline in `js/poster.js`.
+  budget, `safePosterSrc` sink guard, data:-URL decode under CSP). Pipeline in `js/poster.js`.
 - Blocker #2 - contact field defaults to "Ask my guide"; PII-discouraging specific path; owner review
   guidance + PII flag.
 - Blocker #3 - non-shaming path-back ("Revise & share again"); learner report path; owner sees flagged
   notes; `community_post_reports` table.
+
+### NOT-YET-VERIFIED / NOT-YET-BUILT ledger (read this first - Data, fresh-eyes review 2026-09-15)
+
+So "mostly verified" is never mistaken for "verified." Open, by design:
+- **Not built (pre-lift, Gate H):** learner-delete of own post; family-objection path; child assent;
+  the stated board intention; portability (fast-follow).
+- **Not verified:** two-guide RLS isolation (B3b/B6b/B11b - only one guide in test data); the real-photo
+  EXIF + real-PDF upload spot-checks (Gate F); the live screen-reader read-through (Gate F).
+- **Runs once, not yet repeatable:** the RLS wall-walk + the upload harness are one-time; make them
+  regression checks re-run on any board-touching change (Gate H item 5).
+- **Fast-follows (post-lift):** "your idea is on the board" moment; family board explainer + changelog.
 
 ---
 
@@ -199,7 +210,45 @@ synthetic harness couldn't, on the actual file:
 
 ---
 
-## The lift (only after A-F clear)
+## Gate H - Sovereignty additions (fresh-eyes review 2026-09-15)
+
+From the 8-agent strategic review (Spock/Guinan/Data/Ezri/Sarek/Quark/Kira/Sisko). Core finding: the
+code is well-verified, but the **child's sovereignty, the family's voice, and the board's living
+meaning** are under-built relative to the security. Convergent (Spock+Quark+Kira+Ezri): the child and
+the family each need a hand on the off switch, and the child must be a KNOWING party, not just moderated.
+Minutes: `agents/meetings/2026/09/2026-09-15-community-board-fresh-eyes-strategic-review.md`.
+
+**PRE-LIFT (build before flag-on):**
+- [ ] **1. Learner-delete of own post** (Quark, non-negotiable) - a child can withdraw their own words
+      at any stage. Ownership without deletion is tenancy. (Build: a learner-scoped status transition +
+      an RLS delete/withdraw policy for own rows.)
+- [ ] **2. Family-objection path** (Kira, partial-dissent - she holds this pre-lift) - a family can flag
+      "this post is about my child," routed to the owner like a report. A power to publish a child
+      without a family door to object is an asymmetry. **[Kira pre-lift vs. Sisko fast-follow - captain's
+      call.]**
+- [ ] **3. Child assent** (Spock) - alongside guardian consent, the under-13 learner is shown, in their
+      terms, that all families will see this, and agrees. Consent protects the guardian's authority;
+      assent protects the child.
+- [ ] **4. Stated board intention, written** (Guinan -> Sarek) - "a place to offer, not perform;
+      received, never ranked; it exists so a young person learns a community will hold what they hand
+      it." At the top of the board spec + the family explainer. Meaning defended late is meaning already
+      drifted; this sentence is the future "no" to "featured ideas."
+- [ ] **5. Deferred-ledger + re-verification cadence** (Data) - the ledger at the top of this file
+      (done); make the RLS wall-walk + upload harness **repeatable regression checks** re-run on any
+      board-touching change.
+
+**FAST-FOLLOWS (post-lift):**
+- [ ] 6. "Your idea is on the board" warm moment on approval (Ezri).
+- [ ] 7. Family board explainer + policy changelog (Sarek) - opens with Guinan's intention sentence.
+- [ ] 8. Portability - a learner can export/take their posts when they leave (Quark).
+
+**CONSIDERATIONS (watch):** proportional ship discipline / name the minimum-to-lift (Sisko); the stage
+risk - guard the social dynamic (Guinan); the power to silence - audit that report/take-down protects
+children rather than quiets inconvenient ones (Kira).
+
+---
+
+## The lift (only after A-F + Gate H pre-lift clear)
 
 - [ ] Flip `isCommunityRich` in `js/flags.js` to default-on (mirror the Life Skills / Responsibilities
       lift pattern: `?commboard=off` becomes the opt-out).
