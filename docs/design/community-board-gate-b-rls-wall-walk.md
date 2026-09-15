@@ -261,6 +261,8 @@ the owner's own profile.
   real non-owner learner.
 - **SKIP / deferred (needs a second guide):** B3b, B6b, B11b - guide-roster isolation across two
   different guides could not be walked with one guide in the data.
+- **Delete perimeter added 2026-09-15 (v0.42, `cp_delete_own`, Gate H learner-delete):** D1 learner
+  deletes OWN = PASS, D2 learner cannot delete ANOTHER's = PASS. The self-delete is scoped to own rows.
 
 ## Sign-off
 

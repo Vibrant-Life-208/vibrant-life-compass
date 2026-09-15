@@ -25,10 +25,10 @@ none of it code. Do NOT flip the flag until every gate below is cleared.
 So "mostly verified" is never mistaken for "verified." Open, by design:
 - **Pre-lift Gate H items 1-4 now BUILT (sw v206):** learner-delete, family-objection path, child
   assent, stated board intention. Item 5 (re-verification cadence) still to formalize.
-- **Not applied yet:** migration **v0.42** (`cp_delete_own` - learner-delete RLS). Apply with v0.39-41.
-- **Not verified:** two-guide RLS isolation (B3b/B6b/B11b - only one guide in test data); the v0.42
-  delete RLS (re-walk Gate B: delete OWN yes, ANOTHER's no); the real-photo EXIF + real-PDF upload
-  spot-checks (Gate F); the live screen-reader read-through (Gate F).
+- **v0.42 APPLIED + verified** 2026-09-15: `cp_delete_own` present; delete perimeter walked (D1 delete
+  OWN = PASS, D2 cannot delete ANOTHER's = PASS).
+- **Not verified:** two-guide RLS isolation (B3b/B6b/B11b - only one guide in test data); the real-photo
+  EXIF + real-PDF upload spot-checks (Gate F); the live screen-reader read-through (Gate F).
 - **Runs once, not yet repeatable:** the RLS wall-walk + the upload harness are one-time; make them
   regression checks re-run on any board-touching change (Gate H item 5).
 - **Fast-follows (post-lift):** "your idea is on the board" moment; family board explainer + changelog;
@@ -225,8 +225,9 @@ Minutes: `agents/meetings/2026/09/2026-09-15-community-board-fresh-eyes-strategi
 **PRE-LIFT (build before flag-on) - BUILT 2026-09-15 (sw v206):**
 - [x] **1. Learner-delete of own post** (Quark, non-negotiable) - "Delete this idea" on the learner's
       own posts (any non-removed status); a two-tap confirm, then a hard delete of their own row (reports
-      cascade). Store `deleteMyCommunityPost`. **Needs migration v0.42 applied** (`cp_delete_own` RLS)
-      and the Gate B probes re-walked (a learner can delete OWN, not ANOTHER's).
+      cascade). Store `deleteMyCommunityPost`. **Migration v0.42 APPLIED + RLS WALKED 2026-09-15:**
+      `cp_delete_own` present; probes D1 (learner deletes OWN) = PASS, D2 (cannot delete ANOTHER's) =
+      PASS. Delete perimeter scoped correctly.
 - [x] **2. Family-objection path** (Kira) - the report form now has "This post is about me or my
       family"; it routes to the owner like any report, prefixed `[ABOUT MY FAMILY]` so the reviewer's
       eye goes straight to it. Reuses `community_post_reports` (no new migration). **[Kira held this
