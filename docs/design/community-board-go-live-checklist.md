@@ -21,19 +21,17 @@ none of it code. Do NOT flip the flag until every gate below is cleared.
 
 ---
 
-## Gate A - Database migrations applied (owner: Europa, in Supabase)
+## Gate A - Database migrations applied (owner: Europa, in Supabase) - CLEARED 2026-09-15
 
-The board reads/writes columns and a table that only exist after these run. Apply in order and
-confirm each succeeds before the next.
+Applied via the Supabase SQL Editor as one transaction-wrapped, idempotent block
+(`supabase/APPLY-community-board-v0.39-40-41.sql`). Verified: `community_post_reports` carries all
+three RLS policies (`cpr_insert_own`, `cpr_select_staff`, `cpr_delete_owner`), which means the whole
+`begin; ... commit;` committed - so v0.39 columns and the v0.40 status constraint landed with it.
 
-- [ ] **v0.39** `2026-09-12-v0.39-community-bulletin-rich.sql` - rich board columns (title, category,
-      when_where, contact, poster_image).
-- [ ] **v0.40** `2026-09-14-v0.40-community-posts-removed-status.sql` - the `removed` status (take-down).
-- [ ] **v0.41** `2026-09-15-v0.41-community-post-reports.sql` - the `community_post_reports` table + RLS.
-- [ ] Confirm each applied cleanly (no constraint/policy errors) in the Supabase SQL editor.
-
-*Note: migration state may already be partially applied from earlier dark work - verify actual DB
-state, do not assume.*
+- [x] **v0.39** rich board columns (title, category, when_where, contact, poster_image).
+- [x] **v0.40** the `removed` status (take-down).
+- [x] **v0.41** the `community_post_reports` table + RLS.
+- [x] Confirmed applied cleanly (three `cpr_*` policies present; single transaction committed).
 
 ---
 
