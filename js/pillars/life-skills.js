@@ -374,16 +374,28 @@ export async function renderLifeSkills(learnerId) {
   const activeKey = climb.lifeSkill;
   const activeLabel = SKILLS[activeKey];
 
+  // Per-skill goals (Europa 2026-09-14): each life skill keeps its own goal, so re-choosing your
+  // focus never loses or mismatches a goal. One-time migration folds the legacy single goal into
+  // the per-skill store, keyed to the current skill (before re-choosing existed, the goal could
+  // only have belonged to the active skill).
+  if (activeKey && climb.woop && typeof climb.woop === 'object' && !Array.isArray(climb.woop)
+      && !(climb.woopBySkill && climb.woopBySkill[activeKey])) {
+    climb.woopBySkill = { ...(climb.woopBySkill || {}), [activeKey]: climb.woop };
+    foundations.climb = { ...climb };
+    setProfileFoundations(learnerId, foundations).catch(() => {});
+  }
+  const activeWoop = (climb.woopBySkill && climb.woopBySkill[activeKey]) || {};
+
   const activeSection = activeLabel
     ? section('Working on this year', `<div class="pillar-goal"><p class="pillar-goal-text">${escapeHtml(activeLabel)}</p></div>`)
-    : section('Working on this year', emptyNote('Choose the life skill that matters most to you at this stage, and it lives here.'));
+    : section('Working on this year', emptyNote('Pick the one that matters most to you right now - tap it below to make it your focus this year.'));
 
   const others = Object.entries(SKILLS).filter(([k]) => k !== activeKey);
   const othersSection = section('Other skills', `
-    <p class="pillar-prompt">The rest are here whenever you want to explore them - one active at a time.</p>
-    <ul class="pillar-list">${others.map(([, label]) => `<li>${escapeHtml(label)}</li>`).join('')}</ul>`);
+    <p class="pillar-prompt">The rest are here whenever you want to explore them - one active at a time. Tap one to make it your focus.</p>
+    <ul class="pillar-list ls-choose-list">${others.map(([k, label]) => `<li><button type="button" class="ls-choose" data-ls-choose="${escapeAttr(k)}">${escapeHtml(label)}</button></li>`).join('')}</ul>`);
 
-  const goalSection = skillGoalSection(activeLabel, climb.woop);
+  const goalSection = skillGoalSection(activeLabel, activeWoop);
   // "Where to start" sits between the active skill and the goal editor, so its first step
   // flows straight into the goal. Flag-gated (dark) and only when a skill is active. The course set
   // + register are chosen from the learner's studio (Discovery gets its own course; see courseFor).
@@ -400,6 +412,52 @@ export async function renderLifeSkills(learnerId) {
 
   wireSkillGoal(learnerId, foundations || {}, climb);
   wireWhereToStart();
+  wireSkillChooser(el, learnerId, foundations || {}, climb);
+}
+
+// Choose / re-choose the active life skill from the pillar (learner-only, re-choosable focus #1).
+// A first pick commits directly; switching from an existing focus shows a gentle beat first
+// (Jake) - the old focus and its goal stay saved, so switching is safe exploration, not a reset.
+function wireSkillChooser(el, learnerId, foundations, climb) {
+  const activeKey = climb.lifeSkill;
+  const activeLabel = SKILLS[activeKey];
+  el.querySelectorAll('[data-ls-choose]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const skillId = btn.dataset.lsChoose;
+      const newLabel = SKILLS[skillId];
+      if (!newLabel || skillId === activeKey) return;
+      if (!activeKey) { commitSkill(learnerId, foundations, climb, skillId); return; }
+      showSwitchConfirm(el, activeLabel, newLabel, () => commitSkill(learnerId, foundations, climb, skillId));
+    });
+  });
+}
+
+// The gentle beat: a soft, reassuring confirm before a switch. Never a warning; names what is kept.
+function showSwitchConfirm(el, oldLabel, newLabel, onConfirm) {
+  el.querySelector('.ls-switch-confirm')?.remove();
+  const card = document.createElement('div');
+  card.className = 'ls-switch-confirm';
+  card.innerHTML = `
+    <p class="ls-switch-text">Make <strong>${escapeHtml(newLabel)}</strong> your focus? <strong>${escapeHtml(oldLabel)}</strong> stays right here, and its goal is saved for whenever you come back to it.</p>
+    <div class="ls-switch-actions">
+      <button type="button" class="btn btn-primary ls-switch-yes">Yes, switch to ${escapeHtml(newLabel)}</button>
+      <button type="button" class="btn btn-text ls-switch-no">Not now</button>
+    </div>`;
+  const list = el.querySelector('.ls-choose-list');
+  if (list && list.parentNode) list.parentNode.insertBefore(card, list); else el.prepend(card);
+  card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  card.querySelector('.ls-switch-yes').addEventListener('click', onConfirm);
+  card.querySelector('.ls-switch-no').addEventListener('click', () => card.remove());
+}
+
+async function commitSkill(learnerId, foundations, climb, skillId) {
+  const next = { ...foundations, climb: { ...climb, lifeSkill: skillId } };
+  try {
+    await setProfileFoundations(learnerId, next);
+    climb.lifeSkill = skillId;
+    foundations.climb = { ...climb };
+  } catch (e) { console.warn('life skill switch failed:', e); return; }
+  await renderLifeSkills(learnerId);
 }
 
 // "Use this as my start" - drop the course's first step into the goal's first field and save
@@ -425,10 +483,14 @@ function wireSkillGoal(learnerId, foundations, climb) {
   const save = async () => {
     const woop = {};
     document.querySelectorAll('[data-woop-key]').forEach((t) => { woop[t.dataset.woopKey] = t.value.trim(); });
-    const next = { ...foundations, climb: { ...climb, woop } };
+    // Per-skill: the goal is saved under the active skill, so each skill keeps its own.
+    const active = climb.lifeSkill;
+    const bySkill = { ...(climb.woopBySkill && typeof climb.woopBySkill === 'object' ? climb.woopBySkill : {}) };
+    if (active) bySkill[active] = woop;
+    const next = { ...foundations, climb: { ...climb, woopBySkill: bySkill } };
     try {
       await setProfileFoundations(learnerId, next);
-      climb.woop = { ...woop };
+      climb.woopBySkill = bySkill;
       foundations.climb = { ...climb };
     } catch (e) { console.warn('skill goal save failed:', e); }
   };
