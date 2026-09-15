@@ -159,19 +159,24 @@ Remove it afterward with the owner "Take down" button, or `delete from community
 ## Second surface in this walk: Responsibilities v1 (added 2026-09-14)
 
 The same sitting can also walk **Responsibilities** (Creator Mindset), built dark behind `?resp=on`
-(compass main, **sw v181**). Full design + rationale: `docs/design/2026-09-14-responsibilities-v1-design-note.md`.
+(compass main, **sw v189**). Full design + rationale: `docs/design/2026-09-14-responsibilities-v1-design-note.md`.
 
 **Updated 2026-09-14 (post-build, from captain testing):**
 - **Weekly now has a weekday PICKER** (S M T W T F S) - the learner chooses the day (e.g. "clean the
   litter box" every Friday) instead of it auto-anchoring to the day it was set.
 - **The calendar marker is a yellow "responsibility tab"** (Creator Mindset colour #F5A623), not a
   green leaf - outline when it's yours that day, filled once tended.
-- The new big **"This month" calendar** (live, sw v180) makes the tabs large and legible - this is
-  what surfaces responsibilities clearly.
+- The new big **"This month" calendar** (live, sw v180) makes the tabs large and legible.
+- **Add a responsibility right from the Calendar** - a "+ Add a responsibility" control on the
+  calendar view opens a quick form (name + cadence + weekday) so a learner can create one without
+  going to the Creator pillar; the yellow tab appears immediately. Tending + removing still live on
+  Creator.
 
-**Access:** load `?resp=on` on the studio device, then Creator Mindset -> Responsibilities; add one,
-choose a cadence (Daily / Weekdays / Weekly-then-pick-a-day), and check the Calendar (the big "This
-month" at the top) for the yellow tab. `?resp=off` to switch it back off.
+**Access:** two doors now - (a) Creator Mindset -> Responsibilities, or (b) the **Calendar**'s
+"+ Add a responsibility". Add one, choose a cadence (Daily / Weekdays / Weekly-then-pick-a-day), and
+check the Calendar (the big "This month" at the top) for the yellow tab. `?resp=off` to switch off.
+Also worth watching: does the learner tell the **presence dot** (tap a day = "I showed up") apart from
+the **yellow responsibility tab**? They are deliberately different marks.
 
 **Watch points — Jake (developmental):**
 - Does the **cadence + weekday picker** land for a Discovery (~8-11) child, or is Weekly/pick-a-day
