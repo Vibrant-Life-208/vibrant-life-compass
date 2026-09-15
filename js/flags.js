@@ -118,8 +118,10 @@ export function isResponsibilities() {
 
 // Life Skills "growth" elevations (2026-09-14 fleet review): the skill-goal return loop
 // (what you've done / what you're noticing), the vision tether, and the doing-story - all
-// notice-never-score. Dark by default; opt in with ?lsgrow=on. Held dark for the consented
-// real-learner walk (Salus condition) and Naomi's Living-Seed drift-watch ("a door, never a bell").
+// notice-never-score. LIVE FOR EVERYONE as of 2026-09-14 by captain call: these are reflection
+// surfaces with no upload/child-data path, so they lift ahead of the walk (the walk becomes a
+// live-surface review). Salus's watch-conditions and Naomi's Living-Seed drift-watch ("a door,
+// never a bell") carry forward. Default ON; opt OUT with ?lsgrow=off, remembered in localStorage.
 const LSGROW_LS_KEY = 'vlc_lsgrow';
 export function isLifeSkillsGrow() {
   try {
@@ -128,6 +130,6 @@ export function isLifeSkillsGrow() {
       localStorage.setItem(LSGROW_LS_KEY, p);
       return p === 'on';
     }
-    return localStorage.getItem(LSGROW_LS_KEY) === 'on';
-  } catch (_) { return false; }
+    return localStorage.getItem(LSGROW_LS_KEY) !== 'off';
+  } catch (_) { return true; }
 }

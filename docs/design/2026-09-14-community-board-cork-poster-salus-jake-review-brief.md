@@ -210,8 +210,16 @@ override); the walk becomes a live-surface review whose watch-points above are t
 
 ## Third surface in this walk: Life Skills growth elevations (added 2026-09-14)
 
+> **STATUS CHANGE 2026-09-14: NOW LIVE FOR EVERYONE (sw v194), by captain call.** These are
+> notice-never-score reflection surfaces with no upload/child-data path, so they lift ahead of the
+> walk; the walk becomes a live-surface review, not a ship gate. Salus's watch-conditions and
+> Naomi's Living-Seed drift-watch below carry forward as the safety net. `?lsgrow=off` per-browser
+> is the standing mitigation. (The **community board** does NOT lift with them - it stays dark until
+> its upload-safety walk, because child file upload is the one place "lift now, fix later" is hardest
+> to reverse.) Decision logged 2026-09-14; Salus's and Naomi's memories carry it.
+
 From the 8-agent "setting learners up for success" review (Guinan/Jake/Troi/Salus/Naomi/Ezri/Kirk/
-Boothby). Built dark behind `?lsgrow=on` (compass main, sw v179). Minutes:
+Boothby). Now **default-on** for all learners (`?lsgrow=off` to opt out). Minutes:
 `agents/meetings/2026/09/2026-09-14-life-skills-setting-learners-up-for-success.md`. Four elevations:
 
 1. **Return loop** ("How it's going") on the skill goal - "what have you done so far?" (real-world
@@ -240,8 +248,10 @@ count or a nudge, that is the 13%).
 chess club going?"), or does a guide read it as a status to check? If it reads as a dashboard, it has
 drifted.
 
-*Same gate: conditions built, flags stay dark until the walk is watched. The guide window is
-guide-facing, but it is about a learner's data, so it belongs in the same consented walk.*
+*These elevations are LIVE now (captain call); the walk is their live-surface review, watch-points
+above are the net, `?lsgrow=off` the mitigation. The guide window is guide-facing but about a
+learner's data, so it still belongs in the same consented walk. The community board remains the one
+surface still gated dark.*
 
 ---
 
