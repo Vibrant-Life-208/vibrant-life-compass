@@ -14,7 +14,7 @@ import { isClimbBuild } from './flags.js';
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar, lifeAreaForCategory } from './studios.js';
 import { lifeWheelSvgFor, COMPASS_REGIONS, REGION_COLORS, taskBand, taskRegion } from './wheel.js';
-import { renderThresholdsHtml, buildSlicePlan, isCurrentWheelBuild, getThresholds } from './thresholds.js';
+import { renderThresholdsHtml, buildSlicePlan, isCurrentWheelBuild, getThresholds, requirementForCategory } from './thresholds.js';
 import { renderGoalArcHtml, currentArcPosition, weeklyKindFor } from './goal-arc.js';
 import { getWeeklyAnswer, saveWeeklyAnswer } from './weekly-answers.js';
 
@@ -96,8 +96,9 @@ async function weekDateLabel(sessionIndex, weekIndex, studioId) {
 // On save, seeds Session 1, 2, 3 goals automatically with End of Session 1, 2, 3
 // respectively. Each tagged autoPopulated=true so learner-edited
 // session goals are preserved on re-save.
-export async function openYearGoalModal({ category, existing, onSave, isFirstTime, studio, requirement = '' }) {
+export async function openYearGoalModal({ category, existing, onSave, isFirstTime, studio, requirement = '', learner = null }) {
   setModalTitle(`${category.name} - year goal`);
+  requirement = requirement || requirementForCategory(learner, category);
   // Pre-compute date labels for the weekly inputs (studio-aware calendar)
   // Weeks per session come from the calendar (js/studios.js sessionWeeks) so the
   // setter follows the calendar rather than hardcoding 4/5/3. Setup plans the first
@@ -1087,6 +1088,9 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
   // (Rose/Ben) as the one who would witness the learner's growth, never impersonated.
   const gsGuide = learnerId ? await getLearner(learnerId) : null;
   const gsGuideName = gsGuide?.guideName ? escapeHtml(gsGuide.guideName) : null;
+  // Anchor the year goal with this category's next-studio requirement, for any category, whenever a
+  // leveling-up learner sets a goal (captain 2026-09-14). Callers may still pass one explicitly.
+  requirement = requirement || requirementForCategory(gsGuide, category);
   const dnow = new Date();
   const todayISO = `${dnow.getFullYear()}-${String(dnow.getMonth() + 1).padStart(2, '0')}-${String(dnow.getDate()).padStart(2, '0')}`;
   const MAX_ITEMS = 3; // up to three per phase; a FEW, never the full ladder (Decision 2 + captain 2026-07-18)

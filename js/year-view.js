@@ -214,6 +214,7 @@ export async function renderYearView(learnerId) {
         existing: goal,
         isFirstTime: noFilledGoalsYet,
         studio: learner.studio,
+        learner,
         onSave: async ({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps }) => {
           await saveGoal({
             id: goal?.id,

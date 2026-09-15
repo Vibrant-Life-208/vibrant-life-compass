@@ -78,6 +78,30 @@ export function getThresholds(targetStudio) {
   return THRESHOLDS[targetStudio] || null;
 }
 
+// The next-studio requirement(s) that belong to a CATEGORY, for a learner leveling up - matched by
+// keyword across the target studio's skills + character thresholds (captain 2026-09-14, "all
+// categories"). Returns a ready-to-show sentence ("To move up to Adventure: ...") or '' if the
+// learner is not leveling up or the category has no matching requirement.
+export function requirementForCategory(learner, category) {
+  const target = learner && learner.pitchTargetStudio;
+  if (!target || !category) return '';
+  const t = getThresholds(target);
+  if (!t) return '';
+  const items = [...(Array.isArray(t.skills) ? t.skills : []), ...(Array.isArray(t.character) ? t.character : [])];
+  if (!items.length) return '';
+  const n = ((category.name || '') + ' ' + (category.id || '')).toLowerCase();
+  let kw = null;
+  if (/math|khan/.test(n)) kw = /khan|math/;
+  else if (/read|book|lexia|language|writing|\bla\b|english/.test(n)) kw = /lexia|read|book|spelling|handwriting|typing|writing/;
+  else if (/civ/.test(n)) kw = /civ/;
+  else if (/character|mindset|heart|spirit|emotion|creator/.test(n)) kw = /mindset|effort|courage|growth|creator/;
+  else if (/lead|culture|friend|community|social/.test(n)) kw = /leadership|launch|soaring|culture/;
+  if (!kw) return '';
+  const matches = items.filter((s) => kw.test(((s.name || '') + ' ' + (s.id || '')).toLowerCase()));
+  if (!matches.length) return '';
+  return `To move up to ${getStudioName(target)}: ${matches.map((s) => s.name).join('; ')}`;
+}
+
 // ── Threshold -> wheel slice (life area) map ─────────────────────────────────
 // The 1-year plan is organized by wheel slice. When a learner opts into a pitch,
 // their thresholds are PRE-INSERTED into the slice they belong to, so the year

@@ -76,6 +76,7 @@ export async function renderCreatorMindset(learnerId) {
       existing,
       isFirstTime: !yearGoals.some((g) => g.text && g.text.trim()),
       studio: learner.studio,
+      learner,
       onSave: async ({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps }) => {
         await saveGoal({
           id: existing?.id, learnerId, categoryId: cat.id, scope: 'year',
