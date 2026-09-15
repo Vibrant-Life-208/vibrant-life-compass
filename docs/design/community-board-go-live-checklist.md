@@ -115,6 +115,12 @@ to the **same counsel**, not a fresh engagement.
 - [ ] Get the answer **in writing**; record the consent lane + any required consent-form / contract
       language. If direct verified consent is required, that becomes its own build (VPC, both
       directions) before lift.
+- [ ] **Proposed instrument attached** (packet Appendix A): a plain-language, granular, revocable
+      at-enrollment consent (separate permissions for text / image / a photo of the child), drafted for
+      counsel to finalize. Vibrant Life currently has **no** media release, so this would be new.
+- [ ] **Build item if adopted:** a **per-learner consent flag** the board checks before allowing a post
+      (no consent -> no publish; text-only -> withhold the image/poster field). Small build; noted now
+      so it isn't discovered after lift.
 
 ---
 
