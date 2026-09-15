@@ -76,13 +76,22 @@ async function renderPdfPoster(buf) {
 }
 
 async function renderImagePoster(file) {
-  const url = URL.createObjectURL(file);
+  // Decode via a data: URL (FileReader), NOT a blob: URL. The app's CSP is `img-src 'self' data:`
+  // (no blob:), so a createObjectURL/blob source is CSP-blocked and every image upload silently
+  // fails - a data: URL is permitted. (2026-09-15, caught by the Gate C browser verify.)
+  const dataUrl = await new Promise((res) => {
+    const fr = new FileReader();
+    fr.onload = () => res(fr.result);
+    fr.onerror = () => res(null);
+    fr.readAsDataURL(file);
+  });
+  if (typeof dataUrl !== 'string') return { ok: false, reason: 'Could not read that image.' };
   try {
     const img = await new Promise((res, rej) => {
       const i = new Image();
       i.onload = () => res(i);
       i.onerror = () => rej(new Error('image'));
-      i.src = url;
+      i.src = dataUrl;
     });
     const w = img.naturalWidth || POSTER_MAX_W;
     const h = img.naturalHeight || w;
@@ -98,8 +107,6 @@ async function renderImagePoster(file) {
     return { ok: true, image: out };
   } catch (e) {
     return { ok: false, reason: 'Could not read that image.' };
-  } finally {
-    URL.revokeObjectURL(url);
   }
 }
 
