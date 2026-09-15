@@ -100,14 +100,20 @@ strong; the child-upload path is not. Three ship-blockers must clear before ANY 
 hard-to-reverse pieces that make this board different from the surfaces lifted live on 2026-09-14.
 Minutes: `agents/meetings/2026/09/2026-09-14-community-board-upload-safety-fresh-review.md`.
 
-1. **Upload hardening, verified** (La'an + Riles + Tutela - convergent signal). Allowlist PDF + raster
-   image types only; re-encode EVERY image through canvas (not just PDFs) to strip **EXIF/GPS** (a
-   child's home coordinates can ride inside a photographed poster) and to kill the **SVG-script**
-   vector; render the stored data URL only via `<img>`, never as markup / an SVG sink; put a page +
-   time budget on pdf.js so a large file cannot hang a young learner's device. Deliverable = a
-   **passing test** (GPS photo -> no coordinates in the stored artifact; SVG -> rejected or
-   rasterized), not a written intention. "Code configured is not code confirmed" (Tutela) - walk the
-   wall, including the RLS on the poster column at every interim state.
+1. **Upload hardening, verified** (La'an + Riles + Tutela - convergent signal). **BUILT + VERIFIED
+   2026-09-15 (sw v200).** The poster pipeline was extracted to `js/poster.js` (no store/backend deps,
+   so it verifies in isolation) and hardened: SVG refused outright in every disguise; strict raster
+   allowlist; every accepted image re-encoded through canvas to JPEG (strips **EXIF/GPS** + active
+   content - the stored value is always inert pixels); canvas dimension-capped to <=700x1000
+   (memory-DoS guard); pdf.js load+render under an 8s time budget (device-hang guard); and a
+   `safePosterSrc()` sink guard so only `data:image/(jpeg|png|webp)` values reach the DOM at all three
+   `<img>` sinks (a poisoned `javascript:` / `data:text/html` / `data:image/svg+xml` value can never
+   render). **Verification** (`scripts/verify-poster-upload.html` + Node): SVG allowlist + sink guard
+   ALL-PASS (executed, deterministic Node run); dimension-cap / never-upscale math ALL-PASS (Node);
+   EXIF/GPS strip guaranteed by construction (canvas re-encode emits only pixels) with a committed
+   browser harness that runs the live GPS-photo test for a human/CI. *Still owed on this blocker: the
+   RLS-on-the-poster-column walk at every interim state (Tutela's "walk the wall") - the pipeline is
+   hardened; the storage-layer perimeter check is separate.*
 2. **Contact-field restructure** (Tasha + Neelix). The free-text "who can people talk to?" box
    publishes a child's phone / address / another child's name to a board every family sees. Do not
    delete it - default it to **"Ask your guide"** so the safe path is the default path; discourage raw
