@@ -109,12 +109,22 @@ carry-in)".
 
 ## Gate E - Accessibility + quiet-poster pass (owner: Pervius)
 
-- [ ] Every field + the file input labeled; focus order sane.
-- [ ] The poster field reads as visually **quiet** - title + description first (the offering), poster a
-      secondary "if you'd like."
-- [ ] If a poster is attached, its caption doubles as **required alt text** (a blind child on the board
-      deserves to know what's pinned). *(Note: caption-as-alt-text may still need building - confirm.)*
-- [ ] Pins/notes meet 44x44 + contrast; reduced-motion respected on any pin animation.
+Full audit: **`community-board-gate-e-a11y-audit.md`** (Parts 1-3 + sign-off). Summary:
+
+- [x] **Mechanical WCAG fixes applied** (sw v204): labeled the contact input + the file input
+      (`aria-label` / `aria-labelledby` / `aria-describedby`); made the poster status a live region
+      (`aria-live="polite"`); narrowed the file `accept` to the raster allowlist (no SVG in the picker).
+      Title/description/category/when-where were already properly labeled.
+- [x] **Quiet-poster ordering already met** - the poster field is the LAST field (title + description
+      first); no change needed.
+- [ ] **Rendered-surface checks (Pervius runs):** contrast of muted small text (`.cork-hint`/`.cork-opt`
+      /`.cork-report`), touch targets (esp. `.cork-report`, currently ~12px), SR read-throughs of form +
+      board + owner UI, focus order. Reduced-motion is already covered for `.cork-note`.
+- [ ] **Judgment calls:** (a) report-link touch target vs. its intentionally-discreet design (Salus/
+      Neelix) - resize to >=24px without making it loud, or take the 2.5.8 inline exception; (b)
+      **caption-as-alt-text is NOT built** - posted poster `alt` is title-derived; decide build-now vs
+      fast-follow.
+- [ ] Pervius signs (compliance verdict + adoption note) OR names what to fix first.
 
 ---
 

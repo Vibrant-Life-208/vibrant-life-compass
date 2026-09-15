@@ -139,8 +139,8 @@ export async function wireRichCommunity(host, learnerId) {
           <label class="cork-radio"><input type="radio" name="cork-contact-mode" value="guide" checked> Ask my guide <span class="cork-opt">(recommended)</span></label>
           <label class="cork-radio"><input type="radio" name="cork-contact-mode" value="specific"> Someone or somewhere specific</label>
           <div class="cork-contact-specific" id="cork-contact-specific" hidden>
-            <input type="text" id="cork-contact" maxlength="120" placeholder="A first name, or a place like 'the Grove'">
-            <span class="cork-hint">Please don't put a phone number, a home address, or another kid's full name - your guide will check this before it goes up.</span>
+            <input type="text" id="cork-contact" maxlength="120" aria-label="A specific person or place to contact" aria-describedby="cork-contact-hint" placeholder="A first name, or a place like 'the Grove'">
+            <span class="cork-hint" id="cork-contact-hint">Please don't put a phone number, a home address, or another kid's full name - your guide will check this before it goes up.</span>
             <p class="cork-contact-warn" id="cork-contact-warn" hidden></p>
           </div>
         </fieldset>`;
@@ -156,10 +156,10 @@ export async function wireRichCommunity(host, learnerId) {
           <textarea id="cork-desc" rows="4" maxlength="500" placeholder="${young ? 'What is your idea, and why would it be fun?' : 'What is the idea, and why does it matter to you?'}" required></textarea></label>
         ${extraFields}
         <div class="cork-field">
-          <span class="cork-label">${young ? 'Add a drawing' : 'Poster or drawing'} <span class="cork-opt">(optional)</span></span>
-          <input type="file" id="cork-poster" accept="application/pdf,image/*">
-          <span class="cork-hint">${young ? 'Draw your idea on paper, take a photo, and add it here.' : 'A PDF, or a photo of a drawing.'}</span>
-          <p class="cork-poster-status" id="cork-poster-status" hidden></p>
+          <span class="cork-label" id="cork-poster-label">${young ? 'Add a drawing' : 'Poster or drawing'} <span class="cork-opt">(optional)</span></span>
+          <input type="file" id="cork-poster" accept="application/pdf,image/png,image/jpeg,image/webp,image/gif,image/heic,image/heif" aria-labelledby="cork-poster-label" aria-describedby="cork-poster-hint">
+          <span class="cork-hint" id="cork-poster-hint">${young ? 'Draw your idea on paper, take a photo, and add it here.' : 'A PDF, or a photo of a drawing.'}</span>
+          <p class="cork-poster-status" id="cork-poster-status" aria-live="polite" hidden></p>
           <div class="cork-poster-preview" id="cork-poster-preview" hidden></div>
         </div>
         <div class="cork-form-actions">
