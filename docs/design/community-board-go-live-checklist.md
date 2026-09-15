@@ -63,28 +63,26 @@ Test Adventure, a genuine non-owner learner.*
 
 ---
 
-## Gate C - Live upload verification (owner: whoever runs the walk / CI)
+## Gate C - Live upload verification (owner: whoever runs the walk / CI) - HARNESS DONE 2026-09-15
 
-The Node tests for the allowlist + sink + dimension cap already pass (deterministic). The one piece
-run-by-construction, not executed there, is the live EXIF strip in a real browser engine. The harness
-and the module it tests are both deployed, so this is a browser open - no local server needed.
+The Node tests for the allowlist + sink + dimension cap pass (deterministic). The live browser run
+was executed against the deployed harness + module.
 
-### Step 1 - Run the harness (2 minutes, no login, no server)
+### Step 1 - Run the harness - DONE (STATUS: ALL-PASS, 16/16, 2026-09-15)
 
-- [ ] In any browser, open:
-      **`https://vibrant-life-compass.vercel.app/scripts/verify-poster-upload.html`**
-- [ ] The page runs the tests against the LIVE `/js/poster.js` and prints its result in place. Wait for
-      the top line to change from `running...` to a status line. **PASS = the first line reads
-      `STATUS: ALL-PASS (N passed, 0 failed)`**, and every line below reads `PASS`:
-  - SVG rejected in every disguise (mime, extension, svg-content-with-png-name)
-  - the EXIF-GPS-injected JPEG is accepted, re-encoded to `data:image/jpeg`, and the GPS **sentinel is
-    absent** from the stored output (no `Exif` marker either)
-  - a very tall image is bounded to <= 700x1000 (dimension cap held)
-  - `safePosterSrc` drops `javascript:`, `data:text/html`, `data:image/svg+xml`, and null
-- [ ] Record the status line (screenshot or copy the text) as the artifact for this gate.
+- [x] Ran `https://vibrant-life-compass.vercel.app/scripts/verify-poster-upload.html` in a real
+      browser: **STATUS: ALL-PASS (16 passed, 0 failed)**. SVG rejected in every disguise; the
+      EXIF-GPS JPEG re-encoded to `data:image/jpeg` with the GPS sentinel + `Exif` marker **absent**;
+      tall image capped <= 700x1000; `safePosterSrc` drops `javascript:`/`data:text/html`/
+      `data:image/svg+xml`/null; normal PNG accepted; fake `.pdf` (bad magic) rejected.
 
-*If the page stays on `running...`, open the browser console for an error and note it - but on the
-deployed static host this should just run.*
+**The live run caught TWO real bugs before lift (this is why Gate C exists):**
+  1. **`poster.js` CSP bug (real, learner-affecting):** the site CSP is `img-src 'self' data:` (no
+     `blob:`), but the pipeline decoded images via `URL.createObjectURL` (a `blob:` URL) - CSP-blocked,
+     so **every** photo/drawing upload silently failed. Fixed: decode via `FileReader.readAsDataURL`
+     (a `data:` URL the CSP permits). No CSP relaxation. (sw v203.)
+  2. Harness-only: test strings contained a literal `</script>` that closed the inline module early;
+     escaped to `<\/script>`.
 
 ### Step 2 - Real-phone-photo spot-check (belt-and-suspenders)
 
