@@ -45,6 +45,25 @@ const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label])
 
 // Poster/drawing pipeline lives in ./poster.js (renderPosterFromFile + safePosterSrc), imported above.
 
+// --- Contact field (blocker #2): safe-by-default, with gentle PII discouragement ---
+// Heuristic "does this look like personal contact info a child shouldn't publish?" - drives an inline
+// nudge only (never a hard block); the guide review is the real backstop.
+function looksLikePII(v) {
+  const s = String(v || '');
+  if (/[\w.+-]+@[\w-]+\.\w{2,}/.test(s)) return true;                          // email
+  if ((s.match(/\d/g) || []).length >= 7) return true;                         // phone-ish (7+ digits)
+  if (/\b\d{1,6}\s+\w+.*\b(st|street|ave|avenue|rd|road|dr|drive|ln|lane|blvd|ct|court|way|cir|circle|pl|place)\b/i.test(s)) return true; // address
+  return false;
+}
+// Resolve the contact value from the form: the safe default ("Ask a guide") unless the learner chose
+// "specific" and typed something. Young register has no contact field, so returns '' (nothing shown).
+function contactValue(host) {
+  const modeEl = host.querySelector('input[name="cork-contact-mode"]:checked');
+  if (!modeEl) return '';
+  if (modeEl.value !== 'specific') return 'Ask a guide';
+  return (host.querySelector('#cork-contact')?.value.trim() || '') || 'Ask a guide';
+}
+
 // --- Render ---
 function categoryChip(cat) {
   if (!cat) return '';
@@ -104,9 +123,16 @@ export async function wireRichCommunity(host, learnerId) {
           </select></label>
         <label class="cork-field"><span class="cork-label">When &amp; where <span class="cork-opt">(optional)</span></span>
           <input type="text" id="cork-when" maxlength="200" placeholder="Thursdays after lunch, in the Grove..."></label>
-        <label class="cork-field"><span class="cork-label">Who can people talk to? <span class="cork-opt">(optional)</span></span>
-          <input type="text" id="cork-contact" maxlength="120" placeholder="Ask a guide...">
-          <span class="cork-hint">You can just say "ask a guide" - you don't have to put your own name.</span></label>`;
+        <fieldset class="cork-field cork-contact-field">
+          <legend class="cork-label">Who can people talk to?</legend>
+          <label class="cork-radio"><input type="radio" name="cork-contact-mode" value="guide" checked> Ask my guide <span class="cork-opt">(recommended)</span></label>
+          <label class="cork-radio"><input type="radio" name="cork-contact-mode" value="specific"> Someone or somewhere specific</label>
+          <div class="cork-contact-specific" id="cork-contact-specific" hidden>
+            <input type="text" id="cork-contact" maxlength="120" placeholder="A first name, or a place like 'the Grove'">
+            <span class="cork-hint">Please don't put a phone number, a home address, or another kid's full name - your guide will check this before it goes up.</span>
+            <p class="cork-contact-warn" id="cork-contact-warn" hidden></p>
+          </div>
+        </fieldset>`;
 
     host.innerHTML = `
       <p class="pillar-prompt">${young
@@ -146,6 +172,25 @@ export async function wireRichCommunity(host, learnerId) {
     titleEl.addEventListener('input', refreshValid);
     descEl.addEventListener('input', refreshValid);
 
+    // Contact field (older register): the safe path - "Ask my guide" - is the default. A learner can
+    // choose "someone specific", which reveals a text box that gently discourages raw PII (a phone
+    // number, address, or another kid's full name); the guide gate is the backstop. (Blocker #2,
+    // Tasha + Neelix 2026-09-15.) The young register has no contact field at all.
+    const specificWrap = host.querySelector('#cork-contact-specific');
+    const contactEl = host.querySelector('#cork-contact');
+    const contactWarn = host.querySelector('#cork-contact-warn');
+    if (specificWrap && contactEl) {
+      host.querySelectorAll('input[name="cork-contact-mode"]').forEach((r) => r.addEventListener('change', () => {
+        const specific = host.querySelector('input[name="cork-contact-mode"]:checked')?.value === 'specific';
+        specificWrap.hidden = !specific;
+        if (specific) contactEl.focus(); else { contactEl.value = ''; contactWarn.hidden = true; }
+      }));
+      contactEl.addEventListener('input', () => {
+        contactWarn.hidden = !looksLikePII(contactEl.value);
+        contactWarn.textContent = 'That looks like a phone number, email, or address - your guide will likely remove it. A first name or a place works better.';
+      });
+    }
+
     posterEl.addEventListener('change', async () => {
       poster = null; previewEl.hidden = true; previewEl.innerHTML = '';
       const file = posterEl.files && posterEl.files[0];
@@ -170,7 +215,7 @@ export async function wireRichCommunity(host, learnerId) {
         category: host.querySelector('#cork-cat')?.value || '',
         body: descEl.value.trim(),
         whenWhere: host.querySelector('#cork-when')?.value.trim() || '',
-        contact: host.querySelector('#cork-contact')?.value.trim() || '',
+        contact: contactValue(host),
         posterImage: poster ? poster.image : '',
       };
       if (!payload.title || !payload.body) return;

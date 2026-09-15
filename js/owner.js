@@ -3,6 +3,7 @@
 // dashboard. Built for a non-technical owner: big labels, one choice at a time.
 
 import { getSession, clearSession, getFamilyIdForProfile, getStudioPracticePulse } from './store.js';
+import { safePosterSrc } from './poster.js';
 import { renderFamilyView } from './family.js';
 import { renderAnchorInsights } from './insights.js';
 import { characteristicLabel } from './practice.js';
@@ -15,6 +16,16 @@ function escapeHtml(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
   ));
+}
+
+// Does a submitted contact string look like personal info to strip before posting? (Blocker #2.)
+// Flags the "Talk to" line in the review queue for the reviewer - never auto-edits.
+function looksLikePII(v) {
+  const s = String(v || '');
+  if (/[\w.+-]+@[\w-]+\.\w{2,}/.test(s)) return true;                          // email
+  if ((s.match(/\d/g) || []).length >= 7) return true;                         // phone-ish (7+ digits)
+  if (/\b\d{1,6}\s+\w+.*\b(st|street|ave|avenue|rd|road|dr|drive|ln|lane|blvd|ct|court|way|cir|circle|pl|place)\b/i.test(s)) return true; // address
+  return false;
 }
 
 function showOnly(screen) {
@@ -102,12 +113,14 @@ async function renderOwnerCommunity(onBack) {
       <p class="picker-sub">Ideas your guides have passed up. Post one to the board, and see what's live.</p>
       <div class="owner-community">
         <h3 class="guide-section-title">Waiting on you</h3>
+        ${pending.length ? `<p class="community-review-guidance">Before you post: read the <strong>Talk to</strong> line and the text for a phone number, home address, email, or another child's full name - remove those first. Contact should route through a guide, not a child's personal details.</p>` : ''}
         ${pending.length ? pending.map((p) => {
-          const poster = (typeof p.posterImage === 'string' && p.posterImage.startsWith('data:image/')) ? p.posterImage : '';
+          const poster = safePosterSrc(p.posterImage);
+          const contactFlag = looksLikePII(p.contact) ? ' community-review-flag' : '';
           const detail = [
             p.category ? `<p class="community-review-meta"><span class="community-review-k">Kind</span> ${escapeHtml(p.category)}</p>` : '',
             p.whenWhere ? `<p class="community-review-meta"><span class="community-review-k">When / where</span> ${escapeHtml(p.whenWhere)}</p>` : '',
-            p.contact ? `<p class="community-review-meta"><span class="community-review-k">Talk to</span> ${escapeHtml(p.contact)}</p>` : '',
+            p.contact ? `<p class="community-review-meta${contactFlag}"><span class="community-review-k">Talk to</span> ${escapeHtml(p.contact)}${contactFlag ? ' <span class="community-review-flag-tag">check &amp; remove personal info</span>' : ''}</p>` : '',
           ].join('');
           return `
           <div class="community-review-card">
