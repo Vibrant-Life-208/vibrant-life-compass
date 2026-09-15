@@ -4859,6 +4859,20 @@ body.landscape-mountain {
 .community-review-guidance { font-size: 0.82rem; color: #6b4a1e; background: #fbf3e3; border: 1px solid #ecd7ad; border-radius: 8px; padding: 0.5rem 0.65rem; margin: 0 0 0.7rem; }
 .community-review-meta.community-review-flag { color: #a15a1e; }
 .community-review-flag-tag { font-size: 0.72rem; font-weight: 600; color: #fff; background: #c4783a; border-radius: 999px; padding: 0.05rem 0.45rem; margin-left: 0.35rem; white-space: nowrap; }
+/* Report affordance on a board note (blocker #3). */
+.cork-report-wrap { margin-top: 0.5rem; }
+.cork-report { background: none; border: 0; padding: 0; font-size: 0.76rem; color: var(--text-muted); text-decoration: underline; cursor: pointer; }
+.cork-report:hover { color: var(--text); }
+.cork-report-form { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.35rem; }
+.cork-report-why { width: 100%; box-sizing: border-box; padding: 0.4rem 0.5rem; border: 1px solid var(--earth-light); border-radius: 6px; font-size: 0.85rem; }
+.cork-report-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+.cork-report-done { font-size: 0.8rem; color: #3f6f4a; font-style: italic; margin: 0.35rem 0 0; }
+/* Non-shaming path-back: revise & share again. */
+.conn-mine-revise { margin-top: 0.2rem; padding: 0; font-size: 0.82rem; }
+/* Reported posted note in the owner review. */
+.community-review-reported { border-color: #e0b58a; box-shadow: inset 0 0 0 1px #efcfa6; }
+.community-review-reportflag { margin: 0 0 0.35rem; }
+.community-review-reasons { font-size: 0.8rem; color: #8a5a2a; }
 .cork-form input[type="text"], .cork-form select, .cork-form textarea {
   width: 100%; box-sizing: border-box; padding: 0.5rem 0.6rem;
   border: 1px solid var(--earth-light, #d9c9a3); border-radius: 8px;

@@ -1493,6 +1493,24 @@ export async function getCommunityReviewQueue(status) {
   return (data || []).map(rowToCommunityPost);
 }
 
+// Blocker #3: a learner reports a POSTED note for staff to look at. Insert-only; reporter_id
+// defaults to auth.uid() in the DB. Never changes the post's status (the owner decides).
+export async function reportCommunityPost(postId, reason) {
+  const row = { post_id: postId };
+  if (reason && reason.trim()) row.reason = reason.trim().slice(0, 300);
+  const { error } = await getClient().from('community_post_reports').insert(row);
+  if (error) { console.warn('reportCommunityPost:', error.message); return false; }
+  return true;
+}
+
+// Staff read of reports (RLS scopes to roster/owner). Returns { postId, reason, createdAt } rows.
+export async function getCommunityPostReports() {
+  const { data, error } = await getClient().from('community_post_reports')
+    .select('post_id, reason, created_at').order('created_at', { ascending: false });
+  if (error) { console.warn('getCommunityPostReports:', error.message); return []; }
+  return (data || []).map((r) => ({ postId: r.post_id, reason: r.reason || '', createdAt: r.created_at }));
+}
+
 // Apply a review. patch: { status, stage: 'guide'|'owner', guideNote? }.
 export async function reviewCommunityPost(id, patch) {
   const { data: u } = await getClient().auth.getUser();

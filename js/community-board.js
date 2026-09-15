@@ -22,7 +22,7 @@
 // owner review before anything reaches the public board.
 
 import { escapeHtml, escapeAttr } from './pillars/_scaffold.js';
-import { submitCommunityPost, getMyCommunityPosts, getPostedBoard, getLearner } from './store.js';
+import { submitCommunityPost, getMyCommunityPosts, getPostedBoard, getLearner, reportCommunityPost } from './store.js';
 import { renderPosterFromFile, safePosterSrc } from './poster.js';
 
 const POST_STATUS = {
@@ -83,16 +83,27 @@ function boardNote(b) {
       ${categoryChip(b.category)}
       <p class="cork-desc">${escapeHtml(b.body)}</p>
       ${meta}
+      <div class="cork-report-wrap" data-report-wrap="${escapeAttr(b.id)}">
+        <button type="button" class="cork-report" data-report="${escapeAttr(b.id)}">Something wrong? Tell a guide</button>
+      </div>
     </div>
   </article>`;
 }
 
 function mineRow(p) {
+  // Non-shaming path-back (blocker #3, Winona): a taken-down idea is not a mark against the learner.
+  // We say so warmly and offer a way to revise + share again - repair, never exile. Same for 'denied'.
+  const removed = p.status === 'removed';
+  const denied = p.status === 'denied';
+  const statusLine = removed
+    ? 'Taken down - that happens sometimes, and it is not a mark against you. You can tweak it and share it again.'
+    : `${POST_STATUS[p.status] || p.status}${denied && p.guideNote ? ` - ${p.guideNote}` : ''}`;
   return `<div class="conn-mine">
     ${safePosterSrc(p.posterImage) ? `<img class="conn-mine-thumb" src="${escapeAttr(safePosterSrc(p.posterImage))}" alt="" loading="lazy">` : ''}
     <div class="conn-mine-main">
       <p class="conn-mine-body">${p.title ? `<strong>${escapeHtml(p.title)}</strong> - ` : ''}${escapeHtml(p.body)}</p>
-      <p class="conn-mine-status conn-status-${escapeAttr(p.status)}">${escapeHtml(POST_STATUS[p.status] || p.status)}${p.status === 'denied' && p.guideNote ? ` - ${escapeHtml(p.guideNote)}` : ''}</p>
+      <p class="conn-mine-status conn-status-${escapeAttr(p.status)}">${escapeHtml(statusLine)}</p>
+      ${(removed || denied) ? `<button type="button" class="btn btn-text conn-mine-revise" data-revise="${escapeAttr(p.id)}">Revise &amp; share again</button>` : ''}
     </div>
   </div>`;
 }
@@ -224,6 +235,46 @@ export async function wireRichCommunity(host, learnerId) {
       poster = null;
       await render();
     });
+
+    // Report a posted note (blocker #3): opens a small "tell a guide what's wrong" form; sending
+    // files a report for staff to look at (it does NOT remove the note - the owner decides). A gentle,
+    // two-step affordance so a tap is never an accidental takedown.
+    host.querySelectorAll('[data-report]').forEach((btn) => btn.addEventListener('click', () => {
+      const wrap = host.querySelector(`[data-report-wrap="${CSS.escape(btn.dataset.report)}"]`);
+      if (!wrap || wrap.querySelector('.cork-report-form')) return;
+      const id = btn.dataset.report;
+      btn.hidden = true;
+      const form = document.createElement('div');
+      form.className = 'cork-report-form';
+      form.innerHTML = `
+        <label class="cork-hint" for="cork-report-why-${escapeAttr(id)}">Tell a guide what's wrong <span class="cork-opt">(optional)</span></label>
+        <input type="text" id="cork-report-why-${escapeAttr(id)}" class="cork-report-why" maxlength="300" placeholder="What should a guide know?">
+        <div class="cork-report-actions">
+          <button type="button" class="btn btn-text" data-report-cancel="1">Never mind</button>
+          <button type="button" class="btn btn-primary" data-report-send="1">Send to a guide</button>
+        </div>`;
+      wrap.appendChild(form);
+      form.querySelector('.cork-report-why').focus();
+      form.querySelector('[data-report-cancel]').addEventListener('click', () => { form.remove(); btn.hidden = false; });
+      form.querySelector('[data-report-send]').addEventListener('click', async (ev) => {
+        const send = ev.currentTarget; send.disabled = true; send.textContent = 'Sending...';
+        const reason = form.querySelector('.cork-report-why')?.value.trim() || '';
+        try { await reportCommunityPost(id, reason); } catch (_) {}
+        wrap.innerHTML = '<p class="cork-report-done">Thank you - a guide will take a look.</p>';
+      });
+    }));
+
+    // Non-shaming path-back: "Revise & share again" reopens the form pre-filled from the taken-down
+    // (or not-this-time) idea, then scrolls to it. Repair, never exile.
+    host.querySelectorAll('[data-revise]').forEach((btn) => btn.addEventListener('click', () => {
+      const p = mine.find((m) => String(m.id) === String(btn.dataset.revise));
+      if (!p) return;
+      if (titleEl) titleEl.value = p.title || '';
+      if (descEl) descEl.value = p.body || '';
+      refreshValid();
+      host.querySelector('#cork-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      titleEl?.focus();
+    }));
   };
 
   await render();

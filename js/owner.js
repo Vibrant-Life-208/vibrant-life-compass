@@ -101,11 +101,20 @@ async function renderOwnerCommunity(onBack) {
   const screen = document.getElementById('owner-context-screen');
   if (!screen) return;
   showOnly(screen);
-  const { getCommunityReviewQueue, getPostedBoard, reviewCommunityPost } = await import('./store.js');
-  const [pending, board] = await Promise.all([
+  const { getCommunityReviewQueue, getPostedBoard, reviewCommunityPost, getCommunityPostReports } = await import('./store.js');
+  const [pending, board, reports] = await Promise.all([
     getCommunityReviewQueue('pending_owner').catch(() => []),
     getPostedBoard().catch(() => []),
+    getCommunityPostReports().catch(() => []),
   ]);
+  // Group reports by post so a posted note carries a "someone flagged this" prompt for the owner
+  // (blocker #3). Reports never auto-remove - they only draw the eye; the owner decides.
+  const reportsByPost = new Map();
+  for (const r of reports) {
+    if (!reportsByPost.has(r.postId)) reportsByPost.set(r.postId, []);
+    if (r.reason) reportsByPost.get(r.postId).push(r.reason);
+    else reportsByPost.get(r.postId).push('');
+  }
   screen.innerHTML = `
     <div class="picker-container owner-context">
       <button type="button" class="owner-back" data-back="1">&#8592; Menu</button>
@@ -132,12 +141,17 @@ async function renderOwnerCommunity(onBack) {
           </div>`;
         }).join('') : '<p class="pillar-empty">Nothing waiting - all clear.</p>'}
         <h3 class="guide-section-title">On the board</h3>
-        ${board.length ? board.map((b) => `
-          <div class="community-review-card">
+        ${board.length ? board.slice().sort((a, b) => (reportsByPost.has(b.id) ? 1 : 0) - (reportsByPost.has(a.id) ? 1 : 0)).map((b) => {
+          const flags = reportsByPost.get(b.id) || null;
+          const reasons = flags ? flags.filter(Boolean) : [];
+          return `
+          <div class="community-review-card${flags ? ' community-review-reported' : ''}">
+            ${flags ? `<p class="community-review-reportflag"><span class="community-review-flag-tag">someone flagged this (${flags.length})</span>${reasons.length ? ` <span class="community-review-reasons">${reasons.map((r) => escapeHtml(r)).join(' · ')}</span>` : ''}</p>` : ''}
             ${b.title ? `<p class="community-review-title"><strong>${escapeHtml(b.title)}</strong></p>` : ''}
             <p class="community-review-body">${escapeHtml(b.body)}</p>
             <div class="community-review-actions"><button type="button" class="btn btn-text" data-takedown="${escapeHtml(b.id)}">Take down</button></div>
-          </div>`).join('') : '<p class="pillar-empty">Nothing posted yet.</p>'}
+          </div>`;
+        }).join('') : '<p class="pillar-empty">Nothing posted yet.</p>'}
       </div>
     </div>`;
   screen.querySelector('[data-back]').addEventListener('click', () => onBack());

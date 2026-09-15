@@ -1203,3 +1203,5 @@ export async function getMyCommunityPosts() { return []; }
 export async function getPostedBoard() { return []; }
 export async function getCommunityReviewQueue() { return []; }
 export async function reviewCommunityPost() { return null; }
+export async function reportCommunityPost() { return false; }
+export async function getCommunityPostReports() { return []; }

@@ -125,6 +125,8 @@ export const {
   getPostedBoard,
   getCommunityReviewQueue,
   reviewCommunityPost,
+  reportCommunityPost,
+  getCommunityPostReports,
 } = impl;
 
 // La'an's runtime write-wall — the single store write edge for goal rows. saveGoal dispatches
