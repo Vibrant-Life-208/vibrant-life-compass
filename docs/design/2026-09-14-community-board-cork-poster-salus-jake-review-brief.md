@@ -159,24 +159,33 @@ Remove it afterward with the owner "Take down" button, or `delete from community
 ## Second surface in this walk: Responsibilities v1 (added 2026-09-14)
 
 The same sitting can also walk **Responsibilities** (Creator Mindset), built dark behind `?resp=on`
-(compass main, sw v175). Full design + rationale: `docs/design/2026-09-14-responsibilities-v1-design-note.md`.
+(compass main, **sw v181**). Full design + rationale: `docs/design/2026-09-14-responsibilities-v1-design-note.md`.
 
-**Access:** load `?resp=on` on the studio device, then Creator Mindset -> Responsibilities; give one
-a cadence (Daily / Weekdays / Weekly) and check the Calendar for the soft leaf. `?resp=off` to switch
-it back off.
+**Updated 2026-09-14 (post-build, from captain testing):**
+- **Weekly now has a weekday PICKER** (S M T W T F S) - the learner chooses the day (e.g. "clean the
+  litter box" every Friday) instead of it auto-anchoring to the day it was set.
+- **The calendar marker is a yellow "responsibility tab"** (Creator Mindset colour #F5A623), not a
+  green leaf - outline when it's yours that day, filled once tended.
+- The new big **"This month" calendar** (live, sw v180) makes the tabs large and legible - this is
+  what surfaces responsibilities clearly.
+
+**Access:** load `?resp=on` on the studio device, then Creator Mindset -> Responsibilities; add one,
+choose a cadence (Daily / Weekdays / Weekly-then-pick-a-day), and check the Calendar (the big "This
+month" at the top) for the yellow tab. `?resp=off` to switch it back off.
 
 **Watch points — Jake (developmental):**
-- Does the **cadence** land for a Discovery (~8-11) child, or is Weekdays/Weekly too abstract (simpler
-  young cut needed)?
+- Does the **cadence + weekday picker** land for a Discovery (~8-11) child, or is Weekly/pick-a-day
+  too abstract (simpler young cut needed)?
 - Does it feel like **ownership** ("mine to carry") or tip into **obligation** ("what I'm supposed to
   do")?
-- Is the tend/leaf loop quietly satisfying without becoming a thing they chase?
+- Is the tend loop quietly satisfying without becoming a thing they chase?
 
 **Watch points — Salus (safety):**
 - Does "tended today?" ever read as a **test** they can fail? Watch for a wince on a day they did not
   tend - it is designed as a non-event; verify that lands.
 - Does "Off" feel like a genuine, unpunished choice?
-- Confirm no count/streak/scoreboard leak anywhere (the Clabough non-negotiable).
+- Confirm no count/streak/scoreboard leak anywhere (the Clabough non-negotiable). The yellow tab is a
+  presence marker, never a tally.
 
 *Same gate as the board: conditions built, but neither seat clears it for a real child until the walk
 is watched. Both flags stay dark until then.*
