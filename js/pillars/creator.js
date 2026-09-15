@@ -6,10 +6,12 @@
 // tools are still Phase 2.
 
 import { shell, section, emptyNote, goalCard, escapeHtml, escapeAttr } from './_scaffold.js';
-import { getLearner, getGoals, getProfileHorizons, getProfileFoundations, setProfileFoundations } from '../store.js';
+import { getLearner, getGoals, getProfileHorizons, getProfileFoundations, setProfileFoundations, saveGoal } from '../store.js';
 import { getCategoriesForStudio } from '../studios.js';
 import { isResponsibilities } from '../flags.js';
 import { CADENCES, normalizeResponsibilities, cadenceLabel } from '../responsibilities.js';
+import { openGoalSetupModal, openYearGoalModal } from '../modals.js';
+import { isCurrentWheelBuild } from '../thresholds.js';
 
 const HORIZONS = [
   { key: 'beyond_5yr', label: '10 years from now' },
@@ -56,8 +58,47 @@ export async function renderCreatorMindset(learnerId) {
   ]);
   const cats = getCategoriesForStudio(learner?.studio) || [];
   const coreIds = new Set(cats.filter((c) => c.kind === 'core').map((c) => c.id));
+  const makerCats = cats.filter((c) => !coreIds.has(c.id) && c.id && c.name);
   const yearGoals = (goals || []).filter((g) => g.scope === 'year');
   const makerGoals = yearGoals.filter((g) => !coreIds.has(g.categoryId));
+  const currentWheel = isCurrentWheelBuild(learner);
+
+  // Set / edit a maker goal inline, using the SAME rich year-goal flow the Compass wheel and the
+  // Academics pillar use: a year goal broken in half + milestones + weekly bite-size steps
+  // (captain 2026-09-14). Mirrors year-view's per-category handler exactly - no duplicated logic.
+  const openMakerGoal = (cat, existing) => {
+    if (currentWheel) {
+      openGoalSetupModal({ goal: existing || null, category: cat, learnerId, onDone: () => renderCreatorMindset(learnerId) });
+      return;
+    }
+    openYearGoalModal({
+      category: cat,
+      existing,
+      isFirstTime: !yearGoals.some((g) => g.text && g.text.trim()),
+      studio: learner.studio,
+      onSave: async ({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps }) => {
+        await saveGoal({
+          id: existing?.id, learnerId, categoryId: cat.id, scope: 'year',
+          text, baseline, halfwayPoint, quarterPoint, eos1Point,
+          weeklySteps: weeklySteps || existing?.weeklySteps || {},
+          targetSession: 6, status: existing?.status || 'active',
+        });
+        const seedSession = async (sessionIndex, seedText) => {
+          if (!seedText) return;
+          const existingS = (goals || []).find((g) => g.scope === 'session' && g.sessionIndex === sessionIndex && g.categoryId === cat.id);
+          if (!existingS) {
+            await saveGoal({ learnerId, categoryId: cat.id, scope: 'session', sessionIndex, text: seedText, autoPopulated: true, status: 'active' });
+          } else if (existingS.autoPopulated) {
+            await saveGoal({ ...existingS, text: seedText, autoPopulated: true });
+          }
+        };
+        await seedSession(3, halfwayPoint);
+        await seedSession(2, quarterPoint);
+        await seedSession(1, eos1Point);
+        await renderCreatorMindset(learnerId);
+      },
+    });
+  };
 
   const h = horizons || {};
   const horizonRows = HORIZONS.map((row) => {
@@ -70,9 +111,21 @@ export async function renderCreatorMindset(learnerId) {
     ? section('Your vision', horizonRows)
     : section('Your vision', emptyNote('Your 10 / 5 / 1 year vision appears here once you set it.'));
 
-  const goalsSection = makerGoals.length
-    ? section('Your goals', makerGoals.map(goalCard).join(''))
-    : section('Your goals', emptyNote('The goals you set from your vision will land here.'));
+  const goalCatIds = new Set(makerGoals.map((g) => g.categoryId));
+  const availableCats = makerCats.filter((c) => !goalCatIds.has(c.id));
+  const goalsBody = (makerGoals.length
+    ? makerGoals.map((g) => `<div class="creator-goal-row">${goalCard(g)}<div class="acad-goal-actions"><button type="button" class="btn btn-text" data-edit-goal="${escapeAttr(g.categoryId)}">Edit goal</button></div></div>`).join('')
+    : emptyNote('Set a goal from your vision and it will land here.'))
+    + (availableCats.length
+      ? `<div class="creator-add-goal">
+          <button type="button" class="btn btn-text" id="creator-add-goal-btn">+ Set a goal</button>
+          <div id="creator-goal-cats" hidden>
+            <p class="pillar-prompt">Which part of your life is this goal for?</p>
+            <div class="creator-cat-choices">${availableCats.map((c) => `<button type="button" class="resp-chip creator-cat-choice" data-goal-cat="${escapeAttr(c.id)}">${escapeHtml(c.name)}</button>`).join('')}</div>
+          </div>
+        </div>`
+      : '');
+  const goalsSection = section('Your goals', goalsBody);
 
   const toolsSection = section('Emotional Regulation', regToolsHtml());
 
@@ -90,6 +143,20 @@ export async function renderCreatorMindset(learnerId) {
     { color: 'creator', title: 'Creator Mindset', subtitle: 'Where you find out you can build.' },
     [horizonSection, goalsSection, toolsSection, respSection],
   );
+
+  // Inline goal set/edit (mirrors Academics). Edit an existing maker goal, or pick a life-area to
+  // set a new one - both open the rich year-goal flow.
+  el.querySelectorAll('[data-edit-goal]').forEach((btn) => btn.addEventListener('click', () => {
+    const cat = makerCats.find((c) => c.id === btn.dataset.editGoal);
+    if (cat) openMakerGoal(cat, makerGoals.find((g) => g.categoryId === cat.id));
+  }));
+  const addGoalBtn = el.querySelector('#creator-add-goal-btn');
+  const goalCatBox = el.querySelector('#creator-goal-cats');
+  if (addGoalBtn && goalCatBox) addGoalBtn.addEventListener('click', () => { goalCatBox.hidden = !goalCatBox.hidden; });
+  el.querySelectorAll('[data-goal-cat]').forEach((btn) => btn.addEventListener('click', () => {
+    const cat = makerCats.find((c) => c.id === btn.dataset.goalCat);
+    if (cat) openMakerGoal(cat, null);
+  }));
 
   wireResponsibilities(learnerId, foundations || {}, climb);
 }
