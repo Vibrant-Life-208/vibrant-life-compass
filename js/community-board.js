@@ -23,6 +23,7 @@
 
 import { escapeHtml, escapeAttr } from './pillars/_scaffold.js';
 import { submitCommunityPost, getMyCommunityPosts, getPostedBoard, getLearner } from './store.js';
+import { renderPosterFromFile, safePosterSrc } from './poster.js';
 
 const POST_STATUS = {
   pending_guide: 'Waiting for your guide',
@@ -42,90 +43,7 @@ const CATEGORIES = [
 ];
 const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.label]));
 
-// --- Poster: render a PDF's first page OR an image to a downscaled JPEG data URL, on-device. ---
-let _pdfjs = null;
-async function getPdfjs() {
-  if (_pdfjs) return _pdfjs;
-  const mod = await import('./vendor/pdf.min.mjs');
-  mod.GlobalWorkerOptions.workerSrc = new URL('./vendor/pdf.worker.min.mjs', import.meta.url).href;
-  _pdfjs = mod;
-  return mod;
-}
-
-const MAX_FILE_BYTES = 15 * 1024 * 1024; // reject anything larger than a plausible poster/photo
-const POSTER_MAX_W = 700;                // downscale to this width
-const POSTER_MAX_LEN = 600000;           // matches the DB column cap on the data URL
-
-function canvasToPoster(canvas) {
-  let out = canvas.toDataURL('image/jpeg', 0.72);
-  if (out.length > POSTER_MAX_LEN) out = canvas.toDataURL('image/jpeg', 0.55);
-  return out;
-}
-
-async function renderPdfPoster(buf) {
-  let doc;
-  try {
-    const pdfjs = await getPdfjs();
-    doc = await pdfjs.getDocument({ data: buf }).promise;
-  } catch (e) { return { ok: false, reason: 'Could not read that PDF.' }; }
-  try {
-    const page = await doc.getPage(1);
-    const base = page.getViewport({ scale: 1 });
-    const scale = Math.min(1, POSTER_MAX_W / base.width);
-    const viewport = page.getViewport({ scale });
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.ceil(viewport.width);
-    canvas.height = Math.ceil(viewport.height);
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height); // flatten for JPEG
-    await page.render({ canvasContext: ctx, viewport }).promise;
-    const out = canvasToPoster(canvas);
-    if (out.length > POSTER_MAX_LEN) return { ok: false, reason: 'That poster is too detailed to store - try a simpler file.' };
-    return { ok: true, image: out };
-  } catch (e) { return { ok: false, reason: 'Could not render that poster.' }; }
-}
-
-async function renderImagePoster(file) {
-  const url = URL.createObjectURL(file);
-  try {
-    const img = await new Promise((res, rej) => {
-      const i = new Image();
-      i.onload = () => res(i);
-      i.onerror = () => rej(new Error('image'));
-      i.src = url;
-    });
-    const w = img.naturalWidth || POSTER_MAX_W;
-    const scale = Math.min(1, POSTER_MAX_W / w);
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.max(1, Math.round(w * scale));
-    canvas.height = Math.max(1, Math.round((img.naturalHeight || w) * scale));
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    const out = canvasToPoster(canvas);
-    if (out.length > POSTER_MAX_LEN) return { ok: false, reason: 'That image is too detailed to store - try a smaller one.' };
-    return { ok: true, image: out };
-  } catch (e) {
-    return { ok: false, reason: 'Could not read that image.' };
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-}
-
-async function renderPosterFromFile(file) {
-  if (!file) return { ok: false, reason: 'No file chosen.' };
-  if (file.size > MAX_FILE_BYTES) return { ok: false, reason: 'That file is too large (15MB max).' };
-  const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
-  const isImg = /^image\//.test(file.type || '') || /\.(png|jpe?g|webp|gif|heic|heif)$/i.test(file.name || '');
-  if (isPdf) {
-    const buf = await file.arrayBuffer();
-    const magic = new TextDecoder().decode(new Uint8Array(buf.slice(0, 5)));
-    if (magic !== '%PDF-') return { ok: false, reason: 'That file is not a valid PDF.' };
-    return renderPdfPoster(buf);
-  }
-  if (isImg) return renderImagePoster(file);
-  return { ok: false, reason: 'Please choose a PDF or an image (a photo of a drawing works too).' };
-}
+// Poster/drawing pipeline lives in ./poster.js (renderPosterFromFile + safePosterSrc), imported above.
 
 // --- Render ---
 function categoryChip(cat) {
@@ -140,7 +58,7 @@ function boardNote(b) {
   ].join('');
   return `<article class="cork-note">
     <span class="cork-pin" aria-hidden="true"></span>
-    ${b.posterImage ? `<img class="cork-poster" src="${escapeAttr(b.posterImage)}" alt="${escapeAttr((b.title || 'Community') + ' poster')}" loading="lazy">` : ''}
+    ${safePosterSrc(b.posterImage) ? `<img class="cork-poster" src="${escapeAttr(safePosterSrc(b.posterImage))}" alt="${escapeAttr((b.title || 'Community') + ' poster')}" loading="lazy">` : ''}
     <div class="cork-note-body">
       ${b.title ? `<h4 class="cork-title">${escapeHtml(b.title)}</h4>` : ''}
       ${categoryChip(b.category)}
@@ -152,7 +70,7 @@ function boardNote(b) {
 
 function mineRow(p) {
   return `<div class="conn-mine">
-    ${p.posterImage ? `<img class="conn-mine-thumb" src="${escapeAttr(p.posterImage)}" alt="" loading="lazy">` : ''}
+    ${safePosterSrc(p.posterImage) ? `<img class="conn-mine-thumb" src="${escapeAttr(safePosterSrc(p.posterImage))}" alt="" loading="lazy">` : ''}
     <div class="conn-mine-main">
       <p class="conn-mine-body">${p.title ? `<strong>${escapeHtml(p.title)}</strong> - ` : ''}${escapeHtml(p.body)}</p>
       <p class="conn-mine-status conn-status-${escapeAttr(p.status)}">${escapeHtml(POST_STATUS[p.status] || p.status)}${p.status === 'denied' && p.guideNote ? ` - ${escapeHtml(p.guideNote)}` : ''}</p>
@@ -242,7 +160,7 @@ export async function wireRichCommunity(host, learnerId) {
       poster = { image: res.image };
       statusEl.textContent = young ? 'Drawing ready.' : 'Poster ready.'; statusEl.className = 'cork-poster-status is-ok';
       previewEl.hidden = false;
-      previewEl.innerHTML = `<img class="cork-poster-thumb" src="${escapeAttr(res.image)}" alt="Preview">`;
+      previewEl.innerHTML = `<img class="cork-poster-thumb" src="${escapeAttr(safePosterSrc(res.image))}" alt="Preview">`;
     });
 
     host.querySelector('#cork-form').addEventListener('submit', async (e) => {
