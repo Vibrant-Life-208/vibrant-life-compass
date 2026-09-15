@@ -9,7 +9,7 @@ import { shell, section, emptyNote, goalCard, escapeHtml, escapeAttr } from './_
 import { getLearner, getGoals, getProfileFoundations, setProfileFoundations, saveGoal } from '../store.js';
 import { getCategoriesForStudio, getStudioName } from '../studios.js';
 import { getBooks, addBook, setBookmark } from '../books.js';
-import { openGoalSetupModal, openYearGoalModal, openThresholdsModal } from '../modals.js';
+import { openGoalSetupModal, openYearGoalModal } from '../modals.js';
 import { isCurrentWheelBuild, getThresholds } from '../thresholds.js';
 
 export async function renderAcademicsPillar(learnerId) {
@@ -66,49 +66,54 @@ export async function renderAcademicsPillar(learnerId) {
     });
   };
 
+  const climb = (foundations && foundations.climb && typeof foundations.climb === 'object' && !Array.isArray(foundations.climb))
+    ? foundations.climb : {};
+
+  // The year tools live WITH each subject (captain 2026-09-14): the learner's program + baseline for
+  // that subject, and - for a learner leveling up (pitchTargetStudio set) - the next-studio
+  // requirements that belong to that subject. No separate "headed" block at the top.
+  const levelingUp = Boolean(learner?.pitchTargetStudio);
+  const targetName = levelingUp ? (getStudioName(learner.pitchTargetStudio) || learner.pitchTargetStudio) : '';
+  const skills = levelingUp ? ((getThresholds(learner.pitchTargetStudio) || {}).skills || []) : [];
+
+  // Map a subject to its captured program (onboarding: climb.math / la / reading).
+  const programForCat = (cat) => {
+    const n = ((cat.name || '') + ' ' + (cat.id || '')).toLowerCase();
+    if (/math/.test(n)) return climb.math ? { program: climb.math.program, baseline: climb.math.baseline } : null;
+    if (/language|writing|lexia|\bla\b|english/.test(n)) return climb.la ? { program: climb.la.program, baseline: climb.la.baseline } : null;
+    if (/read|book/.test(n)) return (climb.reading && climb.reading.current) ? { program: climb.reading.current, baseline: '' } : null;
+    return null;
+  };
+  // The threshold requirements that belong to a subject, matched by keyword.
+  const reqsForCat = (cat) => {
+    if (!levelingUp || !skills.length) return [];
+    const n = ((cat.name || '') + ' ' + (cat.id || '')).toLowerCase();
+    const kw = /math/.test(n) ? /khan|math/
+      : /read|book|language|writing|lexia|\bla\b/.test(n) ? /lexia|read|book|spelling|handwriting|typing|writing/
+      : /civ/.test(n) ? /civ/
+      : null;
+    if (!kw) return [];
+    return skills.filter((s) => kw.test(((s.name || '') + ' ' + (s.id || '')).toLowerCase()));
+  };
+
   const subjectSections = coreCats.map((c) => {
     const g = goalFor(c.id);
-    const inner = (g ? goalCard(g) : emptyNote('No goal set yet.'))
+    const prog = programForCat(c);
+    const reqs = reqsForCat(c);
+    const progLine = (prog && (prog.program || prog.baseline))
+      ? `<p class="acad-subj-prog">${prog.program ? `<span class="acad-headed-prog">${escapeHtml(prog.program)}</span>` : ''}${prog.baseline ? ` <span class="acad-subj-base">started: ${escapeHtml(prog.baseline)}</span>` : ''}</p>`
+      : '';
+    const reqLine = reqs.length
+      ? `<p class="acad-subj-req"><span class="acad-subj-req-k">To move up to ${escapeHtml(targetName)}:</span> ${reqs.map((r) => escapeHtml(r.name)).join('; ')}</p>`
+      : '';
+    const inner = progLine + reqLine
+      + (g ? goalCard(g) : emptyNote('No goal set yet.'))
       + `<div class="acad-goal-actions"><button type="button" class="btn btn-text" data-subject-goal="${escapeAttr(c.id)}">${g ? 'Edit goal' : 'Set a goal'}</button></div>`;
     return section(c.name, inner);
   });
   const subjectsBlock = subjectSections.length
     ? subjectSections
     : [section('Core subjects', emptyNote('Your academic subjects appear here.'))];
-
-  const climb = (foundations && foundations.climb && typeof foundations.climb === 'object' && !Array.isArray(foundations.climb))
-    ? foundations.climb : {};
-
-  // "Where you're headed this year" (captain 2026-09-14): the learner's programs + baselines to
-  // decide what the end of the year looks like, and - for a learner leveling up (pitchTargetStudio
-  // set) - the next studio's requirements up front, since those ARE the year-end program targets.
-  const progList = [];
-  if (climb.math && (climb.math.program || climb.math.baseline)) progList.push({ subj: 'Math', program: climb.math.program, baseline: climb.math.baseline });
-  if (climb.la && (climb.la.program || climb.la.baseline)) progList.push({ subj: 'Language Arts', program: climb.la.program, baseline: climb.la.baseline });
-  if (climb.reading && climb.reading.current) progList.push({ subj: 'Reading', program: climb.reading.current, baseline: '' });
-  const programRows = progList.map((p) => `<div class="acad-headed-row">
-      <span class="acad-headed-subj">${escapeHtml(p.subj)}</span>${p.program ? ` <span class="acad-headed-prog">${escapeHtml(p.program)}</span>` : ''}
-      ${p.baseline ? `<p class="acad-headed-base">Where you started: ${escapeHtml(p.baseline)}</p>` : ''}
-    </div>`).join('');
-
-  const levelingUp = Boolean(learner?.pitchTargetStudio);
-  let crossingBlock = '';
-  if (levelingUp) {
-    const t = getThresholds(learner.pitchTargetStudio);
-    const targetName = getStudioName(learner.pitchTargetStudio) || learner.pitchTargetStudio;
-    const skills = (t && Array.isArray(t.skills)) ? t.skills : [];
-    crossingBlock = `<div class="acad-crossing">
-      <p class="acad-crossing-head">You're aiming for <strong>${escapeHtml(targetName)}</strong>. To move up, here's what it takes:</p>
-      ${skills.length ? `<ul class="acad-crossing-list">${skills.map((s) => `<li>${escapeHtml(s.name)}</li>`).join('')}</ul>` : ''}
-      <button type="button" class="btn btn-text" id="acad-see-thresholds">See the full requirements</button>
-    </div>`;
-  }
-  const headedSection = (programRows || crossingBlock)
-    ? section("Where you're headed this year", `
-        <p class="pillar-prompt">Look at your programs and decide what the end of the year looks like${levelingUp ? ", and what it takes to move up" : ''} - then set your goals below.</p>
-        ${programRows}
-        ${crossingBlock}`)
-    : '';
 
   const readingSection = section('Deep reading', `
     <p class="pillar-prompt">A book that challenges you - and a place to think on paper about it. Choose one at a time; a book can change you, so the choice matters.</p>
@@ -124,12 +129,8 @@ export async function renderAcademicsPillar(learnerId) {
 
   el.innerHTML = shell(
     { color: 'academics', title: 'Academics', subtitle: 'The tools you build for understanding the world - built, not given.' },
-    [headedSection, ...subjectsBlock, readingSection, writingSection].filter(Boolean),
+    [...subjectsBlock, readingSection, writingSection],
   );
-
-  el.querySelector('#acad-see-thresholds')?.addEventListener('click', () => {
-    if (learner?.pitchTargetStudio) openThresholdsModal(learner.pitchTargetStudio, learner);
-  });
 
   el.querySelectorAll('[data-subject-goal]').forEach((btn) => btn.addEventListener('click', () => {
     const cat = coreCats.find((c) => c.id === btn.dataset.subjectGoal);
