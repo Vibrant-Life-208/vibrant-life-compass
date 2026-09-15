@@ -236,7 +236,7 @@ guide-facing, but it is about a learner's data, so it belongs in the same consen
 
 ## Fourth surface in this walk: Academics / goal-setting changes (added 2026-09-14)
 
-**These shipped LIVE, not dark** (sw v188) - no flag needed. They are significant child-facing
+**These shipped LIVE, not dark** (sw v191) - no flag needed. They are significant child-facing
 changes to the goal-setting flow, so they are worth *watching* with the real learner in the same
 sitting even though they are already on. What changed:
 
@@ -254,11 +254,17 @@ sitting even though they are already on. What changed:
    it. Now covers academic AND character/leadership categories, and fires from EVERY goal-setting door
    (Compass wheel, Academics, Creator) via a shared matcher (`requirementForCategory`). Only shows when
    `pitchTargetStudio` is set and the category has a matching requirement.
-4. **Auto-schedule on goal save** - the moment a goal is saved, its milestones + weekly steps become
-   dated tasks on the **Calendar** and **task list** (idempotent; keeps any rearrangement/check-offs).
+4. **Auto-schedule on goal save, starting from today** - the moment a goal is saved, its milestones +
+   weekly steps become dated tasks on the **Calendar** and **task list** (idempotent; keeps any
+   rearrangement/check-offs). A goal set MID-YEAR (Session 2+) only schedules **this week forward** -
+   no steps dropped into weeks already past; existing past tasks are kept, never deleted.
+5. **Task-list empty state fixed** - the old "Finish your Session-1 plan" message (read as locked to
+   Session 1) now says tasks come from goals, that it can be done ANYTIME, and offers a "Bring in my
+   goal steps" button. So a learner can build their plan naturally in Session 2 with no pre-seeding.
 
 **Access:** log in as the learner, Academics (or Creator), tap **Set a goal** on a subject; after
-saving, check the **Calendar** (big "This month") and the **task list** for the dated steps + milestones.
+saving, check the **Calendar** (big "This month") and the **task list** for the dated steps +
+milestones (this-week-forward). An empty task list has a "Bring in my goal steps" button.
 
 **Watch points - Jake (developmental):** does the 9-stage goal breakdown (baseline -> halfway ->
 milestones -> weekly steps) feel doable or overwhelming for this learner? Does the per-subject program
