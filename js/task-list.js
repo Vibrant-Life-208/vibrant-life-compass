@@ -10,6 +10,7 @@
 // week planner. (Age-tiered surfacing, research-grounded.)
 
 import { getTasks, getLearner } from './store.js';
+import { autoScheduleYearPlan } from './auto-schedule.js';
 import { taskColorStyle, taskBand, taskRegion } from './wheel.js';
 import { getPlanningCalendar } from './studios.js';
 import { todayISO } from './tasks.js';
@@ -54,8 +55,15 @@ export async function renderTaskList(learnerId) {
     container.innerHTML = `
       <div class="tasklist-page">
         <h2 class="tasklist-title">Plan</h2>
-        <p class="learners-empty">No tasks yet. Finish your Session-1 plan and they’ll appear here, week by week.</p>
+        <p class="learners-empty">No tasks here yet. Your tasks come from your goals - set a year goal (on the Compass wheel, Academics, or Creator) and its weekly steps and milestones land here, week by week. You can do this anytime, not just at the start of the year.</p>
+        <button type="button" class="btn btn-primary" id="tasklist-sync">Bring in my goal steps</button>
       </div>`;
+    container.querySelector('#tasklist-sync')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true; btn.textContent = 'Bringing them in…';
+      try { await autoScheduleYearPlan(learnerId); } catch (err) { console.warn('tasklist sync:', err); }
+      await renderTaskList(learnerId);
+    });
     return;
   }
 
