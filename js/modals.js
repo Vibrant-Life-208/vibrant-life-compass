@@ -12,7 +12,7 @@ import {
 } from './store.js';
 import { isClimbBuild } from './flags.js';
 import { parseViaPdf } from './via-import.js';
-import { nextStudio, pitchCutoff, getStudioName, getYearCalendar, lifeAreaForCategory } from './studios.js';
+import { nextStudio, pitchCutoff, getStudioName, getYearCalendar, getCalendarForStudio, lifeAreaForCategory } from './studios.js';
 import { lifeWheelSvgFor, COMPASS_REGIONS, REGION_COLORS, PILLAR_PICKER, taskBand, taskRegion } from './wheel.js';
 import { renderThresholdsHtml, buildSlicePlan, isCurrentWheelBuild, getThresholds, requirementForCategory } from './thresholds.js';
 import { renderGoalArcHtml, currentArcPosition, weeklyKindFor } from './goal-arc.js';
@@ -114,6 +114,32 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
   const existingS1 = existing?.weeklySteps?.[1] || [];
   const existingS2 = existing?.weeklySteps?.[2] || [];
   const existingS3 = existing?.weeklySteps?.[3] || [];
+
+  // Weekly planning starts from the CURRENT session, not always Session 1 (captain 2026-09-15).
+  // A learner setting a goal mid-year - entering Session 2, or not until Session 3 - should not be
+  // asked to fill weeks that already passed. We detect where today falls and skip the weekly stages
+  // for sessions already behind us; the milestone stages (1-5) still cover the whole year, and the
+  // year grid / scheduler already "start from today". Summer/pre-start planning stays at Session 1.
+  const startCal = getCalendarForStudio(studio);
+  const isoStr = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const todayStr = isoStr(new Date());
+  // Skip a weekly session once ALL its weeks are behind us - not merely once the NEXT session has
+  // started. (Sessions have breaks between them: today can be past Session 1's last week yet before
+  // Session 2's start.) A session is "past" when the end of its final week (start + (weeks-1)*7 + 4d)
+  // is before today.
+  const weeksArr = [w1, w2, w3];
+  let curSession = 1;
+  for (let i = 1; i <= 3; i++) {
+    const start = (startCal.sessionStarts || [])[i - 1];
+    if (!start) break;
+    const endD = new Date(start + 'T00:00:00');
+    endD.setDate(endD.getDate() + ((weeksArr[i - 1] || 1) - 1) * 7 + 4); // Friday of the session's last week
+    if (todayStr > isoStr(endD)) curSession = i + 1; // this session fully passed - move to the next
+  }
+  curSession = Math.min(3, Math.max(1, curSession));
+  const firstWeekly = 5 + curSession;                                   // 6, 7, or 8
+  const skippedWeekly = [6, 7, 8].filter((s) => s < firstWeekly);        // weekly stages already past
+  const stageOrder = [1, 2, 3, 4, 5, ...[6, 7, 8].filter((s) => s >= firstWeekly), 9];
   const fields = document.getElementById('form-fields');
   const weeklyRow = (sessionIndex, week, dateLabel, value, max) =>
     `<div class="week-row">
@@ -392,14 +418,14 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         <span class="review-section-label">End of Session 1 — Quick wins (end of Session 1)</span>
         <input type="text" id="review-eos1" class="review-milestone-input" value="${escapeAttr(v.eos1Point)}">
       </div>
-      <div class="review-section">
+      ${curSession <= 1 ? `<div class="review-section">
         <span class="review-section-label">Session 1 — ${w1} weeks</span>
         ${s1Dates.map((d, i) => rowHtml(1, i + 1, d, v.weeklySteps[1][i])).join('')}
-      </div>
-      <div class="review-section">
+      </div>` : ''}
+      ${curSession <= 2 ? `<div class="review-section">
         <span class="review-section-label">Session 2 — ${w2} weeks</span>
         ${s2Dates.map((d, i) => rowHtml(2, i + 1, d, v.weeklySteps[2][i])).join('')}
-      </div>
+      </div>` : ''}
       <div class="review-section review-section-tight">
         <span class="review-section-label">Session 3 — ${w3} weeks (tight)</span>
         ${s3Dates.map((d, i) => rowHtml(3, i + 1, d, v.weeklySteps[3][i])).join('')}
@@ -428,9 +454,12 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
         // For milestone stages (1-5), require the textarea to be filled
         const ta = fields.querySelector(`.stage-panel[data-stage="${stage}"] textarea`);
         if (ta && !ta.value.trim()) { ta.focus(); return; }
-        showStage(stage + 1);
+        // Advance along stageOrder so weekly stages for past sessions are skipped.
+        const nextStage = stageOrder[stageOrder.indexOf(stage) + 1];
+        if (nextStage) showStage(nextStage);
       } else if (action === 'back') {
-        showStage(stage - 1);
+        const prevStage = stageOrder[stageOrder.indexOf(stage) - 1];
+        if (prevStage) showStage(prevStage);
       } else if (action === 'save') {
         // Final save - collect from the review surface (which holds the
         // edit-after-rebalance values), falling back to staged values.
@@ -464,6 +493,23 @@ export async function openYearGoalModal({ category, existing, onSave, isFirstTim
       }
     });
   });
+
+  // Weekly stages for sessions already passed: hide their dots + panels so the flow skips straight
+  // from the milestones to the current session's weekly plan (stageOrder drives the actual nav).
+  skippedWeekly.forEach((s) => {
+    const dot = fields.querySelector(`.stage-dot[data-stage="${s}"]`);
+    if (dot) dot.style.display = 'none';
+    const panel = fields.querySelector(`.stage-panel[data-stage="${s}"]`);
+    if (panel) panel.hidden = true;
+  });
+  if (curSession > 1) {
+    // Stage 5 (last milestone) now leads into the current session's weekly plan, not Session 1.
+    const s5next = fields.querySelector('.stage-panel[data-stage="5"] [data-action="next"]');
+    if (s5next) s5next.textContent = `Next — Session ${curSession}`;
+    // "Prep for Session 1 - on the school-year weeks" makes no sense once Session 1 has passed.
+    const s1radio = fields.querySelector('input[name="yg-north-when"][value="session1"]');
+    if (s1radio && s1radio.closest('label')) s1radio.closest('label').style.display = 'none';
+  }
 
   activeSubmit = null;
   // Hide the default form's Save button - we use stage-specific Next/Save buttons
