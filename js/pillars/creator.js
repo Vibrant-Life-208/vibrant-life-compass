@@ -121,12 +121,18 @@ function respItemHtml(r, i, rich) {
   const tendedToday = r.tended.includes(todayISO());
   const cad = cadenceLabel(r);
   const chips = CADENCES.map((c) => `<button type="button" class="resp-chip${r.cadence === c.id ? ' selected' : ''}" data-resp-cad="${i}" data-cad="${escapeAttr(c.id)}">${escapeHtml(c.label)}</button>`).join('');
+  // When it's Weekly, let the learner pick WHICH day (e.g. every Friday) instead of auto-anchoring.
+  const dowNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const weekdayPicker = r.cadence === 'weekly'
+    ? `<div class="resp-weekdays" role="group" aria-label="Which day">${dowNames.map((name, wd) => `<button type="button" class="resp-wd${r.weekday === wd ? ' selected' : ''}" data-resp-wd="${i}" data-wd="${wd}" aria-label="${name}" title="${name}">${name[0]}</button>`).join('')}</div>`
+    : '';
   const tend = r.cadence !== 'off'
-    ? `<button type="button" class="resp-tend${tendedToday ? ' tended' : ''}" data-resp-tend="${i}">${tendedToday ? '🌿 Tended today' : 'Tended today?'}</button>`
+    ? `<button type="button" class="resp-tend${tendedToday ? ' tended' : ''}" data-resp-tend="${i}">${tendedToday ? 'Tended today ✓' : 'Tended today?'}</button>`
     : '';
   return `<li class="pillar-resp-item resp-rich">
     <div class="resp-head"><span class="resp-text">${escapeHtml(r.text)}</span>${removeBtn}</div>
     <div class="resp-cadence">${chips}</div>
+    ${weekdayPicker}
     ${cad ? `<span class="resp-cad-label">On your calendar: ${escapeHtml(cad)}</span>` : ''}
     ${tend}
   </li>`;
@@ -172,6 +178,7 @@ function wireResponsibilities(learnerId, foundations, climb) {
   document.getElementById('creator-resp')?.addEventListener('click', async (e) => {
     const rm = e.target.closest('[data-resp-remove]');
     const cadBtn = e.target.closest('[data-resp-cad]');
+    const wdBtn = e.target.closest('[data-resp-wd]');
     const tendBtn = e.target.closest('[data-resp-tend]');
     if (rm) {
       items = items.filter((_, i) => i !== Number(rm.dataset.respRemove));
@@ -180,7 +187,12 @@ function wireResponsibilities(learnerId, foundations, climb) {
       if (!items[idx]) return;
       const c = cadBtn.dataset.cad;
       items[idx] = { ...items[idx], cadence: c };
-      if (c === 'weekly') items[idx].weekday = new Date().getDay(); // anchor weekly to today's weekday
+      // Default weekly to today's weekday, but keep any weekday already chosen (the picker changes it).
+      if (c === 'weekly' && items[idx].weekday == null) items[idx].weekday = new Date().getDay();
+    } else if (wdBtn && rich) {
+      const idx = Number(wdBtn.dataset.respWd);
+      if (!items[idx]) return;
+      items[idx] = { ...items[idx], weekday: Number(wdBtn.dataset.wd) };
     } else if (tendBtn && rich) {
       const idx = Number(tendBtn.dataset.respTend);
       if (!items[idx]) return;

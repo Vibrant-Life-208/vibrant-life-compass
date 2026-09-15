@@ -410,10 +410,11 @@ function buildMonth(year, month, ctx) {
     if (inCycle && responsibilities && responsibilities.length) {
       const active = responsibilities.filter((r) => respActiveOn(r, d.getDay()));
       if (active.length) {
-        const leaf = document.createElement('span');
-        leaf.className = 'cal-resp' + (active.some((r) => r.tended.includes(dISO)) ? ' tended' : '');
-        leaf.textContent = '🌿';
-        cell.appendChild(leaf);
+        const mark = document.createElement('span');
+        // A yellow "responsibility tab" (Creator Mindset colour): outline when it's yours that day,
+        // filled once tended. Shape/colour in CSS (.cal-resp), not an emoji (captain 2026-09-14).
+        mark.className = 'cal-resp' + (active.some((r) => r.tended.includes(dISO)) ? ' tended' : '');
+        cell.appendChild(mark);
         const names = active.map((r) => r.text).join(' · ');
         cell.title = `${cell.title ? cell.title + ' · ' : ''}${names}`;
       }

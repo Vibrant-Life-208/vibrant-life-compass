@@ -4242,7 +4242,7 @@ body.landscape-mountain {
 .cal-month--hero .cal-num { font-size: 0.95rem; }
 .cal-month--hero .cal-school-event { font-size: 0.72rem; -webkit-line-clamp: 3; }
 .cal-month--hero .cal-task-dot { width: 8px; height: 8px; }
-.cal-month--hero .cal-resp { font-size: 15px; bottom: 4px; }
+.cal-month--hero .cal-resp { width: 16px; height: 8px; bottom: 5px; }
 .cal-month--hero .cal-session-tag { font-size: 0.65rem; }
 /* Fixed row height so every week reads the same across all months, regardless of how many
    school-event labels a month carries. Row 1 (the weekday headers) stays auto; the day rows
@@ -4727,12 +4727,16 @@ body.landscape-mountain {
 .resp-cadence { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .resp-chip { border: 1px solid var(--earth-light, #d9c9a3); background: #fff; color: var(--text-soft); border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.78rem; cursor: pointer; }
 .resp-chip.selected { background: var(--sage-pale, #e8efe5); border-color: var(--sage, #4a6741); color: var(--sage, #4a6741); font-weight: 600; }
+.resp-weekdays { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+.resp-wd { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--earth-light, #d9c9a3); background: #fff; color: var(--text-soft); font-size: 0.8rem; cursor: pointer; }
+.resp-wd.selected { background: var(--pillar-creator, #F5A623); border-color: var(--pillar-creator, #F5A623); color: #fff; font-weight: 700; }
 .resp-cad-label { font-size: 0.76rem; color: var(--text-muted); font-style: italic; }
 .resp-tend { align-self: flex-start; border: 1px solid var(--sage-light, #b8ccae); background: #fff; color: var(--sage, #4a6741); border-radius: 999px; padding: 0.2rem 0.7rem; font-size: 0.8rem; cursor: pointer; }
 .resp-tend.tended { background: var(--sage-pale, #e8efe5); font-weight: 600; }
-/* The soft leaf on the calendar: faint when a responsibility is yours that day, fuller once tended. */
-.cal-resp { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 10px; line-height: 1; opacity: 0.4; filter: grayscale(0.5); pointer-events: none; }
-.cal-resp.tended { opacity: 1; filter: none; }
+/* The yellow "responsibility tab" on the calendar (Creator Mindset colour): a small rounded tab,
+   outlined when it's yours that day, filled once tended. */
+.cal-resp { position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 11px; height: 6px; border-radius: 2px; background: transparent; border: 1.5px solid var(--pillar-creator, #F5A623); opacity: 0.8; pointer-events: none; }
+.cal-resp.tended { background: var(--pillar-creator, #F5A623); opacity: 1; }
 
 /* Life Skills: WOOP skill-goal fields (2026-07-27). Capacity-goal, editable, no
    score/streak - the goal is the plan, tended. */
