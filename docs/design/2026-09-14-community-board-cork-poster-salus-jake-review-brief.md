@@ -231,7 +231,7 @@ guide-facing, but it is about a learner's data, so it belongs in the same consen
 
 ## Fourth surface in this walk: Academics / goal-setting changes (added 2026-09-14)
 
-**These shipped LIVE, not dark** (sw v186) - no flag needed. They are significant child-facing
+**These shipped LIVE, not dark** (sw v187) - no flag needed. They are significant child-facing
 changes to the goal-setting flow, so they are worth *watching* with the real learner in the same
 sitting even though they are already on. What changed:
 
@@ -243,7 +243,12 @@ sitting even though they are already on. What changed:
    (`pitchTargetStudio` set only), the next-studio requirement(s) that belong to that subject
    (Master Khan -> Math, Finish Lexia/spelling/typing -> Reading, etc.) - inline, right above that
    subject's goal + Set-a-goal button. The full cross-studio requirements list still lives on North.
-3. **Auto-schedule on goal save** - the moment a goal is saved, its milestones + weekly steps become
+3. **Requirement on Stage 1 of the goal modal** - for a leveling-up learner, the subject's next-studio
+   requirement also appears inside the year-goal modal (Stage 1, a highlighted box above the vision:
+   "To move up to Adventure: Master Khan grade levels 2-5"), so the requirement anchors the goal at
+   the moment they write it. Only shows when `pitchTargetStudio` is set and the subject has a matching
+   requirement.
+4. **Auto-schedule on goal save** - the moment a goal is saved, its milestones + weekly steps become
    dated tasks on the **Calendar** and **task list** (idempotent; keeps any rearrangement/check-offs).
 
 **Access:** log in as the learner, Academics (or Creator), tap **Set a goal** on a subject; after
