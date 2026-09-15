@@ -6,9 +6,11 @@
 // journals + the wishlist are self-only reflective narrative in foundations.climb.
 
 import { shell, section, emptyNote, goalCard, escapeHtml, escapeAttr } from './_scaffold.js';
-import { getLearner, getGoals, getProfileFoundations, setProfileFoundations } from '../store.js';
+import { getLearner, getGoals, getProfileFoundations, setProfileFoundations, saveGoal } from '../store.js';
 import { getCategoriesForStudio } from '../studios.js';
 import { getBooks, addBook, setBookmark } from '../books.js';
+import { openGoalSetupModal, openYearGoalModal } from '../modals.js';
+import { isCurrentWheelBuild } from '../thresholds.js';
 
 export async function renderAcademicsPillar(learnerId) {
   const el = document.getElementById('academics-view');
@@ -22,10 +24,52 @@ export async function renderAcademicsPillar(learnerId) {
   const coreCats = cats.filter((c) => c.kind === 'core');
   const yearGoals = (goals || []).filter((g) => g.scope === 'year');
   const goalFor = (catId) => yearGoals.find((g) => g.categoryId === catId);
+  const currentWheel = isCurrentWheelBuild(learner);
+
+  // Set / edit a subject's YEAR goal inline, using the SAME rich flow the Compass wheel uses -
+  // a year goal broken in half (halfway = End of Session 3), quarter + Session-1 milestones, and
+  // weekly bite-size steps (captain 2026-09-14). Mirrors year-view's per-category handler exactly
+  // so Academics is a real create surface, not just a display lens.
+  const openSubjectGoal = (cat, existing) => {
+    if (currentWheel) {
+      openGoalSetupModal({ goal: existing || null, category: cat, learnerId, onDone: () => renderAcademicsPillar(learnerId) });
+      return;
+    }
+    openYearGoalModal({
+      category: cat,
+      existing,
+      isFirstTime: !yearGoals.some((g) => g.text && g.text.trim()),
+      studio: learner.studio,
+      onSave: async ({ text, baseline, halfwayPoint, quarterPoint, eos1Point, weeklySteps }) => {
+        await saveGoal({
+          id: existing?.id, learnerId, categoryId: cat.id, scope: 'year',
+          text, baseline, halfwayPoint, quarterPoint, eos1Point,
+          weeklySteps: weeklySteps || existing?.weeklySteps || {},
+          targetSession: 6, status: existing?.status || 'active',
+        });
+        // Auto-populate Session 1/2/3 milestones (recursive halving + foundation), like year-view.
+        const seedSession = async (sessionIndex, seedText) => {
+          if (!seedText) return;
+          const existingS = (goals || []).find((g) => g.scope === 'session' && g.sessionIndex === sessionIndex && g.categoryId === cat.id);
+          if (!existingS) {
+            await saveGoal({ learnerId, categoryId: cat.id, scope: 'session', sessionIndex, text: seedText, autoPopulated: true, status: 'active' });
+          } else if (existingS.autoPopulated) {
+            await saveGoal({ ...existingS, text: seedText, autoPopulated: true });
+          }
+        };
+        await seedSession(3, halfwayPoint);
+        await seedSession(2, quarterPoint);
+        await seedSession(1, eos1Point);
+        await renderAcademicsPillar(learnerId);
+      },
+    });
+  };
 
   const subjectSections = coreCats.map((c) => {
     const g = goalFor(c.id);
-    return section(c.name, g ? goalCard(g) : emptyNote('No goal set yet.'));
+    const inner = (g ? goalCard(g) : emptyNote('No goal set yet.'))
+      + `<div class="acad-goal-actions"><button type="button" class="btn btn-text" data-subject-goal="${escapeAttr(c.id)}">${g ? 'Edit goal' : 'Set a goal'}</button></div>`;
+    return section(c.name, inner);
   });
   const subjectsBlock = subjectSections.length
     ? subjectSections
@@ -50,6 +94,11 @@ export async function renderAcademicsPillar(learnerId) {
     { color: 'academics', title: 'Academics', subtitle: 'The tools you build for understanding the world - built, not given.' },
     [...subjectsBlock, readingSection, writingSection],
   );
+
+  el.querySelectorAll('[data-subject-goal]').forEach((btn) => btn.addEventListener('click', () => {
+    const cat = coreCats.find((c) => c.id === btn.dataset.subjectGoal);
+    if (cat) openSubjectGoal(cat, goalFor(cat.id));
+  }));
 
   wireDeepBook(learner);
   wireWishlist(learnerId, foundations || {}, climb);

@@ -4764,6 +4764,7 @@ body.landscape-mountain {
 
 /* Academics: deep reading (book + journal + wishlist) + creative writing (2026-07-27). */
 .pillar-subhead { margin: 1rem 0 0.4rem; font-size: 0.92rem; font-weight: 600; color: var(--text); }
+.acad-goal-actions { margin-top: 0.4rem; display: flex; justify-content: flex-start; }
 .acad-book { background: #fff; border: 1px solid var(--earth-pale, #e3ddd0); border-radius: 10px; padding: 0.7rem 0.85rem; }
 .acad-book-title { margin: 0 0 0.5rem; font-weight: 600; color: var(--text); }
 .acad-book-mark-label { display: block; font-size: 0.78rem; color: #9a9a90; margin-bottom: 0.2rem; }
