@@ -3068,7 +3068,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
         <p class="onb-climb-kicker">Life Skills</p>
         <h3 class="onb-climb-head">${young ? 'The powers you build for a life you get to run.' : 'The capacities you build for a life you run yourself.'}</h3>
         <p class="onb-climb-body">${young ? 'Leading alongside other people. Turning an idea into something real. Making your money make sense. Taking good care of yourself. Grown-up powers, started now.' : 'Leading alongside people, turning an idea into something real, making money make sense, and tending your own wellbeing. Grown-up powers, started now.'}</p>
-        <p class="onb-climb-label">${young ? "Which one are you most curious about right now? You can look at any of them - pick one to start, or just explore." : 'Which is most important to you at this stage of life - what would you like to work on this year?'}</p>
+        <p class="onb-climb-label">${young ? "Which one are you most curious about right now? You can look at any of them - pick one to start, or just explore. You can change it later." : 'Which matters most to you right now? Pick your first focus for this year - you can change it anytime on your Life Skills page.'}</p>
         <div class="onb-climb-choices">
           ${skills.map((s) => `
             <button type="button" class="onb-climb-choice${chosen === s.id ? ' selected' : ''}" data-climb-skill="${escapeAttr(s.id)}">

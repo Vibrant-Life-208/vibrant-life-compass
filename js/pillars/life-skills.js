@@ -427,21 +427,37 @@ function wireSkillChooser(el, learnerId, foundations, climb) {
       const newLabel = SKILLS[skillId];
       if (!newLabel || skillId === activeKey) return;
       if (!activeKey) { commitSkill(learnerId, foundations, climb, skillId); return; }
-      showSwitchConfirm(el, activeLabel, newLabel, () => commitSkill(learnerId, foundations, climb, skillId));
+      // "still new" = no goal set for the current skill yet. A non-numeric depth signal (Salus:
+      // never a count), so the beat can reflect (Jake's mirror) without policing (Troi).
+      const currentIsNew = !skillHasGoal(climb, activeKey);
+      showSwitchConfirm(el, activeLabel, newLabel, currentIsNew, () => commitSkill(learnerId, foundations, climb, skillId));
     });
   });
 }
 
+// Does a skill have a goal yet? Non-numeric depth signal for the "still new" beat variant.
+function skillHasGoal(climb, skillId) {
+  const w = (climb.woopBySkill && climb.woopBySkill[skillId]) || (skillId === climb.lifeSkill ? climb.woop : null);
+  if (!w || typeof w !== 'object') return false;
+  return ['setup', 'obstacle', 'ifThen', 'success'].some((k) => (w[k] || '').trim());
+}
+
 // The gentle beat: a soft, reassuring confirm before a switch. Never a warning; names what is kept.
-function showSwitchConfirm(el, oldLabel, newLabel, onConfirm) {
+// Two variants (fleet review 2026-09-14): when the current skill is still new (no goal yet), it
+// reflects that staying is just as okay as switching (Jake's mirror; strictly non-numeric).
+function showSwitchConfirm(el, oldLabel, newLabel, currentIsNew, onConfirm) {
   el.querySelector('.ls-switch-confirm')?.remove();
   const card = document.createElement('div');
   card.className = 'ls-switch-confirm';
+  const text = currentIsNew
+    ? `Make <strong>${escapeHtml(newLabel)}</strong> your focus? <strong>${escapeHtml(oldLabel)}</strong> is still new for you - switching is okay, and so is staying with it a little longer. Either way, ${escapeHtml(oldLabel)} stays right here.`
+    : `Make <strong>${escapeHtml(newLabel)}</strong> your focus? <strong>${escapeHtml(oldLabel)}</strong> stays right here, and its goal is saved for whenever you come back to it.`;
+  const stayLabel = currentIsNew ? `Stay with ${escapeHtml(oldLabel)} for now` : 'Not now';
   card.innerHTML = `
-    <p class="ls-switch-text">Make <strong>${escapeHtml(newLabel)}</strong> your focus? <strong>${escapeHtml(oldLabel)}</strong> stays right here, and its goal is saved for whenever you come back to it.</p>
+    <p class="ls-switch-text">${text}</p>
     <div class="ls-switch-actions">
       <button type="button" class="btn btn-primary ls-switch-yes">Yes, switch to ${escapeHtml(newLabel)}</button>
-      <button type="button" class="btn btn-text ls-switch-no">Not now</button>
+      <button type="button" class="btn btn-text ls-switch-no">${stayLabel}</button>
     </div>`;
   const list = el.querySelector('.ls-choose-list');
   if (list && list.parentNode) list.parentNode.insertBefore(card, list); else el.prepend(card);
