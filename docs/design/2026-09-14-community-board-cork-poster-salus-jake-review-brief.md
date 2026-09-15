@@ -226,3 +226,36 @@ drifted.
 
 *Same gate: conditions built, flags stay dark until the walk is watched. The guide window is
 guide-facing, but it is about a learner's data, so it belongs in the same consented walk.*
+
+---
+
+## Fourth surface in this walk: Academics / goal-setting changes (added 2026-09-14)
+
+**These shipped LIVE, not dark** (sw v185) - no flag needed. They are significant child-facing
+changes to the goal-setting flow, so they are worth *watching* with the real learner in the same
+sitting even though they are already on. What changed:
+
+1. **Inline "Set a goal" / "Edit goal"** on Academics (per subject) and Creator (per maker goal) -
+   opens the SAME rich year-goal flow the Compass wheel uses: a year goal broken in half (halfway =
+   End of Session 3), quarter + Session-1 milestones, and weekly bite-size steps.
+2. **"Where you're headed this year"** block at the top of Academics - the learner's programs +
+   baselines (to decide the year-end target), and, for a learner leveling up (`pitchTargetStudio`
+   set only), the next studio's requirements up front.
+3. **Auto-schedule on goal save** - the moment a goal is saved, its milestones + weekly steps become
+   dated tasks on the **Calendar** and **task list** (idempotent; keeps any rearrangement/check-offs).
+
+**Access:** log in as the learner, Academics (or Creator), tap **Set a goal** on a subject; after
+saving, check the **Calendar** (big "This month") and the **task list** for the dated steps + milestones.
+
+**Watch points - Jake (developmental):** does the 9-stage goal breakdown (baseline -> halfway ->
+milestones -> weekly steps) feel doable or overwhelming for this learner? Does "Where you're headed"
+*ground* the year-end target (helpful), or does the wall of program targets feel like pressure? Does a
+suddenly-full calendar after saving one goal energize or overwhelm?
+
+**Watch points - Salus (safety):** for a leveling-up learner, do the next-studio requirements read as
+an *invitation* or as a *bar they're failing*? Watch for any wince at the requirements list. The
+auto-scheduled tasks must never read as "here is everything you owe" - watch the affect when the
+calendar fills.
+
+*Live, so no gate blocks it - but the walk is still the moment to catch whether the goal loop
+motivates or overwhelms a real child.*
