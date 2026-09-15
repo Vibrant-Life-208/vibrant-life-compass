@@ -35,21 +35,31 @@ three RLS policies (`cpr_insert_own`, `cpr_select_staff`, `cpr_delete_owner`), w
 
 ---
 
-## Gate B - Tutela's RLS wall-walk (owner: Tutela / TCC)
+## Gate B - Tutela's RLS wall-walk (owner: Tutela / TCC) - SIGNED-WITH-CONDITION 2026-09-15
 
-Tutela's standing position: *code configured is not code confirmed - walk the wall in the running
-system.* This is a review, not a build. Walk each perimeter as a real logged-in user:
+Walked in the running Supabase via JWT-impersonation probes (`community-board-gate-b-rls-wall-walk.md`).
+Tutela SIGNED the perimeter for the identities present; one segment is unverified and is a **condition
+of lift**. Decision logged 2026-09-15; recorded in Tutela's memory.
 
-- [ ] **Poster column RLS** - a learner sees only: their own posts (any status), the posted board, and
-      nothing else. A learner CANNOT read another learner's pending/denied/removed post.
-- [ ] **Interim exposure** - a submitted-but-not-posted poster is visible only to the learner, their
-      guide, and the owner - confirm at each stage (pending_guide -> pending_owner -> posted).
-- [ ] **Reports RLS (v0.41)** - a learner can INSERT a report only against a `posted` post, only as
-      themselves (reporter_id = auth.uid()); a learner CANNOT read reports; a guide reads only reports
-      on their roster's posts; the owner reads all and can delete-to-dismiss.
-- [ ] **No cross-row writes** - confirm a learner cannot update or delete another learner's
-      `community_posts` row through any path.
-- [ ] Tutela signs the perimeter (log to her memory / decision log) OR names a gap to fix first.
+- [x] **Poster/post RLS** - a learner sees only their own posts (any status) + the posted board, NOT
+      another's pending/removed post (probes B1a, B2). PASS.
+- [x] **Interim exposure** - guide-of-A and owner see A's pending; verified for the one guide present
+      (B3a, B3c). PASS.
+- [x] **Reports RLS (v0.41)** - learner can report only a `posted` post as themselves (B7), cannot
+      report a non-posted post (B8), cannot forge reporter_id (B9), CANNOT read reports (B10 -
+      re-verified with a real non-owner learner), owner reads all (B12), reporting never mutates the
+      post (B14). PASS.
+- [x] **No cross-row writes** - learner cannot insert forged or update another's post (B4b, B5). PASS.
+- [x] Tutela signed the perimeter (decision log + memory, 2026-09-15).
+- [ ] **CONDITION OF LIFT (deferred, not a failure):** guide-roster isolation **across two different
+      guides** (probes B3b/B6b/B11b) is UNVERIFIED - the test DB has only one guide, so cross-guide
+      roster leakage could not be walked. Before lift: seed a second guide + assignment and re-run
+      those probes, OR walk them on the real school roster. Tutela will not sign a segment she has not
+      walked.
+
+*Note on the walk: the initial B10 showed a false FAIL because the sparse test DB's only "second
+learner" resolved to the owner's own profile (owners legitimately read reports). Re-verified PASS with
+Test Adventure, a genuine non-owner learner.*
 
 ---
 

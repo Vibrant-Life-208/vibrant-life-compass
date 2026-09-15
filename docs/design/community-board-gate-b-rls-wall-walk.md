@@ -249,12 +249,28 @@ delete from community_posts where id in
 
 ---
 
+## Results - executed 2026-09-15 (auto-discovery DO-block, JWT impersonation)
+
+The walk was run as a single auto-discovering DO block against the live Supabase. Test DB was sparse:
+one guide (Erin S.), one genuine non-owner learner (Test Adventure); the only other "learner" row was
+the owner's own profile.
+
+- **PASS (identities present):** B1a, B2, B3a, B3c, B4a, B4b, B5, B6a, B7, B8, B9, B10, B11a, B12, B14.
+- **B10 note:** first run showed a false FAIL because the auto-picked "second learner" resolved to the
+  owner's profile (owners legitimately read reports); re-verified PASS impersonating Test Adventure, a
+  real non-owner learner.
+- **SKIP / deferred (needs a second guide):** B3b, B6b, B11b - guide-roster isolation across two
+  different guides could not be walked with one guide in the data.
+
 ## Sign-off
 
-- [ ] All Lane 1 probes PASS (B1-B14).
-- [ ] All Lane 2 UI checks PASS.
-- [ ] **Tutela signs the perimeter** (record to her memory + the decision log) OR names the specific
-      gap to fix first. Also carry the child-publication-consent counsel question (Gate D) - RLS being
-      correct does not answer whether a minor may publish at all.
+- [x] Lane 1 probes PASS for all identities present (see Results).
+- [ ] Lane 2 UI checks (do during Jake+Salus walk, Gate F).
+- [x] **Tutela SIGNED the perimeter** 2026-09-15 (decision log + memory), **with one condition of
+      lift:** two-guide roster isolation (B3b/B6b/B11b) must be walked before lift - seed a second
+      guide + assignment and re-run, or walk on the real school roster. Also carry the
+      child-publication-consent counsel question (Gate D) - RLS being correct does not answer whether a
+      minor may publish at all.
 
-*The perimeter is signed when the wall is walked, not when it is written.*
+*The perimeter is signed when the wall is walked, not when it is written. Tutela signed where she
+walked; the one unwalked segment is a named condition, not hidden.*
