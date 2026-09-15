@@ -11,7 +11,7 @@
 
 import { getTasks, getLearner } from './store.js';
 import { autoScheduleYearPlan } from './auto-schedule.js';
-import { taskColorStyle, taskBand, taskRegion } from './wheel.js';
+import { taskColorStyle, taskBand, taskRegion, REGION_TO_PILLAR } from './wheel.js';
 import { getPlanningCalendar } from './studios.js';
 import { todayISO } from './tasks.js';
 
@@ -145,7 +145,7 @@ function rowHtml(task, today) {
       <span class="tasklist-dot" style="${dot}"></span>
       <span class="tasklist-when">${escapeHtml(when)}</span>
       <span class="tasklist-text">${escapeHtml(task.text)}${tag}</span>
-      ${region ? `<span class="tasklist-region">${escapeHtml(region)}</span>` : ''}
+      ${region ? `<span class="tasklist-region">${escapeHtml(REGION_TO_PILLAR[region] || region)}</span>` : ''}
     </li>`;
 }
 

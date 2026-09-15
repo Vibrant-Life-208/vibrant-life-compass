@@ -13,7 +13,7 @@ import {
 import { isClimbBuild } from './flags.js';
 import { parseViaPdf } from './via-import.js';
 import { nextStudio, pitchCutoff, getStudioName, getYearCalendar, lifeAreaForCategory } from './studios.js';
-import { lifeWheelSvgFor, COMPASS_REGIONS, REGION_COLORS, taskBand, taskRegion } from './wheel.js';
+import { lifeWheelSvgFor, COMPASS_REGIONS, REGION_COLORS, PILLAR_PICKER, taskBand, taskRegion } from './wheel.js';
 import { renderThresholdsHtml, buildSlicePlan, isCurrentWheelBuild, getThresholds, requirementForCategory } from './thresholds.js';
 import { renderGoalArcHtml, currentArcPosition, weeklyKindFor } from './goal-arc.js';
 import { getWeeklyAnswer, saveWeeklyAnswer } from './weekly-answers.js';
@@ -572,9 +572,9 @@ export function openTaskModal({ existing, defaultDate, onSave, books = [] }) {
     { v: 'weekly', label: "A weekly milestone - a step I'll finish this week" },
     { v: 'milestone', label: 'A milestone marker - a bigger point I am reaching for' },
   ];
-  const regionSwatches = COMPASS_REGIONS.map((r) => `
-    <button type="button" class="task-region-swatch${region === r ? ' selected' : ''}" data-region="${r}" style="--swatch:${REGION_COLORS[r]}" aria-pressed="${region === r}" title="${r}">
-      <span class="task-region-dot"></span><span class="task-region-name">${r}</span>
+  const regionSwatches = PILLAR_PICKER.map((p) => `
+    <button type="button" class="task-region-swatch${region === p.region ? ' selected' : ''}" data-region="${p.region}" style="--swatch:${REGION_COLORS[p.region]}" aria-pressed="${region === p.region}" title="${escapeHtml(p.label)}">
+      <span class="task-region-dot"></span><span class="task-region-name">${escapeHtml(p.label)}</span>
     </button>`).join('');
   document.getElementById('form-fields').innerHTML = `
     <div class="form-field">

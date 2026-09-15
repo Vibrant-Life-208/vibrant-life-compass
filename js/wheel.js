@@ -48,13 +48,30 @@ export function regionIdForCategory(categoryId) {
 //   milestone  -> a darker shade (a milestone marker)
 // Hue = which part of life the task serves; shade = how load-bearing it is. The
 // values match the compass SVG (Self/Making/World/Others) + the Voice gold accent.
+// Task colour now speaks PILLAR (pyramid) language (captain 2026-09-14): the region stays the
+// internal hue key, but the colours are the pillar palette and the picker shows the pillar name, so
+// a task's colour matches the pillar tab the learner navigates. 1:1 region -> pillar map:
+//   Self -> Creator Mindset · Others -> Connection · Making -> Life Skills · World -> Academics ·
+//   Voice -> Purpose. (Engine unchanged; only the palette + labels move.)
 export const REGION_COLORS = {
-  Self:   '#8f5e14',
-  Making: '#3f8a5f',
-  World:  '#35608f',
-  Others: '#c4634a',
-  Voice:  '#c99a3b',
+  Self:   '#F5A623',  // Creator Mindset
+  Others: '#7A3E9D',  // Connection
+  Making: '#1CA08D',  // Life Skills
+  World:  '#EE6C2B',  // Academics
+  Voice:  '#E01230',  // Purpose
 };
+// Region -> the pillar name the learner sees.
+export const REGION_TO_PILLAR = {
+  Self: 'Creator Mindset', Others: 'Connection', Making: 'Life Skills', World: 'Academics', Voice: 'Purpose',
+};
+// The "which part of life?" picker, in pillar (nav) order; each carries its underlying region key.
+export const PILLAR_PICKER = [
+  { region: 'Voice',  label: 'Purpose' },
+  { region: 'Others', label: 'Connection' },
+  { region: 'Self',   label: 'Creator Mindset' },
+  { region: 'Making', label: 'Life Skills' },
+  { region: 'World',  label: 'Academics' },
+];
 
 function hexToRgb(hex) {
   const h = String(hex).replace('#', '');
@@ -105,13 +122,9 @@ export function taskColorStyle(task) {
   if (!region) return null;
   const base = REGION_COLORS[region];
   const band = taskBand(task);
-  // Voice/Spirit reads WHITE (the sovereign centre is cream, not a solid hue). A white
-  // chip can't hue-shade and would clash with Self's gold, so Voice keeps a cream fill and
-  // shows the band on a gold-family accent border + text instead. (Captain 2026-07-21.)
-  if (region === 'Voice') {
-    const accent = band === 'recurring' ? '#d9c48f' : band === 'milestone' ? '#9c7a2e' : '#c99a3b';
-    return { bg: '#f6f1e7', border: accent, fg: '#6b5320' };
-  }
+  // Voice now colours as the Purpose pillar (a solid red), shaded by band like every other pillar -
+  // the old cream "sovereign centre" treatment was retired with the move to the pillar palette
+  // (captain 2026-09-14), so all five pillars read consistently.
   if (band === 'recurring') return { bg: mix(base, '#ffffff', 0.78), border: base, fg: mix(base, '#000000', 0.25) };
   if (band === 'milestone') { const dark = mix(base, '#000000', 0.34); return { bg: dark, border: dark, fg: '#ffffff' }; }
   // weekly (or plain-with-region) = the region colour itself.
