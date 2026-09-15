@@ -60,6 +60,7 @@ export async function renderAcademicsPillar(learnerId) {
         await seedSession(3, halfwayPoint);
         await seedSession(2, quarterPoint);
         await seedSession(1, eos1Point);
+        try { const { autoScheduleYearPlan } = await import('../auto-schedule.js'); await autoScheduleYearPlan(learnerId); } catch (e) { /* non-fatal */ }
         await renderAcademicsPillar(learnerId);
       },
     });

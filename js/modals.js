@@ -1265,6 +1265,13 @@ export async function openGoalSetupModal({ goal = null, category = null, learner
       capture();
       if (!isLast) { s.idx += 1; renderStep(); return; }
       await persist();
+      // Lay the just-saved goal's milestones + weekly steps onto the calendar + task list right away
+      // (captain 2026-09-14). Idempotent + non-destructive: keeps any rearrangement/check-offs, only
+      // refreshes wording + plants new keys. So a goal set anywhere becomes dated tasks immediately.
+      if (learnerId) {
+        try { const { autoScheduleYearPlan } = await import('./auto-schedule.js'); await autoScheduleYearPlan(learnerId); }
+        catch (e) { console.warn('auto-schedule after goal save:', e); }
+      }
       closeModal();
       if (onDone) await onDone();
     });
