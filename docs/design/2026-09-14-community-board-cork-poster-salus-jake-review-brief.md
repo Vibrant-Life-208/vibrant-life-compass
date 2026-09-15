@@ -180,3 +180,40 @@ it back off.
 
 *Same gate as the board: conditions built, but neither seat clears it for a real child until the walk
 is watched. Both flags stay dark until then.*
+
+---
+
+## Third surface in this walk: Life Skills growth elevations (added 2026-09-14)
+
+From the 8-agent "setting learners up for success" review (Guinan/Jake/Troi/Salus/Naomi/Ezri/Kirk/
+Boothby). Built dark behind `?lsgrow=on` (compass main, sw v179). Minutes:
+`agents/meetings/2026/09/2026-09-14-life-skills-setting-learners-up-for-success.md`. Four elevations:
+
+1. **Return loop** ("How it's going") on the skill goal - "what have you done so far?" (real-world
+   doing) + "what are you noticing about yourself?" (reflection). Living, optional, **no count / no
+   streak / no nudge / nothing due**.
+2. **Doing-story** - folded into the return loop.
+3. **Vision tether** - the learner's 1-year (or 10-year) horizon beside the goal ("A step toward...").
+4. **Guide present-state window** - on each learner's guide card, their CURRENT chosen skill + goal
+   as a conversation-starter. Never a dashboard; no switch-history, no metrics. Read-scope is clean:
+   a guide can already open a learner's compass, so this surfaces nothing new.
+
+**Access:** learner side - `?lsgrow=on`, Life Skills pillar (needs a skill chosen + a goal to show
+the loop/tether). Guide side - load `?lsgrow=on` as the guide, "My learners", the window sits on each
+learner's card. `?lsgrow=off` to switch off.
+
+**Watch points - Jake (developmental):** does the return loop help a learner cross the *dip* (come
+back and keep going), or does it read as one more task? Does the vision tether make the skill feel
+connected to who they're becoming?
+
+**Watch points - Salus (safety):** does "How it's going" ever read as "did you do your practice?" -
+watch for any wince on a return with nothing filled in. It is designed as a door, not a bell; verify
+that lands. No count/streak/scoreboard anywhere (Naomi's Living-Seed drift-watch: the day it gains a
+count or a nudge, that is the 13%).
+
+**Watch points - Boothby (guide side):** does the window actually start a *conversation* ("how's the
+chess club going?"), or does a guide read it as a status to check? If it reads as a dashboard, it has
+drifted.
+
+*Same gate: conditions built, flags stay dark until the walk is watched. The guide window is
+guide-facing, but it is about a learner's data, so it belongs in the same consented walk.*
