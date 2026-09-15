@@ -169,6 +169,13 @@ export async function autoScheduleYearPlan(learnerId) {
   const mode = schedulingModeFor(learner);
   const specs = assignDaysToSpecs(buildYearPlanSpecs(goals, cal), mode);
 
+  // "Start from today" (captain 2026-09-14): a goal set mid-year only schedules current + future
+  // weeks. Clamps NEW task creation to this week's Monday and later; existing tasks in past weeks
+  // are still refreshed/kept below (this never deletes past history).
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const thisMonday = mondayOf(todayStr);
+
   const priorAuto = existing.filter((t) => t.source === 'auto');
   const priorByKey = new Map(priorAuto.map((t) => [t.planKey, t]));
   // Manual (non-auto) task texts already present in a given week - so we don't double up
@@ -196,6 +203,9 @@ export async function autoScheduleYearPlan(learnerId) {
       await saveTask(learnerId, { ...prior, text: s.text, band: s.band, region: s.region, goalId: s.goalId });
       continue;
     }
+    // Start from today: don't plant a NEW task into a week that already passed. (Only new
+    // scheduling is clamped forward; prior tasks were refreshed above, never deleted.)
+    if (thisMonday && s.weekMonday && s.weekMonday < thisMonday) continue;
     // Skip a weekly step already covered by a manual task in the same week.
     if (s.band === 'weekly' && manualByWeek.has(`${s.weekMonday}::${s.text.toLowerCase()}`)) continue;
     toCreate.push({
