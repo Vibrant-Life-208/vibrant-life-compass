@@ -9,7 +9,8 @@ none of it code. Do NOT flip the flag until every gate below is cleared.
 - Review brief + blocker detail: `docs/design/2026-09-14-community-board-cork-poster-salus-jake-review-brief.md`
 - Fresh-panel minutes: `evoke-agents-backup/agents/meetings/2026/09/2026-09-14-community-board-upload-safety-fresh-review.md`
 - Upload-verify harness: `scripts/verify-poster-upload.html`
-- Migrations: `supabase/migrations/2026-09-12-v0.39-*`, `2026-09-14-v0.40-*`, `2026-09-15-v0.41-*`
+- Migrations: `supabase/migrations/2026-09-12-v0.39-*`, `2026-09-14-v0.40-*`, `2026-09-15-v0.41-*`,
+  `2026-09-15-v0.42-*` (learner-delete RLS - apply this too)
 
 **Built state (sw v205, dark):**
 - Blocker #1 - upload hardening (SVG reject, canvas re-encode strips EXIF/GPS, dimension cap, pdf.js
@@ -22,13 +23,16 @@ none of it code. Do NOT flip the flag until every gate below is cleared.
 ### NOT-YET-VERIFIED / NOT-YET-BUILT ledger (read this first - Data, fresh-eyes review 2026-09-15)
 
 So "mostly verified" is never mistaken for "verified." Open, by design:
-- **Not built (pre-lift, Gate H):** learner-delete of own post; family-objection path; child assent;
-  the stated board intention; portability (fast-follow).
-- **Not verified:** two-guide RLS isolation (B3b/B6b/B11b - only one guide in test data); the real-photo
-  EXIF + real-PDF upload spot-checks (Gate F); the live screen-reader read-through (Gate F).
+- **Pre-lift Gate H items 1-4 now BUILT (sw v206):** learner-delete, family-objection path, child
+  assent, stated board intention. Item 5 (re-verification cadence) still to formalize.
+- **Not applied yet:** migration **v0.42** (`cp_delete_own` - learner-delete RLS). Apply with v0.39-41.
+- **Not verified:** two-guide RLS isolation (B3b/B6b/B11b - only one guide in test data); the v0.42
+  delete RLS (re-walk Gate B: delete OWN yes, ANOTHER's no); the real-photo EXIF + real-PDF upload
+  spot-checks (Gate F); the live screen-reader read-through (Gate F).
 - **Runs once, not yet repeatable:** the RLS wall-walk + the upload harness are one-time; make them
   regression checks re-run on any board-touching change (Gate H item 5).
-- **Fast-follows (post-lift):** "your idea is on the board" moment; family board explainer + changelog.
+- **Fast-follows (post-lift):** "your idea is on the board" moment; family board explainer + changelog;
+  portability (export/take your posts on leaving).
 
 ---
 
@@ -218,24 +222,24 @@ meaning** are under-built relative to the security. Convergent (Spock+Quark+Kira
 the family each need a hand on the off switch, and the child must be a KNOWING party, not just moderated.
 Minutes: `agents/meetings/2026/09/2026-09-15-community-board-fresh-eyes-strategic-review.md`.
 
-**PRE-LIFT (build before flag-on):**
-- [ ] **1. Learner-delete of own post** (Quark, non-negotiable) - a child can withdraw their own words
-      at any stage. Ownership without deletion is tenancy. (Build: a learner-scoped status transition +
-      an RLS delete/withdraw policy for own rows.)
-- [ ] **2. Family-objection path** (Kira, partial-dissent - she holds this pre-lift) - a family can flag
-      "this post is about my child," routed to the owner like a report. A power to publish a child
-      without a family door to object is an asymmetry. **[Kira pre-lift vs. Sisko fast-follow - captain's
-      call.]**
-- [ ] **3. Child assent** (Spock) - alongside guardian consent, the under-13 learner is shown, in their
-      terms, that all families will see this, and agrees. Consent protects the guardian's authority;
-      assent protects the child.
-- [ ] **4. Stated board intention, written** (Guinan -> Sarek) - "a place to offer, not perform;
-      received, never ranked; it exists so a young person learns a community will hold what they hand
-      it." At the top of the board spec + the family explainer. Meaning defended late is meaning already
-      drifted; this sentence is the future "no" to "featured ideas."
-- [ ] **5. Deferred-ledger + re-verification cadence** (Data) - the ledger at the top of this file
-      (done); make the RLS wall-walk + upload harness **repeatable regression checks** re-run on any
-      board-touching change.
+**PRE-LIFT (build before flag-on) - BUILT 2026-09-15 (sw v206):**
+- [x] **1. Learner-delete of own post** (Quark, non-negotiable) - "Delete this idea" on the learner's
+      own posts (any non-removed status); a two-tap confirm, then a hard delete of their own row (reports
+      cascade). Store `deleteMyCommunityPost`. **Needs migration v0.42 applied** (`cp_delete_own` RLS)
+      and the Gate B probes re-walked (a learner can delete OWN, not ANOTHER's).
+- [x] **2. Family-objection path** (Kira) - the report form now has "This post is about me or my
+      family"; it routes to the owner like any report, prefixed `[ABOUT MY FAMILY]` so the reviewer's
+      eye goes straight to it. Reuses `community_post_reports` (no new migration). **[Kira held this
+      pre-lift; built pre-lift.]**
+- [x] **3. Child assent** (Spock) - the send button is gated on an assent checkbox: "I understand my
+      idea will be shown to all the Vibrant Life families, and I want to share it" (young register:
+      simpler wording). Consent protects the guardian's authority; assent protects the child.
+- [x] **4. Stated board intention** (Guinan) - an in-app line under the board prompt: *"A place to
+      offer, not to perform. Every idea is received; none is ranked."* (Also belongs at the top of the
+      family explainer, fast-follow #7.)
+- [ ] **5. Deferred-ledger + re-verification cadence** (Data) - ledger done (top of file). Still to
+      formalize: make the RLS wall-walk + upload harness **repeatable regression checks** re-run before
+      any board-touching lift.
 
 **FAST-FOLLOWS (post-lift):**
 - [ ] 6. "Your idea is on the board" warm moment on approval (Ezri).

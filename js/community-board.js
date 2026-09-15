@@ -22,7 +22,7 @@
 // owner review before anything reaches the public board.
 
 import { escapeHtml, escapeAttr } from './pillars/_scaffold.js';
-import { submitCommunityPost, getMyCommunityPosts, getPostedBoard, getLearner, reportCommunityPost } from './store.js';
+import { submitCommunityPost, getMyCommunityPosts, getPostedBoard, getLearner, reportCommunityPost, deleteMyCommunityPost } from './store.js';
 import { renderPosterFromFile, safePosterSrc } from './poster.js';
 
 const POST_STATUS = {
@@ -103,7 +103,10 @@ function mineRow(p) {
     <div class="conn-mine-main">
       <p class="conn-mine-body">${p.title ? `<strong>${escapeHtml(p.title)}</strong> - ` : ''}${escapeHtml(p.body)}</p>
       <p class="conn-mine-status conn-status-${escapeAttr(p.status)}">${escapeHtml(statusLine)}</p>
-      ${(removed || denied) ? `<button type="button" class="btn btn-text conn-mine-revise" data-revise="${escapeAttr(p.id)}">Revise &amp; share again</button>` : ''}
+      <div class="conn-mine-actions">
+        ${(removed || denied) ? `<button type="button" class="btn btn-text conn-mine-revise" data-revise="${escapeAttr(p.id)}">Revise &amp; share again</button>` : ''}
+        ${p.status !== 'removed' ? `<button type="button" class="btn btn-text conn-mine-delete" data-delete="${escapeAttr(p.id)}">Delete this idea</button>` : ''}
+      </div>
     </div>
   </div>`;
 }
@@ -149,6 +152,7 @@ export async function wireRichCommunity(host, learnerId) {
       <p class="pillar-prompt">${young
         ? 'Have an idea for everyone? A club, a fun day, a way to help? Tell your guide about it.'
         : 'Have an idea for the community - a group to start, a way to give back, an event to run? Fill it in and send it to your guide.'}</p>
+      <p class="cork-intention">A place to offer, not to perform. Every idea is received; none is ranked.</p>
       <form class="cork-form" id="cork-form" novalidate>
         <label class="cork-field"><span class="cork-label">${young ? 'What is your idea?' : 'Title'}</span>
           <input type="text" id="cork-title" maxlength="120" placeholder="${young ? 'Chess club, art day...' : 'Chess group, park clean-up...'}" required></label>
@@ -162,6 +166,9 @@ export async function wireRichCommunity(host, learnerId) {
           <p class="cork-poster-status" id="cork-poster-status" aria-live="polite" hidden></p>
           <div class="cork-poster-preview" id="cork-poster-preview" hidden></div>
         </div>
+        <label class="cork-assent"><input type="checkbox" id="cork-assent"> ${young
+          ? 'I know all the Vibrant Life families will get to see my idea, and I want to share it.'
+          : 'I understand my idea will be shown to all the Vibrant Life families, and I want to share it.'}</label>
         <div class="cork-form-actions">
           <button type="submit" class="btn btn-primary" id="cork-send" disabled>Send to my guide</button>
         </div>
@@ -178,10 +185,14 @@ export async function wireRichCommunity(host, learnerId) {
     const posterEl = host.querySelector('#cork-poster');
     const statusEl = host.querySelector('#cork-poster-status');
     const previewEl = host.querySelector('#cork-poster-preview');
+    const assentEl = host.querySelector('#cork-assent');
 
-    const refreshValid = () => { sendEl.disabled = !(titleEl.value.trim() && descEl.value.trim()); };
+    // Send needs the idea AND the learner's assent - the child is a knowing party, not just moderated
+    // (Gate H, Spock 2026-09-15). Consent protects the guardian's authority; assent protects the child.
+    const refreshValid = () => { sendEl.disabled = !(titleEl.value.trim() && descEl.value.trim() && assentEl?.checked); };
     titleEl.addEventListener('input', refreshValid);
     descEl.addEventListener('input', refreshValid);
+    assentEl?.addEventListener('change', refreshValid);
 
     // Contact field (older register): the safe path - "Ask my guide" - is the default. A learner can
     // choose "someone specific", which reveals a text box that gently discourages raw PII (a phone
@@ -249,6 +260,7 @@ export async function wireRichCommunity(host, learnerId) {
       form.innerHTML = `
         <label class="cork-hint" for="cork-report-why-${escapeAttr(id)}">Tell a guide what's wrong <span class="cork-opt">(optional)</span></label>
         <input type="text" id="cork-report-why-${escapeAttr(id)}" class="cork-report-why" maxlength="300" placeholder="What should a guide know?">
+        <label class="cork-report-family"><input type="checkbox" class="cork-report-family-cb"> This post is about me or my family</label>
         <div class="cork-report-actions">
           <button type="button" class="btn btn-text" data-report-cancel="1">Never mind</button>
           <button type="button" class="btn btn-primary" data-report-send="1">Send to a guide</button>
@@ -258,10 +270,29 @@ export async function wireRichCommunity(host, learnerId) {
       form.querySelector('[data-report-cancel]').addEventListener('click', () => { form.remove(); btn.hidden = false; });
       form.querySelector('[data-report-send]').addEventListener('click', async (ev) => {
         const send = ev.currentTarget; send.disabled = true; send.textContent = 'Sending...';
-        const reason = form.querySelector('.cork-report-why')?.value.trim() || '';
+        let reason = form.querySelector('.cork-report-why')?.value.trim() || '';
+        // Family-objection path (Gate H, Kira): a family flags a post about their child; it routes to
+        // the owner like any report, prefixed so the reviewer's eye goes straight to it.
+        if (form.querySelector('.cork-report-family-cb')?.checked) reason = ('[ABOUT MY FAMILY] ' + reason).trim();
         try { await reportCommunityPost(id, reason); } catch (_) {}
         wrap.innerHTML = '<p class="cork-report-done">Thank you - a guide will take a look.</p>';
       });
+    }));
+
+    // Learner-delete of own post (Gate H, Quark): a child can withdraw their own words at any stage.
+    // A gentle two-tap confirm so it is never accidental; then a hard delete of their own row.
+    host.querySelectorAll('[data-delete]').forEach((btn) => btn.addEventListener('click', () => {
+      if (btn.dataset.confirming !== '1') {
+        btn.dataset.confirming = '1';
+        btn.textContent = 'Delete for good?';
+        setTimeout(() => { if (btn.dataset.confirming === '1') { btn.dataset.confirming = '0'; btn.textContent = 'Delete this idea'; } }, 4000);
+        return;
+      }
+      btn.disabled = true; btn.textContent = 'Deleting...';
+      (async () => {
+        try { await deleteMyCommunityPost(btn.dataset.delete); } catch (_) {}
+        await render();
+      })();
     }));
 
     // Non-shaming path-back: "Revise & share again" reopens the form pre-filled from the taken-down

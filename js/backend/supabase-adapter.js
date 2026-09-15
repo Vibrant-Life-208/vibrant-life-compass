@@ -1493,6 +1493,14 @@ export async function getCommunityReviewQueue(status) {
   return (data || []).map(rowToCommunityPost);
 }
 
+// Gate H (Quark): a learner deletes their OWN post at any stage - right-to-be-forgotten for a
+// child's own words. RLS (cp_delete_own, v0.42) scopes it to own rows; reports cascade-delete.
+export async function deleteMyCommunityPost(postId) {
+  const { error } = await getClient().from('community_posts').delete().eq('id', postId);
+  if (error) { console.warn('deleteMyCommunityPost:', error.message); return false; }
+  return true;
+}
+
 // Blocker #3: a learner reports a POSTED note for staff to look at. Insert-only; reporter_id
 // defaults to auth.uid() in the DB. Never changes the post's status (the owner decides).
 export async function reportCommunityPost(postId, reason) {

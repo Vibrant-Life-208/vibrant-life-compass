@@ -1205,3 +1205,4 @@ export async function getCommunityReviewQueue() { return []; }
 export async function reviewCommunityPost() { return null; }
 export async function reportCommunityPost() { return false; }
 export async function getCommunityPostReports() { return []; }
+export async function deleteMyCommunityPost() { return false; }
