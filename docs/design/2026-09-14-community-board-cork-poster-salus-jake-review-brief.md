@@ -158,8 +158,17 @@ Remove it afterward with the owner "Take down" button, or `delete from community
 
 ## Second surface in this walk: Responsibilities v1 (added 2026-09-14)
 
-The same sitting can also walk **Responsibilities** (Creator Mindset), built dark behind `?resp=on`
-(compass main, **sw v189**). Full design + rationale: `docs/design/2026-09-14-responsibilities-v1-design-note.md`.
+> **STATUS CHANGE 2026-09-14: NOW LIVE FOR EVERYONE (sw v193), by captain override of this walk gate.**
+> Responsibilities was built dark behind `?resp=on`; the captain lifted it live for all learners
+> before the walk (same shape as the 2026-08-03 mountain override of the SSC+PDC gate). **The walk
+> still runs next week - but as a review of a LIVE surface, not a ship gate.** It is now the safety
+> net, not the door. If a real child reads the "tended today?" surface as a test or a chore-tracker
+> rather than as care, the fast mitigation is `?resp=off` per-learner while we adjust. Decision logged
+> 2026-09-14; Jake's and Salus's memories carry the override + their standing watch-conditions.
+
+The same sitting can also walk **Responsibilities** (Creator Mindset). It is now **default-on** for
+all learners (`?resp=off` to opt a browser out). Full design + rationale:
+`docs/design/2026-09-14-responsibilities-v1-design-note.md`.
 
 **Updated 2026-09-14 (post-build, from captain testing):**
 - **Weekly now has a weekday PICKER** (S M T W T F S) - the learner chooses the day (e.g. "clean the
@@ -172,9 +181,10 @@ The same sitting can also walk **Responsibilities** (Creator Mindset), built dar
   going to the Creator pillar; the yellow tab appears immediately. Tending + removing still live on
   Creator.
 
-**Access:** two doors now - (a) Creator Mindset -> Responsibilities, or (b) the **Calendar**'s
-"+ Add a responsibility". Add one, choose a cadence (Daily / Weekdays / Weekly-then-pick-a-day), and
-check the Calendar (the big "This month" at the top) for the yellow tab. `?resp=off` to switch off.
+**Access:** two doors, both live for everyone now - (a) Creator Mindset -> Responsibilities, or
+(b) the **Calendar**'s "+ Add a responsibility". Add one, choose a cadence (Daily / Weekdays /
+Weekly-then-pick-a-day), and check the Calendar (the big "This month" at the top) for the yellow tab.
+`?resp=off` to switch off for a browser.
 Also worth watching: does the learner tell the **presence dot** (tap a day = "I showed up") apart from
 the **yellow responsibility tab**? They are deliberately different marks.
 
@@ -192,8 +202,9 @@ the **yellow responsibility tab**? They are deliberately different marks.
 - Confirm no count/streak/scoreboard leak anywhere (the Clabough non-negotiable). The yellow tab is a
   presence marker, never a tally.
 
-*Same gate as the board: conditions built, but neither seat clears it for a real child until the walk
-is watched. Both flags stay dark until then.*
+*The board stays dark until its walk clears. Responsibilities does NOT - it is live now (captain
+override); the walk becomes a live-surface review whose watch-points above are the safety net, and
+`?resp=off` per-learner is the standing mitigation if it lands wrong for a real child.*
 
 ---
 
