@@ -117,9 +117,10 @@ carry-in)".
 
 ## Gate D - Counsel question (owner: Europa + counsel)
 
-Packet ready: **`community-board-gate-d-counsel-packet.md`** - a narrow ADDENDUM to the existing Vibrant
-Life child-data engagement (Growth Record brief + teen-sandbox age-verification thread), so it routes
-to the **same counsel**, not a fresh engagement.
+Packet **SEND-READY**: **`community-board-gate-d-counsel-packet.md`** - a narrow ADDENDUM to the existing
+Vibrant Life child-data engagement (Growth Record brief + teen-sandbox age-verification thread), routes
+to the **same counsel**. Confirmed: **Vibrant Life has NO existing media release**, so Appendix A (the
+attached draft consent) is a new instrument for counsel to finalize. See the packet's "Send-ready" section.
 
 - [ ] Send the packet to counsel. Core question: *when an under-13 learner PUBLISHES self-authored
       content + an image to a board visible to all enrolled families, does it require verifiable
@@ -164,6 +165,10 @@ Full audit: **`community-board-gate-e-a11y-audit.md`** (Parts 1-3 + sign-off). S
 ---
 
 ## Gate F - Jake's binding real-child walk (owner: Jake + Salus, consented)
+
+**One-page script ready: `community-board-gate-f-walk-script.md`** - a single consented sitting that also
+closes Gate C (upload spot-checks) and Gate E (screen-reader read-through). Bring a learner (ideally
+Discovery 8-11), a real GPS phone photo + a real PDF, a screen reader, and `exiftool`.
 
 Jake's standing gate: no learner-facing surface clears until he watches a real learner meet the built
 thing. Consented, every screen. Watch specifically:

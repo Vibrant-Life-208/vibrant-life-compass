@@ -45,6 +45,9 @@ is PUBLISHED - visible to every enrolled family and staff** once approved. Key f
   and the owner.
 - **School / educational context.** This is a school using the tool for its community; not a public
   consumer social network, and not (as designed) directed at commercial use of children's data.
+- **No existing media release.** Vibrant Life does **not** currently use a photo/media/publication
+  release at enrollment. So this is a greenfield consent question, and Appendix A is a proposed new
+  instrument (not a re-interpretation of an existing form).
 - **First jurisdiction: Idaho, USA.** Built to California-grade as the high-water mark; EU deferred.
 
 ## 2. The questions
@@ -131,6 +134,23 @@ contact and when-where fields.
 to the same counsel handling the teen-sandbox age-verification / Growth Record questions. Raised by
 Tutela (TCC) as the child-publication-consent crux that RLS correctness does not answer: the wall being
 sound says who CAN see the board; it does not say whether a minor may PUBLISH to it.*
+
+---
+
+## Send-ready (Europa)
+
+This packet is **final and complete** - the media-release fact is confirmed (none exists), the draft
+instrument is attached (Appendix A), and it is scoped as an addendum to the existing engagement. To send:
+
+- [ ] Send this file to the **same counsel** handling the teen-sandbox age-verification / Growth Record
+      questions (so it rides the open engagement, not a fresh one). A one-line cover is enough: *"A narrow
+      addendum on the Vibrant Life community board - Q1 (consent lane) and Q3 (image likeness) gate a
+      go-live; a proposed consent instrument is in Appendix A for you to finalize."*
+- [ ] Flag the gating items (Q1 consent lane, Q3 image likeness) as the ones that unblock the build.
+- [ ] Get the answer **in writing**; then the consent lane + any required VPC/per-post mechanics become a
+      build task before lift, and the finalized Appendix A becomes the enrollment form.
+
+*Not legal advice; the packet asks the questions, counsel answers them.*
 
 ---
 
