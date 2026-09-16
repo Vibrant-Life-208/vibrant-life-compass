@@ -3663,6 +3663,37 @@ body.landscape-mountain {
   line-height: 1.45;
 }
 
+/* Strengths step mode toggle (adults): pick-by-hand vs upload the VIA PDF.
+   Segmented control; active segment reads like a selected picker card.
+   Guide-onboarding review, 2026-09-16. */
+.onb-mode-toggle {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0 0 1rem;
+  padding: 0.25rem;
+  background: var(--cream);
+  border: 1px solid var(--earth-light);
+  border-radius: var(--radius-sm);
+}
+.onb-mode-btn {
+  flex: 1;
+  min-height: 44px; /* dignity */
+  padding: 0.55rem 0.6rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.onb-mode-btn.active {
+  background: var(--sage);
+  color: var(--warm-white);
+  font-weight: 500;
+}
+
 .onb-select-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));

@@ -1812,6 +1812,12 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     strengths: [],
     strengthResult: null, // parsed VIA PDF {top8, bottom8, top3}
     strengthError: '',
+    // Adults (guides/parents/Launch Pad) choose how to give strengths: 'pick' the
+    // top 5 by hand (no VIA PDF needed - the default, so a guide onboarding never
+    // hits a required-upload wall) or 'upload' the VIA results PDF for the fuller
+    // top-8/bottom-8 ranking. Children keep the youth-VIA upload flow (see
+    // renderStrengths). (Guide-onboarding review, 2026-09-16.)
+    strengthMode: 'pick',
     valuesLexicon: [],
     viaStrengths: [],
     horizons: { beyond_5yr: '', within_5yr: '', within_1yr: '', current_state: '', halfway: '' },
@@ -2031,6 +2037,24 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     `;
   }
 
+  // Strengths step entry. Children (Discovery/Adventure youth VIA) keep the
+  // upload-only flow untouched. Adults (guides, parents, Launch Pad) get a choice:
+  // pick their top 5 by hand (default - no PDF wall) or upload the VIA results PDF
+  // for the fuller ranking. The pick grid is the existing renderSelectStep, switched
+  // on for strengths for the first time. (Guide-onboarding review, 2026-09-16.)
+  function renderStrengths() {
+    if (childStrengths) return renderStrengthsUpload();
+    const toggle = `
+      <div class="onb-mode-toggle" role="tablist" aria-label="How to add your strengths">
+        <button type="button" class="onb-mode-btn${state.strengthMode === 'pick' ? ' active' : ''}" data-smode="pick" role="tab" aria-selected="${state.strengthMode === 'pick'}">Pick my top 5</button>
+        <button type="button" class="onb-mode-btn${state.strengthMode === 'upload' ? ' active' : ''}" data-smode="upload" role="tab" aria-selected="${state.strengthMode === 'upload'}">I have my VIA results</button>
+      </div>`;
+    const body = state.strengthMode === 'upload'
+      ? renderStrengthsUpload()
+      : renderSelectStep({ kind: 'strength', label: 'strengths' });
+    return toggle + body;
+  }
+
   // Strengths step: VIA survey link-out + on-device PDF upload (no hand-picking).
   function renderStrengthsUpload() {
     const labels = {};
@@ -2072,12 +2096,21 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     // resume-then-back it may be absent, so fall back to the saved top strengths.
     const ids = (state.strengthResult ? state.strengthResult.top8 : state.strengths).slice(0, 5);
     const chips = ids.map((id) => `<li class="strength-pill">${escapeHtml(labels[id] || id)}</li>`).join('');
+    // Guide register (guides + owners): the guide learns their strengths to steward
+    // with them, not as a child meeting their tools. Sibling register, adult stance,
+    // tied to the work. (Hoshi, guide-onboarding review 2026-09-16.)
+    const guideReg = role === 'guide';
+    const heading = guideReg ? 'The strengths you steward with' : 'Tools you already have';
+    const bodyHtml = guideReg
+      ? `<p class="onb-why-body">These are yours - the ways you notice, steady a room, ask the question that opens a door. You already use them in the studio every day. Naming them here isn't a test; it's so you can lend them on purpose, and so you can recognize the same thing beginning to form in a learner.</p>
+        <p class="onb-why-body">A guide who knows their own strengths can see a child reaching for one of theirs.</p>`
+      : `<p class="onb-why-body">Meet your strengths - some of the best parts of who you are. You use them every day: helping a friend, asking a good question, making someone laugh, keeping going when things get tricky.</p>
+        <p class="onb-why-body">They're tools you already carry. When something feels hard, ask: which of my strengths can help me right now? The more you use them, the stronger they grow.</p>`;
     return `
       <div class="onb-strengths-why">
         <ul class="strength-pill-list">${chips}</ul>
-        <h3 class="onb-why-heading">Tools you already have</h3>
-        <p class="onb-why-body">Meet your strengths - some of the best parts of who you are. You use them every day: helping a friend, asking a good question, making someone laugh, keeping going when things get tricky.</p>
-        <p class="onb-why-body">They're tools you already carry. When something feels hard, ask: which of my strengths can help me right now? The more you use them, the stronger they grow.</p>
+        <h3 class="onb-why-heading">${heading}</h3>
+        ${bodyHtml}
       </div>
       ${navButtons({ skippable: false, continueLabel: terminalLabel(isLast()) })}
     `;
@@ -2088,12 +2121,20 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
   // entered. Copy is accessible to young learners and reads with dignity for
   // teens/adults. (Captain 2026-07-19.)
   function renderValuesWhy() {
+    // Guide register (guides + owners): values as what a steward holds steady, and
+    // the discipline of not guiding a learner toward the guide's own values.
+    // (Hoshi, guide-onboarding review 2026-09-16.)
+    const guideReg = role === 'guide';
+    const bodyHtml = guideReg
+      ? `<p class="onb-why-body">Your values are what you hold steady when a decision is hard - and a guide's values quietly shape the whole room. Naming them isn't about performing them. It's so you can tell the difference between guiding a learner toward their values and guiding them toward yours.</p>
+        <p class="onb-why-body">On the next screen, name a few of your own.</p>`
+      : `<p class="onb-why-body">Your values are the things that matter most to you, and knowing them makes the hard choices easier.</p>
+        <p class="onb-why-body">Here is a surprising way to find them: notice what bothers you. When something feels unfair, or you are quick to defend someone, that feeling is pointing at something you care about.</p>
+        <p class="onb-why-body">On the next screen, you'll name a few of your own.</p>`;
     return `
       <div class="onb-strengths-why">
         <h3 class="onb-why-heading">What you stand for</h3>
-        <p class="onb-why-body">Your values are the things that matter most to you, and knowing them makes the hard choices easier.</p>
-        <p class="onb-why-body">Here is a surprising way to find them: notice what bothers you. When something feels unfair, or you are quick to defend someone, that feeling is pointing at something you care about.</p>
-        <p class="onb-why-body">On the next screen, you'll name a few of your own.</p>
+        ${bodyHtml}
       </div>
       ${navButtons({ skippable: false, continueLabel: terminalLabel(isLast()) })}
     `;
@@ -2129,7 +2170,10 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const list = kind === 'value' ? state.values : state.strengths;
     // Discovery learners skip the external Values assessment link (values.institute
     // is adult-oriented) - they pick from the curated list. (Captain 2026-07-14.)
-    const suppressValuesLink = kind === 'value' && studio === 'discovery';
+    // Strengths in pick mode also skip the survey link: the strengths-step toggle
+    // already owns the "I have my VIA results" path, so the link here would only
+    // confuse. kind:'strength' is rendered ONLY by that pick mode. (2026-09-16.)
+    const suppressValuesLink = (kind === 'value' && studio === 'discovery') || kind === 'strength';
     const linkUrl = kind === 'value' ? VALUES_ASSESSMENT_URL : VIA_SURVEY_URL;
     const linkText = kind === 'value'
       ? 'Take the Values assessment'
@@ -3326,7 +3370,7 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
     const formFields = document.getElementById('form-fields');
     const step = curStep();
     if (step === 'breath') formFields.innerHTML = renderBreath();
-    else if (step === 'strengths') formFields.innerHTML = renderStrengthsUpload();
+    else if (step === 'strengths') formFields.innerHTML = renderStrengths();
     else if (step === 'strengths_why') formFields.innerHTML = renderStrengthsWhy();
     else if (step === 'values_why') formFields.innerHTML = renderValuesWhy();
     else if (step === 'values') formFields.innerHTML = typeValues ? renderValuesType() : renderSelectStep({ kind: 'value', label: 'values' });
@@ -3382,6 +3426,13 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
 
     // Strengths step: VIA PDF upload (on-device parse, then advance).
     if (step === 'strengths') {
+      // Adult mode toggle: pick-by-hand vs upload the VIA PDF. Re-render on switch.
+      document.querySelectorAll('[data-smode]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.strengthMode = btn.dataset.smode;
+          render();
+        });
+      });
       const input = document.getElementById('onb-via-file');
       const drop = document.getElementById('onb-via-drop');
       const handle = async (file) => {
@@ -3455,9 +3506,16 @@ export async function openOnboardingModal({ profileId = null, role = 'learner', 
       if (step === 'breath') {
         await advance(null);
       } else if (step === 'strengths') {
-        const r = state.strengthResult;
-        if (!r) return; // need an uploaded VIA PDF first
-        await advance(() => profileId ? setStrengthRanking(profileId, { top8: r.top8, bottom8: r.bottom8 }) : Promise.resolve());
+        // Adult pick mode: exactly 5 hand-picked strengths -> save the flat top-5.
+        // Otherwise (children, or adults who uploaded) use the parsed VIA ranking.
+        if (!childStrengths && state.strengthMode === 'pick') {
+          if (state.strengths.length !== 5) return;
+          await advance(() => profileId ? setProfileStrengths(profileId, state.strengths) : Promise.resolve());
+        } else {
+          const r = state.strengthResult;
+          if (!r) return; // need an uploaded VIA PDF first
+          await advance(() => profileId ? setStrengthRanking(profileId, { top8: r.top8, bottom8: r.bottom8 }) : Promise.resolve());
+        }
       } else if (step === 'strengths_why') {
         await advance(null); // read-only page; nothing to persist
       } else if (step === 'values_why') {
