@@ -1098,6 +1098,13 @@ export async function resetPassword(role, accountId) {
   return { tempPassword };
 }
 
+// Guide MFA (TOTP) - Supabase-only. The local backend has no Auth service to hold a
+// factor, so these are no-ops that report "no factor," which makes guide-onboarding
+// skip the enrollment step on local (matching signature with the Supabase adapter).
+export async function enrollTotpFactor() { return null; }
+export async function verifyTotpFactor() { return false; }
+export async function hasVerifiedTotpFactor() { return false; }
+
 // Typed values + archetype (older learners + adults) - local mirror.
 export async function setValuesFreetext(identityId, { values = [], archetype = '' } = {}) {
   const all = read(KEYS.profileAnchor) || {};

@@ -133,3 +133,18 @@ export function isLifeSkillsGrow() {
     return localStorage.getItem(LSGROW_LS_KEY) !== 'off';
   } catch (_) { return true; }
 }
+// Guide first-run onboarding (orientation + MFA enrollment). Dark by default; opt in
+// with ?guideonb=on, remembered in localStorage. Off until Accord+Hoshi finalize the
+// orientation copy, Tutela reviews the live MFA wiring, and (for real guides) the
+// flag is lifted. (2026-08-28, from the guide-account review + Phase 2 O3.)
+const GUIDEONB_LS_KEY = 'vlc_guideonb';
+export function isGuideOnboarding() {
+  try {
+    const p = new URLSearchParams(location.search).get('guideonb');
+    if (p === 'on' || p === 'off') {
+      localStorage.setItem(GUIDEONB_LS_KEY, p);
+      return p === 'on';
+    }
+    return localStorage.getItem(GUIDEONB_LS_KEY) === 'on';
+  } catch (_) { return false; }
+}
