@@ -10,7 +10,7 @@
 - **The thread underneath:** *your life is bigger than you've let yourself imagine, and you can start naming it.*
 - **Source:** the 100 Dreams practice is Matthew Kelly, *The Dream Manager* (2007) - 100 personal dreams, three time-horizons, shared in a "dream session" where dreams are contagious.
 - **The map (fleet decision 2026-08-21):** dreams sort into the **five Compass regions** the learner already navigates - **Self / Others / Making / World / Voice** - with warm dream-prompts nested in each (Kelly's evocative words, teen-relabeled). One coherent map, not a competing twelve-taxonomy. See the decision log.
-- **Runs through every day:** the Captain's Log (named Day 1, added to daily); core academics build in weeks 2-3; the credit/path-map audit happens weeks 2-3 (after belonging is rooted, never Day 2 morning); accountability partners; the Monday re-entry ritual.
+- **Runs through every day:** the Captain's Log (named Day 1, then available every day rather than required every day - Log-fallow-days are binding, see the year plan); core academics build in weeks 2-3; the credit/path-map audit happens weeks 2-3 (after belonging is rooted, never Day 2 morning); accountability partners; the Monday re-entry ritual.
 - **Guide-day structure:** Tue/Thu 9:00-1:00, baby worn, the one deep block ~10:00-11:00 (fed before, timed to the nap, pivot ready). Full structure in studio-plan v0.3, Part 2.
 
 ### Ring-1 seeds (2026-08-28) - introduced in week one, carried three years
@@ -36,7 +36,7 @@ Session 1 is where four cross-year threads are *planted* (canonical doctrine in 
 
 ### The Table
 
-The shared-meal belonging ritual on every guide day (from the "Live & Love Life" thread). The guide sits and eats the same food; the base meal is always provided (no cover charge); allergen/cultural/ED-safe; presence, not consumption (no one watches a plate). The worn baby sits at the center. Open sub-question: 11:00-11:30 inside the guide day vs. the 1:00 lunch.
+The shared-meal belonging ritual on every guide day (from the "Live & Love Life" thread). The guide sits and eats with them. **Learners bring their own lunch; the studio does not provide food (captain, 2026-10-19).** Presence, not consumption (no one watches a plate). Allergen/cultural/ED planning now attaches to the two shared-food events rather than the daily meal. **The equity half of the floor is unbuilt** - see the year plan. The worn baby sits at the center. Open sub-question: 11:00-11:30 inside the guide day vs. the 1:00 lunch.
 
 ---
 

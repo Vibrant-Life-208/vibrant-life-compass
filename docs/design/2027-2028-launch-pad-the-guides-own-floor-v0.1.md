@@ -6,7 +6,7 @@
 
 ## Why this exists
 
-The year's deepest claim is that you can run your own life sustainably and author it without extracting from yourself. The single most powerful teaching instrument in the whole year is **the guide modeling that she does not extract from herself to serve.** A guide who runs herself into the ground to deliver the founding year would be, however lovingly, teaching the opposite of the curriculum with her own body. Teaching "run your own ship" from a ship you are sinking to keep afloat is the deepest possible incoherence.
+The year's deepest claim is that you can run your own life sustainably and author it without extracting from yourself. The single most powerful teaching instrument in the whole year is **the guide modeling that they do not extract from themselves to serve.** A guide who runs themselves into the ground to deliver the founding year would be, however lovingly, teaching the opposite of the curriculum with their own body. Teaching "run your own ship" from a ship you are sinking to keep afloat is the deepest possible incoherence.
 
 The studio has a trauma-informed floor for the learner (Session 5: opt-out, private-by-default, name-without-detailing, coach-not-therapist). It has had **no equivalent floor for the guide.** This is that floor. It is not a concession to circumstances. It is the curriculum, applied to its teacher.
 
@@ -20,11 +20,11 @@ If the deep Socratic block has been **pivoted away for 2 consecutive guide days*
 
 ### 2. Witness-debrief - more often than monthly
 
-Sessions 5 and 7 ask the guide to be the container for teenagers' turning points, worst days, family ruptures, grief, and self-portraits. That is real emotional labor, and it lands on the same body doing the newborn's night-holding and the household's holding. **The coach-not-therapist boundary protects the learner; it must also protect the guide.** The guide needs a real reflective/debrief structure - a supervisor, a peer, a trusted practitioner - **more often than monthly through S5 and S7**, so she has somewhere to set down what she witnesses. Monthly is not enough for the witness-load of the memory season.
+Sessions 5 and 7 ask the guide to be the container for teenagers' turning points, worst days, family ruptures, grief, and self-portraits. That is real emotional labor, and it lands on the same body doing the newborn's night-holding and the household's holding. **The coach-not-therapist boundary protects the learner; it must also protect the guide.** The guide needs a real reflective/debrief structure - a supervisor, a peer, a trusted practitioner - **more often than monthly through S5 and S7**, so they have somewhere to set down what they witness. Monthly is not enough for the witness-load of the memory season.
 
 ### 3. Permission, in writing: pivoting is the design working
 
-A pivoted-away deep block is not a failure of the founding cohort. A good-enough Tuesday in December is not a betrayal of the lineage. The year is called **Origin, not Mastery.** The permission the learners get - "a permanent-scaffold path is legitimate," "postpone depth, never fake it" - **the guide takes for herself.** Write it down so it is a rule, not a feeling you have to summon while tired.
+A pivoted-away deep block is not a failure of the founding cohort. A good-enough Tuesday in December is not a betrayal of the lineage. The year is called **Origin, not Mastery.** The permission the learners get - "a permanent-scaffold path is legitimate," "postpone depth, never fake it" - **the guide takes for themselves.** Write it down so it is a rule, not a feeling you have to summon while tired.
 
 ### 4. The founding-cohort trap, named
 
@@ -43,4 +43,4 @@ This is the trap door under the whole year, and it is currently "owed" in every 
 
 ## The one-line version
 
-*"We evoke, we never extract" - and the person most often left off that sentence is the guide. Build her floor before the seventh session.*
+*"We evoke, we never extract" - and the person most often left off that sentence is the guide. Build their floor before the seventh session.*

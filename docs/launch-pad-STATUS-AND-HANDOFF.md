@@ -2,6 +2,68 @@
 
 > The single place to understand where the **Launch Pad** (the three-year in-person studio formation for 16-18-year-olds) design stands, what is merged, what is owed, and what the next real step is.
 
+---
+
+## STATE AS OF 2026-10-13 (read this first; the section below it is the 1 September baseline)
+
+**The next real step has not changed and has not happened: one real Origin morning.** Everything since 1 September has been paper, review and packaging. Nothing has been shipped to a learner or a family, and no family conversation has been held.
+
+**What happened since the baseline**
+
+| When | What |
+|---|---|
+| 09-24, 09-25 (x2) | Three 8-voice sittings authored the door: the first-cohort conversation, the promotion plan and not-shown wall, the Ballast and Open Days, the family's path |
+| 09-26 | Access statement v0.2, carrying Erin's six decisions of nine. Three remain open |
+| 09-28 | **Fresh-eyes review**, 8 fresh voices, 21 decisions, 0 dissent. First review of the new family-facing substrate |
+| 10-03 to 10-12 | Print pipeline: 17 reading PDFs, 12 spiral-bindable editions, the file manifest, the Drive structure, 33 PDFs uploaded |
+| 10-13 | **Final-check review**, 8 voices, 11 decisions, 0 dissent. 10 of 11 closed the same day |
+| 10-14 | **Pilot morning call sheet** written. Three calls, then a date |
+
+**Open and blocking the door** (one canonical list; earlier versions of the index page carried three contradicting ones)
+
+- [ ] Split the access statement into a family-facing file and a working list
+- [ ] Audit the eleven present-tense promises in *What the room provides*. Three describe a room that does not exist: the quiet space, the large-print handouts, the equal alternative for every expedition
+- [ ] Build the exceeds-capacity referral list. Six phone calls, not architecture
+- [ ] Crisis numbers on the Ballast
+- [ ] Plain-language pass and the funded interpreter offer. The no-child-interpreter rule is now written into the door document §1.1
+- [ ] Site walk, which also chooses the quiet space (a binding gate before Session 5)
+- [ ] Read the admissions timeline against the founder leave plan. **Recommendation on record: the admissions clock moves, not the leave plan. Not yet ratified**
+
+**Open artifacts:** the one-page Family note (five documents depend on it, and it gates the pilot), a family-facing price (held by Jenna and Wes), the Successor Envelope, the Family Charter, the second adult's written authority, the named warm-referral therapist.
+
+**The pilot's own gates:** eight, six in hand. Open are the named clinician (Call 1) and consent against the one-page Family note. See `design/launch-pad-pilot-morning-call-sheet.md`.
+
+**Drive.** Two separate trees, deliberately. `Launch Pad - FAMILY-SHAREABLE` sits at the top level with no shareable ancestor and holds the four family PDFs, six artwork files, and its own contents card, shared with `vibrantlife208@gmail.com` at **commenter**. `Launch Pad - GUIDE ONLY (do not share)` holds the reading set, the spiral set, sources and the review record, and is **not** shared with anyone.
+
+Both index pages were rebuilt **2026-10-17** and the superseded versions trashed:
+
+| Page | Doc ID |
+|---|---|
+| Family contents card (in FAMILY-SHAREABLE) | `1bI8wklOasuXu6j6c1H1eRYaHJzzoJvPgA_MJzeM82nE` |
+| Guide working index (in GUIDE ONLY) | `1_-SDF_OUajbxSYTOCtGmRKvvHcGIjLlPIYNNd5au_vA` |
+
+The guide index now carries one canonical gate list in place of the three contradicting five-item lists, live links to all 22 guide-tier files, the calendar with the admissions/leave collision marked **recommendation, not ratified**, and the named blind spots of the two build checks.
+
+**Two Drive-ingress limits, both confirmed by test rather than assumed.** `create_file` takes the whole payload inside the tool call, so a PDF of any real size exceeds the per-message output limit; routing through a subagent does not help, because the limit is per message and not per context. And `update_file` is metadata-only (title and parent), so a PDF cannot be replaced in place - a new upload gets a new file ID, which silently breaks every link that pointed at the old one. Replacing the four family PDFs on 10-17 is what broke the links in Jenna's card and forced the rebuild. **Check downstream links after any PDF replacement.**
+
+Two further rendering limits, found by reading the created Docs back: a link inside a table cell renders as literal escaped markdown, and so does bold. Put links and emphasis in lists and paragraphs, never in table cells.
+
+**Five Drive copies are knowingly stale**, staged locally at `~/Desktop/Launch Pad PDFs/UPDATE these 5 in Drive/` and marked as out of date on the guide index rather than claimed current. One matters: `40-the-first-conversation.pdf` and its spiral twin predate Kira's §1.1 language ruling of 10-16 (funded interpreter, learner never interprets their own admission conversation). The other three are the designed year-book spirals, which predate the calendar correction. Six more files differ by one to three bytes, which is an embedded build timestamp and not content.
+
+**Checks now run inside the build** and fail it on a hit: 89 internal names and the not-shown wall, across all ten family-tier files. Both passed 2026-10-13. Neither is a truth check.
+
+**Still owed to the fleet:** memory appends for **seven** sittings (09-24, 09-25 x2, 09-28, 10-13, and the two rooms of 10-16), routed through the Fleet MCP channel from an `evoke-agents-backup` session. Facilitator direct-write is not the channel.
+
+**Unresolved, carried forward from 10-16 and not closed by the week repair:**
+
+- **Kirk's three-to-one.** Twelve of the final sixteen weeks go inward and the return is a quarter of the descent. All five fresh voices refused it as arc, explicitly. Partially mitigated by starting the return inside Session 6's harvest. Needs the pilot, or a room with authority the closed review body does not have.
+- **Odo's shadow, which is about process rather than curriculum.** Nine circles read this programme and none read its container. *"If this repair ships without asking why the calendar was invisible to every ring, the next container error ships too."*
+- **The 2027-2028 break dates are projections** from the 2026-2027 pattern. Jenna sets the real ones, and the family card asks her for exactly that.
+
+**Still open on the live Compass, affecting children today:** the `notifications_insert_any` impersonation vector, flagged July, called a queue-jumper on 1 September, still present in `supabase/schema.sql`. Not a 2027 item.
+
+---
+
 **As of 2026-09-01.** The complete design body is **merged to `main`** after the **full nine-circle fleet review** (every ring) and **three leadership decisions + a curation pass**. Nothing here is shipped to a live software surface - the Launch Pad is (by design) mostly pen, paper, and a room; the companion Compass app is deliberately "a lens, not a vault." **The review body is closed. The next real step is not more review - it is one real Origin morning.**
 
 ---

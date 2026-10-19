@@ -36,16 +36,32 @@ Enrollment is still uncertain this far out; the likely max is **7**. So plan for
 
 ### Year-at-a-glance
 
+**Corrected 2026-10-16.** The table below previously ran on an invented three-week cadence (3/3/3/3/6/6/6, thirty weeks) that ignored the school's breaks entirely. Vibrant Life runs seven sessions with a break between each, and the sessions are **not** equal lengths: they are set by where the breaks fall. Derived from the real 2026-2027 calendar (first day Aug 17, last day May 27, session breaks Sep 14-17, Oct 26-29, Feb 15-18, Apr 5-8, plus Thanksgiving and Winter), the true shape is **4, 5, 3, 3, 6, 6, 7 = thirty-four program weeks.**
+
 | Session (Origin) | Dates | Weeks |
 |---|---|---|
-| S1 - The Map of Me | Aug 16 - Sep 3 | 3 |
-| S2 - The Lineage | Sep 6 - Sep 24 | 3 |
-| S3 - The Power of Choice | Sep 27 - Oct 15 | 3 |
-| S4 - Running My Own Ship | Oct 18 - Nov 5 | 3 |
-| S5 - The Full Draft | Nov 8 - Jan 8 (spans 2 breaks) | 6 |
-| S6 - Chapter One | Jan 10 - Feb 18 | 6 |
-| S7 - This Is Me / The Unveiling | Feb 21 - Apr 7 (spans spring break) | 6 |
-| Open Waters (flex tail) | Apr 10 - late May | ~7 |
+| S1 - The Map of Me | Aug 16 - Sep 9 | 4 |
+| *session break* | Sep 13 - 16 | |
+| S2 - The Lineage | Sep 20 - Oct 21 | 5 |
+| *session break* | Oct 25 - 28 | |
+| S3 - The Power of Choice | Nov 1 - Nov 18 | 3 |
+| *Thanksgiving* | Nov 22 - 26 | |
+| S4 - Running My Own Ship | Nov 29 - Dec 16 | 3 |
+| *Winter break* | Dec 20 - 31 | |
+| S5 - The Full Draft | Jan 3 - Feb 10 | 6 |
+| *session break* | Feb 14 - 17 | |
+| S6 - Chapter One | Feb 21 - Mar 30 | 6 |
+| *session break* | Apr 3 - 6 | |
+| S7 - This Is Me / The Unveiling | Apr 10 - May 6 | 4 |
+| Open Waters (flex tail) | May 10 - May 25 | 3 |
+
+**Three consequences of the correction, each a real change to the design:**
+
+1. **Nothing spans the winter breaks.** S3 ends into Thanksgiving and S4 ends into the winter break. The prior framing of S5 as "the long session across two breaks" is retired; S5 now runs clean from Jan 3 to Feb 10.
+2. **S7 shortens from six weeks to four, and Open Waters from about seven to three.** The arithmetic forces it: the design wanted 30 session weeks plus 7 of Open Waters, which is 37, and the real year holds 34. S1 to S6 take 27 of them, leaving 7 to split. The Unveiling keeps a four-week build and Open Waters keeps a real, if short, flex tail rather than being deleted. **This split is the captain's to confirm.**
+3. **Labor Day falls inside S1 and Columbus Day inside S2.** Each costs a Monday, which in this studio is a self-run morning rather than a guide day, so the guided hours are untouched.
+
+*Break dates are projected from the 2026-2027 calendar. Jenna sets the real ones. Confirm before anything is printed for a family.*
 
 ---
 
@@ -69,7 +85,7 @@ The design principle, since there is **no relief adult on guide days**: the day 
 
 **Going deep - the three modes** (Socratic questioning; real conversation; group challenges) and the discussion culture (pass always allowed; disagree with the idea not the person; "I changed my mind" is a win; draw out the quiet voice) carry forward from v0.2, plus the **access doors in**: write-first-then-share think-time, a non-verbal contribution channel each day, "place yourself" never "stand," and a varied settle question.
 
-**The Table inclusion floor** (from v0.2, unchanged): base meal always provided, no cover charge; allergen/cultural/religious safety planned; presence not consumption (no one watches a plate - a specific reason the Salus + Jake walk matters); Erin eats seated, same food; ritual bones (a threshold, a rotating role, screen-free as a gift).
+**The Table inclusion floor** (**revised 2026-10-19, captain: the studio does not provide the daily meal - learners bring their own lunch**). What survives: presence not consumption (no one watches a plate - a specific reason the Salus + Jake walk matters); Erin eats seated, same food; ritual bones (a threshold, a rotating role, screen-free as a gift).
 
 ---
 
@@ -101,7 +117,7 @@ Unchanged from v0.2, in brief: **for a learner who names core-credit completion 
 - **Day 2 - Tue Aug 17, 9:00-1:00** - S1 opens; 100 Dreams unfiltered. Credit-audit 1:1s **removed** from this morning. Deep-work cycles **taught explicitly** today so learners have seen a focused block before Day 3.
 - **Day 3 - Wed Aug 18** - a **narrated self-guided day**: an adult present-but-not-directing so learners run their first solo day with the shape visible. (Note: this is a Tots day for Erin 9:15-11:30 - so the narration either happens in her 12:00-12:30 check-in framing, or a light-touch adult narrates the morning. Resolve alongside the Mon/Wed presence question above.)
 - **Re-entry after every break** - a guide-led "where were you, where are you" re-thread, especially critical across the two-break span of S5.
-- **Open Waters (Apr 10 - late May, ~7 weeks)** *(evoked-polish - Cura)* - light structure, not a void: real-world **expeditions**, personal-project deep dives, **HS-credit close-out** for anyone finishing the year's plan, the **Next Great Adventure** send-off for graduating captains, and genuine **fallow** (rest is a legitimate use of it). Name it to families as intentional - flex + fallow - not "we'll figure it out."
+- **Open Waters (May 10 - May 25, 3 weeks)** *(evoked-polish - Cura)* - light structure, not a void: real-world **expeditions**, personal-project deep dives, **HS-credit close-out** for anyone finishing the year's plan, the **Next Great Adventure** send-off for graduating captains, and genuine **fallow** (rest is a legitimate use of it). Name it to families as intentional - flex + fallow - not "we'll figure it out."
 
 ---
 
@@ -131,7 +147,7 @@ Babywearing covers the normal day. It does **not** cover the day the baby is too
 ### Locked Decision #6 with teeth - see *The Guide's Own Floor* (companion doc)
 
 - **Erin's Friday is fallow too** - protected, not on-call.
-- **A witness-debrief, more often than monthly** - the S5/S7 witness-load (holding teens' worst days and self-portraits) needs a real reflective/peer debrief, not an occasional call. Coach-not-therapist applies *to the guide too*: she needs somewhere to set down what she witnesses.
+- **A witness-debrief, more often than monthly** - the S5/S7 witness-load (holding teens' worst days and self-portraits) needs a real reflective/peer debrief, not an occasional call. Coach-not-therapist applies *to the guide too*: they need somewhere to set down what they witness.
 - **A pre-committed pause-trigger, N=2:** if the deep work has been pivoted-away for **2 consecutive guide days** (baby or exhaustion), pause to fallow-mode and re-plan rather than push through. Pre-committed *now, while rested* - a depleted person does not pause; that is exactly when the instinct fails.
 - **Permission, in writing:** a pivoted-away deep block or a good-enough December day is *the design working, not the guide failing.* Origin, not Mastery - the permission the learners get, the guide takes too.
 - Full detail: **`2027-2028-launch-pad-the-guides-own-floor-v0.1.md`.**
@@ -151,7 +167,7 @@ From the 5-voice "are we serving / make it evoked" review. These apply across ev
 - **Feelings are the guide's private hope, never the session's aim** *(Guinan, Polaris, Deanna)*. The "joy-flavor" lines ("the relief and catharsis," "being seen") name what *some* learners may feel - never a deliverable. You cannot schedule "being seen" for a Thursday. Word every joy-flavor as possibility ("some feel this; some feel nothing yet; both are true"), never as the outcome.
 - **The empty basket is a true harvest** *(Guinan, Naomi)*. Every harvest day carries an explicit honored outcome: *"I have nothing to declare this season" is a real and honored harvest - the fallow field is part of the crop.* No one performs a harvest on schedule.
 - **Guard the self-as-deficit read** *(Deanna, Naomi)*. Learner-facing framing never renders a life as a gap-map: "the quiet regions are the invitation," not "the gap is the data." The Credit/Path Map is the learner's own, co-computed, non-cumulative across years. Season goals are droppable with no failure.
-- **Leave one cup empty** *(Guinan)*. Build at least one genuinely unstructured, un-harvested stretch *inside* the arc (not just Fridays) - a fallow field with no Work of the Day, where the self assembles in the gap. Candidate: a designated open week in the long S5, or a lighter December week named as fallow-on-purpose.
+- **Leave one cup empty** *(Guinan)*. **BUILT 2026-10-16, as S2 week 6.** Both original candidates died in the calendar correction - S5 now runs six unbroken weeks and is tighter than before, and December became S4 entirely. The empty stretch landed instead in the Lineage session, where the learner is waiting on an elder to answer: no new content, no Work of the Day, nothing reported, nothing handed in. Guinan's finding sat unbuilt for seven weeks and was nearly spent as inventory when the calendar handed four weeks back; it is named in the book as the week that must not be refilled the first time it looks idle.
 - **A window, not only mirrors** *(Deanna, Guinan)*. The S5-S7 interior stretch (18 weeks of self-work) gets an outward-facing beat before the Unveiling - *witness someone else's story* (interview an elder, reflect a peer's Chapter One) - so being-seen becomes reciprocal, not performative. Built into S7's open.
 - **A door for the learner who is not a story** *(Guinan)*. The year assumes the self is a narrative. Offer a dignified path for the learner who does not experience themselves that way - the self-portrait may be non-narrative (an image, a practice, a set of values) with equal honor.
 - **Hand the learner the design** *(Polaris, Naomi)*. Name the "engines" to the learner where naming honors them (the guide holds your dreams *with* you, not for you); end the year with a co-authoring close and a **Log ownership handoff** ("it's yours, take it, no copy kept").
@@ -192,7 +208,7 @@ The three-year spec now carries the canonical Ring-1 doctrine (see its "Ring-1 r
 - **The graduated somatic floor, seeded here.** Origin already opens with the body-first settle; add the mid-work discharge point (a 30-second orient between activations) and an active close-return, plus a standing physical exit ramp ("here is where you step out to, and you don't have to ask"). Anchor the discharge/return especially at S5's full-draft autobiography, where a body will get activated. Train the regulation reflex where the stakes are low.
 - **The learner-held closing practice, introduced at a young register.** Even Origin opens the interior (100 dreams is an opening act); introduce the three-prompt close (*what did I meet / what do I carry / who am I now*) as a light, learner-held, never-read practice that rides the fallow - so the reflex is a year old by the Forge and three by the Launch.
 - **Chosen / forward lineage - alternate doors, natively built (Kira, Tier 1).** The lineage/family work (S2, S5) offers, with *equal light* (not as an opt-out), the learner whose roots are severed, contested, adopted, foster, refugee, or painful: your lineage is who you *choose*, who you are *building*, who you are becoming - the self as first-of-a-line. Not a side-exit; a full front door. (Stirps reads the door copy before it ships.)
-- **Destination named on day one.** Origin's mountain, said in week one: "in ~30 weeks you'll stand and say *this is me* - the Unveiling; everything between now and then is getting ready to mean it."
+- **Destination named on day one.** Origin's mountain, said in week one: "in May, you'll show your people who you are - as much of it as you choose - the Unveiling; everything between now and then is getting ready to mean it." *(No week-count in the spoken line: a bare number is the metric register on a welcome surface, it goes stale every time the calendar moves, and the old wording promised a stage that Session 7 then spends four weeks un-promising.)*
 - **Fallow is binding.** The fallow Friday, the empty basket, the Vineyard, and Log-fallow-days are precondition-to-open, as un-cuttable as the referral pathway.
 
 *"We evoke - we never extract." - and that includes the Guide, and her baby.*

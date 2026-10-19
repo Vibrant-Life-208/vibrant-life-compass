@@ -32,7 +32,7 @@ Not just permission ("pass is always allowed") but a *path*.
 ---
 
 ## The marked quiet (McCoy - silence is a designed medium, not the absence of activity)
-Unstructured silence with a self-conscious teenager is *activating*, not restful - it looks like calm and feels like exposure. Every held silence in all three years (the settle, the closing minute, the Star Chart handoff, a dissent left standing) is bounded by three parts, all things the guide already has in her body:
+Unstructured silence with a self-conscious teenager is *activating*, not restful - it looks like calm and feels like exposure. Every held silence in all three years (the settle, the closing minute, the Star Chart handoff, a dissent left standing) is bounded by three parts, all things the guide already has in their body:
 1. **Mark the entry** - one unchanging spoken cue, the same words and slow cadence for three years: *"We're going into the quiet now."* The body learns the cue and begins to settle before the mind catches up.
 2. **Floor it** - silence only lands on an already-regulated body (the settle comes first); never use silence *as* the regulation.
 3. **Bound it** - every silence has a known, cost-free way out (the exit-ramp / pass signal), so no learner is ever trapped in a silence with no door.
@@ -40,7 +40,7 @@ Unstructured silence with a self-conscious teenager is *activating*, not restful
 ---
 
 ## Protect the guide's own nervous system (McCoy + Vic - the single point of failure)
-Co-regulation is a *physiological output*: the guide spends her own vagal tone to settle a flooded learner, all day, solo, with an infant worn on her body. **The guide runs her own settle, her own way-down at day's end, and her own closing minute - as safety instrumentation, not self-care** - printed on the one-page-per-season Operating Page she carries. Her regulation is on the page, or it is not in the design. (See leadership v2, the guide-in-series finding; and P0-2, the guide-sustainability watch + honorable-defer blessing.)
+Co-regulation is a *physiological output*: the guide spends their own vagal tone to settle a flooded learner, all day, solo, with an infant worn. **The guide runs their own settle, their own way-down at day's end, and their own closing minute - as safety instrumentation, not self-care** - printed on the one-page-per-season Operating Page they carry. The guide's own regulation is on the page, or it is not in the design. (See leadership v2, the guide-in-series finding; and P0-2, the guide-sustainability watch + honorable-defer blessing.)
 
 ---
 
