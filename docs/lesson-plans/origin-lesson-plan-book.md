@@ -129,6 +129,20 @@ And one more, which sits on top of the six:
 
 **You may refuse the structure itself.** If you decline a whole quest, you are fully honored. You are not quietly marked down as a failure or an opt-out. Your no is real.
 
+## Where your no reaches, and where it stops
+
+Here is the edge of that last promise, said now rather than discovered later.
+
+**Your no covers your own work.** A quest, a prompt, an interview, a share, a whole session, this entire structure. It lands the moment you say it, it costs you nothing, and nobody can overrule it.
+
+**It does not cover how you treat the people in the room with you.** That is not a deadline and it is not output. It is the floor that makes everything else here safe for six other people, and it is the one place in this programme where something can actually be taken from you. The studio's agreements run that floor, and they have their own ladder: a Pause, then a Stop, then a Strike. You will meet it in your first week, and you will help write the agreements it rests on.
+
+So, in one line: **the agreements are about how we treat each other. The promises are about whether you do the work.**
+
+Declining a quest is never a Pause. A Pause is never a judgement on your work, your pace, or whether you are keeping up. If anyone ever runs those two together, they have got it wrong, and you can say so out loud and point at this page.
+
+**And if you do not sign.** You are in the room anyway, and that was never the price of being here. The agreements still run for you, and here is the honest reason rather than a convenient one: they are not holding you to your word, because you did not give it. They are holding the room safe for the people in it with you. You can tell us the agreements are not yours. You cannot be outside the floor, because **the floor is not about you.**
+
 ## How we work: the week
 
 The studio day runs through the morning, 9:00 to 1:00. Across the week, two mornings are guide days and two are your own.
