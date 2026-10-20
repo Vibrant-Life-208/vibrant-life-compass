@@ -65,7 +65,7 @@ This studio has its own small vocabulary. None of it is a secret, so here it all
 - **The Work of the Day.** The one piece of the session's work the whole tribe does together that morning, named out loud at the start so you know what the day is for.
 - **Your tribe.** The people in this studio with you.
 - **The walk-in.** Two things share this word. The walk-in is the soft first stretch of a guide day, when the door is open and nothing is required. It is also what we call the quiet one-to-one conversations that happen inside that window, where the guide comes to one or two people rather than calling anyone over. "I'll catch you in the walk-in" means a conversation, not a meeting, and nothing in it is written down.
-- **Fallow.** Deliberately empty. Fallow is a farming word: a fallow field is one you leave unplanted on purpose, because that is what makes it rich again. Fridays are fallow. Never earned, never filled.
+- **Fallow.** Deliberately empty. Fallow is a farming word: a fallow field is one you leave unplanted on purpose, because that is what makes it rich again. Fridays are fallow, and so is one whole week in the autumn. Never earned, never filled.
 - **A harvest.** The last stretch of a session, where you gather what the weeks grew and name what you got. It is yours to gather, and an empty harvest is a real harvest.
 - **Witnessed.** Someone was there and saw it. Not watched, not assessed. Being witnessed is a gift and never a demand.
 - **A re-thread.** Picking the year back up after a break. The first guide day back starts with it: where were you, where are you now, what came back changed. You are never restarting cold.
@@ -86,7 +86,8 @@ This studio has its own small vocabulary. None of it is a secret, so here it all
 - **The shadow of the problem.** The uncomfortable truth inside a problem that nobody wants to say, which is usually why it stays unsolved. We look at the shadow of the problem, never the shadow of you.
 - **The Call to Action.** The talk you may give at year's end: here is a problem worth solving, why it got to me, what I did, what I ask of you. It is the harvest, and it is a feast, not a judged presentation.
 - **A Call to Repair.** The other shape the talk takes when the honest finding is that something went wrong: here is what I owe, who leads this, how you join them. A whole talk, not a lesser one.
-- **The short Origin.** If you are joining this year, the small version of the first year's three things, built in your own work time across the first three weeks. Nobody grades it and nobody can see who is doing it.
+- **Open Waters.** The loose three weeks after the Call to Action: expeditions, your own projects, credit close-out, and real rest.
+- **The short Origin.** If you are joining this year, the small version of the first year's three things, built in your own work time across the first four weeks. Nobody grades it and nobody can see who is doing it.
 
 ## What you make and carry
 
@@ -259,7 +260,7 @@ But you will know the difference between *I don't know yet* and *I didn't look.*
 
 There is one adult, outside the studio, you can always talk to. You will know who they are and how to reach them in the first week, before you ever need them.
 
-One honest line about breaks, said now. When the studio is on a break - the short ones between sessions, Thanksgiving, the two weeks at winter - the guide is not reachable. A break is rest and reset for them too, and the book protects that the same way it protects your Friday. The one adult outside the room is reachable across every break, the same as always. And if you are ever in danger, or someone else is, **988** is free, open all day and all night, and you can call or text it from anywhere. Nobody here will ever be upset that you used it.
+One honest line about breaks, said now. When the studio is on a break - the short ones between sessions, Thanksgiving, the two weeks at winter, and the summer - the guide is not reachable. A break is rest and reset for them too, and the book protects that the same way it protects your Friday. The one adult outside the room is reachable across every break, the same as always. And if you are ever in danger, or someone else is, **988** is free, open all day and all night, and you can call or text it from anywhere. Nobody here will ever be upset that you used it.
 
 And this is the honest shape of privacy, said on the first day rather than saved for the moment it matters. Almost everything stays here. Your Captain's Log, nobody reads. Your closing minute is never written down by anyone.
 
@@ -314,7 +315,7 @@ Origin does one quiet job: it gives a person three things to stand on. The Forge
 - **Agency claimed.** The felt knowledge that your choices matter and that you can move some things in your life. You will take a quick stock of what you actually have to work with.
 - **A routine that holds.** A rhythm for your days that fits you, so the work has somewhere to live.
 
-There is a card for each one, in print, in large print, and read aloud on a recording, so you can take it in the way you take things in. You build them in your own-day blocks across the first three weeks, and the midday check-in on those days is where you ask about them. They can be picked up again any time, they are never a test, and nobody grades them. Nobody can see who is doing them. By the time the group names the problem each person will carry, most people have enough of "what's mine" to name a problem that is genuinely theirs; if you don't yet, you carry a smaller problem or a placeholder, and that is a real start. In the shared work, you are a full Forge learner from the very first day. There is no catch-up table.
+There is a card for each one, in print, in large print, and read aloud on a recording, so you can take it in the way you take things in. You build them in your own-day blocks across the first four weeks, and the midday check-in on those days is where you ask about them. They can be picked up again any time, they are never a test, and nobody grades them. Nobody can see who is doing them. By the time the group names the problem each person will carry, most people have enough of "what's mine" to name a problem that is genuinely theirs; if you don't yet, you carry a smaller problem or a placeholder, and that is a real start. In the shared work, you are a full Forge learner from the very first day. There is no catch-up table.
 
 ---
 
@@ -343,13 +344,13 @@ The Forge runs the full Vibrant Life year, mid-August to late May, on the school
 | S7 The Call to Action | Apr 9 - May 3 | 4 |
 | Open Waters (flex tail) | May 7 - May 24 | 3 |
 
-Five Mondays inside sessions are holidays - Labor Day (Sep 4) in S1, the second Monday of October (Oct 9) in S2, New Year's Day (Jan 1) as S5's first day, MLK Day (Jan 15) in S5, Presidents Day (Feb 19) on S6's first day - and a Monday here is a self-run morning rather than a guided one. One guide day in S3 is a holiday, Election Day, Tue Nov 7, a presidential election; whether the studio observes it is decided before S3 opens. Veterans Day is observed on a Friday that year and costs nothing.
+Five Mondays inside sessions are holidays: Labor Day (Sep 4) in S1, the second Monday of October (Oct 9) in S2, New Year's Day (Jan 1) as S5's first day, MLK Day (Jan 15) in S5, and Presidents Day (Feb 19) on S6's first day. A Monday here is a self-run morning rather than a guided one. One guide day in S3 is a holiday: Election Day, Tue Nov 7, a presidential election that year. Whether the studio observes it is decided before S3 opens. Veterans Day falls on a Saturday that year and is observed on Fri Nov 10, a fallow day, so it takes no program day.
 
-*The dates above are Origin's 2027-2028 shape laid onto a start of Monday, August 14, 2028, with the real Thanksgiving week. They are projected, not set. One thing a real calendar will almost certainly move: New Year's Day falls on S5's first Monday, so the winter break likely sits a week later than printed. Jenna, who runs the school, sets the real dates; confirm before anything is printed for a family.*
+*These dates take Origin's 2027-2028 shape and begin it on Monday, August 14, 2028, around that year's real Thanksgiving week. They are a projection. One thing the real calendar will move: as printed, New Year's Day is S5's first Monday, so expect the winter break a week later. Jenna, who runs the school, sets the real dates. Confirm them before anything is printed for a family.*
 
-**The content below has not yet been laid onto these weeks.** The sessions were planned at three, three, three, three, six, six and six weeks; the calendar gives four, five, three, three, six, six and four plus the tail. Where a session has more weeks than its plan, the extra weeks are named below as not yet planned, and nothing is set for them, because a week nobody has listed is the week that gets quietly filled. Where a session has fewer, the plan says so, and what moves is for the voices who own the material to decide, not this book to decide quietly.
+**The sessions below are cut to these weeks.** Where the calendar gave a session more weeks than its plan, the extra went to one of two places: air, so the threshold rites and the learner's own dig each get a day of their own, and the year's one fallow week, named as such in Session 2. Nothing was added because a week existed.
 
-Every session ends into a break, so every session carries the same two seams. On the last guided day, the carry-out: the pace question, the harvest, and the closing minute at session scale. On the first guided day back, the re-thread. The re-ask is rarer and is asked where there is still time to act on the answer: at the winter break, after the long middle session, and on the year-close day. The agreements are open for reopening at every session's close too - say so on the last guided day, every time, so the handle is real and not only promised in week one.
+Every session ends into a break, so every session carries the same two seams. On the last guided day, the carry-out: the pace question, the harvest, and the closing minute at session scale. On the first guided day back, the re-thread. The re-ask is rarer and is asked three times, where there is still time to act on the answer: at the winter break, which is The Wider Field's last guided day; after The Long Game; and on the year-close day. The agreements are open for reopening at every session's close too - say so on the last guided day, every time, so the handle is real and not only promised in week one.
 
 On day one, name where the year is going. Say it plainly:
 
@@ -359,7 +360,7 @@ A destination named on day one is a gift, not a deadline; it gives the whole yea
 
 The year opens with a shared threshold that the whole room crosses together - returners and joiners in the same doorway, never a remedial side door for the new arrivals. Returners re-open their Origin Captain's Log and pull one dream forward: "which of your one hundred dreams is a problem you could act on? Which broke your heart enough to name?" Origin's harvest becomes The Forge's premise. This is offered, never required - a returner may carry a wholly new dream, and that is theirs to choose.
 
-For any learner joining mid-cycle, three things make "joining in progress" real rather than a polite word for behind: the Captain's Log from day one, peer-witness pairs in which each witnesses the other naming a dream (not tutoring, witnessing), and the short Origin built quietly in their own work blocks across the first three weeks. Pair everyone, mixed, and only where both have said yes; a pairing that marks the joiner is the catch-up table the learner's page says does not exist. No visible catch-up.
+For any learner joining mid-cycle, three things make "joining in progress" real rather than a polite word for behind: the Captain's Log from day one, peer-witness pairs in which each witnesses the other naming a dream (not tutoring, witnessing), and the short Origin built quietly in their own work blocks across the first four weeks. Pair everyone, mixed, and only where both have said yes; a pairing that marks the joiner is the catch-up table the learner's page says does not exist. No visible catch-up.
 
 ## The year's daily ritual: the Impossible Question
 
@@ -418,7 +419,7 @@ Your curious question, when you offer it, stays a mirror and never a way to scar
 
 **Your own settle.** You spend your own steadiness settling a room all day, solo, often with a small child nearby. Run your own settle, your own way down at day's end, and your own closing minute - as safety instrumentation, not as self-care. A depleted guide cannot run the watch-and-pivot the whole floor depends on. Do a weekly presence-check: "was I whole for the deep hour this week, or was I bailing water?" The lighter shape of this year *is* the floor working - a smaller tribe or a further-lightened year is the design honoring you, not you failing. What you can hold sets how many learners are in the room, and both come before money, because a learner enrolled on coverage not yet secured is one the floor cannot hold, and the day it fails is the day you find out. And there is a pre-written, honorable permission to defer the whole thing if the year outgrows the sustainable shape, written while rested because rested is the only time it can be: a depleted person does not pause on instinct.
 
-**Your fallow day is fallow too, and so are the breaks.** Protected, not on-call. The learner's page says plainly that you are not reachable over a break, so you never have to improvise that limit on the last guided day; what you say aloud before each break is who is: the one adult outside the room, and 988. Every session here ends into a break: Thanksgiving after Session 3, the two-week winter break after Session 4 and its expedition, the session break after Session 5's shadow door, the session break after Session 6, Open Waters and then summer after Session 7. Say it on the last guided day, every time.
+**Your fallow day is fallow too, and so are the breaks.** Protected, not on-call. The learner's page says plainly that you are not reachable over a break, so you never have to improvise that limit on the last guided day; what you say aloud before each break is who is: the one adult outside the room, and 988. Every session here ends into a break: the September break after Naming the Dragon, the October break after The Detective, Thanksgiving after My Arena, the two-week winter break after The Wider Field and its expedition, the February break after The Long Game, the April break after Hands to Work, and after the Call to Action, Open Waters and then the summer, the longest absence in the cycle. Say it on the last guided day, every time, in one fixed form: "The break starts Friday and runs [length]. I won't be reachable - that's my rest too. [Name] is, the whole time, not only on studio days; here is how to reach them. 988 is free and open all day and all night, call or text, from anywhere. The path to real help stays open the whole break. I'm back in the room on [day]."
 
 ---
 
@@ -426,103 +427,130 @@ Your curious question, when you offer it, stays a mirror and never a way to scar
 
 Each session below gives you: what it's for, a short plain intro for the learner, the flow day by day, things you might say aloud, the settle and closing minute, watch-fors, and what you'll need.
 
-A note on the flow tables: Monday and Wednesday are your own days (you run your own hours; check-in around midday). Tuesday is the lighter guide day. Thursday is the deep guide day. Friday is fallow and closes the week. Each session header carries its calendar weeks and projected dates; the week labels inside a session count from that session's first week.
+A note on the flow tables: Monday and Wednesday are your own days (you run your own hours; check-in around midday). Tuesday is the lighter guide day. Thursday is the deep guide day. Friday is fallow and closes the week. Each session header carries its calendar weeks and projected dates; the week labels inside a session count from that session's first week. The weeks inside a session follow one small grammar, and the word in brackets after each week says which beat it is: a session opens, deepens, applies, and harvests. The week the work leaves the room and comes back is a gather. A three-week session doubles up. Session 2's fourth week is named what it is: fallow.
 
 One word about words. Part 1 said the Log is kept however you hold it, and that holds all year. When the sessions below say write, draft, or read, and when a day line says Log, they mean put it in your Log and go back to it, in whatever form yours takes. The book says write because it is the shortest word, not because it is the only way. The same holds for stand, walk, and speak: they mean take part in the way your body takes part. And anything the room listens to has a transcript in the room; anything the room reads can be heard. Both are on the table for everyone before anyone needs them; nobody has to ask.
 
 ---
 
-## Session 1 - Naming the Dragon *(four weeks, Aug 14 - Sep 7)*
+## Session 1 - Naming the Dragon (four weeks, Aug 14 - Sep 7)
 
 **What it's for:** Learn the difference between a problem, a fact of life, a preference, and a mystery - and name the one problem you will carry all year, precisely enough to actually fight it.
 
-**For the learner:** "Everything sucks" is a dragon too big and too foggy to fight. A dragon you can name - the specific, actual thing, said clearly enough that you would know what moving it looks like - is a dragon you can face. This session hands you a distinction almost no one gets handed as a teenager: some hard things are problems you can act on, some are facts of life you accept, some are just preferences, and some are mysteries you sit with. You work on each of them differently. By the end you may name the one dragon you will trace and act on all year. If you are still searching for yours, that is honest and honored - a dragon can't be forced, and "I'm still looking" is a true harvest.
+**For the learner:** The first week is the threshold. You help write this year's agreements whether you were here last year or not; last year's do not carry over. Then the work. "Everything sucks" is a dragon too big and too foggy to fight. A dragon you can name - the specific, actual thing, said clearly enough that you would know what moving it looks like - is a dragon you can face. This session hands you a distinction almost no one gets handed as a teenager: some hard things are problems you can act on, some are facts of life you accept, some are just preferences, and some are mysteries you sit with. You work on each of them differently. By the end you may name the one dragon you will trace and act on all year. If you are still searching for yours, that is honest and honored - a dragon can't be forced, and "I'm still looking" is a true harvest.
 
 **The flow:**
 
-*Weeks 1-4 · Aug 14 - Sep 7 · off: Mon Sep 4, Labor Day.* The plan below describes three weeks. **Week 4 is part of the session and is not yet planned; nothing is set for it and nothing is owed in it.**
+*Weeks 1-4 · Aug 14 - Sep 7 · off: Mon Sep 4, Labor Day*
 
-*Week 1 - the threshold and the distinction.*
-- **Mon (your own):** a settle-in first day. Returners re-open their Origin Log; joiners begin the short Origin; everyone restarts the core rhythm. Check-in.
-- **Tue (lighter guide day):** the shared opener for everyone; the exit ramp built and walked before any promise is asked for; the privacy words said as written, and the one adult outside the room named; the first Impossible Question ("Can one person change a system?"); peer-witness pairs set, mixed, only where both have said yes; the year framed and the destination named. Close with the returner reach-back invitation - bring a dream forward Thursday.
-- **Wed (your own):** returners pull a dream forward from the Origin harvest; joiners continue the short Origin; everyone notices one thing that bugs them this week. Check-in.
-- **Thu (deep guide day):** the distinction - problem, fact of life, preference, mystery. Play "Problem or Not?" - cards with real situations sorted into the four buckets; the arguments over the gray cards are the whole lesson. Begin the Iceberg (the surface problem versus the thing underneath). Bridge: watch for your own dragon this week.
+**The fourth week goes to the front, as Origin's did, and the mixed room is the stronger reason, not a weaker one.** In Origin the risk was exposure among strangers. Here the risk is inheritance: a joiner signing a floor they did not write, in a room where six people already know where the cups are. A floor the returners wrote last year cannot be consented to by a joiner this year; it can only be accepted. So the first week is where the room that will live under the floor writes it, both halves as authors, carried on a shared task where history is no advantage: setting up the room for the year. No Forge content in the week.
+
+*Week 1 - the threshold (open).*
+- **Mon (your own):** returners' own morning: re-open the Origin Log, restart the core rhythm. A joiner's first day is Tuesday, by design; one who chooses to come today is met at the door and shown the building before the guide goes to Tots. Check-in.
+- **Tue (lighter guide day):** arrival, then the door. The walk-in, the settle, the first circle with a name round and "how are you, really?" (pass is always allowed), the Table, the map of the year, and the destination named. Then the exit ramp built and walked by everyone before any promise is asked for - returners walk it again, because last year's ramp was last year's room. Then the privacy words as written, the one adult outside the room named, and breaks said. All of it carried on the shared task of setting up the room for the year: the exit-ramp place, the quiet space, the Table, the dragons wall. No Impossible Question today, no pairs, no Forge content.
+- **Wed (your own):** the interval: promises offered, nothing owed back. Returners, core. Joiners, the short Origin's first card in their own block, where nobody can see who is doing it. Check-in.
+- **Thu (deep guide day):** the tribe's own half. Say the floor first: six things this tribe cannot agree to, the six it was promised. Then the agreements, written fresh by this room - a returner who offers reads last year's aloud as a starting point, not a text, because the count cleared and the room is new - contributions on cards or aloud, named as reopenable and told when. Say what happens if a learner will not sign: in the room anyway. Then, last and separate, the carried objects for joiners: name your Log with every form on the table, name your Vineyard-thing; a returner says their Vineyard's name aloud only if they choose. The close's one light thing is the first Impossible Question, named as the handoff: the same muscle as Origin's choice games, now standing inside something too big to close. At the very end of the week, send home the dragon-watch ("notice one thing that bugs you this week") and offer the returner reach-back: "which of your hundred dreams is a problem you could act on? Bring that one next week, or a new one, or neither yet."
 - **Fri:** fallow.
 
-*Week 2 - name it precisely.*
+*Week 2 - the distinction (deepen).*
+- **Mon (your own):** returners pull a dream forward, or carry a new one; joiners continue the short Origin; everyone carries the dragon-watch; core. Check-in.
+- **Tue (lighter guide day):** Impossible Question, in its place from now on. Peer-witness pairs set in the walk-in, mixed, only where both have said yes, now that a yes means something. Then "Problem or Not?" - cards with real situations sorted into four buckets; the arguments over the gray cards are the whole lesson.
+- **Wed (your own):** apply the four buckets to the thing that bugged you; core; Log. Check-in.
+- **Thu (deep guide day):** the distinction held on real material - problem, fact of life, preference, mystery - and the Iceberg begun (the surface problem versus the thing underneath). Bridge: watch for your own dragon.
+- **Fri:** fallow.
+
+*Week 3 - name it precisely (apply).*
 - **Mon (your own):** reframe one of your own complaints; core; Log; joiners continue the short Origin. Check-in.
 - **Tue (lighter guide day):** Impossible Question; then "Reframe-It to How Might We" as a group game - crank a complaint ("history is pointless") into an open design question ("how might we make this matter?"). A complaint is a closed door; a How-Might-We is an open one.
 - **Wed (your own):** apply the Iceberg to a real complaint - what's underneath it? Core; Log. Check-in.
 - **Thu (deep guide day):** where's the dragon really? Each learner brings a candidate problem and works to name it precisely - not "everything sucks" but the specific, actionable thing. Bridge: refine your named dragon.
 - **Fri:** fallow.
 
-*Week 3 - name the dragon you'll carry.*
-- **Mon (your own):** refine your candidate into a clean How-Might-We; core; Log. Check-in.
-- **Tue (lighter guide day):** Impossible Question; share candidate dragons, and the peer-witness pairs witness each other naming one (borrowed dreams count, and a joiner has had three mornings to find one); find "problem-neighbors" (whose problem rhymes with yours - the start of collaboration); light peer feedback.
-- **Wed (your own):** finalize your How-Might-We; core; Log; come ready Thursday. Check-in.
-- **Thu (deep guide day, harvest):** each learner names the dragon they'll carry - a precisely-named problem to trace and act on all year. A small voluntary share. Bridge into Session 2: "You've named the dragon. Next: trace it to its root - the obvious villain is almost never the cause."
+*Week 4 - name the dragon you'll carry (harvest).*
+- **Mon:** Labor Day; no studio.
+- **Tue (lighter guide day):** Impossible Question; share candidate dragons, and the peer-witness pairs witness each other naming one (borrowed dreams count, and a joiner has had three weeks to find one); find "problem-neighbors" (whose problem rhymes with yours - the start of collaboration); light peer feedback.
+- **Wed (your own):** the interval, named out loud as one: the learners run it themselves, carrying one question, handing in nothing. Late in the session they can hold their own silence, which they could not in week 1.
+- **Thu (deep guide day, harvest):** each learner names the dragon they'll carry, or says they are still looking. A small voluntary share. Ask the pace question; run the closing minute at session scale; say aloud who is reachable over the break, and that you are not. Bridge into Session 2: "You've named the dragon. Next: trace it to its root - the obvious villain is almost never the cause."
 - **Fri:** fallow, closes Session 1.
 
 **Things to say:**
 - "A vague dragon can't be fought. A named one can. Naming precisely is half the victory."
 - "Is that a problem you can act on, or a fact of life you accept? A fact of life doesn't answer to effort. Fighting one can wear you out, and that's not a fault in you."
 - "I'm still searching for mine" - honor it whole: "That's a true harvest. You can't force a problem to matter."
+- "Last year's agreements were last year's room. This room writes its own."
 
-**The settle and the closing minute:** open every guide day with the settle; close every guide day with the closing minute, "take your closing minute" as the whole prompt. Run it at session scale on the harvest day, and ask the pace question before the bridge.
+**The settle and the closing minute:** open every guide day with the settle; close every guide day with the closing minute, "take your closing minute" as the whole prompt. Run it at session scale on the harvest day, Thu Sep 7, and ask the pace question before the bridge.
 
 **Watch-fors:** if a learner's hard things turn out to be facts of life, they have not failed to solve anything; hold the distinction gently. Complaints can surface real pain - hold, do not treat, route if it's past coaching.
 
-**What you'll need:** the "Problem or Not?" cards (real situations for the four buckets), in large print and read aloud as each is drawn, with the Iceberg drawn and also said in words; the three short-Origin cards for any joiner (dreams, what-I-have, a week that holds), each in print, large print, and audio; peer-witness pairs set by consent; the exit-ramp place, set up before Tuesday; the two names, written: the one adult outside the room, and the person who takes the child; the quiet space and referral roster live before day one.
+**What you'll need:** the "Problem or Not?" cards (real situations for the four buckets), in large print and read aloud as each is drawn, with the Iceberg drawn and also said in words; the three short-Origin cards for any joiner (dreams, what-I-have, a week that holds), each in print, large print, and audio; peer-witness pairs set by consent in week 2; the exit-ramp place, set up before Tuesday; one shared setting-up task to carry the first week; cards for agreement contributions; the map of the year to hand out; last year's agreements, for a returner to read if one offers; the two names, written: the one adult outside the room, and the person who takes the child; the quiet space and referral roster live before day one.
 
 ---
 
-## Session 2 - The Detective *(five weeks, Sep 18 - Oct 19)*
+## Session 2 - The Detective (five weeks, Sep 18 - Oct 19)
 
 **What it's for:** Learn root-cause thinking - keep asking "why" until you hit the system underneath - and trace your own dragon down to the rot beneath it.
 
-**For the learner:** The obvious culprit is almost never the real cause. This session you work a mystery the tribe picks, and you learn one tool, the 5 Whys: keep asking why until you reach the pattern underneath. The villain everyone suspects usually turns out to be a symptom, and the cause is a system, which means a set of choices people keep making. Then, if you want, you turn the same tool on your own dragon. There is a second half: a system is made of choices, so you also ask who is still answerable inside it. Cause and who-is-answerable, together: that is the whole of justice. Some dragons, dug into, turn out to be facts of life and not problems. That is a true finding, not a failed one. You dig as far as you choose and stop where you choose.
+**For the learner:** The obvious culprit is almost never the real cause. This session you work a mystery the tribe picks, and you learn one tool, the 5 Whys: keep asking why until you reach the pattern underneath. The villain everyone suspects usually turns out to be a symptom, and the cause is a system, which means a set of choices people keep making. Then, if you want, you turn the same tool on your own dragon. There is a second half: a system is made of choices, so you also ask who is still answerable inside it. Cause and who-is-answerable, together: that is the whole of justice. Some dragons, dug into, turn out to be facts of life and not problems. That is a true finding, not a failed one. You dig as far as you choose and stop where you choose, and the dig has no finish date inside the session: the fourth week is the week the answer is allowed to not be in yet, and it is the year's one fallow week, empty on purpose.
 
-One straight thing first: the mystery is usually a murder, the board-game kind - cartoonish, bloodless, nobody real - and the trick of it is that every suspect looks guilty until you find the system underneath. If a made-up death is not what you want to spend three weeks on, for any reason or none, there is a version with the same puzzle and no body in it: who sabotaged the harvest festival, who killed the river. Same mechanics, same twist. Ask once and nobody asks why.
+One straight thing first: the mystery is usually a murder, the board-game kind - cartoonish, bloodless, nobody real - and the trick of it is that every suspect looks guilty until you find the system underneath. If a made-up death is not what you want to spend two weeks on, for any reason or none, there is a version with the same puzzle and no body in it: who sabotaged the harvest festival, who killed the river. Same mechanics, same twist. Ask once and nobody asks why.
 
 **The flow:**
 
-*Weeks 5-9 · Sep 18 - Oct 19 · off: Mon Oct 9, Indigenous Peoples' Day / Columbus Day.* The plan below describes three weeks. **Weeks 4 and 5 of the session are not yet planned; nothing is set for them and nothing is owed in them.** Origin gave its five-week session to waiting; what this one gives its extra weeks to is for the voices who own the material.
+*Weeks 5-9 · Sep 18 - Oct 19 · off: Mon Oct 9, Indigenous Peoples' Day / Columbus Day, in week 4*
 
-*Week 1 - set the mystery.*
-- **Mon (your own):** core; begin gathering facts about your own dragon (from Session 1); Log. Check-in.
-- **Tue (lighter guide day):** Impossible Question; the tribe picks the format - a ready whodunit, build-your-own mystery for another group, or a roam-the-room speakeasy - and the mystery begins (for example, "A Death at Greywater Manor," six guests, each a motive; every suspect looks guilty in turn - that's the trap).
-- **Wed (your own):** investigate the mystery; core; Log. Check-in.
-- **Thu (deep guide day):** introduce the 5 Whys - but run it three times from the same symptom, finding a different root each pass, then look for the loop where the roots feed each other. A system is a web, not a ladder; a single chain flattens it. Bridge: keep digging, find more than one root.
+**The dig has no finish date inside the session.** The mystery takes two weeks and ends in a twist. Your own dragon takes as long as it takes: the tool turns to it in week 3, and week 4 is the week the answer is allowed to not be in yet. Nobody is waited on but you. "I stopped here" and "it's a fact of life" are places to stand, not places to be moved from, and nobody asks what is under them in front of the room.
+
+*Week 1 - set the mystery (open, re-thread).*
+- **Mon (your own):** core; begin gathering facts about your own dragon from Session 1, or, if you are starting here, begin the short Origin and carry a placeholder dragon or a smaller one; Log. Check-in.
+- **Tue (lighter guide day):** the re-thread first - where were you, where are you now, what came back changed over the break; peer-witness pairs set for anyone new, mixed, only where both have said yes; Impossible Question; then the tribe picks the format - a ready whodunit, build-your-own mystery for another group, or a roam-the-room speakeasy - and the mystery begins (for example, "A Death at Greywater Manor," six guests, each a motive; every suspect looks guilty in turn - that's the trap). A learner starting this week has a full vote; it is the first thing the tribe decides with them in it.
+- **Wed (your own):** investigate the mystery; core; joiners continue the short Origin; Log. Check-in.
+- **Thu (deep guide day):** introduce the 5 Whys and run it once, on the mystery - ask why of the death, then why of the answer, until it bottoms out. Name what one chain is: a ladder, and a ladder is never the whole of a system. Bridge: "Next week we start again from the same body and see whether we land in the same place."
 - **Fri:** fallow.
 
-*Week 2 - the twist, and the return trip.*
-- **Mon (your own):** core; run a first 5-Whys pass on your own dragon; Log. Check-in.
-- **Tue (lighter guide day):** Impossible Question; continue the mystery; the Iceberg revisited.
-- **Wed (your own):** core; deepen your root-cause dig; Log. Check-in.
-- **Thu (deep guide day):** run the 5 Whys to the end - "no one murdered her; a system did." Then teach the arrow both ways: a system is made of choices people keep making, so ask "is anyone still accountable? Where does the system stop being an excuse - for the powerful, and for you?" The systemic half alone graduates cynics; cause and accountability together is the whole of justice. Then transfer to your own dragon: the system beneath it and the choices, including yours, inside it. Bridge: trace your dragon to its roots.
+*Week 2 - the twist (deepen).*
+- **Mon (your own):** core; investigate; one more fact about your own dragon; joiners continue the short Origin; Log. Check-in.
+- **Tue (lighter guide day):** Impossible Question; continue the mystery; the Iceberg revisited on the mystery - what sits under the six motives?
+- **Wed (your own):** core; investigate; Log. Check-in.
+- **Thu (deep guide day):** run the 5 Whys three times from the same symptom, finding a different root each pass, then look for the loop where the roots feed each other. The loop is the twist: "no one murdered her; a system did." A system is a web, not a ladder. Then the arrow both ways, inside the fiction, where it is safe to practise: a system is made of choices people keep making, so who in Greywater Manor is still answerable? Where does the system stop being an excuse - for the powerful first? The mystery closes here. Bridge: "Next week the tool turns to your own dragon, if you want it to."
 - **Fri:** fallow.
 
-*Week 3 - trace your own dragon.*
-- **Mon (your own):** core; finish your 5 Whys on your dragon; Log. Check-in.
-- **Tue (lighter guide day):** Impossible Question; share early root-cause findings; find problem-neighbors (shared systems).
-- **Wed (your own):** core; name the system underneath your dragon; Log. Check-in.
-- **Thu (deep guide day, harvest):** each learner names the root or system beneath their dragon (voluntary share). Bridge into Session 3: "You've found the system. Next: where in it can *you* actually act?"
+*Week 3 - the tool on your own dragon (apply).*
+- **Mon (your own):** core; a first 5 Whys pass on your own dragon, or on your placeholder; a joiner's short Origin finishes about now and can go on being picked up; Log. Check-in.
+- **Tue (lighter guide day):** Impossible Question; the Iceberg on your own dragon, in company, lightly - what is it sitting on? Low stakes: nobody reads out a root.
+- **Wed (your own):** core; a second pass from the same symptom; Log. Check-in.
+- **Thu (deep guide day):** the transfer - the system beneath your dragon and the choices inside it. The arrow both ways, asked of the powerful first; "you can ask it of yourself if you choose to," and the choosing is the learner's. Then name the two findings out loud before anyone has made them, so nobody is surprised by their own: some dragons, dug into, are facts of life; and some digs stop before the bottom. Both are places to stand. Bridge: "Dig as far as you choose. It comes back when it comes."
+- **Fri:** fallow.
+
+*Week 4 - the fallow week, and it stays empty (gather).* No new detective work. **This is the year's one deliberately empty stretch inside the arc, and it is un-harvested: no Work of the Day, nothing reported, nothing to hand in.** The grid still runs - the settle, the circle, the Impossible Question, the Table, the close - and the middle block is low-stakes craft, or nothing. The temptation to refill it the first time it looks idle is the exact thing it exists to resist. The guide's work this week is the walk-in, for whoever wants to say where the dig stands: at the bottom, still going, stopped on purpose, or a fact of life. "Stopped on purpose" closes the question, and nobody is asked it twice. Nobody is behind. A root you reach under the shovel is not the root; the dig needs a week where nobody is digging.
+- **Mon:** off, Indigenous Peoples' Day / Columbus Day.
+- **Tue (lighter guide day):** Impossible Question; then craft or nothing - if the tribe chose build-your-own, the finished mystery is handed to the group it was built for; if not, a game, or the hands block early. The dig is talked about in the walk-in, one to one, if at all.
+- **Wed (your own):** core; the dig, if it is still going; Log. Check-in.
+- **Thu (deep guide day):** left empty on purpose. No new tool. The room is open to work your dig in company, with the guide or a problem-neighbour, for anyone who wants it, and hands and each other for anyone who does not; nobody says which they are doing.
+- **Fri:** fallow.
+
+*Week 5 - what's under it (harvest).*
+- **Mon (your own):** core; finish, or leave unfinished, your 5 Whys on your dragon; Log. Check-in.
+- **Tue (lighter guide day):** Impossible Question; share early root-cause findings, voluntary; find problem-neighbours by shared system - whose dragon sits on the same web as yours; the start of collaboration, and also where a learner who stopped digging can look at a neighbour's root without owning it.
+- **Wed (your own):** core; name the system underneath your dragon, or name where you stopped; Log. Check-in.
+- **Thu (deep guide day, harvest):** each learner names the root or system beneath their dragon, or "fact of life," or "I stopped here," or "a placeholder, dug into" - all four equal (voluntary share). Ask the pace question. Say aloud who is reachable over the Oct 23-26 break, and that you are not. Run the closing minute at session scale. Bridge into Session 3: "You've found the system. Next: where in it can *you* actually act?"
 - **Fri:** fallow, closes Session 2.
 
 **Things to say:**
 - "The obvious villain is a symptom. Underneath it is a system: things people keep doing. That's what we're looking for."
 - "A system isn't a ladder you climb down. It's a web. Find where the causes feed each other."
 - "A system explains a lot. Where does it stop explaining, and someone's choice begin? Ask it of the powerful first. You can ask it of yourself if you choose to."
+- "Dig as far as you choose. It comes back when it comes, and 'I stopped here' is a place to stand."
 
-**The settle and the closing minute:** settle to open; the closing minute at every close, and at session scale after the harvest; the way down and the close-return on any day a learner's own root-cause dig touches something tender. Re-thread on the first guide day back after the break; pace question before the bridge.
+**The settle and the closing minute:** settle to open; the closing minute at every close, and at session scale after the harvest; the way down and the close-return on any day a learner's own root-cause dig touches something tender. The re-thread is the first thing on week 1's Tuesday; the pace question and the break line are on week 5's Thursday, Thu Oct 19, before the bridge.
 
-**Watch-fors:** keep the mystery Clue-style, cartoonish, and bloodless - no graphic violence, because the mystery is a tool for root-cause, and a learner who has met real violence cannot use a tool that reopens it; the cartoon keeps the twist and drops the wound. The lighter swap is on the learner's page and offered to everyone, not produced for whoever needs it; opt-out always. This is a strong belonging session for a newcomer - the 5 Whys needs no Origin foundation. "My dragon turned out to be a fact of life, not a problem" is a real finding, not a failure.
+**Watch-fors:** keep the mystery Clue-style, cartoonish, and bloodless - no graphic violence, because the mystery is a tool for root-cause, and a learner who has met real violence cannot use a tool that reopens it; the cartoon keeps the twist and drops the wound. The lighter swap is on the learner's page and offered to everyone, not produced for whoever needs it; opt-out always. This is a strong belonging session for a newcomer - the 5 Whys needs no Origin foundation. "My dragon turned out to be a fact of life, not a problem" is a real finding, not a failure, and it gets a week before anyone asks what is under it: a finding said in the hour it is found, in front of six peers, is a verdict; one the learner has sat with is theirs. The same holds for "I stopped here." The mystery is shared work a learner starting this week is inside from the first morning; their short Origin runs on the own-days alongside, and their dragon may be a placeholder all session.
 
 **What you'll need:** the chosen mystery materials (a ready whodunit like Greywater Manor, or build-your-own supplies, or the space set up as a speakeasy), with every clue and character sheet in a form each learner can take in alone - read, heard, or large print - so the detective work is never routed through a sighted partner; the lighter non-murder swap ready; the 5 Whys as a simple, visible frame, also said in words.
 
 ---
 
-## Session 3 - My Arena *(three weeks, Oct 30 - Nov 16, ends into Thanksgiving)*
+## Session 3 - My Arena (three weeks, Oct 30 - Nov 16, ends into Thanksgiving)
 
 **What it's for:** Right-size the problem to the slice you can actually move, take an honest inventory of what you have to work with, and win one small real thing you can feel.
 
@@ -530,28 +558,28 @@ One straight thing first: the mystery is usually a murder, the board-game kind -
 
 **The flow:**
 
-*Weeks 10-12 · Oct 30 - Nov 16 · on a guide day: Tue Nov 7, Election Day, observance decided before the session · ends into Thanksgiving.*
+*Weeks 10-12 · Oct 30 - Nov 16 · on a guide day: Tue Nov 7, Election Day, observance decided before the session · ends into Thanksgiving*
 
-*Week 1 - the Three Circles.*
+*Week 1 - the Three Circles (open, re-thread).*
 - **Mon (your own):** core; list everything about your dragon you worry about; Log. Check-in.
-- **Tue (lighter guide day):** Impossible Question; the Three Circles map (Concern / Influence / Control) - sort your worries; watch where energy can actually act.
+- **Tue (lighter guide day):** the re-thread first, short; Impossible Question; the Three Circles map (Concern / Influence / Control) - sort your worries; watch where energy can actually act.
 - **Wed (your own):** core; sit with your map; Log. Check-in.
 - **Thu (deep guide day):** right-sizing, by question - where does your energy move something, and where does it just burn? Concern-only turns into cynicism. Add the standpoint question: "Where are you standing inside this system? What does that let you see, and what does it hide?" Bridge: what do you actually have to act with?
 - **Fri:** fallow.
 
-*Week 2 - agency inventory and a starter quest.*
+*Week 2 - agency inventory and a starter quest (deepen, apply).*
 - **Mon (your own):** core; agency inventory - skills, time, relationships, resources you have *now*; Log. Check-in.
 - **Tue (lighter guide day):** Impossible Question; finish the agency inventory; pick a starter quest - one small real problem inside your arena to act on.
 - **Wed (your own):** core; scope your starter quest small enough to actually finish; Log. Check-in.
 - **Thu (deep guide day):** the move from "it happens to me" to "I can act on this slice"; test the starter quest against the Three Circles - is it really in your influence or control? Bridge: begin acting.
 - **Fri:** fallow.
 
-*Week 3 - a thing you moved.*
+*Week 3 - a thing you moved (harvest).*
 - **Mon (your own):** act on the starter quest; core; Log. Check-in.
 - **Tue (lighter guide day):** Impossible Question; act, build, or share starter-quest progress in company.
 - **Wed (your own):** finish the starter quest; core; Log. Check-in.
-- **Thu (deep guide day, harvest):** a thing you moved - "this one is mine, and I moved it." Some feel it as a win; some don't yet; both count, and "it didn't move" is a harvest too. Voluntary share. Ask the pace question. Bridge into Session 4: "You've moved something in your arena. Now lift your eyes - what in the wider world gets to you?"
-- **Fri:** fallow, closes Session 3. The last guided day before Thanksgiving: say aloud who is reachable over the break, and that you are not.
+- **Thu (deep guide day, harvest):** a thing you moved - "this one is mine, and I moved it." Some feel it as a win; some don't yet; both count, and "it didn't move" is a harvest too. Voluntary share. Ask the pace question. This is the last guided day before Thanksgiving, Thu Nov 16: say aloud who is reachable over the break, that 988 is always open, and that you are not; run the closing minute at session scale. Bridge into Session 4: "You've moved something in your arena. Now lift your eyes - what in the wider world gets to you?"
+- **Fri:** fallow, closes Session 3.
 
 **Things to say:**
 - "Energy spent only on what you can't touch tends to run out. Find the slice you can move, and spend some there."
@@ -566,7 +594,7 @@ One straight thing first: the mystery is usually a murder, the board-game kind -
 
 ---
 
-## Session 4 - The Wider Field *(three weeks, Nov 27 - Dec 14, ends into the winter break)*
+## Session 4 - The Wider Field (three weeks, Nov 27 - Dec 14, ends into the winter break)
 
 **What it's for:** Lift your eyes from your own arena to the world, meet real problems where they live, and choose the one that breaks your heart - the one you'll carry through the rest of the year.
 
@@ -576,27 +604,27 @@ Three things said now, before the trip. Some of these problems may already be to
 
 **The flow:**
 
-*Weeks 13-15 · Nov 27 - Dec 14 · ends into the winter break.*
+*Weeks 13-15 · Nov 27 - Dec 14 · ends into the winter break*
 
-*Week 1 - the wider field.*
+*Week 1 - the wider field (open, re-thread).*
 - **Mon (your own):** core; notice what in the world you can't stop thinking about; Log. Check-in.
-- **Tue (lighter guide day):** Impossible Question; love before heartbreak - begin with "what do you love about being alive on this planet?" (gladness before hunger). Then the Problem Gallery - a set of real-world problems laid out to move through (global goals, local issues, environmental, social); which one won't let you go?
+- **Tue (lighter guide day):** the re-thread first, short, after Thanksgiving; Impossible Question; love before heartbreak - begin with "what do you love about being alive on this planet?" (gladness before hunger). Then the Problem Gallery - a set of real-world problems laid out to move through (global goals, local issues, environmental, social); which one won't let you go?
 - **Wed (your own):** core; sit with the ones that pulled you; Log. Check-in.
 - **Thu (deep guide day):** "what breaks your heart?" - not what you should care about, what actually moves you. Pair every heartbreak with agency (your slice, not all of it). Bridge: come to the expedition ready to see one firsthand.
 - **Fri:** fallow.
 
-*Week 2 - the expedition.*
+*Week 2 - the expedition (deepen).*
 - **Mon (your own):** core; research a problem that pulled you; Log. Check-in.
 - **Tue (lighter guide day), the expedition:** go where a real problem lives (a shelter, a food bank, a council meeting) - and to at least one living-system site that is *not* a scene of failure (an old-growth stand, a wetland, a farm at harvest, a dark night sky). You are a thread in a living whole, not a technician above a broken machine. Ask the membership question: "How is this problem already touching your life? Where are you inside this system, not above it?"
 - **Wed (your own):** core; write what the expedition stirred; Log. Check-in.
 - **Thu (deep guide day):** debrief the expedition; the stakeholder intro (who actually *has* this problem?); re-anchor hope, not helplessness. Bridge: which problem will you carry?
 - **Fri:** fallow.
 
-*Week 3 - commit to the problem.*
+*Week 3 - commit to the problem (apply, harvest), and the first half of the midpoint crossing.*
 - **Mon (your own):** core; narrow toward the problem you'll carry; map its stakeholders; Log. Check-in.
 - **Tue (lighter guide day):** Impossible Question; share candidate problems; problem-neighbors (who might collaborate).
 - **Wed (your own):** core; commit; Log. Check-in.
-- **Thu (deep guide day, harvest):** each learner may commit to the world-problem they'll carry, or say they are still looking, *and* the tribe deliberates one shared "Commons Problem" into being - argued together, yielded to, chosen as a *we*, to carry to a shared chorus talk at the year's end. Name the relay: "you are one hand in a relay that began before you and continues after you - carry it your distance and pass it well, not 'I must solve it.'" Voluntary share. Ask the pace question. Bridge into Session 5: "You've chosen what's worth solving. Next: can a big problem actually be solved - and how do you begin?" This is the last guided day before the two-week winter break, straight after the expedition: say aloud who is reachable across it, that 988 is always open, that you are not until January, and that the pathway stays live the whole time. Run the closing minute at session scale.
+- **Thu (deep guide day, harvest):** each learner may commit to the world-problem they'll carry, or say they are still looking, *and* the tribe deliberates one shared "Commons Problem" into being - argued together, yielded to, chosen as a *we*, to carry to a shared chorus talk at the year's end. Name the relay: "you are one hand in a relay that began before you and continues after you - carry it your distance and pass it well, not 'I must solve it.'" Voluntary share. **This week holds the true midpoint of the year, and the midpoint is the winter break itself** - the fold between here and January, crossed with the learner's body out of the room. So the crossing comes in two halves, and this half is Thu Dec 14: the look-back across Sessions 1 to 4 (the dragon named, traced, a slice moved, the eyes lifted - who are you becoming?), the pace question, the re-ask (*is this still yours?*), asked to the room and answered one at a time in the walk-in or at the Table, never round the circle, and the re-entry note to your future self, so the problem committed this morning survives two weeks of ordinary life. Say aloud who is reachable across the break, that 988 is always open, that you are not until January, and that the pathway stays live the whole time. Run the closing minute at session scale. Bridge into Session 5: "You've chosen what's worth solving. Next: can a big problem actually be solved - and how do you begin?"
 - **Fri:** fallow, closes Session 4.
 
 **Things to say:**
@@ -613,53 +641,53 @@ Three things said now, before the trip. Some of these problems may already be to
 
 ---
 
-## Session 5 - The Long Game *(six weeks, Jan 1 - Feb 8)*
+## Session 5 - The Long Game (six weeks, Jan 1 - Feb 8)
 
 **What it's for:** Learn that big problems are systems, not single heroic acts - break the impossible into a next doable step, find the real leverage, gather people, fail forward, and come out with a real plan and a first prototype.
 
 **For the learner:** Things are only impossible until they're not. Nobody solves a big problem alone or in one move. This is the long session. It teaches you to break a big problem into a next real step, to find the lever where a small push moves a lot (the obvious levers are usually the weakest), to work with other people, and to treat what went wrong as information. There are three doors into it, each yours to open or leave shut: play, where being wrong is allowed; the child's question, "why not?"; and the shadow, meaning the uncomfortable truth inside a problem that people avoid. The shadow we look at is the problem's, never yours. The shadow day is one day, late in the session, and the lightest-touch day of the year: nobody will ask about your past, your family, or anything you carry, and you can sit that day out and still finish the session. You'll also be asked what pushes back if your fix works, the honest question that keeps you from playing the savior. "This problem is bigger than one year" is a real plan, and you can say it without shame.
 
-This session opens the day after the winter break. The first guided day is the re-thread before anything else: where were you, where are you now, what came back changed.
+This session opens the Monday after the winter break, and its first guided day is the second half of the midpoint crossing: the big re-thread as the whole morning, not a warm-up. Where were you, where are you now, what came back changed; the carried problem picked back up and checked against what two weeks of ordinary life showed; the safety floor said aloud again before a session that holds a shadow door. The clowning starts on the Thursday.
 
 **The flow:**
 
-*Weeks 16-21 · Jan 1 - Feb 8 · off: Mon Jan 1, New Year's Day (projected; the real break likely moves), Mon Jan 15, MLK Day · no break inside this session.*
+*Weeks 16-21 · Jan 1 - Feb 8 · off: Mon Jan 1, New Year's Day (the session's first day as projected; the real break likely moves); Mon Jan 15, MLK Day · no break inside this session*
 
-*Week 1 - systems, not single acts.*
+*Week 1 - systems, not single acts (open, re-thread).*
 - **Mon (your own):** core; is my problem a system? map its parts; Log. Check-in.
-- **Tue (lighter guide day):** the Impossible Question at full strength; clowning and play intro (failing-forward, "yes-and").
+- **Tue (lighter guide day):** the big re-thread, the whole morning (above). Nothing else is asked today.
 - **Wed (your own):** core; where's the leverage in my system? Log. Check-in.
-- **Thu (deep guide day):** can big problems be solved? Systems, not single acts; no hero alone. The leverage-ladder: tweak-a-number, then change-a-rule or who-enforces-it, then change-the-goal, then change-the-story everyone believes - and the obvious levers (a rule, more funding, more awareness) are usually the weakest. Bridge: find a lever, name which rung it's on, and a higher rung you haven't tried yet.
+- **Thu (deep guide day):** the Impossible Question at full strength, and the clowning and play intro (failing-forward, "yes-and"). Then: can big problems be solved? Systems, not single acts; no hero alone. The leverage-ladder: tweak-a-number, then change-a-rule or who-enforces-it, then change-the-goal, then change-the-story everyone believes - and the obvious levers (a rule, more funding, more awareness) are usually the weakest. Bridge: find a lever, name which rung it's on, and a higher rung you haven't tried yet.
 
-*Week 2 - next doable steps.*
+*Week 2 - next doable steps (deepen).*
 - **Mon (your own):** core; break the impossible into the next doable step; Log. Check-in.
 - **Tue (lighter guide day):** Impossible Question; more clowning and play - the clown fails constantly and turns failure into delight; permission to be gloriously wrong.
 - **Wed (your own):** core; name your next doable step; Log. Check-in.
-- **Thu (deep guide day):** proximal goals and the self-efficacy spiral; how a big problem yields to small, real, next steps. Bridge: take one step.
+- **Thu (deep guide day):** next doable steps, and how each small win makes the next one feel possible; how a big problem yields to small, real, next steps. Ask the pace question here, Thu Jan 11, two clear weeks before the shadow door, so there is still time to act on the answer. Bridge: take one step.
 
-*Week 3 - the inner child door.*
+*Week 3 - the inner child door (deepen).*
 - **Mon (your own):** core; take a real step on your problem; Log. Check-in.
 - **Tue (lighter guide day):** Impossible Question; the inner-child door - children ask "why not?" before anyone teaches them a thing is impossible; reconnect to fearless curiosity.
 - **Wed (your own):** core; "why not?" applied to your problem; Log. Check-in.
 - **Thu (deep guide day):** collaboration - who else is working on this? No one solves a system alone; find your collaborators. Bridge: reach one.
 
-*Week 4 - the shadow door.*
+*Week 4 - the shadow door (deepen).*
 - **Mon (your own):** core; what's the uncomfortable truth inside your issue? Log. Check-in.
 - **Tue (lighter guide day):** Impossible Question; light, held play after the shadow prep.
 - **Wed (your own):** core; sit with the shadow *of the problem*; Log. Check-in.
 - **Thu (deep guide day), the shadow:** the uncomfortable truth most big problems stay unsolved because everyone avoids it. Of the problem, never the self. Opt-out, lightest touch, invitational. Accountability with compassion: the people inside the shadow are also inside the system - repair includes them, it doesn't just defeat them. Guard against the shadow hardening into contempt for a villain. Bridge: what does naming the shadow open?
 
-*Week 5 - prototype.*
+*Week 5 - prototype (apply).*
 - **Mon (your own):** core; build the smallest real prototype of a solution-step; Log. Check-in.
 - **Tue (lighter guide day):** Impossible Question; prototyping in company; iterate from what happened, not what you hoped.
 - **Wed (your own):** core; test your prototype; Log. Check-in.
 - **Thu (deep guide day):** iteration and failing-forward; change one thing based on what actually happened. And: "if your action works, what pushes back?" Name one likely unintended consequence of your own plan - the antidote to the savior posture, which requires believing your fix does only what you meant. Bridge: refine toward a real plan.
 
-*Week 6 - a plan and a prototype.*
+*Week 6 - a plan and a prototype (harvest).*
 - **Mon (your own):** core; consolidate your plan; Log. Check-in.
 - **Tue (lighter guide day):** Impossible Question; share plans and prototypes; peer feedback.
 - **Wed (your own):** core; ready your plan; Log. Check-in.
-- **Thu (deep guide day, harvest):** a real plan plus a first prototype for acting on the problem. Voluntary share. Bridge into Session 6: "You have a plan. Now: real action, with real people."
+- **Thu (deep guide day, harvest):** a real plan plus a first prototype for acting on the problem, or honestly not yet. Voluntary share. Ask the pace question, and the re-ask (*is this still yours?*), answered one at a time in the walk-in or at the Table, never round the circle: after the long middle session, before design-with service begins, is the yes that matters, and there are ten weeks left to act on a no. Run the closing minute at session scale, Thu Feb 8, and say aloud who is reachable over the break. Bridge into Session 6: "You have a plan. Now: real action, with real people."
 
 *Fallow every Friday, all six weeks.*
 
@@ -670,15 +698,15 @@ This session opens the day after the winter break. The first guided day is the r
 - "What's the uncomfortable truth inside this issue?" - never "what's your childhood wound?"
 - "If your fix works, what pushes back?"
 
-**The settle and the closing minute:** the shadow work is an opening, so it earns its close - the closing minute at every close, the way down and the close-return after the shadow door, and the closing minute at session scale on the last guided day. The shadow stays aimed at the problem, never at the self. Ask the pace question at the close of the shadow-door week, two weeks before the session ends while there is still time to act on it.
+**The settle and the closing minute:** the shadow work is an opening, so it earns its close - the closing minute at every close, the way down and the close-return after the shadow door, and the closing minute at session scale on the last guided day. The shadow stays aimed at the problem, never at the self. The pace question sits at the close of week 2, two clear weeks before the shadow door, and again at the harvest.
 
-**Watch-fors (binding):** aim shadow and inner-child work at the shadow of the *problem*, never a forced excavation of the self, because the shadow of a problem can be said in a room; the shadow of a self already has a home, the Log, and a room is not where a teenager is asked to open it. Opt-out always; the shadow comes last, lightest touch, because the two doors before it build the play that makes the third survivable. This long session runs through late winter - lighter-scope the deep days, lean on the once-weekly pivot (a deep block that has to move because of a hard day in the guide's own home is recoverable next week), protect your own fallow, and re-thread after any break. "The honest finding is that this problem is bigger than one year" is real - name it without shame. This session ends into a break straight after the shadow door: say aloud who is reachable across it.
+**Watch-fors (binding):** aim shadow and inner-child work at the shadow of the *problem*, never a forced excavation of the self, because the shadow of a problem can be said in a room; the shadow of a self already has a home, the Log, and a room is not where a teenager is asked to open it. Opt-out always; the shadow comes last, lightest touch, because the two doors before it build the play that makes the third survivable. This long session runs through late winter - lighter-scope the deep days, lean on the once-weekly pivot (a deep block that has to move because of a hard day in the guide's own home is recoverable next week), protect your own fallow, and re-thread after any break. "The honest finding is that this problem is bigger than one year" is real - name it without shame. This session ends into a break two weeks after the shadow door: say aloud who is reachable across it.
 
 **What you'll need:** the ladder of levers as a simple visual and as four plain sentences in order; improv and clowning prompts, chosen so every learner plays as built - clowning lives in the voice, the face, and the hands as much as the feet; the shadow question framed carefully (of the problem, opt-out); prototyping materials; the "what pushes back?" prompt.
 
 ---
 
-## Session 6 - Hands to Work *(six weeks, Feb 19 - Mar 29)*
+## Session 6 - Hands to Work (six weeks, Feb 19 - Mar 29)
 
 **What it's for:** Act, for real, with real people - choosing how you serve, designing the work *with* the people who have the problem, and doing something that actually leaves them better off.
 
@@ -688,33 +716,33 @@ Three honest things. Your project cannot start until a real person who has the p
 
 **The flow:**
 
-*Weeks 22-27 · Feb 19 - Mar 29 · off: Mon Feb 19, Presidents Day (the session's first day).*
+*Weeks 22-27 · Feb 19 - Mar 29 · off: Mon Feb 19, Presidents Day (the session's first day)*
 
-*Week 1 - choose your mode.*
+*Week 1 - choose your mode (open, re-thread).*
 - **Mon (your own):** core; which mode of serving fits you and your problem? Log. Check-in.
-- **Tue (lighter guide day):** Impossible Question; the service-choice menu presented - direct service, advocacy, philanthropy, building, teaching; each learner chooses.
+- **Tue (lighter guide day):** the re-thread first, short; Impossible Question; the service-choice menu presented - direct service, advocacy, philanthropy, building, teaching; each learner chooses.
 - **Wed (your own):** core; plan your action; Log. Check-in.
 - **Thu (deep guide day):** empathy as the core skill; design *with*, never *for*; who are the real people with this problem? Bridge: invite one of them (not just interview) - ask whether this should happen, and let them shape it.
 - **Fri:** fallow.
 
-*Week 2 - design with.* Between the invitation and the yes there is a wait, and the wait is the work. A person deciding whether to let you in is doing the thing this session is about, and "they haven't answered" or "they said no" is a true place to be standing in the third week, not a week behind.
+*Week 2 - design with (gather).* Between the invitation and the yes there is a wait, and the wait is the work. A person deciding whether to let you in is doing the thing this session is about, and "they haven't answered" or "they said no" is a true place to be standing in the third week, not a week behind.
 - **Mon (your own):** core; talk to a real, affected person, if they have said yes; Log. Check-in.
 - **Tue (lighter guide day):** Impossible Question; service prep or building in company.
 - **Wed (your own):** core; shape your action from what real people told you; Log. Check-in.
 - **Thu (deep guide day):** design-with in practice; adjust your plan to the people, not your assumptions. Bridge: begin the real action.
 - **Fri:** fallow.
 
-*Weeks 3-5 - carry out the project, with real people. Each week the same shape:*
+*Weeks 3-5 - carry out the project, with real people (apply). Each week the same shape, and at the close of week 4, Thu Mar 15, the pace question:*
 - **Mon / Wed (your own):** carry out the service, philanthropy, building, or teaching project, with real people; core; Log; check-in.
 - **Tue (lighter guide day):** Impossible Question; hands-on project work or service expeditions in company.
 - **Thu (deep guide day):** reflect on what's happening in the real action; iterate; hold anything heavy (hold, don't treat). Bridge: the next real step.
 - **Fri:** fallow.
 
-*Week 6 - a real action taken.*
+*Week 6 - a real action taken (harvest).*
 - **Mon (your own):** core; finish and consolidate your action; Log. Check-in.
 - **Tue (lighter guide day):** Impossible Question; share what you did and what happened.
 - **Wed (your own):** core; reflect - did it leave people better off? Log. Check-in.
-- **Thu (deep guide day, harvest):** a real action taken, with real people, or honestly not yet, plus the reflection ("did this serve them, as they tell it? And, separately, what did it do in me?"). Voluntary share. Ask the pace question, and the re-ask (*is this still yours?*), answered one at a time in the walk-in or at the Table, never round the circle. Run the closing minute at session scale. Bridge into Session 7: "You did the work. Now: tell a room what's worth solving."
+- **Thu (deep guide day, harvest):** a real action taken, with real people, or honestly not yet, plus the reflection ("did this serve them, as they tell it? And, separately, what did it do in me?"). Voluntary share. Ask the pace question. Then the join with the Call to Action, so the April break is dwell time: the Problem / Stakes / Story / Ask card goes on the table and is read aloud once; the four ways of being seen are named as equal; and any community story a learner may want in their talk gets its yes asked for now, while the relationship is live, never retrofitted in the last week. Run the closing minute at session scale, Thu Mar 29, and say aloud who is reachable over the break. Bridge into Session 7: "You did the work. Now: tell a room what's worth solving. Here's the shape a Call takes, and the four ways you can give it; carry them over the break. Nothing is due."
 - **Fri:** fallow, closes Session 6.
 
 **Things to say:**
@@ -727,56 +755,50 @@ Three honest things. Your project cannot start until a real person who has the p
 
 **Watch-fors (the community-standing gate, binding):** no project touches real people until a named community member is invited and agrees - to the project, its terms, and a way to say "stop." Name where the benefit flows up front (if the honest answer is "they're part of my learning project," that's the savior trap, caught early). The harvest sits with the community's verdict, not the learner's guess. A repair clause is the same promise as an honored empty harvest: landing wrong is not failing. Affected voices lead early, not at the last minute. No one's story enters the final talk without their consent. Do not send a learner into a situation heavier than the support around them - match the mode to readiness; stay close; service should stretch, not wound. Service expeditions are off-site; plan coverage per outing. Any work with people who are easily harmed gets a real adult's support, and so does the graceful ending of any community relationship.
 
-**What you'll need:** the service-choice menu; named community members invited and agreed before real people are touched; the benefit-flow and repair-clause conversations ready; off-site logistics and coverage; a partner adult where the situation calls for one.
+**What you'll need:** the service-choice menu; the Problem / Stakes / Story / Ask card, for the harvest day; named community members invited and agreed before real people are touched; the benefit-flow and repair-clause conversations ready; off-site logistics and coverage; a partner adult where the situation calls for one.
 
 ---
 
-## Session 7 - The Call to Action *(four weeks, Apr 9 - May 3, the year's harvest)*
+## Session 7 - The Call to Action (four weeks, Apr 9 - May 3, the year's harvest)
 
 **What it's for:** Make a room care - stand up and make the case for a problem worth solving, with vulnerability as the persuasive force, and close the year back inside yourself before it ends.
 
-**For the learner:** This is the harvest. You may make a talk: here is a problem worth solving, here is why it got to me, here is what I did and learned, here is what I'm asking of you. It is advocacy, not a sales pitch; honesty is what makes a room listen, more than polish, and you choose how much of yourself goes in. You choose who hears it, and you know all the choices now rather than in the last week. Four ways, equal, not one main road and three exits: the full room, with families there; the tribe only; one person you choose; or a recorded or written form that you present, or that the guide or a person you choose presents for you while you sit with your people, or while you do not. Nobody will ever have to ask for one of these; all four are offered to everyone, the same way. A talk that says "here is why this was harder than I thought, and here is the smaller thing I'm asking" is a whole talk. "I have nothing to ask a room for yet" is a whole harvest.
+**For the learner:** This is the harvest. You may make a talk: here is a problem worth solving, here is why it got to me, here is what I did and learned, here is what I'm asking of you. It is advocacy, not a sales pitch; honesty is what makes a room listen, more than polish, and you choose how much of yourself goes in. You choose who hears it, and you know all the choices now rather than in the last week. Four ways, equal, not one main road and three exits: the full room, with families there; the tribe only; one person you choose; or a recorded or written form that you present, or that the guide or a person you choose presents for you while you sit with your people, or while you do not. Nobody will ever have to ask for one of these; all four are offered to everyone, the same way. The feast is in the last week, in the evening, and the last morning after it is the year's close, yours and the guide's together. A talk that says "here is why this was harder than I thought, and here is the smaller thing I'm asking" is a whole talk. "I have nothing to ask a room for yet" is a whole harvest.
 
 The room that day is your people - families, the tribe, whoever you invite - and the tribe is your people if no one else comes, honored equally and never as consolation. It is a feast, not a judged presentation. The studio provides the base of the meal; bringing a dish is never required and nobody will know who did. You do not have to eat. There is a named place to step out to that night, and you do not owe anyone a reason. Two rules we hold for you. If your talk carries another person's story, you need their yes before it goes in; a community's pain is never your material without it. And afterwards people will want to ask about your talk. You do not have to answer any question, from anyone, including an adult who means well. "I'd rather not say" is complete, and the guide backs you in the room. The tribe also gives its chorus Call for the shared problem: the whole group saying together what you chose together, in a shape the group decides in rehearsal. If you argued against the shared problem and the room went the other way, you can stand in the chorus, stand with it silently, or sit it out. Before the feast, one question back to yourself: what came back changed in you? Then we eat.
 
 **The flow:**
 
-*Weeks 28-31 · Apr 9 - May 3 · the session break falls before this session (Apr 2-5), not inside it.* The plan below describes six weeks for a four-week session. **Two weeks of it have no home on the calendar yet.** Origin cut its last session to four the same way, by moving work into the join with the session before and letting the works-in-progress share become the dry run; what moves here is for the voices who own the material, and the feast's week in this book is not a date to give a family until it is.
+*Weeks 28-31 · Apr 9 - May 3 · the session break falls before this session (Apr 2-5), not inside it*
 
-*Week 1 - what a Call to Action is.*
-- **Mon (your own):** core; what's the one thing you'd ask a room to do? Log. Check-in.
-- **Tue (lighter guide day):** Impossible Question; what a Call to Action is - advocacy versus a sales pitch; the Problem / Stakes / Story / Ask shape.
+*Week 1 - what a Call to Action is (open, re-thread).*
+- **Mon (your own):** core; the Problem / Stakes / Story / Ask card from the last harvest in hand; what's the one thing you'd ask a room to do? Log. Check-in.
+- **Tue (lighter guide day):** re-thread first. Then the Impossible Question; what a Call to Action is - advocacy versus a sales pitch; the four shapes named again as equal, so the choice stays open the whole session. Anyone still choosing a shape is choosing, not behind.
 - **Wed (your own):** core; draft your Problem and your Ask; Log. Check-in.
-- **Thu (deep guide day):** what makes a room *care*? Vulnerability over polish; the story under the argument. Bridge: find your story.
+- **Thu (deep guide day):** what makes a room *care*? Honesty over polish; the story under the argument; where an arc lands and where it loses the room. Bridge: find your story, and write your Stakes.
 - **Fri:** fallow.
 
-*Week 2 - Problem, Stakes, Story, Ask.*
-- **Mon (your own):** core; write your Stakes (why it matters, to whom); Log. Check-in.
-- **Tue (lighter guide day):** Impossible Question; story-craft games - how an ordinary experience becomes a story that moves people.
-- **Wed (your own):** core; write your Story (why it broke *your* heart, what you did); Log. Check-in.
-- **Thu (deep guide day):** shape the whole arc - Problem, Stakes, Story, Ask; where does it land, where does it lose the room? Bridge: full first draft.
+*Week 2 - Problem, Stakes, Story, Ask, and the chorus (deepen).*
+- **Mon (your own):** core; write your Stakes (why it matters, to whom) and your Story (why it got to *you*, what you did); Log. Check-in.
+- **Tue (lighter guide day):** Impossible Question; story-craft games - how an ordinary experience becomes a story that moves people. Then the tribe builds the chorus Call for the Commons Problem together: what we chose, and what we ask, in a shape the group decides. A *we*, not five solos. A learner who argued the other way in the autumn chooses now whether to stand in it, stand with it silently, or sit it out, and can change their mind up to the night.
+- **Wed (your own):** core; a full first draft, in the form your talk takes; Log. Check-in.
+- **Thu (deep guide day):** shape the whole arc - Problem, Stakes, Story, Ask; share a passage (voluntary, aloud or in the form the talk takes; an offer, never a round); revision as care. Ask the pace question here, with two weeks left to act on the answer. Bridge: build it.
 - **Fri:** fallow.
 
-*Weeks 3-4 - build the talk. Each week the same shape:*
-- **Mon / Wed (your own):** build and revise the talk; finalize the project; core; Log; check-in.
-- **Tue (lighter guide day):** Impossible Question; talk-building, low-stakes delivery practice, the four shapes named again as equal.
-- **Thu (deep guide day):** revision as care; share a passage (voluntary, aloud or in the form the talk takes; an offer, never a round); hold nerves warmly; honesty is the force. Bridge: toward rehearsal.
+*Week 3 - build, then the dry run (apply).*
+- **Mon (your own):** core; build and revise the talk; Log. Check-in.
+- **Tue (lighter guide day):** Impossible Question; talk-building and low-stakes delivery practice in company; the chorus run once. Confirm each learner's chosen shape in the walk-in, one to one, so choosing one person is never announced to the room. The four were on the table from the last harvest; this is the week the choice is made real, not first offered.
+- **Wed (your own):** core; last revisions; Log. Check-in.
+- **Thu (deep guide day):** the dry run, in the shape each learner chose - the tribe for those who chose it, with the one chosen person or the guide for those who did not. Each is the same dry run: the rehearsal, not a thing that precedes one. Hold nerves warmly; honesty is the force. What they said is the point, not how the room reacts. Bridge: rest. Nothing is built between the dry run and the feast.
 - **Fri:** fallow.
 
-*Week 5 - rehearse in the tribe's safety.*
-- **Mon (your own):** core; polish the talk or your chosen shape; Log. Check-in.
-- **Tue (lighter guide day):** Impossible Question; rehearse in the tribe (safe, warm); confirm each learner's chosen shape in the walk-in, one to one, so choosing one person is not announced to the room. The four were on the table from the first day; this is the week the choice is made real, not first offered.
-- **Wed (your own):** core; final prep; a Log entry on the year, if you want one; check-in.
-- **Thu (deep guide day):** the dry run, in the shape each learner chose - the tribe for those who chose it, with the one chosen person or the guide for those who did not; each is the same dry run. Hold nerves. What they said is the point, not how the room reacts. Bridge: rest before the feast.
-- **Fri:** fallow.
-
-*Week 6 - the Call to Action and feast.*
+*Week 4 - the Call to Action, the feast, and the year-close (harvest).*
 - **Mon (your own):** core; final touches; rest. Check-in.
-- **Tue (lighter guide day):** Impossible Question; set the room for the feast; last nerves held.
-- **Wed (your own):** final prep; rest. Check-in.
-- **Thu, the Call to Action and feast:** a real celebration with a real audience, an afternoon or evening with families and the tribe - each learner makes their case, as much and in whatever shape they choose, and the tribe gives the chorus Call for the shared Commons Problem - a *we*, not five solos; standing in the chorus is offered, not required, and a learner who sits it out is still inside the *we*. Advocacy, or a Call to Repair, never a judged presentation; the tribe cheers each other. Being seen is a gift, never a demand. The exit ramp is named for the feast room and shown before the audience arrives.
-- **The year-close**, on the last guided day after the feast has had its night: the co-authoring close, the Log handoff, the whole short record of each learner put on the table unasked, the last re-ask, and the closing minute at year scale (Part 4).
-- **Fri:** fallow, closes Session 7 and the year.
+- **Tue (lighter guide day):** the last Impossible Question of the year, then set the room together; last nerves held; the exit ramp named for the feast room and shown before anyone arrives. At the close of the morning, the turn back inward: "Having gone out to the world's problem, what came back changed in you?"
+- **The feast, Tuesday or Wednesday evening** (the guide's call, by their own day-shape; never the last Thursday): the Call to Action and feast, a real audience, families and the tribe. Each learner makes their case, as much and in whatever shape they choose, and the tribe gives the chorus Call for the Commons Problem; standing in it is offered, not required, and a learner who sits it out is still inside the *we*. Advocacy, or a Call to Repair, never a judged presentation; the tribe cheers each other. Being seen is a gift, never a demand.
+- **Wed (your own):** the interval, named as one: nothing asked back, nothing handed in. Core if you want it, rest if you need it. The noon check-in as always.
+- **Thu (deep guide day), the year-close:** after the feast has had its night, the three acts (Part 4): the co-authoring close with the whole short record on the table unasked, the Log handoff, the last re-ask, and the closing minute at year scale in its fixed words. Say aloud who is reachable over Open Waters and the summer, and that you are not. Bridge into the final year.
+- **Fri:** fallow, closes Session 7. Then Open Waters.
 
 **Things to say:**
 - "This is advocacy, not a sales pitch. Honesty is what makes a room listen, more than polish. You choose how much of yourself goes in."
@@ -786,11 +808,11 @@ The room that day is your people - families, the tribe, whoever you invite - and
 - "The room will clap. That's fine, and it's not the point. What you said is the point."
 - Before the harvest, the turn back inward: "Having gone out to the world's problem, what came back changed in you?"
 
-**The settle and the closing minute:** the Call to Action is a public harvest - an opening in front of other people - so it gets its private re-crossing afterward, the closing minute at year scale, in its fixed words, on the year-close day (see Part 4). Add the turn back inward *before* the harvest: close the year's outward arc back to the self.
+**The settle and the closing minute:** the Call to Action is a public harvest - an opening in front of other people - so it gets its private re-crossing afterward, the closing minute at year scale, in its fixed words, on the year-close day (see Part 4). Add the turn back inward at the close of the feast morning, the last ordinary guided morning before the room opens outward.
 
-**Watch-fors:** being seen is invitational - depth is never a performance requirement. Offer the other three shapes as real roads, not as "share less." Name and hold the learner with no family in the room: the tribe is your people, a chosen witness is honored equally, never a consolation. Advocacy, not a stage performance - what they said is the point, not the applause; never coach for the room's reaction over the learner's conviction. No one's story enters the talk without their consent - a community's pain must never become the learner's persuasive story without that person's yes.
+**Watch-fors:** being seen is invitational - depth is never a performance requirement. Offer the other three shapes as real roads, not as "share less." Name and hold the learner with no family in the room: the tribe is your people, a chosen witness is honored equally, never a consolation. Advocacy, not a stage performance - what they said is the point, not the applause; never coach for the room's reaction over the learner's conviction. No one's story enters the talk without their consent - a community's pain must never become the learner's persuasive story without that person's yes. Do not let the Wednesday between the feast and the year-close fill, and do not seat the year-close on the feast's last hour.
 
-**What you'll need:** the Problem / Stakes / Story / Ask frame on a card and read once aloud; story-craft prompts; a warm real audience arranged and told they are witnesses, not judges; each learner's chosen shape confirmed one to one; any recorded shape playable to the room with its transcript; consent secured for any story that touches another person; the feast planned like a real event with the inclusion floor (base provided, presence not consumption, allergen-safe, no cover charge); the exit ramp named for the feast room; the co-authoring review structure; the Log handoff.
+**What you'll need:** the Problem / Stakes / Story / Ask card, on the table at Session 6's harvest and read aloud there and again in week 1; the chorus Call's shape, decided by the tribe in week 2; story-craft prompts; a warm real audience arranged and told they are witnesses, not judges; each learner's chosen shape confirmed one to one; any recorded shape playable to the room with its transcript; consent secured for any story that touches another person, asked in Session 6 while the relationship is live, never retrofitted in the last week; the feast planned like a real event with the inclusion floor (base provided, presence not consumption, allergen-safe, no cover charge); the exit ramp named for the feast room; the co-authoring review structure; the Log handoff.
 
 ---
 
@@ -812,7 +834,13 @@ On the last guided day, after the feast has had its own night, three acts. First
 
 That is what brings a learner back from standing in front of a room to being themselves. Then a real fallow stretch before the next year opens, and the fallow day stays empty; nothing is seated on it. Never start a new opening on a body still buzzing from the feast.
 
-Then the bridge into the final year: "You found what's worth solving and acted on it. Next: what do you do when there is no easy answer?" Some learners finish the Launch Pad at the end of this year. Each of them gets their own leaving rite, the Launch, in whichever year they leave from, because the end of their own line is the true end. It carries the same condition every Launch does: it waits until the Growth Record export is real.
+## The tail of the year: Open Waters
+
+The flex tail runs May 7 to May 24, the three weeks after Session 7 closes on May 3. It is light structure, not a void, and it is not an eighth session. Four things live there. Credit close-out, for anyone finishing the year's plan, on their own days as all year. Project finishing, because a prototype that was real in March is allowed to be finished in May, and allowed to stay unfinished. The relay handed on: this is where what you built with real people goes to whoever carries it next - back to the community member who said yes, to the tribe who comes after you, or to nobody, which is a true handoff too - and where that relationship ends well, with the thank-you said and the repair clause honoured if it was ever called on; a Call to Repair's "who leads this" is made good here, not only announced from a stage. The tribe's shared problem is passed the same way: what the chorus asked for is left where the next group can find it, in the room's own words, and the next group is free to leave it there. And rest, which is a legitimate use of all three weeks. Nothing the year did not finish is finished here; what a shorter session let go, it let go. Which mornings are guided in the tail is said before it starts, so nobody arrives to an empty room, and no re-thread opens it: the year-scale closing minute already closed the year, and a re-thread would reopen what the learner closed. On the last guided day, Thu May 24, say the summer's break words: the one adult is reachable all summer, 988 never closes, the guide is not reachable, the pathway stays live. Name it to families as intentional: flex plus fallow, not "we'll figure it out."
+
+Some learners finish the Launch Pad at the end of this year. Each of them gets their own leaving rite, the Launch, in whichever year they leave from, because the end of their own line is the true end. It sits inside Open Waters, in the third week, on a day set with the learner and their circle and never the last day, because the last day is when the calendar ends and a crossing is not hurried by a calendar. It carries the same condition every Launch does: it waits until the Growth Record export is real, and that is checked in the second week, not on the day. The Helm's book carries the rite in full.
+
+Then the bridge into the final year: "You found what's worth solving and acted on it. Next: what do you do when there is no easy answer?"
 
 ---
 
