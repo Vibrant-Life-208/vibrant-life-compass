@@ -1,6 +1,6 @@
 # Booking the pilot morning - a sheet for the three calls
 
-**For:** Erin, 14 October 2026. Three calls, then a date.
+**For:** Erin. Written 14 October 2026, updated 20 October. Three calls, then a date.
 **Why this exists:** the status document's own next step. *"The review body is closed. The next real step is not more review - it is one real Origin morning."*
 **What the morning is:** one real Origin Session 1, "The Map of Me" and the 100 Dreams. Two to four real teenagers. One morning. Salus and Jake in the room as the safety pair. **This is the binding real-learner walk, run as the pilot.**
 
@@ -8,20 +8,22 @@
 
 ## Before you dial: the honest gate count
 
-The pilot has **eight** named preconditions, not none. Six are already in hand. **Two are open, and today's calls close most of one of them.**
+The pilot has **eight** named preconditions, not none. **Seven are in hand. One is open, and Call 1 closes it.**
 
 | # | Gate | State |
 |---|---|---|
 | 1 | Referral pathway live: named clinician, same-week warm handoff | **OPEN.** Call 1 |
-| 2 | Consent given against the one-page Family note | **OPEN.** The note does not exist. One page of writing, and the only thing here that is not a phone call |
-| 3 | A crisis-concurrency answer for that morning: one named reachable adult, on paper | **OPEN.** Call 2 settles it |
+| 2 | Consent given against the one-page Family note | **CLOSED 2026-10-19.** Written, one page, Letter. `portfolio/20-family-note-PILOT-MORNING.pdf` |
+| 3 | A crisis-concurrency answer for that morning: one named reachable adult, on paper | Call 2 settles it. Ask it as part of booking the date |
 | 4 | A runnable somatic settle, way-down and exit ramp | In hand. `launch-pad-somatic-floor-grammar-v0.1.md` |
 | 5 | The closing-practice draft in hand | In hand. `launch-pad-closing-practice-v0.1.md` |
 | 6 | "The Curious No" in the guide's hand | In the merged design. **This is the thing the pilot exists to test** |
 | 7 | External-accountability node named | Salus and Jake, confirmed at Call 2 |
 | 8 | The multi-modal-capture sentence ready to say aloud | Below, verbatim |
 
-**Gate 2 is the real one.** Consent that hides its limits is not consent, and the Family note is what carries the limits. It does not need to be the finished Family note the programme will eventually publish. It needs to be one honest page for this one morning.
+**Gate 1 is now the only one, and it is one phone call.** The Family note exists and carries the limits, which was the hard part. But the note has **three blanks**, and the clinician's name is one of them, so the note is not usable until Call 1 happens. The other two blanks are the date and your phone number.
+
+**What the note says that the clinician needs to be able to stand behind:** *"If something comes up that is bigger than a morning can hold, I will stop, help your learner get to real help, and tell you the same day. ______ has agreed to take a same-week call if we need one."* Read them that sentence on the call. It is the promise their name goes under.
 
 ---
 
@@ -29,7 +31,7 @@ The pilot has **eight** named preconditions, not none. Six are already in hand. 
 
 **The one call that closes three separate owed items.** Ask for all three; they are the same conversation.
 
-1. **Will you be the named warm-referral therapist?** Same-week handoff, a real name and a current number. This is the single blank in an otherwise complete crisis roster, and it has been the blank for months.
+1. **Will you be the named warm-referral therapist?** Same-week handoff, a real name and a current number. This is the single blank in an otherwise complete crisis roster, it has been the blank for months, and **it is now the only thing standing between you and a pilot morning.** It is also a blank on a page that goes to families, so their answer has to be a yes you can print.
 2. **The Table question** *(changed 2026-10-19: the studio does not provide the food - learners bring their own lunch. That changes the question rather than just the wording, so ask it the new way.)* A shared meal runs every guide day and everyone brings their own. Presence, never consumption, and nobody watches anybody's plate. For a learner in active eating-disorder recovery: **does bring-your-own help or hurt?** It hands them control of their own portion, which may be the better arrangement. It also makes what they chose visible on the table every time, which may be the worse one. You will know which. And what would you need us to do differently either way? *Ask also: is being at the Table refusable on a hard day without it reading as not belonging?*
 3. **Who else should we point families to** when the honest answer is that this room cannot hold what their learner needs? Real names and numbers. Special education advocates, programmes with aide support, the state parent training centre. Six names is enough.
 
@@ -48,13 +50,15 @@ Two to four teenagers. No pitch and no persuasion.
 - That two other adults will be in the room and why.
 - **That their learner may decline any part of it, including all of it, and nothing changes.**
 - That nothing from the morning is photographed, written up or posted. Not now, not later.
-- Consent is given against the one-page note, not against this phone call.
+- Consent is given against the one-page note, not against this phone call. Send or hand them the note after this call so they read it before they answer.
 
 ---
 
 ## Then: the date
 
-Within about three weeks. Put it in the calendar before the calls go cold.
+Within about three weeks of the calls. Put it in the calendar before they go cold.
+
+Then fill the note's three blanks, copy it, and hand it to each family **before** the morning rather than on the day. Consent given on the doorstep is not consent given against a note.
 
 ---
 

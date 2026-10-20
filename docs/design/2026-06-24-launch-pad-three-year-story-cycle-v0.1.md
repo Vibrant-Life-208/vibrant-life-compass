@@ -1,6 +1,6 @@
 # The Launch Pad Story
 
-**A three-year formation for learners ages 15-18**
+**A three-year studio for learners aged 16 to 18**
 **Status:** v0.1 working draft - locked structure, Season One built deep | **+ Ring-1 revisions (2026-08-28)** and **Ring-2 revisions (2026-08-31)** appended at the end (canonical cross-cutting doctrine: the closing practice, the layer rule, the through-line spine, binding fallow, decline-as-covenant, the graduated safety floor, guide-as-safety-member, the runway tiers; then the Ring-2 buildable subset - fixed closing prompts, Vineyard-in-Origin, season-scale re-crossing, the Curious No, the two-worlds hinge, the daily-ritual through-line, crew-not-watch, and the "deliberately NOT built" refusal architecture) and the Tue/Thu weekly-rhythm reconciliation applied inline
 **Date:** 2026-06-24
 **Origin:** Evoke Passion fleet meeting (8 voices) facilitated for Europa, toward a presentation for Jenna

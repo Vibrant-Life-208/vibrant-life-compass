@@ -1,0 +1,14 @@
+/* One-sheet handout: no cover page, no folio, tight enough for a single side of Letter.
+   Used for the family note that goes in a hand, not in a binder. */
+@page { size: letter; margin: 0.55in 0.6in; @bottom-center { content: none; } }
+body { font-family: Georgia, "Times New Roman", serif; line-height: 1.32; color: #1a1a1a; font-size: 9.6pt; }
+header#title-block-header { page-break-after: auto; text-align: left; padding-top: 0; margin-bottom: 0.5em; }
+header#title-block-header h1.title { font-size: 19pt; border: none; margin: 0 0 0.1em 0; letter-spacing: 0.01em; }
+header#title-block-header p.subtitle { font-size: 10.5pt; color: #555; font-style: italic; margin: 0; }
+header#title-block-header p.date { display: none; }
+nav#TOC { display: none; }
+h1, h2, h3 { page-break-before: auto; }
+p { margin: 0.42em 0; orphans: 2; widows: 2; }
+strong { color: #000; }
+hr { border: none; border-top: 1px solid #bbb; margin: 0.7em 0; }
+em { color: #444; }

@@ -60,7 +60,7 @@ Target 5-6, ceiling 7 (year plan v0.3). If the first two circles fill the room, 
 ## 4. The sentences
 
 **Use freely**
-- "A three-year formation for ages 16 to 18. Not a high school."
+- "A three-year studio for learners aged 16 to 18. Not a high school."
 - "Two mornings a week with a guide. Two mornings the learner runs. Friday is never filled."
 - "No grades. No ranking. No deadlines you didn't set. Your Log is yours and no one reads it."
 - "Here is what one guide can hold, and here is what they can't."
