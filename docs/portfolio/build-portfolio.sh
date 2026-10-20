@@ -164,6 +164,17 @@ if [ "$SPIRAL" = "1" ]; then echo "done -> $OUT (spiral edition)"; exit 0; fi
 for p in The-Launch-Pad-Story-Poster.pdf The-Launch-Pad-Story-Poster-Families.pdf The-Launch-Pad-Story-Poster-Parents.pdf The-Launch-Pad-Story-Poster-StarMap.pdf 2026-06-25-launch-pad-overview-one-pager.pdf The-Launch-Pad-Story-for-Jenna.pdf; do
   [ -f "$D/$p" ] && cp "$D/$p" "$OUT/20-$p"
 done
+# The pilot-morning Family note - a consent instrument with signature lines, its own
+# print style. Added 2026-10-20: it had no recorded build command anywhere, so every
+# render was a hand-typed invocation from memory, which is how it once came out at A4.
+# Building it here also puts it inside the tier check below by design rather than by
+# the glob happening to sweep an orphan left in the output directory.
+"$PANDOC" "$D/launch-pad-family-note-pilot-v0.1.md" -s -f markdown-yaml_metadata_block \
+  --metadata title="A pilot morning at the Launch Pad" \
+  --css="$OUT/style-onepager.css" --pdf-engine="$WEASY" \
+  -o "$OUT/20-family-note-PILOT-MORNING.pdf" 2> >(grep -v "Ignored" >&2 || true)
+echo "built 20-family-note-PILOT-MORNING.pdf ($(pages "$OUT/20-family-note-PILOT-MORNING.pdf")pp)"
+
 # The site walk sheet - a form to carry and fill in, its own print style
 "$PANDOC" "$D/launch-pad-site-walk-sheet-v0.1.md" -s -f markdown-yaml_metadata_block \
   --css="$OUT/walk-style.css" --pdf-engine="$WEASY" -o "$OUT/30-site-walk-sheet.pdf" 2> >(grep -v "Ignored" >&2 || true)
@@ -181,7 +192,10 @@ echo "built 30-site-walk-sheet.pdf ($(du -h "$OUT/30-site-walk-sheet.pdf" 2>/dev
 # Those need a human. Known blind spot: ambiguous one-word agent names (La, Via,
 # Mos, Kim, Rand, Mae, Nine) are excluded to avoid false alarms on ordinary prose.
 FLEET='Accord|Aditus|Aequum|Arcana|Caelum|Canor|Chekov|Claritas|Codex|Concordia|Cura|Custodia|Custos|Domus|Faber|Fabula|Fides|Fieri|Firmitas|Foedus|Gestus|Gnosis|Gubernator|Hoshi|Impetus|Intimus|Ishka|Iter|Kropotkin|Leonard|Limen|Limina|Lingua|Ludus|Lumen|Lux|Mccoy|Memoria|Motus|Munus|Neelix|Nexus|Obrien|Ordo|Origo|Ortus|Pactum|Palmer|Pervius|Polaris|Pons|Portus|Praesens|Praxis|Pulaski|Radix|Reginald|Riker|Salus|Satis|Sato|Sensus|Signum|Solacium|Spes|Stirps|Tessera|Totum|Tutela|Umbra|Vedek|Veritas|Verus|Vigilia|Vigor|Vinculum|Vox|Wildman|Yates'
-WALL='[0-9]+ to [0-9]+ learners|ceiling of [0-9]+|seven chairs|limited spots|spots are filling|applications clos|don.t miss|act now|enroll now|our graduates|graduates go on|transform your|unleash|the leader your child'
+# Spelled-out numbers added 2026-10-20. The digit-only form returned a clean sweep on a
+# deck that states capacity three times in words. A verify expression too narrow to see
+# what is in front of it reads as a pass, which is worse than no check at all.
+WALL='([0-9]+|one|two|three|four|five|six|seven|eight|nine|ten) to ([0-9]+|one|two|three|four|five|six|seven|eight|nine|ten) learners|ceiling of ([0-9]+|one|two|three|four|five|six|seven|eight|nine|ten)|seven chairs|limited spots|spots are filling|applications clos|don.t miss|act now|enroll now|our graduates|graduates go on|transform your|unleash|the leader your child'
 PT="${PT:-/opt/homebrew/bin/pdftotext}"
 
 tiercheck() {

@@ -1,14 +1,31 @@
-/* One-sheet handout: no cover page, no folio, tight enough for a single side of Letter.
-   Used for the family note that goes in a hand, not in a binder. */
-@page { size: letter; margin: 0.55in 0.6in; @bottom-center { content: none; } }
+/* Family-note handout: no cover page, no TOC, goes in a hand rather than a binder.
+   Two deliberate sheets since 2026-10-20, when the Captains' Council review added the
+   two named adults, the withdrawal line, the safety carve-out and the learner's own
+   paragraph. Page 1 is written to the family; page 2 is written to the learner and
+   carries both signatures. Leading stays comfortable on purpose: this is a consent
+   instrument, and shrinking the type to win a page count is the wrong trade. */
+@page { size: letter; margin: 0.5in 0.58in; }
+/* A family must know a second page exists before they sign. */
+@page { @bottom-center { content: "Page " counter(page) " of " counter(pages); font-family: Georgia, serif; font-size: 8pt; color: #777; } }
+
 body { font-family: Georgia, "Times New Roman", serif; line-height: 1.32; color: #1a1a1a; font-size: 9.6pt; }
-header#title-block-header { page-break-after: auto; text-align: left; padding-top: 0; margin-bottom: 0.5em; }
-header#title-block-header h1.title { font-size: 19pt; border: none; margin: 0 0 0.1em 0; letter-spacing: 0.01em; }
+/* Pandoc's standalone template ships body{margin:auto;max-width:36em}, which boxed this
+   note into a narrow column and wasted a third of the sheet. Author styles beat a user
+   stylesheet, so this override needs !important. */
+body { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+
+header#title-block-header { page-break-after: auto; text-align: left; padding-top: 0; margin-bottom: 0.35em; }
+header#title-block-header h1.title { font-size: 16pt; border: none; margin: 0 0 0.1em 0; letter-spacing: 0.01em; }
 header#title-block-header p.subtitle { font-size: 10.5pt; color: #555; font-style: italic; margin: 0; }
 header#title-block-header p.date { display: none; }
 nav#TOC { display: none; }
+
 h1, h2, h3 { page-break-before: auto; }
 p { margin: 0.42em 0; orphans: 2; widows: 2; }
 strong { color: #000; }
-hr { border: none; border-top: 1px solid #bbb; margin: 0.7em 0; }
+hr { border: none; border-top: 1px solid #bbb; margin: 0.6em 0; }
 em { color: #444; }
+
+/* The learner's paragraph and the signature lines travel together, so the signatures
+   never land on a sheet of their own with nothing above them. */
+.pagebreak { page-break-before: always; }

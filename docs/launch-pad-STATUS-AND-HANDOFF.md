@@ -31,7 +31,7 @@
 
 **Open artifacts:** the one-page Family note (five documents depend on it, and it gates the pilot), a family-facing price (held by Jenna and Wes), the Successor Envelope, the Family Charter, the second adult's written authority, the named warm-referral therapist.
 
-**The pilot's own gates:** eight, six in hand. Open are the named clinician (Call 1) and consent against the one-page Family note. See `design/launch-pad-pilot-morning-call-sheet.md`.
+**The pilot's own gates:** eight. **Three in hand, one half, four open** (audited 2026-10-20 against the artifacts, not against the claims). Open: the named clinician (Call 1), consent actually given against the Family note, the crisis-concurrency name, and the external-accountability node, which was recorded closed against two fleet agents and has never been staffed by humans. See `design/launch-pad-pilot-morning-call-sheet.md`.
 
 **Drive.** Two separate trees, deliberately. `Launch Pad - FAMILY-SHAREABLE` sits at the top level with no shareable ancestor and holds the four family PDFs, six artwork files, and its own contents card, shared with `vibrantlife208@gmail.com` at **commenter**. `Launch Pad - GUIDE ONLY (do not share)` holds the reading set, the spiral set, sources and the review record, and is **not** shared with anyone.
 
