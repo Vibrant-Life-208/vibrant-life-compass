@@ -1,0 +1,2290 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@page {
+  size: Letter;
+  margin: 22mm 21mm 18mm 21mm;
+  @top-center { content: "The Origin Year   ·   Launch Pad"; font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 8pt;
+                 letter-spacing: .14em; color: #C3B8A8; text-transform: uppercase; }
+  @bottom-center { content: counter(page); font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 9pt; color: #B9AE9E; }
+}
+@page cover  { margin: 0; @top-center { content: none; } @bottom-center { content: none; } }
+@page glance { @top-center { content: none; } }
+
+html { font-family: 'Palatino Linotype', Palatino, 'Iowan Old Style', Georgia, 'Times New Roman', serif; color: #2A2622; font-size: 11.5pt; line-height: 1.62; }
+body { margin: 0; }
+p { margin: 0 0 .7em 0; }
+strong { color: #7C4F26; }
+em { color: #4a423a; }
+a { color: #7C4F26; text-decoration: none; }
+
+/* ---------- cover ---------- */
+.cover { page: cover; height: 100vh; box-sizing: border-box; background: #FBF6EE;
+          border-top: 10mm solid #B0743A; display: flex; flex-direction: column;
+          justify-content: center; padding: 0 26mm; }
+.cover .kicker { font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 10pt; letter-spacing: .28em; color: #7C4F26;
+                  text-transform: uppercase; margin-bottom: 10mm; }
+.cover h1.ttl { font-family: 'Palatino Linotype', Palatino, 'Iowan Old Style', Georgia, 'Times New Roman', serif; font-weight: 700; font-size: 46pt; line-height: 1.02;
+                 margin: 0 0 8mm 0; color: #241f1b; letter-spacing: -.01em;
+                 border: none; break-before: avoid; }
+.cover h1.ttl::before { content: none; }
+.cover .rule { width: 44mm; height: 3px; background: #B0743A; margin: 0 0 12mm 0; }
+.cover .question { font-family: 'Palatino Linotype', Palatino, 'Iowan Old Style', Georgia, 'Times New Roman', serif; font-style: italic; font-size: 25pt; line-height: 1.2;
+                    color: #7C4F26; margin: 0 0 12mm 0; }
+.cover .sub { font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #6b6156; max-width: 118mm; }
+.cover .foot { margin-top: 22mm; font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 9.5pt; letter-spacing: .1em;
+                color: #9a8f80; text-transform: uppercase; }
+
+/* ---------- at-a-glance contents ---------- */
+.glance { page: glance; break-before: page; break-after: page; padding-top: 6mm; }
+.glance h2.gtitle { font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13pt; letter-spacing: .18em; text-transform: uppercase;
+                     color: #7C4F26; border: none; padding: 0; margin: 0 0 8mm 0; }
+.glance .part { font-family: 'Palatino Linotype', Palatino, 'Iowan Old Style', Georgia, 'Times New Roman', serif; font-size: 16pt; color: #241f1b; margin: 7mm 0 2mm 0; }
+.glance .part .q { font-style: italic; color: #7C4F26; font-size: 13pt; }
+.glance ol { list-style: none; margin: 1mm 0 0 0; padding: 0; }
+.glance ol li { font-family: 'Palatino Linotype', Palatino, 'Iowan Old Style', Georgia, 'Times New Roman', serif; font-size: 11pt; color: #4a423a; padding: 1.6mm 0;
+                 border-bottom: 1px solid #EDE4D6; display: flex; }
+.glance ol li .n { font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; color: #B0743A; width: 9mm; }
+
+/* ---------- part divider (h1) ---------- */
+h1 { break-before: page; string-set: part content();
+      font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; font-size: 26pt; line-height: 1.1;
+      color: #241f1b; margin: 30mm 0 2mm 0; padding-bottom: 5mm;
+      border-bottom: 3px solid #B0743A; }
+h1::before { content: "";  display: block; width: 18mm; height: 4px; background: #B0743A; margin-bottom: 7mm; }
+
+/* ---------- section headers (h2) ---------- */
+h2 { font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; font-size: 15pt; color: #7C4F26;
+      margin: 9mm 0 2.5mm 0; line-height: 1.25; break-after: avoid; }
+
+/* session cards: h2 whose text began with "Session N" (tagged in post-process) */
+h2.session { break-before: page; background: #FBF6EE; border-left: 5px solid #B0743A;
+              padding: 6mm 7mm; margin: 0 0 5mm 0; display: flex; align-items: baseline;
+              font-size: 17pt; color: #241f1b; }
+h2.session .snum { font-family: 'Palatino Linotype', Palatino, 'Iowan Old Style', Georgia, 'Times New Roman', serif; font-weight: 700; font-size: 30pt; color: #B0743A;
+                    margin-right: 6mm; line-height: 1; }
+h2.session .sdur { display: block; font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 400; font-size: 9.5pt;
+                    letter-spacing: .06em; text-transform: uppercase; color: #9a8f80; margin-top: 2mm; }
+h3 { font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; font-size: 12pt; color: #3a332c; margin: 6mm 0 2mm 0; }
+
+/* ---------- spoken-line cards (blockquotes) ---------- */
+blockquote { margin: 3.5mm 0; padding: 4mm 6mm 4mm 6mm; background: #fff;
+              border: 1px solid #EBE1D2; border-left: 4px solid #B0743A;
+              border-radius: 2px; color: #3a332c; break-inside: avoid; }
+blockquote::before { content: "SAY"; display: block; font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 7.5pt;
+                      letter-spacing: .18em; color: #B0743A; margin-bottom: 1.5mm; }
+blockquote p { margin: 0; font-size: 11pt; line-height: 1.5; }
+blockquote p + p { margin-top: 2mm; }
+
+/* ---------- note / seam cards (standalone italic paragraphs) ---------- */
+p.note { background: #FBF6EE; border-radius: 3px; padding: 4mm 6mm; margin: 4mm 0;
+          font-size: 10.5pt; color: #5a5148; break-inside: avoid; }
+p.note em { color: #5a5148; }
+
+/* lists */
+ul, ol { margin: 0 0 .7em 0; padding-left: 6mm; }
+li { margin: 0 0 1.5mm 0; }
+
+hr { border: none; border-top: 1px solid #EDE4D6; margin: 7mm 0; }
+</style></head><body>
+<section class="cover">
+  <div class="kicker">LAUNCH PAD  ·  A GUIDE&#x27;S LESSON PLAN BOOK</div>
+  <h1 class="ttl">The Origin Year</h1>
+  <div class="rule"></div>
+  <div class="question">Who am I?</div>
+  <div class="sub">A guide&#x27;s book for Year One of the Launch Pad, written so a learner can read every page.</div>
+  <div class="foot">Vibrant Life</div>
+</section>
+<section class="glance"><h2 class="gtitle">The year at a glance</h2>
+<div class="part">Part 1 - For everyone: what this year is</div>
+<div class="part">Part 2 - For the guide: teaching this year</div>
+<div class="part">Part 3 - The sessions</div>
+<ol>
+<li><span class="n">1</span><span>The Map of Me (four weeks, Aug 16 - Sep 9)</span></li>
+<li><span class="n">2</span><span>The Lineage (five weeks, Sep 20 - Oct 21)</span></li>
+<li><span class="n">3</span><span>The Power of Choice (three weeks, Nov 1 - Nov 18, ends into Thanksgiving)</span></li>
+<li><span class="n">4</span><span>Running My Own Ship (three weeks, Nov 29 - Dec 16, ends into the winter break)</span></li>
+<li><span class="n">5</span><span>The Full Draft (six weeks, Jan 3 - Feb 10)</span></li>
+<li><span class="n">6</span><span>Chapter One (six weeks, Feb 21 - Mar 30)</span></li>
+<li><span class="n">7</span><span>This Is Me / The Unveiling (four weeks, Apr 10 - May 4)</span></li>
+</ol>
+<div class="part">Part 4 - Closing the year</div>
+</section>
+<h2 id="opening-note">Opening note</h2>
+<p>This is the guide’s book for the first year of the Launch Pad, the
+year called Origin. It holds the whole plan: the shape of the year, the
+seven sessions, the week-by-week flow, the things a guide might say, and
+the ways we keep everyone safe. It is written for the guide to teach
+from. It is also written so that any learner can pick it up and read the
+whole thing.</p>
+<p>That last part is a rule, not an accident. Here is the rule, and it
+holds on every page:</p>
+<p class="note"><em>Everything in this book is safe and honest for a learner to read.
+Nothing in it manages or manipulates anyone. Lines in “quotes” are
+things a guide might say aloud. Everything else is for the guide to
+understand and hold.</em></p>
+<p>There is no hidden chapter. There is no page that says “here is how
+to get the reluctant kid to do the thing.” A guide’s notes here are
+transparent and kind. If a learner reads a note about themselves, they
+should feel respected, not handled. That is the whole point of the year,
+so it is the whole point of the book too.</p>
+<p>One author’s note on language: this book was written by Erin Stanley,
+who opened the studio. “The guide” means whoever is leading the studio,
+and this book says “they” throughout, because that will not always be
+the same person. “You” sometimes means the guide and sometimes means the
+learner - the context always makes it clear which.</p>
+<hr />
+<h1 id="part-1---for-everyone-what-this-year-is">Part 1 - For everyone:
+what this year is</h1>
+<h2 id="the-years-question">The year’s question</h2>
+<p>Origin asks one question, all year: <strong>Who am I?</strong></p>
+<p>That is it. Not “who should you be,” not “who do we need you to
+become.” Just the honest, enormous question of who you already are and
+who you are turning into. Everything this year is a way of walking
+around that question and looking at it from a new side.</p>
+<p>Origin is the first of three years. The three years each carry their
+own question:</p>
+<ul>
+<li><strong>Origin - Who am I?</strong> (Know your story.)</li>
+<li><strong>The Forge - What is worth solving?</strong> (Find your
+work.)</li>
+<li><strong>The Helm - What do I do when there is no easy
+answer?</strong> (Make the hard call, and love the life around it.)</li>
+</ul>
+<p>Origin comes first in the telling because a story is the ground the
+other two years stand on. It is not a prerequisite. The three years turn
+as a cycle rather than a ladder: whichever year is running when you
+arrive is the one you start in, and you are not behind. A learner who
+starts at The Forge asks what is worth solving with the story they
+already have, and comes to Origin later with more of it. Nobody here is
+catching up to anybody.</p>
+<h2 id="the-journey-the-years-arc-plain">The journey (the year’s arc,
+plain)</h2>
+<p>The year is built like a story with a beginning, a middle, and an
+end.</p>
+<p>You start by dreaming with no ceiling. You look at where you come
+from and the people who made you. You practice the muscle of choosing,
+and then the muscle of running your own days. Then, in the long middle
+of the year, you write your whole life down, all of it, unedited. After
+that you become the author of it, shaping it into something you can
+hold. And at the very end, you make a piece that says “this is me,” and
+you show it to your people.</p>
+<p>Named plainly, the seven sessions are:</p>
+<ol type="1">
+<li><strong>The Map of Me</strong> - dream 100 dreams and start naming
+what you want.</li>
+<li><strong>The Lineage</strong> - gather the stories of where you come
+from.</li>
+<li><strong>The Power of Choice</strong> - practice choosing on
+purpose.</li>
+<li><strong>Running My Own Ship</strong> - build a routine that fits
+you.</li>
+<li><strong>The Full Draft</strong> - write your whole life,
+unshaped.</li>
+<li><strong>Chapter One</strong> - become the author and shape it.</li>
+<li><strong>This Is Me / The Unveiling</strong> - make a self-portrait
+and show it.</li>
+</ol>
+<p>The year rhymes from end to end: you dream it, you draft it, you
+shape it, you declare it.</p>
+<h2 id="the-words-this-book-uses">The words this book uses</h2>
+<p>This studio has its own small vocabulary. None of it is a secret, so
+here it all is, before you meet any of it.</p>
+<ul>
+<li><strong>A quest.</strong> One piece of work with a beginning and an
+end: a prompt, an interview, a making, a share. It is the unit you can
+say no to.</li>
+<li><strong>A session.</strong> One of the year’s seven stretches, each
+with its own question. Three to six weeks long, with a break after
+it.</li>
+<li><strong>The settle.</strong> The three slow breaths that open every
+guide day.</li>
+<li><strong>The way down.</strong> Standing up and shaking it out after
+hard work, so your body can put the stress down.</li>
+<li><strong>The exit ramp.</strong> The named place you can step out to,
+without asking, and come back from with nothing said.</li>
+<li><strong>The closing minute.</strong> The three private questions at
+the end of an opening. Never written for the studio, never read by
+anyone.</li>
+<li><strong>The Work of the Day.</strong> The one piece of the session’s
+work the whole tribe does together that morning, named out loud at the
+start so you know what the day is for. One per guide day.</li>
+<li><strong>Your tribe.</strong> The people in this studio with
+you.</li>
+<li><strong>The walk-in.</strong> The soft first twenty-five minutes of
+a guide day, when the door is open and nothing is required. The guide
+will come to one or two people for a quiet talk inside it. Nothing said
+in one is written down.</li>
+<li><strong>The interval.</strong> A your-own day with nothing asked
+back: one question to carry, nothing to hand in. It is named out loud so
+you know the quiet is on purpose.</li>
+<li><strong>The close-return.</strong> The words the room says out loud
+after a heavy day, so your body hears that the heavy part is over.
+Always the same words; they are on the settle page.</li>
+<li><strong>Fallow.</strong> Deliberately empty. Fallow is a farming
+word: a fallow field is one you leave unplanted on purpose, because that
+is what makes it rich again. Fridays are fallow, and so is one whole
+week in the autumn. Never earned, never filled.</li>
+<li><strong>A harvest.</strong> The last stretch of a session, where you
+gather what the weeks grew and name what you got. An empty harvest is a
+real harvest.</li>
+<li><strong>Witnessed.</strong> Someone was there and saw it. Not
+watched, not assessed. Being witnessed is a gift and never a
+demand.</li>
+<li><strong>A re-thread.</strong> Picking the year back up after a
+break. The first guide day back starts with it: where were you, where
+are you now, what came back changed. You are never restarting cold.</li>
+<li><strong>The pace question.</strong> The guide asking whether the
+plan still matches the speed your real life is running at.</li>
+<li><strong>The re-ask.</strong> The guide asking, out loud, <em>is this
+still yours?</em> It means: do you still choose to be here, doing
+this.</li>
+<li><strong>Open Waters.</strong> The loose three weeks after the
+Unveiling: expeditions, your own projects, credit close-out, and real
+rest.</li>
+</ul>
+<p>One word needs a line of its own, because it does two jobs. A
+<strong>harvest</strong> is the gathering at a session’s end, and it is
+yours. The Vineyard is the one thing in this year that is never
+harvested, and that is exactly what makes it the Vineyard.</p>
+<h2 id="what-you-make-and-carry">What you make and carry</h2>
+<p><strong>The Captain’s Log.</strong> This year you begin one artifact
+you will carry through all three years: your Captain’s Log. It is a
+record of your own life and your own thinking. You name it yourself. You
+write in it however you write. It belongs to you, completely. A guide
+never reads it to grade you or check up on you. The moment a private log
+becomes something someone else reads to judge you, it stops being yours,
+and this one stays yours. You will carry it out the door when you leave,
+and no copy is kept.</p>
+<p><strong>The Vineyard.</strong> On the very first day, alongside the
+Log, you name one more thing: a part of your week that is just yours to
+love. A thing you tend because you love it, and that no one will ever
+ask you what it was <em>for</em>.</p>
+<p><strong>What it can be.</strong> Almost anything. The list below is
+deliberately a mess, because there is no right kind of thing:</p>
+<ul>
+<li>an instrument you are slowly getting better at, or one you are not
+getting better at</li>
+<li>a trail you walk, or a bus route you like riding</li>
+<li>bread. Or a knife you keep sharp, or an engine, or a sewing
+machine</li>
+<li>a game, including one on a screen</li>
+<li>a friendship you put real time into</li>
+<li>a language nobody in your family speaks</li>
+<li>drawing the same thing over and over</li>
+<li>birds</li>
+<li>a project with no end date and no plan</li>
+<li>lying on the floor and listening to one album all the way
+through</li>
+</ul>
+<p>Some of those sound impressive and some sound like nothing.
+<strong>That is the point.</strong> This is not a list to choose from,
+and there is no version of this that counts for more. If your honest
+answer is the album on the floor, that is a Vineyard, and nobody here
+will rank it against somebody’s violin.</p>
+<p><strong>Why this is in a school book at all.</strong> The rest of
+this year asks hard things of you. You will write your whole life down,
+look at your worst day, and show yourself to a room full of your people.
+That is one half of what this place is for. The other half is sitting in
+the third year’s question, The Helm: <em>make the hard call, and love
+the life around it.</em> The Vineyard is where that second half lives,
+starting now rather than in three years. It is not a reward for the hard
+work, and it is not a break from it. It is the other half of the work,
+and it is given its own ground precisely so that nothing can quietly
+turn it into the first half.</p>
+<p><strong>It is never made useful.</strong> It is never harvested. It
+is never turned into an assignment. Nobody grades it, reports on it,
+counts it, or asks you to reflect on it. If a guide ever adds a
+“Vineyard reflection prompt,” the whole thing is dead, so no one will.
+The moment it becomes useful it stops being a Vineyard.</p>
+<p><strong>When, and this is the one part that is required.</strong>
+Making time for something you love is a requirement of this programme.
+Not a particular thing, not a certain number of hours, and not anything
+you hand in. The requirement is that the time is in your week and that
+something you love is in the time.</p>
+<p>That is deliberate, and it is not softness. A life with no un-useful
+joy in it is not what this place is trying to build you toward, and
+<strong>finding the time is a skill, exactly like learning to hold your
+own hours.</strong> Nobody drifts into it. People who have it protect it
+on purpose, and that is learnable, so we teach it.</p>
+<p>In practice: Friday is already yours and is the obvious home. You
+name a Vineyard-thing in the first week. When you build your routine in
+Session 4, your Vineyard is in it, and a routine without it is not a
+finished routine. If your Vineyard-thing needs something that lives
+here, a workbench or a kiln or a piano or a quiet room, say so in the
+first week and the door is open to you on Fridays.</p>
+<p><strong>And the edge of it, which matters as much as the
+requirement.</strong> Nobody ever checks what you did with the time.
+Nobody signs in. Nobody is counted. Nobody asks how it went, and that
+includes the guide. The only question anyone will ever ask is <em>is the
+time there</em> - never what you made, never whether you got better at
+it, never whether you enjoyed it. It is the same deal as the Table:
+presence is the whole requirement, never consumption. The moment anyone
+asks the second kind of question the Vineyard is dead, and the rule
+against asking it is written as hard as the rules about safety.</p>
+<p>The last of the promises says you may refuse the structure itself,
+and this is part of the structure. So you can refuse this too. What you
+cannot do is get the programme to stop offering it, or stop protecting
+the time, or stop asking whether the time is there. <strong>The
+requirement binds us to keep making room for it. It does not bind you to
+fill the room.</strong></p>
+<p>The Vineyard is the quiet twin of the Captain’s Log. The Log is the
+self examined. The Vineyard is the self delighted. You carry both from
+the first morning, and both grow across all three years.</p>
+<h2 id="the-promises-the-six-refusals">The promises (the six
+refusals)</h2>
+<p>Underneath everything, there is a floor of promises. Nothing in the
+Launch Pad is allowed to break these. In plain words:</p>
+<ol type="1">
+<li><strong>No grades or scores anyone but you can see.</strong> Your
+progress is yours.</li>
+<li><strong>No ranking and no leaderboards.</strong> You are never
+stacked against the person next to you. There is no screen anywhere in
+the Compass that puts learners side by side. A parent linked to your
+account can see which of your own goals you have finished, and that is
+the whole of what anyone else sees. If that ever stops being exactly
+true, you will be told before it changes, not after.</li>
+<li><strong>No one deposits the answers into you.</strong> You make
+meaning here; the guide holds questions and walks with you, and does not
+hand you a finished you.</li>
+<li><strong>No imposed deadlines.</strong> You set your own pace. “I
+didn’t get to it” is honored, not punished.</li>
+<li><strong>Your worth is not your output.</strong> A quest you
+abandoned and learned from counts as much as one you finished. Doing
+more does not make you worth more.</li>
+<li><strong>No surveillance.</strong> The data of your life belongs to
+you, not to the school.</li>
+</ol>
+<p>And one more, which sits on top of the six:</p>
+<p><strong>You may refuse the structure itself.</strong> If you decline
+a whole quest, you are fully honored. You are not quietly marked down as
+a failure or an opt-out. Your no is real.</p>
+<h2 id="where-your-no-reaches-and-where-it-stops">Where your no reaches,
+and where it stops</h2>
+<p>Here is the edge of that last promise.</p>
+<p><strong>Your no covers your own work.</strong> A quest, a prompt, an
+interview, a share, a whole session, this entire structure. It lands the
+moment you say it, it costs you nothing, and nobody can overrule it.</p>
+<p><strong>It does not cover how you treat the people in the room with
+you.</strong> That is not a deadline and it is not output. It is the
+floor that makes everything else here safe for six other people, and it
+is the one place in this programme where something can actually be taken
+from you. The studio’s agreements run that floor, and they have their
+own ladder. You will meet it in your first week, and you will help write
+the agreements it rests on. Here is the whole of it, said now rather
+than when you are standing in it:</p>
+<ul>
+<li><strong>A Pause.</strong> Step out, settle, come back when you are
+ready. A council member meets you. The count runs across the day, and a
+third in one day is a Stop.</li>
+<li><strong>A Stop.</strong> Home for the day, with a note that goes
+home and that you fill out with your guide. Stops carry across
+days.</li>
+<li><strong>A Strike</strong>, at three Stops. One guide day at home,
+never your Friday. Your character contract goes home to work on with
+your family, and when you come back you, your family, Jenna and your
+guide talk it through. Your Stops reset. A second Strike is at least two
+guide days, and you come back when you and your family both say the
+commitment is real.</li>
+<li><strong>Step Away</strong>, at three Strikes. Not back for the rest
+of the year, with a real conversation long before anyone is near it, and
+a way to re-apply the next year.</li>
+</ul>
+<p>That is the top of the ladder and the bottom of it. Nothing about it
+is a surprise, and nothing about it is hidden in a document you are not
+allowed to read.</p>
+<p>So, in one line: <strong>the agreements are about how we treat each
+other. The promises are about whether you do the work.</strong></p>
+<p>Declining a quest is never a Pause. A Pause is never a judgement on
+your work, your pace, or whether you are keeping up. If anyone ever runs
+those two together, they have got it wrong, and you can say so out loud
+and point at this page.</p>
+<p><strong>And if you do not sign.</strong> You are in the room anyway,
+and that was never the price of being here. The agreements still run for
+you. They are not holding you to your word, because you did not give it.
+They are holding the room safe for the people in it with you. You can
+tell us the agreements are not yours. You cannot be outside the floor,
+because <strong>the floor is not about you.</strong></p>
+<h2 id="how-we-work-the-week">How we work: the week</h2>
+<p>The studio day runs through the morning, 9:00 to 1:00. Across the
+week, two mornings are guide days and two are your own.</p>
+<ul>
+<li><strong>Guide days (Tuesday and Thursday).</strong> The guide runs
+the studio with you. The order of the morning is below, and it is the
+same every time.</li>
+<li><strong>Your-own days (Monday and Wednesday).</strong> You run your
+own morning: your reading, your core academics (the high-school credit
+work you have claimed, at your own pace), your personal project, and the
+session’s writing. Nobody is steering but you. The guide is in the
+building, at Vibrant Life Tots with the younger children from 9:15 to
+11:30, and then the guide comes to you around noon for a real check-in.
+Same site, different room. If you need them before noon, you go and get
+them. You are genuinely running your own hours and you are never
+actually alone in the building. Both of those are true at once.</li>
+<li><strong>The fallow day (Friday).</strong> Protected. Never earned,
+never filled, never converted back into work. It is for rest, play,
+friendship, and making things for no reason. This is not a reward for
+finishing. It is practice for a whole life. And it is binding: it does
+not get eaten to cover a busy week.</li>
+</ul>
+<h2 id="a-guided-morning-start-to-finish">A guided morning, start to
+finish</h2>
+<p>Guide days run 9:00 to 1:00. The order is the same every single time,
+so you never walk in wondering what today is.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Time</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9:00 - 9:25</td>
+<td><strong>The walk-in.</strong> Door open, nothing required. Put your
+things down, make tea, talk or don’t. The guide is here and will come
+find one or two people for a quiet one-to-one.</td>
+</tr>
+<tr>
+<td>9:25 - 9:35</td>
+<td><strong>The settle, then the circle.</strong> Three breaths, the
+same words every time. Then one round of “how are you, really?” You may
+pass.</td>
+</tr>
+<tr>
+<td>9:35 - 10:50</td>
+<td><strong>The Work of the Day.</strong> The session’s main work. This
+is the part that changes week to week. The rest of this table does
+not.</td>
+</tr>
+<tr>
+<td>10:50 - 11:00</td>
+<td><strong>The way down.</strong> Stand, shake it out, step outside,
+water. Then we eat.</td>
+</tr>
+<tr>
+<td>11:00 - 11:40</td>
+<td><strong>The Table.</strong> We eat together. You bring your own
+lunch.</td>
+</tr>
+<tr>
+<td>11:40 - 12:40</td>
+<td><strong>Hands and each other.</strong> Making, cooking, building,
+fixing, an errand into the world, a project with somebody else.
+Different from the morning’s work on purpose: the body works and the
+talking gets easy.</td>
+</tr>
+<tr>
+<td>12:40 - 1:00</td>
+<td><strong>The close.</strong> One light thing, then your closing
+minute, then you go.</td>
+</tr>
+</tbody>
+</table>
+<p>The times are honest rather than strict. Most days drift ten minutes.
+The order never drifts.</p>
+<h2 id="the-table">The Table</h2>
+<p>Every guide day has a shared meal in the middle of it. Here is
+exactly how it goes.</p>
+<p><strong>You bring your own lunch.</strong> On ordinary days the
+studio does not provide the food.</p>
+<p>It is still a shared table rather than a lunch break. We stop, sit
+down together, and the guide sits and eats with you. The forty minutes
+is for being a group of people who eat together, not for getting through
+food on the way to the next thing.</p>
+<p>You sit wherever you want. Seats are not assigned, and nobody’s seat
+is kept from last week.</p>
+<p><strong>You do not have to eat.</strong> Presence is the whole
+requirement here, never consumption. If you are fasting, or observing,
+or not hungry, or food is a hard thing for you right now, you sit with
+us and that is full participation. Nobody watches anybody’s plate, and
+you never owe anyone an explanation for what is or is not on yours.</p>
+<p>If you arrive late, come in and sit down. Nothing restarts, and
+nobody asks where you were in front of the room.</p>
+<p>On the two days a year when there <em>is</em> shared food, the
+family-story potluck in the autumn and the feast in May, tell the guide
+what you cannot eat, once, whenever you know it. Planning around it is
+the guide’s job rather than yours to work around. On those two days the
+studio provides the base of the meal, and bringing a dish is never
+required. If you want what the studio brings to stand as yours, say so
+to the guide once, privately, and it will. Nobody at the table will know
+the difference, and nobody will ask.</p>
+<h2 id="the-circle-how-are-you-really">The circle: “how are you,
+really?”</h2>
+<p>Right after the settle, every guide day, we go around once. The
+question is “how are you, really?” and it means the real answer rather
+than the automatic one.</p>
+<p>Here is how it goes. The guide asks, and answers first, honestly and
+briefly. Then it goes around in order, so nobody is picked on and nobody
+has to volunteer. One or two sentences each is plenty. “Tired.” “Good,
+actually.” “I don’t want to say today.” Those are complete answers.</p>
+<p><strong>You can always pass.</strong> Say “pass” and it moves on,
+with no follow-up and no note taken. Passing is not a smaller answer. A
+person who passes has been round the circle the same as everyone
+else.</p>
+<p><strong>Nobody fixes what you say here unless you ask.</strong>
+Advice that arrives unasked is not help, so the circle starts from being
+heard.</p>
+<p>But you can ask, and you can ask the room. “Does anyone know what to
+do about this?” is a completely normal thing to say in a circle, and so
+is “I just wanted to say it, I don’t want to talk about it.” Both are
+answers to the same question, and the question is yours: <strong>do you
+want this held, or do you want it worked?</strong> Say which and the
+room will follow you. Six people who know you is not a smaller resource
+than one guide, and some things a sixteen-year-old knows better than any
+adult in the building.</p>
+<p>If you would rather not ask in front of everyone, that is equally
+fine. Say so, or say nothing and catch the guide afterwards.</p>
+<p>It takes a few minutes. It is not a check-up, and nothing said in it
+is written down.</p>
+<h2 id="who-else-is-in-the-room">Who else is in the room</h2>
+<p>There are a handful of you and one of me. On guide days my baby is in
+the studio with us, usually in a carrier on my front. That is the honest
+shape of this year: you get a guide who is also a parent, in a room
+where a baby naps and eats and sometimes cries. Some mornings I will be
+holding a child while we talk.</p>
+<p>Two things follow from that, and you should know both before you say
+yes. First, there will be minutes when my hands are full and the room
+carries itself for a bit. Second, if you ever need all of me - a hard
+day, or a conversation that cannot be interrupted - there is a named
+person who takes the baby. Then I am entirely yours. That handoff is
+arranged before the year opens. It is not improvised on the day.</p>
+<h2 id="arriving-late-stepping-out-coming-back">Arriving late, stepping
+out, coming back</h2>
+<p><strong>Arriving late.</strong> Walk in. There is no procedure and
+nothing restarts. If the circle is going, join where it has got to, or
+pass. If the settle is going, sit down and pick it up on the next
+breath. Nobody will ask you in front of the room where you were. If
+something made you late and you want the guide to know, catch them at
+the Table.</p>
+<p><strong>Coming back after stepping out.</strong> The soft parts of
+the day are named so you know where the easiest way back in is: the
+walk-in, the Table, and the hands block after it. You can come back at
+any moment, including the middle of a hard one. The soft seams are just
+the ones where nothing has to be said at all. Nobody says anything to
+you when you come back. Not even “glad you’re back.” You pick up a plate
+or pick up a tool and you are in.</p>
+<h2 id="the-log-captured-however-you-hold-it">The Log, captured however
+you hold it</h2>
+<p>You keep the Captain’s Log in whatever form is true to you. Written
+in a notebook. Spoken aloud and recorded. Drawn. Dictated. Typed. Told
+to a scribe who writes it down for you. No form is the lesser Log. The
+point is that you are keeping your own record, not that it looks a
+certain way.</p>
+<p><strong>Where it lives.</strong> Your Log can go home with you, or
+stay here somewhere only you open, or both, and you can change your mind
+any time. If you want it to stay here, say so and nobody asks why. It is
+not kept in the Compass or on any school computer, and no copy is made,
+because the moment there is a copy somebody else is holding your
+life.</p>
+<p><strong>When you write in it.</strong> There is no Log time and
+nobody will ever call one. Here is where the room has room for it, and
+all of these are open rather than expected:</p>
+<ul>
+<li><strong>The walk-in</strong>, the first twenty-five minutes of a
+guide day. Nothing is required then, so if you came in with something on
+your mind, that is the place to put it down before the day starts asking
+things of you. Some people need to write before they can talk, and the
+walk-in sits before the circle on purpose.</li>
+<li><strong>Right after your closing minute</strong>, at the end of a
+guide day. This is the natural one. The closing minute hands you exactly
+the kind of thing the Log is for, and you are already quiet and already
+finished. Some people say the three answers under their breath and then
+write them down; some write something else entirely; some write
+nothing.</li>
+<li><strong>Your own mornings</strong>, Monday and Wednesday. Your
+block, your call, no check-in about it.</li>
+<li><strong>Friday</strong>, if you want it. Friday is also a fine day
+to deliberately not write. A record you have to feed every day stops
+being a record and becomes a chore, and <strong>there are supposed to be
+days you skip.</strong> Weeks, even. A Log with gaps in it is not a
+failed Log; it is what an honest one looks like.</li>
+</ul>
+<p>One rule about this, and it is for the guide as much as you:
+<strong>nobody writes on a bell.</strong> We will never all sit down and
+write at the same time, because the moment that happens, everyone can
+see who is writing and who is not, and the only thing that makes this
+yours is that nobody is watching. Your Log is private in what it says
+and private in whether you touched it today.</p>
+<h2 id="how-no-works-here">How “no” works here</h2>
+<p>You may decline anything. <strong>Your no takes effect the moment you
+say it, and it is not conditional on explaining yourself.</strong> This
+is called <strong>decline-with-reasoning</strong>.</p>
+<p>You can say no to any quest, any prompt, any interview, any share,
+and the no lands straight away. Nothing is held up while you find
+words.</p>
+<p>The reasoning is still owed. Two things about that, and they matter
+equally. <strong>It is owed to your tribe, not to the guide</strong> -
+you are in a room with other people whose work and plans move around
+yours, so they get to know where you stand. It is not a toll you pay an
+adult for permission. And <strong>it is not owed in the moment.</strong>
+“I don’t know yet, and I’ll come back to you” is a real answer. Take a
+day. Take the week. Work it out in your Log first and come back when you
+have it. A reason you had to produce on the spot is not thinking, it is
+pressure.</p>
+<p>The guide may ask you an honest, curious question about it, the way a
+friend might. But the guide <strong>has a voice, never a veto.</strong>
+The guide cannot overrule your reason, and cannot require you to have
+one ready. The question is a mirror, not a test you can fail.</p>
+<p>There is one place where even the curious question is set aside:
+anything to do with official papers and government forms. There, an
+honest reason for declining might reveal something private about your
+legal situation that a guide has no business knowing. So on that one
+surface, your no needs no reason at all.</p>
+<h2 id="the-settle">The settle</h2>
+<p>Every guide day opens with a short, body-first way in, and there is a
+matching way down when something gets heavy. This is fixed, and it is
+yours to keep for life.</p>
+<ul>
+<li><p><strong>The way in (the Settle).</strong> Three slow breaths with
+the out-breath longer than the in-breath (roughly four counts in, six
+counts out), feet flat, one hand where you feel your breath. The guide
+paces it out loud, the same way every time. The out-breath is what tells
+your body it is safe to settle. No app, no playlist, no special
+frequency. Just a human voice, used the same way on purpose.</p></li>
+<li><p><strong>The way down.</strong> After hard work stirs the body up,
+you stand, shake it out, take a short walk, move the activation
+<em>through</em> the body before sitting back down. If standing or
+walking is not yours, any movement that is - shaking out your hands,
+rolling your shoulders, rocking - does the same work. A body cannot work
+off a stress spike sitting still. This is thirty seconds to a few
+minutes, and it comes before the shared meal, because a body still
+buzzing cannot take a meal as welcome.</p></li>
+<li><p><strong>The way out (the exit ramp).</strong> There is a named
+place you can step out to, set up in the first week. You do not have to
+ask. And there is a designed way back in during a soft part of the day,
+with no scene, no acknowledgment demanded. Stepping out and coming back
+costs you nothing. This is the room holding a door open for you, never
+the room watching you for a fall.</p></li>
+<li><p><strong>The way back (the close-return).</strong> After a day
+that went somewhere heavy, the room says out loud that the heavy part is
+over, so your body hears it and not just your head. These words do not
+change either:</p>
+<blockquote>
+<p>“That was then. This is now. Look around and name one thing you can
+see. You’re in this room, and the hard part is behind you.”</p>
+</blockquote>
+<p>It sounds almost too simple to do anything. It works because a body
+that has been inside a hard memory for an hour does not automatically
+notice that the hour ended, and being told, in words, is how it notices.
+Solo version, for the rest of your life: <em>that was then, this is now,
+and I’m here.</em></p></li>
+</ul>
+<h2 id="the-closing-minute">The closing minute</h2>
+<p>At the close of an opening - a dream named, a memory touched, a hard
+thing looked at - you take a quiet minute and cross back through three
+fixed questions. They are always the same, in the same order:</p>
+<ol type="1">
+<li><strong>What did I meet?</strong></li>
+<li><strong>What do I carry back?</strong></li>
+<li><strong>What’s different in me now - even a little?</strong></li>
+</ol>
+<p>That is the whole practice. It is spoken or held in your head, never
+written down for the studio, never read by anyone. It is yours.</p>
+<p><strong>Reach for the real answer.</strong> Taking the first thing
+that comes to mind and moving on makes this worth almost nothing.
+Staying in the question for a whole minute and letting something come up
+makes it worth a great deal, and <strong>something almost always comes
+up, if you stay open long enough to hear it.</strong> That takes a kind
+of nerve. It is the same nerve the rest of this year asks for, and it is
+the part of this practice that actually changes people. Going toward the
+hard thing on purpose is the whole skill.</p>
+<p><strong>“I don’t know yet” is a real answer</strong> - not because
+the question has no answer, but because sometimes the true one has not
+surfaced, and naming that beats manufacturing something to have said.
+“Nothing’s different, and I’m steadier for having looked” is also true
+and complete, because steadier is a change.</p>
+<p>Nobody reads this, nobody asks about it, and no one can tell from the
+outside whether you reached or shrugged. <strong>This is the one
+practice here that runs entirely on your own honour.</strong></p>
+<p>The reason this exists: the year opens a lot of doors inside you.
+This is how you learn to close them yourself, so that when you are grown
+and something cracks you open, you already know the way home. The
+measure of it working is not a good answer. It is that you still use it
+years from now.</p>
+<h2 id="the-one-adult-outside-the-room">The one adult outside the
+room</h2>
+<p>There is one adult, outside the studio, you can always talk to. You
+will know who they are and how to reach them in the first week, before
+you ever need them.</p>
+<p>A line about breaks. When the studio is on a break - the short ones
+between sessions, Thanksgiving, the two weeks at winter, and the summer
+- the guide is not reachable. A break is rest and reset for them too,
+and the book protects that the same way it protects your Friday. Two
+things stay open the whole time:</p>
+<ul>
+<li><strong>The one adult outside the room</strong>, reachable across
+every break, the same as always.</li>
+<li><strong>988</strong>, free, open all day and all night, call or
+text, from anywhere.</li>
+</ul>
+<p>Nobody here will ever be upset that you used either one.</p>
+<p>And this is the shape of privacy here, told to you on the first day
+rather than in the moment it starts to matter. Almost everything stays
+here. Your Captain’s Log, nobody reads. Your closing minute is never
+written down by anyone.</p>
+<p>Here is what doesn’t. If the guide believes you are in danger, that
+someone is hurting or neglecting you, or that something is going on that
+is bigger than a studio morning can hold, they will bring in real help.
+That includes:</p>
+<ul>
+<li>talk of suicide or self-harm</li>
+<li>abuse or neglect</li>
+<li>something going wrong with eating</li>
+<li>a crisis with drugs or alcohol</li>
+<li>a panic or a flashback they cannot reach you through</li>
+<li>a threat to someone else</li>
+<li>something that keeps going and is getting in the way of your
+life</li>
+</ul>
+<p>Those are two different things and they have different consequences,
+so both get named. <strong>Abuse or neglect is a report</strong>, and in
+Idaho the guide is required by law to make it. <strong>Everything else
+on that list is a hand-off</strong>, which means they stop the session
+work and help you get to someone trained, you will be told who, and you
+get a say in which one and when.</p>
+<p>In most of those cases they will also call your parent or guardian,
+and they will tell you they are making the call. The one exception is if
+your parent or guardian is the person hurting you. Then the call goes to
+the state rather than to them.</p>
+<p>That is the whole list. It is not one secret trapdoor, and the guide
+will never go looking for a reason to use it. <strong>What they know is
+only what you chose to tell them.</strong> None of this is breaking
+trust. It is what care actually looks like.</p>
+<h2 id="what-gets-written-down-about-you">What gets written down about
+you</h2>
+<p>Short answer: very little, and you can read all of it.</p>
+<ul>
+<li><strong>Your Captain’s Log and your Vineyard.</strong> Yours. Nobody
+reads them. No copy is kept.</li>
+<li><strong>Your closing minute.</strong> Never written down at all, by
+anyone.</li>
+<li><strong>Your witnessed work</strong> - your dreams list, your
+Chapter One, your portfolio, your This Is Me piece. The guide sees what
+you bring into the room, and so do the people you choose to show. That
+is what bringing it means.</li>
+<li><strong>The guide’s own notes.</strong> A short practical record:
+attendance, your pace and your credit plan, and a factual note if there
+is ever a safety event, meaning what happened, what they did, and who
+they called. A safety note never contains what you wrote or said about
+your own life.</li>
+<li><strong>Your Growth Record, in the Compass.</strong> The one record
+here that is built to leave with you. It works differently from
+everything else on this list, so it has its own section below.</li>
+<li><strong>The agreements record, if you ever reach a Stop.</strong>
+Our studio agreements run on a ladder: a Pause, then a Stop, then a
+Strike. The Stop and the Strike are the two rungs that make paper. A
+Stop note says what happened and goes home the same day, you fill it out
+with your guide, and the line about coming back is yours in your own
+words. A Strike letter lists the dates of the three Stops. Your
+character contract is yours, in your handwriting, and a copy stays with
+Jenna while you are working it. All of it records a choice and never a
+judgement about who you are, the count clears at the start of each year,
+and none of it goes on a transcript or travels with your Growth
+Record.</li>
+<li><strong>What is never kept.</strong> Scores. Rankings. Assessments
+of your character written by anyone but you. Any note about you that you
+have not read. Any file that follows you past this year.</li>
+</ul>
+<p><strong>You can ask to read anything written about you, at any time,
+and the guide will show you.</strong> If you think a note is wrong, say
+so, and it gets corrected. That includes a Pause, a Stop or a Strike: if
+you think a call was wrong, say so, and it can come off - off the note
+and off the count. You do not have to be calm about it. A learner who is
+angry at an unfair call is giving us information, not failing a
+condition.</p>
+<p>That is the whole of it. “No surveillance” is a promise about this
+list, and the list is short on purpose.</p>
+<h2 id="the-growth-record-and-whether-any-of-this-counts-on-paper">The
+Growth Record, and whether any of this counts on paper</h2>
+<p>You are sixteen to eighteen, so a fair question about any year of
+your life is whether it counts on paper.</p>
+<p>The Compass holds a record called your <strong>Growth
+Record</strong>, and the whole design of it is that you own it and the
+studio does not. The app is a lens, not a vault: you hold the keys from
+the first day, and a guide is a guest whose access ends when the
+relationship does. A school cannot lose, withhold or hold hostage a
+record it never held in the first place.</p>
+<p>It has two faces, and you control which one anybody sees.</p>
+<ul>
+<li><strong>The Journey view</strong> is the whole trail, in order, with
+the slow parts and the stalls in it. It stays private. It is yours.</li>
+<li><strong>The Portrait view</strong> is the one you would hand a
+college, an employer or a programme. It is framed as what you can
+actually do, and <strong>you choose what goes into it, piece by
+piece.</strong> Nobody assembles your Portrait for you, and nobody sends
+it anywhere without you.</li>
+</ul>
+<p>One rule holds across both, and it is built into the thing rather
+than promised about it: growth here is only ever shown as
+<strong>movement compared to your own earlier self.</strong> Never a
+grade. Never a score. Never set beside another learner.</p>
+<p><strong>And the honest limit, which you should hear from us rather
+than discover.</strong> The part that lets the record physically leave -
+a real export, readable by a human, held in your hands - <strong>is not
+finished yet.</strong> It is being built. Until it exists, nobody walks
+the Launch at the end of the three years, because a ceremony that hands
+you something that is not there is not a ceremony. That is a rule the
+programme put on itself before any learner was in the room.</p>
+<p>Two more things. High-school credit is tracked separately, and it is
+the one record other people read as a routine matter, which is the
+honest exception to the first promise. And a transcript from a studio
+like this one is not yet a thing every college recognises; the bridge to
+dual enrollment is real work and we will do it alongside you rather than
+pretending it is already finished.</p>
+<hr />
+<h1 id="part-2---for-the-guide-teaching-this-year">Part 2 - For the
+guide: teaching this year</h1>
+<h2 id="the-shape-of-the-year-and-naming-the-destination-on-day-one">The
+shape of the year, and naming the destination on day one</h2>
+<p>Origin runs the full Vibrant Life year, mid-August to late May, and
+it runs on the school’s calendar rather than a tidy one of its own.
+Seven sessions with a break between each: thirty-one weeks of session
+work, plus the three-week Open Waters tail, for thirty-four program
+weeks in all. The sessions are <strong>not</strong> equal lengths. They
+are set by where the breaks fall.</p>
+<p><strong>Origin 2027-2028.</strong> A program week is Monday to
+Thursday. For the Launch Pad that means two guided mornings (Tuesday and
+Thursday), two the learners run themselves (Monday and Wednesday), and
+Friday fallow.</p>
+<table>
+<thead>
+<tr>
+<th>Session</th>
+<th>Dates</th>
+<th>Weeks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1 The Map of Me</td>
+<td>Aug 16 - Sep 9</td>
+<td>4</td>
+</tr>
+<tr>
+<td><em>session break</em></td>
+<td>Sep 13 - 16</td>
+<td></td>
+</tr>
+<tr>
+<td>S2 The Lineage</td>
+<td>Sep 20 - Oct 21</td>
+<td>5</td>
+</tr>
+<tr>
+<td><em>session break</em></td>
+<td>Oct 25 - 28</td>
+<td></td>
+</tr>
+<tr>
+<td>S3 The Power of Choice</td>
+<td>Nov 1 - Nov 18</td>
+<td>3</td>
+</tr>
+<tr>
+<td><em>Thanksgiving</em></td>
+<td>Nov 22 - 26</td>
+<td></td>
+</tr>
+<tr>
+<td>S4 Running My Own Ship</td>
+<td>Nov 29 - Dec 16</td>
+<td>3</td>
+</tr>
+<tr>
+<td><em>Winter break</em></td>
+<td>Dec 20 - 31</td>
+<td></td>
+</tr>
+<tr>
+<td>S5 The Full Draft</td>
+<td>Jan 3 - Feb 10</td>
+<td>6</td>
+</tr>
+<tr>
+<td><em>session break</em></td>
+<td>Feb 14 - 17</td>
+<td></td>
+</tr>
+<tr>
+<td>S6 Chapter One</td>
+<td>Feb 21 - Mar 30</td>
+<td>6</td>
+</tr>
+<tr>
+<td><em>session break</em></td>
+<td>Apr 3 - 6</td>
+<td></td>
+</tr>
+<tr>
+<td>S7 This Is Me / The Unveiling</td>
+<td>Apr 10 - May 4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Open Waters (flex tail)</td>
+<td>May 8 - May 25</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>Four Mondays inside sessions are holidays: Labor Day in S1, the
+second Monday of October in S2, MLK Day in S5, and Presidents Day on
+S6’s first day. A Monday here is a self-run morning rather than a guided
+one. The October holiday is Columbus Day on the federal calendar and
+Indigenous Peoples’ Day by this programme’s values; S2’s watch-fors hold
+the naming. Two guide days in S3 are holidays too, Election Day and
+Veterans Day; whether the studio observes them is decided before S3
+opens. Each session’s spine line in Part 3 carries its own. Nothing
+spans the winter breaks: S3 ends into Thanksgiving and S4 ends into the
+winter break, which is a real teaching and staffing fact you plan around
+rather than through.</p>
+<p>Every session ends into a break, so every session carries the same
+two seams. On the last guided day, the carry-out: the pace question, the
+harvest, and the closing minute at session scale. On the first guided
+day back, the re-thread. The re-ask is rarer and is asked three times,
+where there is still time to act on the answer: at the winter break,
+after the Full Draft, and on the year-close day. The agreements are open
+for reopening at every session’s close too - say so on the last guided
+day, every time, so the handle is real and not only promised in week
+one.</p>
+<p class="note"><em>The break dates above are projected from the school’s 2026-2027
+calendar, which ran 17 August to 27 May with the same shape. Jenna sets
+the real ones; confirm before anything is printed for a family.</em></p>
+<p>On day one, name the destination out loud. Say it plainly in the
+first week:</p>
+<blockquote>
+<p>“In May, you’ll show your people who you are - as much of it as you
+choose. We call it the Unveiling. Everything between now and then is
+getting ready to mean it.”</p>
+</blockquote>
+<p>The mountain should be visible from the trailhead. A learner walks a
+long arc better when they can see where it is going.</p>
+<h2 id="the-safety-floor">The safety floor</h2>
+<p>You are running an examined-life year with teenagers, so the floor
+under it has to be real, seeded early, and grown as the year deepens.
+Four pieces:</p>
+<p><strong>The settle, the way-down, and the exit ramp.</strong>
+Described in full in Part 1 (the learner reads the same words you do).
+Teach them in the first week, with the framing that they are the
+learner’s for life. <strong>Fix your own wording for the settle in the
+first week, write it down, and then do not improve it.</strong> If it
+starts feeling stale to you, that staleness is the thing working: it is
+stale to you because it has become automatic for them, which is the
+entire goal. Keep them fixed - same cadence, same anchor, same spoken
+cue, every guide day. The sameness is the medicine; a settle improvised
+freshly each day never becomes the reflex a body can drop into without
+thinking. Anchor the way-down especially at Session 5, where writing a
+whole life will activate bodies.</p>
+<p><strong>The closing minute.</strong> Also in Part 1. Teach it light
+and concrete in Origin. Model it out loud a few times, genuinely, then
+get out of the way and let it become the learner’s private reflex. Name
+the close; never demand the content. “Take your closing minute” is the
+whole prompt.</p>
+<p><strong>How to push the reach when you cannot see the
+answer.</strong> This is the one practice you are asked to raise the bar
+on and are structurally unable to audit, so the pushing has to happen
+before the minute rather than after it. Two things do all the work.</p>
+<p><strong>Model a hard one out loud, early, and let it be
+slow.</strong> Not a tidy one. Do your own closing minute in front of
+them in the first weeks, including the part where you sit for twenty
+seconds and have nothing, and then say the thing you actually found. A
+learner who has watched an adult stay in a question past the comfortable
+point knows what reaching looks like. One where the adult always had a
+neat answer ready learns that the practice is a performance with a right
+length.</p>
+<p><strong>Put the standard in the invitation, never in the
+follow-up.</strong> “Take your closing minute” stays the whole prompt on
+the day. The place to say <em>go for the real one, something almost
+always comes up if you stay open long enough</em> is when you teach the
+practice, and at a session’s close when you are talking about the
+practice rather than collecting its answers. Say it to the room, about
+the practice, never to a person about their minute.</p>
+<p>And hold the line that makes the bar possible: <strong>you still
+never ask what came up.</strong> A raised bar with an audit attached is
+not a higher standard, it is a graded reflection, and the learner will
+start producing answers for you. The honour system is not the weak
+version of this. It is the only version that survives them leaving.</p>
+<p><strong>The circle, and holding “ask the room.”</strong> Described in
+full in Part 1. One round, in order, pass always allowed, and you answer
+first so the register is set by you rather than by whoever is bravest.
+The part that needs your hands is the asking. A learner can ask the room
+for help with what they just said, and the room is often better at it
+than you are, so the work is not to answer first. It is to make sure the
+asking stays the learner’s.</p>
+<p>Three moves, and they are the whole job:</p>
+<ul>
+<li><strong>Default to held.</strong> If nobody asked, nobody advises.
+When a learner says something hard and the room starts solving, stop it
+once, warmly, and out loud: “Hold on. Did you want ideas, or did you
+just want to say it?” Then do whatever they answer. Asking that question
+in front of everyone teaches the room the rule faster than any
+explanation.</li>
+<li><strong>Hand the room the question, not the answer.</strong> When a
+learner does ask, your first move is “who’s got something for that?”
+rather than your own best thought. You speak last or not at all. A guide
+who answers first has quietly told six people their experience is the
+backup option.</li>
+<li><strong>Close it when it is done.</strong> Advice has a natural
+length and teenagers will overshoot it out of goodwill. “That’s a good
+place to leave it, thank you” is the whole intervention, and it protects
+the person who asked from a room that is enjoying helping.</li>
+</ul>
+<p>And watch the one that will actually happen: the learner who asks for
+help every single morning. That is not a circle problem, it is a learner
+telling you something, and it belongs in a walk-in rather than in a rule
+that narrows the circle for everybody.</p>
+<p><strong>When to reach for outside help (the referral
+pathway).</strong> You are a life-coach and mentor, not a licensed
+clinician. Sessions surface identity, memory, grief, and hard days by
+design, so clinical material will come up. Your job is not to treat it.
+It is to recognize it, hold the moment safely, and route it to real help
+fast.</p>
+<p>Route now. Do not “work it in a session.” Route if you see or hear
+any of these:</p>
+<ul>
+<li>any mention of suicide, self-harm, or not wanting to be here</li>
+<li>abuse, neglect, or someone hurting them</li>
+<li>a crisis happening right now: panic, a flashback, feeling cut off
+from their own body, or distress you cannot reach</li>
+<li>signs of something going wrong with eating</li>
+<li>a crisis with drugs or alcohol</li>
+<li>a threat to someone else</li>
+<li>something past an ordinary hard day: it keeps going, and it is
+getting in the learner’s way</li>
+</ul>
+<p><strong>When in doubt, route.</strong> Being sure is a clinician’s
+job, not yours.</p>
+<p>In the moment:</p>
+<ul>
+<li>Stay with the learner. Never leave them alone in a crisis.</li>
+<li>Move to the quiet space you set up before the year opened. A real
+room or corner, not a hallway.</li>
+<li>Be present, calm, and listening.</li>
+<li>Do not fix it, do not ask for details, do not counsel.</li>
+<li>Do not promise secrecy you cannot keep.</li>
+</ul>
+<p>Then name your own honest limit out loud. One guide has only so much
+capacity to hold a breakdown and the whole room at the same time. That
+limit is real, not a failing. It is exactly why there is a named list of
+trusted adults who can step in when you cannot hold both.</p>
+<p><strong>The second pair of hands.</strong> That list has one more
+line on it that must never stay blank: the person who takes the baby. A
+name, a current number, and a confirmed answer to “can you be here
+inside twenty minutes on a Tuesday morning.” Read the instruction above
+again. “Stay with the learner and never leave them alone” and “move to
+the quiet space” both assume two free hands, and on guide days the baby
+is worn. Both things are true, and they are only both true at once if
+somebody else can arrive. If nobody can, the crisis plan is not built
+yet, whatever else is on the roster.</p>
+<p><strong>Two duties you cannot coach around, in Idaho.</strong></p>
+<p><strong>Someone is in immediate danger.</strong> Call or text
+<strong>988</strong> (free, 24/7; chat also works). If it is
+life-threatening, call <strong>911</strong>.</p>
+<p><strong>You suspect abuse, neglect, or abandonment of a
+child.</strong> In Idaho everyone is a mandatory reporter, and that
+includes you. Report it, ideally within 24 hours. You do not need
+proof.</p>
+<ul>
+<li>Statewide: <strong>855-552-5437</strong></li>
+<li>Treasure Valley: <strong>208-334-5437</strong></li>
+<li>Or <strong>2-1-1</strong>, or local law enforcement</li>
+</ul>
+<p>If the parent or guardian is the source of the harm, that is a
+report, not a phone call home.</p>
+<p><strong>This duty does not give you a key to the Log.</strong> You do
+not read it, so it cannot be a source. What the duty reaches is what a
+learner tells you, shows you or hands you, and what you see and hear in
+the room. Say that distinction out loud on day one: the Log is never
+read, and what you are told, you may have to act on. Going looking is
+the one thing that is never true.</p>
+<p>Build the referral roster real before opening - names and current
+numbers, not categories. The one line that must never stay blank is a
+named, warm-referral therapist: one or two local licensed clinicians the
+studio can send a learner to, arranged before the year opens. “Route to
+real help” is only real if there is a real person to route to. The
+pathway runs across breaks, not only on program days, and the learner is
+told so before each one.</p>
+<p><strong>Keep confidences safe.</strong> Almost everything a learner
+writes and says here is theirs. Say so, up front, on day one, woven into
+the promises you make each other on day one:</p>
+<blockquote>
+<p>“Almost everything you write and say here is yours. Your Captain’s
+Log, nobody reads - including me, and I won’t go looking. What I can’t
+keep private is a short list, and I’d rather you hear it now than find
+out later: if you’re in danger, if someone’s hurting you, or if
+something’s going on that’s bigger than I can hold here. That’s when I
+bring in real help, and usually that means a call home too. I’ll tell
+you when I’m doing it. That’s not breaking trust - it’s what care
+actually looks like.”</p>
+</blockquote>
+<p>Those are the same promises that are on the learner’s privacy page in
+Part 1, in your own voice. Say them in these words, rather than
+improvising a warmer version. A learner who hears a different wording
+than the one they read goes looking for the seam.</p>
+<p>A confidentiality limit named up front is a promise kept. Named in
+the moment, it feels like betrayal. Say it before it is ever needed.</p>
+<h2 id="holding-a-no">Holding a “no”</h2>
+<p>Decline-with-reasoning lives or dies in the single moment a learner
+actually says no. If that moment collapses into invisible opt-out -
+silence, the activity just continues around them - the learner is
+protected by being erased from the room. So hold a no in three beats,
+and you can run them under load:</p>
+<ol type="1">
+<li><strong>Receive the no, whole.</strong> “Okay. You’re not doing this
+one.” Honor it <em>before</em> any curiosity, so your curiosity never
+lands as a lever.</li>
+<li><strong>Offer the door once, and don’t push it.</strong> “That no
+stands, and it’s done. When you’ve worked out what’s behind it, the
+tribe will want to hear it. Not me - them. And not today.” Hold both
+halves or you have turned the practice into a toll: the reasoning is
+genuinely owed to the room, and it is genuinely not owed in the moment.
+If a learner never comes back to it, that is between them and the tribe,
+and it is not yours to collect.</li>
+<li><strong>Keep them inside the encounter.</strong> “Come sit with me -
+you don’t have to do the thing.” Removing the task is not the same as
+removing the person.</li>
+</ol>
+<p>Your question stays a mirror. It is never a way to scare someone into
+yes.</p>
+<p>Ask this: <em>“When do you think you’ll first run into this for
+real?”</em></p>
+<p>Do not ask this: <em>“What happens the first time you need this and
+no one is beside you?”</em></p>
+<p>The first one opens a door. The second one pictures the learner alone
+and unready, and a worried learner hears it as “you’ll be sorry.”</p>
+<p>And whether a fear is the useful kind is the learner’s to name about
+themselves. It is never yours to assign. The instant you re-code a
+reasoned no as “avoidance” so you can override it, you have smuggled the
+veto back in as a diagnosis. You have a voice. You never have a
+veto.</p>
+<h2 id="watch-fors-and-protect-yourself">Watch-fors, and protect
+yourself</h2>
+<p>You are the floor everyone else stands on. That is not a self-care
+footnote; it is safety instrumentation. Co-regulation is a physiological
+output - you spend your own steadiness to settle a flooded learner, all
+day. A depleted guide cannot run the watch-and-pivot the whole floor
+depends on. So:</p>
+<ul>
+<li><strong>Run your own settle, your own way-down at day’s end, and
+your own closing minute.</strong> Your regulation is part of the design,
+not an extra.</li>
+<li><strong>Your fallow day is fallow too, and so are the
+breaks.</strong> Protected, not on-call. Do not eat them to cover a hard
+week. The learner’s page says plainly that you are not reachable over a
+break, so you never have to improvise that limit on the last guided day;
+what you say aloud before each break is who is: the one adult outside
+the room, and 988.</li>
+<li><strong>Debrief what you witness, more often than monthly.</strong>
+Holding teenagers’ worst days and self-portraits is a real load. After
+any safety event, debrief with a peer or supervisor and do not carry it
+alone. Document incidents factually and minimally (what happened, what
+you did, who you contacted), never the learner’s private content.</li>
+<li><strong>A pre-committed pause trigger.</strong> If the deep work has
+been set aside two guide days in a row (from exhaustion or from a hard
+week), pause to a lighter mode and re-plan rather than push through.
+Commit to this now, while rested. A depleted person does not pause on
+instinct; that is exactly when the instinct fails.</li>
+<li><strong>Permission, in writing.</strong> A deep block you set aside,
+or a good-enough December day, is the design working, not you failing.
+This is the Origin year, not a mastery year. The permission the learners
+get, you take too.</li>
+</ul>
+<p>Two general watch-fors across the year. Guard against any framing
+that turns a learner’s life into a map of what is missing in them: the
+quiet region is an invitation, not a deficit. And feelings are your
+private hope for a learner, never the session’s aim. You cannot schedule
+“being seen” for a Thursday. Each session has a kind of gladness we hope
+for. Word it as a possibility - some feel it, some feel nothing yet,
+both are true - never as the outcome you are delivering.</p>
+<hr />
+<h1 id="part-3---the-sessions">Part 3 - The sessions</h1>
+<p>Each session below has the same seven parts: what it’s for, a short
+intro the learner reads, the flow week by week, things to say, the
+settle plus the closing minute, watch-fors, and what you’ll need. Three
+sessions carry one more block in the same place, after the things to
+say: Session 1 (inside the dream session), Session 3 (the choice games)
+and Session 7 (the year-close). Each is one piece of a session too big
+for a week line. The day-shapes are the same all year (guide days
+Tuesday and Thursday; your-own days Monday and Wednesday with a midday
+check-in; Friday fallow), so the flow sections describe what changes,
+not the fixed grid.</p>
+<p>The weeks inside a session follow one small grammar, and the word in
+brackets after each week says which beat it is: a session
+<strong>opens</strong>, <strong>deepens</strong>,
+<strong>applies</strong>, and <strong>harvests</strong>. A five-week
+session adds a <strong>gather</strong>, the week the work leaves the
+room and comes back. A three-week session doubles up. Session 2 gives
+its deepen week to the field and calls it what it is: fallow.</p>
+<p>One word about words. Part 1 said the Log is kept however you hold
+it, and that holds all year. When the sessions below say write, draft,
+page, or read, they mean put it in your Log and go back to it, in
+whatever form yours takes. The book says write because it is the
+shortest word, not because it is the only way. And anything the room
+listens to has a transcript in the room; anything the room reads can be
+heard. Both are on the table for everyone before anyone needs them;
+nobody has to ask.</p>
+<hr />
+<h2 id="session-1---the-map-of-me-four-weeks-aug-16---sep-9">Session 1 -
+The Map of Me (four weeks, Aug 16 - Sep 9)</h2>
+<p><strong>What it’s for:</strong> to dream with no ceiling and start
+naming what you actually want.</p>
+<p><strong>For the learner:</strong> This is where you get to find out
+how much bigger your life might be than you have let yourself imagine -
+some people are startled by their own list, some are not yet, and both
+are true - and where you start naming it out loud. You are going to
+write a hundred dreams. Not the realistic ones - all of them. Then we
+look at what they say about you. This is the “first creation”: you dream
+a thing before you build it, and everything the next years build, you
+dream here first.</p>
+<p><strong>The flow:</strong></p>
+<p class="note"><em>Weeks 1-4 · Aug 16 - Sep 9 · off: Mon Sep 6, Labor Day</em></p>
+<ul>
+<li><strong>Week 1 - the threshold week (open).</strong> The whole first
+week is the crossing, and the order is the point. Agreements signed in
+the hour you met the room are compliance, not consent, so this week
+gives each rite its own air. <strong>Tue: arrival, then the
+door.</strong> The walk-in, the opening circle with the first “how are
+you, really?”, a name round (pass is always allowed), the Table, the map
+of the year. Then <strong>the exit ramp is built and walked, before any
+promise is asked for</strong> - show them how to leave, let them use it
+once in practice. A no with nowhere to stand is a courtesy, not a right.
+Then the privacy words from Part 2, said as written and not warmed up -
+the room is honest about its limits before it asks for anything - and
+the name of the one adult outside the room, and how to reach them.
+<strong>All of it carried on a shared task</strong>, something to do
+side by side; seven strangers put in a circle to name themselves with no
+work under it feels like exposure, not welcome. <strong>Wed is the
+interval</strong>, which means a day where nothing is asked back. The
+promises have been offered - the six refusals and the one that sits on
+top of them - and nothing is owed in return yet. <strong>Thu: the
+tribe’s own half.</strong> Say the floor before they start writing:
+there are six things this tribe cannot agree to, and they are the six
+they were promised. An agreement that makes doing the work, finishing,
+keeping pace, hitting a date or sharing a piece enforceable is not
+theirs to write, because a ladder would then stand behind it. The
+learners co-write their own agreements (contributions can be written on
+a card, not only spoken), and the agreements are named as
+<strong>reopenable</strong> - say when, in words rather than in
+principle: at any session’s close, and on request at any walk-in.
+Agreements you can sign only once are a door with no inside handle. Say
+also what happens if a learner will not sign: they are in the room
+anyway. The agreements describe how we treat each other. They were never
+a condition of being let in. Then, last and separate, the carried
+objects: name your Captain’s Log, with every form it can take out on the
+table so picking one says nothing about you, and name your
+Vineyard-thing. The first Log entry is theirs to make whenever the
+walk-in or the close gives them room for it - nobody writes on a bell,
+and that is true from the first week. <strong>At the very end of the
+week</strong>, send home the 100 Dreams assignment.</li>
+<li><strong>Week 2 (deepen).</strong> They arrive on the first guide day
+<em>with</em> their dreams - a full week of collecting, so the ones that
+arrive late are in the list. Run the dream session (below). The first
+solo day is narrated so the shape is visible. The second guide day goes
+deeper: what do your 100 dreams say about what you actually want?
+<em>Keep this week and the next side by side on shared, comparable
+material: first-week impressions - the funny one, the quiet one - are
+still loose here, and common work keeps them loose. Nobody is assigned a
+part and nobody is moved out of one; the material is kept shared so each
+person has room to be more than their first morning.</em></li>
+<li><strong>Week 3 (apply).</strong> Sort the dreams by time horizon
+(within 12 months / one to five years / five-plus years) and notice what
+the shape reveals. Then map them across the five regions of the Compass
+the learner already navigates - Self, Others, Making, World, Voice -
+using warm prompts so no part of life gets missed. The credit and path
+conversation begins this week, warmly, in walk-ins and check-ins - never
+as a day-two audit.</li>
+<li><strong>Week 4 (harvest).</strong> <strong>Tue: the courage
+pass</strong> - “which of these scares you a little?” <strong>Wed is the
+interval again, and it is named out loud as one</strong>: the learners
+run it themselves, carrying one question and handing in nothing. Late in
+S1 they can hold their own silence, which they could not on Day 1.
+<strong>Thu: each learner picks three within-12-months dreams</strong>
+as the session’s orienting goals - a commitment decided after a night
+and a day of their own air, not in the hour the courage was spent. Three
+is the shape, not a gate - a learner who can name one, or none yet, has
+harvested truly. Ask the pace question as the day closes: is the plan
+matching the speed that is real for you right now? Run the closing
+minute at session scale, the first time at that size. Then the session
+closes and bridges to The Lineage, and the ten-day break lets the goals
+rest. (Labor Day removes this week’s Monday, a self-run morning.)</li>
+</ul>
+<p><strong>Things to say:</strong></p>
+<blockquote>
+<p>“Your first quest, before Tuesday: write 100 dreams. No filter, no
+ceiling, nothing has to be realistic, don’t edit a single one. You’ll
+hit a wall around 40 where the easy ones run out - that’s exactly where
+the real ones start, so keep going. Bring your list Tuesday and we’ll
+dig into them together. A hundred is the target, not a gate - bring what
+you’ve got.”</p>
+</blockquote>
+<blockquote>
+<p>“The Compass is how you read your sky; the Log is how you steer -
+same voyage. You’ll navigate by the chart you’re building right
+now.”</p>
+</blockquote>
+<blockquote>
+<p>“If you hear a dream you want, add it to your own list. Borrowed
+dreams count.”</p>
+</blockquote>
+<blockquote>
+<p>“A thin region isn’t a lack - it’s a door you haven’t walked through
+yet. You don’t have to. If you’re curious, what’s on the other side of
+it?”</p>
+</blockquote>
+<blockquote>
+<p>“Any of these can change, or be dropped, or outgrown at any point,
+with no failure attached. The dream you no longer want is data about who
+you’re becoming, not a target you missed.”</p>
+</blockquote>
+<p><strong>Inside the dream session:</strong> Debrief the wall first
+(“who hit the wall at 40? what came up after?”) so the wall is a shared
+story, not a private failure. For whoever did not reach forty, the wall
+was wherever their list stopped; the wall is the shared story, never the
+number. Then go around once, in order, the same way the morning circle
+goes: each is invited to share one dream, aloud or by putting it on the
+tribe dreams wall, starting with a within-12-months one, and pass is a
+complete answer. The wall is a second way to share for anyone, not a
+side door: a dream pinned there has been shared the same as one said
+aloud, and the guide reads the wall aloud once so the whole room hears
+all of it. Watch the lists grow live as dreams prove contagious. As they
+share, you begin to hold each learner’s dreams with them, which is what
+makes you a coach and not a teacher. Ask before you work one - “do you
+want to just say that one, or do you want us to think about how you’d
+live it?” - and follow the answer. The circle’s held-or-worked rule runs
+here too, and this is the first week the room learns it on something
+light. A warm catch-up in the walk-in, never in front of the room, for
+anyone whose list stopped early. Nobody leaves ashamed of a count.</p>
+<p><strong>The settle and the closing minute:</strong> Open every guide
+day with the settle. Teach the closing minute at its youngest register
+this session, and use it at each day’s close. On the day, “take your
+closing minute” is the whole prompt; the three questions are the
+learner’s own, in the fixed words from Part 1. Spoken, never written for
+the studio.</p>
+<p><strong>Watch-fors:</strong> Do not let the region map read as a
+deficit ledger - the quiet regions are invitations, not gaps. Keep the
+credit and path conversation out of day one entirely; belonging roots
+first. The permission to dream is genuine, so protect it from any quiet
+“be realistic.”</p>
+<p><strong>What you’ll need:</strong> The take-home 100 Dreams card (the
+rule, the wall at 40, a spark bank of warm words, “borrowed dreams
+count,” “what did you want when you were eight?”, and “kept however you
+keep your Log”). Blank Captain’s Logs in several forms. The five-region
+prompt map. A tribe dreams wall surface. The exit-ramp place, set up
+before Tuesday. One shared task to carry the week. Cards for agreement
+contributions. The map of the year to hand out. The two names, written:
+the one adult outside the room, and the person who takes the baby. After
+the first year, notice which words on the card nobody used, and change
+them: a skipped door is a dead label.</p>
+<hr />
+<h2 id="session-2---the-lineage-five-weeks-sep-20---oct-21">Session 2 -
+The Lineage (five weeks, Sep 20 - Oct 21)</h2>
+<p><strong>What it’s for:</strong> to gather the stories of where you
+come from, and to see that an ordinary life carries enormous
+meaning.</p>
+<p><strong>For the learner:</strong> You come from somewhere and
+someone. This session you learn how to gather a story - how to interview
+someone who made you and listen for the story under the facts - and you
+bring what you choose of it to a family-story potluck. “Where you come
+from” is answered whatever your roots are: interrupted, mixed, adopted,
+chosen, unknown, or forward-facing. Interrupted lineage is still
+lineage. However you arrive, you belong at this table.</p>
+<p>This session goes near death. You interview someone older than you,
+usually much older, about a life further along than yours. The room also
+listens to a recording of real people telling their life stories, and
+one of them is dying. People get sick, people are gone, people are not
+speaking to each other, and all of that lives in family stories. Some of
+it will be yours. You will know in advance, every time, before anything
+heavy starts. There is a named place to step out to and you never owe a
+reason for going there. And if your own lineage holds something you do
+not want to go near, you can do this whole session without going near
+it.</p>
+<p>The ask itself has a ceiling and a floor. <strong>One interview,
+once</strong> - that is the ceiling, and nobody is asked for a second.
+The person you ask is told, by you, what this is for and where their
+story will go, and they can take any of it back at any point, even after
+they have told you. After the interview there is one more thing, and it
+is not a second interview: you may take what you made of it back to them
+and go through it with them, so they can hear it and take anything out.
+That is for them, not for us, and you can skip it. And you may decline
+the ask entirely. Some people will have good reason: a family they are
+not in contact with, a story they already know they do not want opened,
+or simply no. Declining the interview is not declining the session. The
+session’s question is where do you come from, and “I am not asking
+anyone” is one of its true answers.</p>
+<p><strong>The flow:</strong></p>
+<p class="note"><em>Weeks 5-9 · Sep 20 - Oct 21 · off: Mon Oct 11, Indigenous
+Peoples’ Day / Columbus Day - see watch-fors</em></p>
+<p><strong>One ask. This is a cap, not a guideline.</strong> Each
+learner interviews one person, once. Five weeks, and most of them go to
+the <strong>waiting</strong>, not to more asking: a learner asks a
+grandmother on a Tuesday and the answer comes when it comes, after a
+phone call across time zones, after a cousin is consulted, after an old
+woman decides whether she wants to tell it. Fewer weeks would force the
+ask and the return into one breath. A second, deeper ask is the line
+where gathering becomes excavation, and we do not cross it.</p>
+<p><strong>The elder has a no, and they are told so.</strong> They are
+the one person in this arc who did not enrol here, who consented to a
+grandchild rather than a curriculum. Before the interview they are told
+plainly what it is for and where the story will go. Where the story will
+go means all of it: the potluck table, and anything the learner writes
+or makes this year that carries the elder’s words. They may withdraw
+anything, at any point, <strong>including after the telling</strong>,
+and a withdrawal reaches that far too: what is taken back comes out of
+what was written and out of anything made from it. The learner carries
+that sentence to them; it is not ours to assume.</p>
+<ul>
+<li><p><strong>Week 5 (open, re-thread).</strong> A short re-thread
+first: where were you, where are you now, what came back changed over
+the break. The three dreams chosen in week 4 have had a break to rest -
+some will have shifted, and that is data, not drift. Then open the
+session: family is who made you. Name the safety net and the other
+honest ways in <em>first</em>, warmly, so everyone knows they belong
+before anything is asked - <strong>and make that door visible to the
+whole room in week one, not produced later for whoever needs
+it.</strong> A door that appears only when someone needs it announces
+them for needing it. For some learners the silence, the rupture or the
+migration <em>is</em> the lineage, and the structure says so before
+anyone asks. The family tree as stories, not a chart. Preview the
+recording of real people talking about their own dying - name that it
+touches death and loss, and give a real place to step out to. Then the
+craft: how to interview someone who made you, how to listen for the
+story under the facts (“what was that time like for you?” not “when were
+you born?”). Practice in pairs in the room first. Give them the words to
+carry to the person they ask, before they ask anything:</p>
+<blockquote>
+<p>“Before you ask them anything, tell them what it’s for and where it
+goes. Something like: ‘I’m gathering a story about where I come from,
+for my studio. Some of it goes to a meal with my people there, and some
+of it might end up in what I write or make this year. Anything you tell
+me, you can take back - now, later, or after I’ve written it down.’ Then
+they know their no is real before they’ve said a word.”</p>
+</blockquote>
+<p>The ask goes out at the end of the week.</p></li>
+<li><p><strong>Week 6 (the fallow week - and it stays empty).</strong>
+No new lineage content. <strong>This is the year’s one deliberately
+empty stretch inside the arc, and it is un-harvested: no Work of the
+Day, nothing reported, nothing to hand in.</strong> The temptation to
+refill it the first time it looks idle is the exact thing it exists to
+resist. Low-stakes in-studio craft only, if anything at all. The guide’s
+work this week is the walk-in, for whoever wants to say where the ask
+stands: sent, answered, still waiting, or not made. “Not made” closes
+the question, and nobody is asked it twice. Nobody is behind.
+<strong>Waiting is the relationship, not a gap before
+it.</strong></p></li>
+<li><p><strong>Week 7 (gather).</strong> They bring back what they
+gathered. Voluntary share of one surprising thing. Reflect the meaning
+under the facts - a recipe as a story, an ordinary day as a whole world.
+<strong>Debrief the ask, never the elder.</strong> What did you do, what
+would you try - never what they withheld. A characterisation of an
+absent family member, said aloud to six peers who will never meet them,
+is not the learner’s to make, and the learner will sit across a table
+from this person again.</p></li>
+<li><p><strong>Week 8 (apply).</strong> Prepare the short telling that
+goes with each dish (or with no dish at all). <strong>Then offer the
+return, and it is not a second gathering.</strong> The learner may take
+what they made of it back to the elder and go through it with them:
+<em>did I get this right, is there anything you want taken out?</em>
+That hands the elder power instead of asking for more. It is offered and
+declinable, never a station anyone is marched through, and whatever they
+add unprompted is theirs to give. Set the potluck together. (The Oct 11
+holiday removes this week’s Monday; see the watch-fors.)</p></li>
+<li><p><strong>Week 9 (harvest).</strong> The family-story potluck gets
+its own week and its own body, rather than riding the back of a working
+day. The table is the tribe, the guide, and whoever each learner chooses
+to invite - the person you interviewed is welcome at it, and is told so
+when you ask them. <strong>Build the vessel to receive an empty
+hand:</strong> “I asked, and the answer has not come yet” is a true
+telling about lineage. If the table cannot hold that, the rite shames
+the learner it was built for. Ask the pace question as the week closes -
+is the plan still matching the speed your real life is running at? - and
+on the last guided day run the closing minute at session scale, before
+the break. Bridge to The Power of Choice.</p></li>
+</ul>
+<p><strong>Things to say:</strong></p>
+<blockquote>
+<p>“Family is who made you - biological, chosen, or found. A
+grandparent, a mentor, a coach, a sibling, a neighbor. Whoever left a
+mark.”</p>
+</blockquote>
+<blockquote>
+<p>“Your lineage is also who you choose, who you’re building, who you’re
+becoming. You can be the first of a line. That’s a full front door, not
+a side exit.”</p>
+</blockquote>
+<blockquote>
+<p>“A recipe you wish you had, recreated from memory, is as real an
+offering as one that’s been handed down for generations.”</p>
+</blockquote>
+<blockquote>
+<p>“You choose how much of your story travels to the table - all of it,
+a little, or none. You’re never the exhibit.”</p>
+</blockquote>
+<blockquote>
+<p>“This recording touches death and loss. Here’s where you can step out
+to, and you don’t owe anyone a reason.”</p>
+</blockquote>
+<p><strong>The settle and the closing minute:</strong> Carry the settle,
+and go further down the safety floor than usual - grief opens for some
+this session, so use a short way down in the middle of the work and the
+close-return on the deep days. Close with the three prompts. Important:
+real grief is <strong>not</strong> a costume anyone takes off at the
+end. This is a “that was me, and I carry it, and I’m still here” close,
+never a “that wasn’t me” one. If an opening runs deeper than a close can
+hold, hand off warmly to the referral pathway.</p>
+<p><strong>Watch-fors:</strong> The mortality preview is the sharpest
+safety point - preview it, name the content, give a real exit, honor
+opt-out with no explanation. The family interview can surface rupture
+(estrangement, loss, unknown parents); keep the other honest ways in
+visible, not buried. Name specific peoples (Eritrean, Nepali, Basque,
+Diné), never a regional lump. And the learner’s own word for their
+people is the word; the guide never asks for a finer-grained one. At the
+potluck, protect the material-poverty path: the studio-provided base
+dish can quietly <em>be</em> a learner’s contribution, pre-arranged so a
+learner who brings nothing is indistinguishable from one who brought a
+dish. Presence, not provision. A learner from a marginalized or painful
+lineage sets their own terms and is never turned into a lesson for the
+room. <strong>The Monday Oct 11 holiday falls inside this
+session.</strong> Decide its observance given the studio’s values, and
+decide what the studio calls it: the federal calendar names it Columbus
+Day, and this programme’s values point to Indigenous Peoples’ Day. It
+lands on a self-run Monday, so the decision is about the name and the
+framing rather than the schedule. In a session about lineage, the name
+is not a small question. If the studio names it Indigenous Peoples’ Day,
+name the specific peoples whose homelands the studio stands on, in the
+names those nations use for themselves, confirmed from their own
+published materials - never “the local tribes.” The rule about specific
+peoples applies to the book.</p>
+<p><strong>What you’ll need:</strong> The recording about dying,
+previewed, with its transcript and a real exit space. Interview-skill
+practice prompts. The elder’s sentence, written so the learner can carry
+it word for word: what this is for, where the story will go, and that
+they may take anything back, at any point, including afterwards. The
+other honest ways in, named as equal from day one. The referral pathway,
+live - this is the first session that hands off to it. Potluck logistics
+with the inclusion floor (base meal provided, no cover charge, allergen
+and cultural and religious safe, presence not consumption). The exit
+ramp, named for the potluck room and shown before guests arrive - the
+same no-reason rule holds at a feast.</p>
+<hr />
+<h2
+id="session-3---the-power-of-choice-three-weeks-nov-1---nov-18-ends-into-thanksgiving">Session
+3 - The Power of Choice (three weeks, Nov 1 - Nov 18, ends into
+Thanksgiving)</h2>
+<p><strong>What it’s for:</strong> to make choosing a muscle you can
+feel in your body.</p>
+<p><strong>For the learner:</strong> You cannot always choose what
+happens to you. But the space between what happens and what you do next
+- that space is where your whole freedom lives. This session, you play
+real choice games until choosing on purpose starts to feel like
+something you can do deliberately, and you notice the choices you have
+been making by not choosing. Responsibility, freedom, and choice are one
+knot, not three topics. And decline-with-reasoning - the way “no” works
+here - is this exact power, practiced on us: your no stands the moment
+you say it, and the reasoning you bring to your tribe afterwards is this
+same muscle, used on purpose.</p>
+<p>A session about choice can do damage if it is taken too far, so:
+<strong>not everything is a choice.</strong> Some things happen to you.
+Some things were done to you that you did not choose, and nothing in
+this session says otherwise. Nobody here is going to tell you that you
+chose your circumstances, and nobody is going to tell you that you chose
+anything that was done to you. The choosing we practice is what you do
+next. That is a different thing, and it is the only thing we are
+claiming.</p>
+<p>And a warning. Getting better at choosing on purpose sometimes makes
+things louder at home before it makes them easier. That is not you doing
+it wrong. We break for Thanksgiving right after this session. The guide
+is not reachable over the break - that is their rest too - but the one
+adult outside the room is, the same as always, and so is 988. If
+something at home gets hard because of work you did here, that is
+exactly the kind of thing to call about.</p>
+<p><strong>The flow:</strong></p>
+<p class="note"><em>Weeks 10-12 · Nov 1 - Nov 18 · on guide days: Tue Nov 2, Election
+Day; Thu Nov 11, Veterans Day, observance decided before the session ·
+ends into Thanksgiving</em></p>
+<ul>
+<li><strong>Week 10 (open, re-thread).</strong> On the first guided day,
+the re-thread first, short - where were you, where are you now, what
+came back changed - and the potluck telling is the natural thing to pick
+back up; it has had a week to settle. Then open every guide day this
+session with a daily choice game (a small, playful, real decision with
+real consequences). Then the knot: responsibility, freedom, and choice
+as one thing. Name the honest frame up front (see watch-fors). Then, at
+a safe distance first - in a story, a film, a moment in history - “where
+did one choice change everything?” Then, only for those who wish, in
+their own life.</li>
+<li><strong>Week 11 (deepen).</strong> Choice games to open. Then, kept
+light and personal: a choice opens some doors and quietly closes others;
+there is no free move. Then the turn toward agency - defaults and drift,
+the choices you make by not choosing. Notice your own patterns without
+judgment.</li>
+<li><strong>Week 12 (apply, then harvest).</strong> Each learner names a
+real choice actually in front of them and practices choosing it
+deliberately - weighing it, owning it, feeling agency in the body. Then
+the harvest: name, if you wish, a choice you now own, or say that none
+is owned yet - seeing where you have not been choosing is itself a
+harvest - and the shift from “things just happen to me” to “things
+happen, and then I choose.” Ask the pace question here too: three weeks
+is short, and the plan should still match the speed that is real for
+you. Bridge to Running My Own Ship. <strong>On the last guided day, Thu
+Nov 18, before the ten-day gap:</strong> run the closing minute at
+session scale. For the learner whose choice-work opened friction at
+home, Thanksgiving is where the work meets the people it is about. Send
+them into it held, not loose. Before they go, say all three out loud:
+how to reach the one adult outside the room over the break; that 988 is
+always open, any hour; and that you are not reachable. Their page
+already says the third one. Hearing it from you the day before makes it
+a plan rather than a surprise.</li>
+</ul>
+<p><strong>Things to say:</strong></p>
+<blockquote>
+<p>“You can’t always choose what happens, and sometimes what happens
+leaves no room to choose at all. What you do next, once there is room
+again - that part is yours. That’s the whole game, and it’s enough.”</p>
+</blockquote>
+<blockquote>
+<p>“Some of your defaults were handed to you. Noticing one isn’t blaming
+yourself for it - it’s just turning the light on.”</p>
+</blockquote>
+<blockquote>
+<p>“Not ‘what should I do?’ handed to me. ‘Here’s how I’m deciding.’
+That’s yours.”</p>
+</blockquote>
+<p><strong>The choice games (a starter bank, rotate them, and pick ones
+every learner in the room can play as built - a game that needs a quick
+voice or a quick read is a game somebody sits out of):</strong> The Fork
+(pose one small real choice, they choose, then trace what it opened and
+closed). Would You Rather with real tradeoffs (each option genuinely
+costs something; argue the gray ones). Yes/No improv (a scene where
+players may only say “yes-and” or “no”; feel how each shapes what’s
+possible). The Default Game (name a thing you do without deciding; try
+deciding it on purpose for a day). One Small Path (a choose-your-path
+story where a tiny early choice cascades - a light taste, not deep
+consequence work).</p>
+<p><strong>The settle and the closing minute:</strong> Settle to open.
+Close with the three prompts. The gladness we hope for here is play -
+for many people agency feels good in the body, and for some it feels
+like risk before it feels like freedom - so let the games be fun, and
+let anyone sit one out.</p>
+<p><strong>Watch-fors:</strong> This is the load-bearing safety point: a
+session about agency can wound if it implies <em>everything</em> is a
+choice. It is not. Some things happen to a person; some people have had
+choice taken from them. Never “you chose your circumstances,” never “you
+chose your harm.” Always distinguish choices you made from things that
+happened to you. The walk-in is where you hear whether home got louder.
+Ask it there, one learner at a time, never in the circle. Keep
+consequence-thinking light - deep second- and third-order work belongs
+to a later year; here it stays personal and immediate. <strong>Two
+holidays fall on guide days inside this three-week session: Election
+Day, Tue Nov 2, and Veterans Day, Thu Nov 11.</strong> Decide observance
+of both before the session opens, not during it. The session has six
+guide days in total, so observing both leaves four, which is a change to
+the plan rather than a detail. Election Day can be framed as a civics
+moment if it is kept.</p>
+<p><strong>What you’ll need:</strong> The choice-game bank.
+Safe-distance stories or clips for “where did a choice change
+everything?” Opt-out held open all session; the referral pathway
+ready.</p>
+<hr />
+<h2
+id="session-4---running-my-own-ship-three-weeks-nov-29---dec-16-ends-into-the-winter-break">Session
+4 - Running My Own Ship (three weeks, Nov 29 - Dec 16, ends into the
+winter break)</h2>
+<p><strong>What it’s for:</strong> to build a routine that actually fits
+you - the thing that makes freedom possible instead of just noise.</p>
+<p><strong>For the learner:</strong> Freedom you can’t hold is just
+noise. A routine that fits you is how you actually run your own ship.
+This is Session 3’s power of choice, lived as a rhythm - one that fits
+<em>you</em>, not one imposed on you. Routine is not the opposite of
+freedom. It is what makes freedom possible. This session you build a
+routine that survives a bad day, you practice real communication, and
+you look back at who you are becoming.</p>
+<p>One thing your routine has to have in it: <strong>your
+Vineyard.</strong> A week with no time in it for something you love is
+not a finished routine, and we will send you back to it the same way we
+would if you had forgotten to sleep. That is the one place this
+programme is strict about joy. Strict means we keep asking whether the
+time is there. It never means we check what you did with it, and if you
+refuse this part too, you will still hear the question - that is the one
+thing you cannot get us to stop. What goes in the time stays nobody’s
+business but yours.</p>
+<p><strong>The flow:</strong></p>
+<p class="note"><em>Weeks 13-15 · Nov 29 - Dec 16 · ends into the winter
+break</em></p>
+<p><strong>December runs lighter by design</strong> - short dark days,
+the guide’s own hardest stretch. This session is December, entirely.
+Postpone depth freely and protect your own fallow.</p>
+<ul>
+<li><strong>Week 13 (open, re-thread).</strong> <strong>Open the first
+guided day (Tue Nov 30) with the re-thread, before anything
+else:</strong> where were you, where are you now, what came back
+changed. Then the reframe: routine makes freedom possible. Begin
+designing your own routine (not a template imposed on you). Then time
+management as craft - time-blocking, energy management (when are
+<em>you</em> sharp?), and the Weekly Plan as the real tool. Design a
+routine that survives a bad day, not just a good one.</li>
+<li><strong>Week 14 (deepen, then apply).</strong> Communication
+foundations - real listening, “I” statements, asking a question worth
+answering (this feeds the interviewing through-skill and, later, mentor
+outreach). Then a real communication: draft and send a genuine email to
+an adult, prepare a needed conversation, or present a plan to the room.
+Refine your routine from two weeks of running it - what bent, what
+held.</li>
+<li><strong>Week 15 (apply, then harvest).</strong> <strong>This week
+holds the true midpoint of the year, and the midpoint is the winter
+break itself</strong> - the fold between here and January, crossed with
+the learner’s body out of the room. So the crossing comes in two halves.
+<strong>This half, on Thu Dec 16:</strong> the look-back across Sessions
+1 to 4 (who are you becoming?), the pace question, the re-ask (<em>is
+this still yours?</em>), and the re-entry note to your future self so
+the throughline survives two weeks away. Ask the re-ask to the room;
+take the answers one at a time, in the walk-in or at the Table, never
+round the circle. A yes said in front of six people is not the answer
+you asked for. A no, or an I don’t know, is held the way Part 2 holds
+any no: received whole first, the door offered once, the learner kept
+inside the room while the plan changes around them. Then the harvest:
+name the routine that now fits you, or name honestly that it does not
+fit yet - a routine still bending is a real harvest in December - and
+share (voluntary) one thing the look-back showed you. They carry the
+re-ask through two weeks of ordinary life and come back with evidence
+rather than a feeling the circle produced. This is the longest stretch
+of the year with no one in the room. Say all three out loud: how to
+reach the one adult across the two weeks; that 988 is always open, any
+hour; and that you are not reachable until January. The referral pathway
+stays live the whole time, not only on program days. Then run the
+closing minute at session scale - this half of the crossing closes here.
+Bridge to The Full Draft.</li>
+</ul>
+<p><strong>Things to say:</strong></p>
+<blockquote>
+<p>“Routine isn’t the opposite of freedom. It’s what makes freedom
+possible. We’re building one that fits <em>you</em>, not one that’s
+imposed on you.”</p>
+</blockquote>
+<blockquote>
+<p>“What have these first weeks shown you about yourself? Who are you
+becoming?”</p>
+</blockquote>
+<blockquote>
+<p>“What pace is real for you right now, and does the plan match it?
+That includes the credit plan.”</p>
+</blockquote>
+<blockquote>
+<p>“And the one I ask only a few times a year, so hear it as a real
+question: is this still yours? Being here, doing this. ‘No’ and ‘I don’t
+know’ are both real answers, and you have two weeks to sit with it.”</p>
+</blockquote>
+<blockquote>
+<p>“A routine that fits you protects the fallow. The un-filled cup is
+part of the rhythm, not a gap to optimize away.”</p>
+</blockquote>
+<p><strong>The settle and the closing minute:</strong> Settle to open;
+three prompts to close. The gladness we hope for is quiet - a clear
+desk, real momentum, the satisfaction of a rhythm that fits.</p>
+<p><strong>Watch-fors:</strong> This is the natural readiness moment -
+read each learner’s readiness for more of their own hours with them, one
+learner at a time, never by date, and let them name how much scaffold
+they want. Some move toward more autonomy; some keep the full scaffold,
+and that never reads as remedial. The midpoint look-back is
+growth-framed, not a shortfall audit - “who you’re becoming,” not “what
+you didn’t finish.” Guard hard against it becoming a private ledger of
+falling short. The credit and path conversation is a pacing
+conversation, witnessed, never graded; a learner who needs a multi-year
+path names it now, adjusting the plan to the learner. Keep communication
+practice real (a genuine email, a genuine conversation), not role-play
+only.</p>
+<p><strong>What you’ll need:</strong> The Weekly Plan tool. A real email
+or conversation for each learner to actually do. The Credit/Path Map for
+the pacing check. The re-entry note format. The long haul is next, so a
+routine that holds is exactly what a learner needs to carry the Full
+Draft through six unbroken weeks of January and February.</p>
+<hr />
+<h2 id="session-5---the-full-draft-six-weeks-jan-3---feb-10">Session 5 -
+The Full Draft (six weeks, Jan 3 - Feb 10)</h2>
+<p><strong>What it’s for:</strong> to claim your whole life on the page
+- all of it - before you choose what to keep.</p>
+<p><strong>For the learner:</strong> You cannot shape a story you have
+not yet dared to tell in full. So first you write all of it - messy,
+complete, unedited, nothing too small. This is your whole life on the
+page. Some people feel real relief and catharsis in claiming it; some
+feel tired, flat, or unfinished. Both are true. No one is asked to
+perform the feeling. Being witnessed is a gift here, never something you
+owe the room. What you write is private by default - it lives in your
+Captain’s Log, which no one reads - and you choose what, if anything,
+you say aloud.</p>
+<p>Here are the five things you will be asked to write. All of them,
+now, so none of them is a surprise on the day.</p>
+<ol type="1">
+<li>A moment after which you were not the same.</li>
+<li>A place, a smell, a song, a meal, a room. Memory lives in the body
+before it lives in words.</li>
+<li>The people who made you. Not just family. Anyone who left a
+mark.</li>
+<li>Your worst day and your best day, and what each one taught you.</li>
+<li>One ordinary day at an age you pick, start to finish.</li>
+</ol>
+<p><strong>Number four is the heavy one.</strong> It comes in the fifth
+week of this session rather than the first, and a week before it you
+will be asked, one to one and never in front of the room, whether you
+want the gentler version instead. The gentler version is a real option
+and not a lesser one. A hard thing can be named without being told in
+detail, and “here is what it taught me” is a complete answer. Nobody has
+to relive anything to belong here.</p>
+<p><strong>The flow (the five prompts, spread across six
+weeks):</strong></p>
+<p class="note"><em>Weeks 16-21 · Jan 3 - Feb 10 · off: Mon Jan 17, MLK Day · no
+break inside this session</em></p>
+<p><strong>This session opens three days after a two-week holiday and
+then runs six unbroken weeks of interior work.</strong> No break falls
+inside it, so what a break would quietly do for a body, the design has
+to do on purpose.</p>
+<ul>
+<li><strong>Week 16 (open, re-thread) - no prompt.</strong> The second
+half of the midpoint crossing, and it is the whole day, not a warm-up.
+The big re-thread: where were you, where are you, what came back
+changed. Then why the whole life first, and the relief some people find
+in getting it all down. <strong>Name the safety floor aloud</strong> -
+the exit ramp, the gentler-prompt swap, the referral pathway with a real
+room and a real person in it. No prompt this week.</li>
+<li><strong>Week 17 (deepen).</strong> Prompt 1 - Turning points (“name
+a moment after which you were not the same”), on the second guided day.
+A recording of real people telling their life stories. Ask the pace
+question at the close, two clear weeks before the hard prompt so there
+is still time to act on the answer.</li>
+<li><strong>Week 18 (deepen).</strong> Prompt 2 - Sensory doorways (a
+place, a smell, a song, a meal, a room; memory lives in the body before
+it lives in words). Memoir excerpts as models. <em>(MLK Monday removes a
+self-run day and its midday check-in.)</em></li>
+<li><strong>Week 19 (deepen).</strong> Prompt 3 - The people (“who made
+you? not just family - anyone who left a mark”). What someone told you
+in the autumn is theirs, and the autumn’s rules still hold over it. What
+they were to you is yours, and nobody can take that back - including a
+person who took their own story back. <strong>On the Thursday, an
+explicit readiness read for what is coming, taken in the walk-in, one
+learner at a time, never round the circle</strong>, and the softer
+prompt offered in advance rather than in the moment. Offering it on the
+day it lands is too late for the learner who needs it.</li>
+<li><strong>Week 20 (apply: the hard prompt).</strong> Prompt 4 - The
+hard and the best (the worst day, the best day, what each taught). Run
+it on the Tuesday, so the held day is the Thursday and no one carries
+the worst day alone into a weekend. This is the sharpest care point -
+run all four things in the settle and the closing minute below, and the
+gentler version was offered last Thursday. Follow it with a lighter,
+held day: coming-of-age songs as mirrors (“which line is about you?”),
+then back to their own words.</li>
+<li><strong>Week 21 (the lighter week, then harvest).</strong>
+<strong>Designed lighter on purpose, not by accident</strong> - the week
+after the hard prompt carries no new hard ground. Prompt 5 - A slice of
+life (“write one ordinary day at age ___, start to finish” - a whole
+world in an ordinary day). The ordinary day is the decompression, not
+one more descent. Then push the draft toward whole, and the harvest: the
+full draft as it stands - complete, or not yet, or with prompts swapped
+or left out - being witnessed, sharing only what you choose. An
+unfinished draft is a real harvest. The pace question and the re-ask
+both come at the close, answered the same way as in December - after the
+whole life is on the page is the strongest re-ask of the year.
+<strong>Run the closing minute at session scale before the
+break</strong>, and the referral pathway stays live <em>through</em> Feb
+11-20, not only on program days; the learner is told so. A learner
+finishes their whole life on the page and then no one sees them for ten
+days. Bridge to Chapter One.</li>
+</ul>
+<p><strong>Things to say:</strong></p>
+<blockquote>
+<p>“Write all of it - messy, complete, nothing too small. You can’t
+shape a story you haven’t yet dared to tell in full. If relief comes, it
+comes from getting it down, not from making it good.”</p>
+</blockquote>
+<blockquote>
+<p>“Your draft lives in your Log, so it takes whatever form your Log
+takes. A told draft, a drawn one, a typed one - all of it is the full
+draft.”</p>
+</blockquote>
+<blockquote>
+<p>“You choose what goes in the draft and what stays private. A hard
+thing can be named without being detailed - ‘what it taught me’ is
+enough. No one has to relive anything to belong here.”</p>
+</blockquote>
+<blockquote>
+<p>“A gentler prompt is always available. You can swap any prompt for a
+softer one, anytime, no reason owed.”</p>
+</blockquote>
+<blockquote>
+<p>“Wherever you went just now, that’s exactly what the closing minute
+is for. Take it, the whole minute, and go for the real answer. Nothing
+you find in it is for me.”</p>
+</blockquote>
+<blockquote>
+<p>“The break starts Friday and runs ten days. I won’t be reachable -
+that’s my rest too - but the person you can go to is, the whole time,
+not only on studio days, and 988 never closes. You just put your whole
+life on a page; here is how to reach them.”</p>
+</blockquote>
+<p><strong>The settle and the closing minute:</strong> This is the
+anchor session for both. On every writing day, four things, every
+time:</p>
+<ul>
+<li><strong>The settle</strong> to open.</li>
+<li><strong>A short way down between hard passages.</strong> Thirty
+seconds: feet on the floor, look around the room, one breath.</li>
+<li><strong>The close-return</strong> at the end. Say it out loud so the
+body hears it: “That was then. This is now. Look around and name one
+thing you can see. You’re in this room, and the hard part is behind
+you.”</li>
+<li><strong>An exit ramp that is always open</strong>, used without
+asking. A body that stays inside a worst-day memory for an unbroken hour
+floods. The closing minute lands hardest here and rides <em>into</em>
+the private Log. This is a “that was me, and I carry it, and I’m still
+here” close, and real grief is never something a learner is asked to put
+down at the door. When a close meets something bigger than a close can
+hold, hand off warmly to the referral pathway. Open no faster than you
+teach a person to close; this session is where that rule is most
+literally true.</li>
+</ul>
+<p><strong>Watch-fors:</strong> This is the heaviest session, and it has
+a <strong>binding gate.</strong> The pathway was built before the year
+opened (Part 2) and Session 2 already leaned on it; this is where you
+check it again and certify it in writing before anyone writes a worst
+day. Do not run this session with a real learner until both of these are
+true:</p>
+<ol type="1">
+<li><strong>The referral pathway built before the year opened is still
+real today.</strong> The quiet space is still a real room. The named
+clinician still has a current number and will still take the call. Your
+own honest limit is said out loud again. The clinical hand-off is in
+place. And the second pair of hands for the baby is re-confirmed for a
+January morning, not a September one.</li>
+<li><strong>A consented safety walk is done, and it walked this
+session’s floor.</strong> Someone who has held this kind of work with
+teenagers - a licensed clinician or an experienced guide - has walked
+this session’s plan with you, in person, before any learner meets it:
+the settle, the way down, the close-return, the exit ramp and the
+hand-off, not only Session 1’s morning.</li>
+</ol>
+<p><strong>Who certifies this gate:</strong> you do, in writing, dated,
+on the plan - naming the quiet space, naming the clinician, and naming
+the date of the walk and who walked it. A solo studio has no second
+signature available, so say plainly that the guide self-certifies and
+make the certification a written thing rather than a feeling. A gate
+nobody signs is a gate nobody holds. A trauma-informed floor with an
+unbuilt trap door is not yet trauma-informed. Coach, not therapist: you
+hold the container and witness; you do not treat. Every session opens
+with a re-thread; Session 4’s is short and this one is a whole day. The
+two-week winter gap is the highest risk to a learner’s throughline,
+which is why week 16 carries no prompt. Being witnessed is a gift, never
+a demand.</p>
+<p><strong>What you’ll need:</strong> The five scaffolding prompts. The
+recordings and readings (the Session 2 recording of real people telling
+their life stories, previewed again if it is played again; memoir
+excerpts; coming-of-age songs; each with a transcript or an audio form).
+Gentler swap-prompts on hand. The built referral pathway and the
+designated quiet space. Your gate certification, written and dated,
+before week 16.</p>
+<hr />
+<h2 id="session-6---chapter-one-six-weeks-feb-21---mar-30">Session 6 -
+Chapter One (six weeks, Feb 21 - Mar 30)</h2>
+<p><strong>What it’s for:</strong> to become the author of your own
+story, and to learn that shaping it small is not making your life small
+- it is declaring there are chapters to come.</p>
+<p><strong>For the learner:</strong> A chapter is not a smaller version
+of your life. It is a shaped thing with one thread running all the way
+through, and you learn to find the thread. To you, right now, this
+<em>is</em> your whole life - so we don’t argue with that, we flip it.
+Calling it “Chapter One” is an act of hope: it declares there are
+chapters coming. It doesn’t make your life small. It makes your future
+big. And here is the discipline that keeps this from feeling like loss:
+we never cut to hide. We cut to focus. Everything you leave out of
+Chapter One is kept, in the full draft, in your Log. It is still true.
+It just isn’t load-bearing for <em>this</em> chapter’s shape.</p>
+<p><strong>The flow (five steps of shaping, across six
+weeks):</strong></p>
+<p class="note"><em>Weeks 22-27 · Feb 21 - Mar 30 · off: Mon Feb 21, Presidents Day
+(the session’s first day)</em></p>
+<ul>
+<li><strong>Week 22 (open, re-thread).</strong> A short re-thread first,
+then: become the author; a chapter is a shaped thing with a throughline;
+introduce the “Chapter One = hope” reframe. Go back through the full
+draft. That is a re-opening, so this day runs Session 5’s four things -
+settle, the way down, the close-return, the exit ramp - and any passage
+may be skipped in the going-back without a word.</li>
+<li><strong>Week 23 (deepen: the truth-discipline).</strong> Cut to
+focus, never to hide; everything cut is kept in the Log, still true.
+Practice the discipline on a shared example at a safe distance before
+turning it on their own life. If an elder’s words from the Lineage are
+in your chapter, their no still reaches here: anything they asked to
+take back comes out of what travels, even now, and stays only in your
+Log if you want it kept.</li>
+<li><strong>Week 24 (deepen: the throughline).</strong> Shaping step 1:
+find the thread (“what is this chapter <em>about</em>?” - one sentence).
+You hold the question; the learner finds the line. A throughline that is
+theirs tends to land as relief rather than a cage. If it lands as a
+cage, hold the question longer, not the line.</li>
+<li><strong>Week 25 (deepen: the load-bearing moments).</strong> <em>Ask
+the pace question at the close, two weeks before the session ends while
+there is still time to act on it.</em> Shaping step 2: choose the three
+to five moments that hold the chapter up - the ones that set up who you
+are becoming. <em>Keep, because</em> - never <em>cut, because.</em>
+Everything else moves, honored, into the Log; nothing is lost.</li>
+<li><strong>Week 26 (apply: write it).</strong> Shaping step 3: make
+Chapter One - tight, shaped, true. Revision as care; share a passage
+with the room if you want to.</li>
+<li><strong>Week 27 (harvest: the second distillation, and the turn
+outward).</strong> Shaping steps 4 and 5: distill the same life into a
+second shape, the short story-of-self and the one-page resume. Same
+material, two forms - a story (meaning) and a page (practical), for two
+different rooms. A Chapter One not yet finished, or a thread not yet
+found, is a real harvest - the shaping goes on. <strong>Assemble the
+portfolio here</strong> - it belongs in the join between the two
+sessions, not to a day of its own. <strong>Choose the medium for your
+This Is Me piece now, before the break, if it’s ready</strong>, so the
+choice has two weeks to sit; the scarce thing in the last session is not
+making time but dwell time. An unchosen medium crosses the break too,
+and nothing in Session 7 waits on it. Name the four ways of being seen
+alongside it, equal, so no one meets them for the first time in April.
+<strong>And the turn outward starts here, not in Session 7.</strong>
+Twelve weeks have gone inward; the coming-back-out needs more than the
+final stretch to carry it, so this harvest turns the work toward being
+seen. Ask the pace question as the session closes: four weeks remain, so
+the plan can still bend to the speed that is real for you. Run the
+closing minute at session scale before the break. Bridge to the
+Unveiling.</li>
+</ul>
+<p><strong>Things to say:</strong></p>
+<blockquote>
+<p>“Calling this ‘Chapter One’ isn’t shrinking your life. It’s declaring
+there are chapters coming. It doesn’t make your life small - it makes
+your future big.”</p>
+</blockquote>
+<blockquote>
+<p>“We never cut to hide. We cut to focus. What you leave out isn’t
+erased - it’s kept in your Log, still true. It just isn’t load-bearing
+for this chapter.”</p>
+</blockquote>
+<blockquote>
+<p>“Keep this, because <strong><em>. Not cut this, because
+</em></strong>. Choose your keepers by what they set up in who you’re
+becoming.”</p>
+</blockquote>
+<blockquote>
+<p>“Your resume is a tool that belongs to you. One true page inside your
+portfolio, for the rooms you choose to walk into. It isn’t you, reduced
+to a page.”</p>
+</blockquote>
+<p><strong>The settle and the closing minute:</strong> Settle to open;
+the three prompts to close - the shaping <em>is</em> a re-crossing of
+the whole draft. Memory is still in play here (it draws on the Session 5
+draft), so keep opt-out and the coach-not-therapist boundary live.</p>
+<p><strong>Watch-fors:</strong> Offer the hero’s-journey arc as
+<em>one</em> map, not the frame. The learner whose life is a garden, a
+spiral, or a set of rooms authors their own shape with equal honor. The
+learner is the author of their story, never a character in ours. The
+truth-discipline is the safety - cutting one’s own life can feel like
+erasure, and the kept-in-the-Log reframe is what makes it authorship.
+Hold the “Chapter One = hope” reframe whenever the shrinking starts to
+feel like loss. Sharing a passage is an offer, never a round. If it
+starts going in order, stop it once, warmly: this is an offer, not a
+round, and a passage kept to yourself is still Chapter One.</p>
+<p><strong>What you’ll need:</strong> The full drafts from Session 5. A
+shared safe-distance example to practice the cut-to-focus discipline.
+The one-page resume format, framed as a tool the learner owns. Portfolio
+materials.</p>
+<hr />
+<h2
+id="session-7---this-is-me-the-unveiling-four-weeks-apr-10---may-4">Session
+7 - This Is Me / The Unveiling (four weeks, Apr 10 - May 4)</h2>
+<p><strong>What it’s for:</strong> to declare who you are - dreamed in
+Session 1, drafted in Session 5, shaped in Session 6, now shown to your
+people.</p>
+<p><strong>For the learner:</strong> This is the year’s harvest. You
+make a self-portrait - a “This Is Me” piece - in whatever medium is true
+to you: art, film, music, writing, spoken word, a practice, a set of
+values. It does not have to be a story. You present it with your
+portfolio, your resume page, and your Chapter One. Some people feel
+deeply seen; some feel exposed or flat. Both are honored, and no one
+performs the feeling. The audience is warm - your people, not a panel.
+It is a feast, not a judged presentation.</p>
+<p><strong>You choose how you are seen, and you know all the choices now
+rather than in April.</strong> Four ways, equal, not one main road and
+three exits:</p>
+<ul>
+<li>show your piece at the feast, with families there;</li>
+<li>show it to the tribe only;</li>
+<li>show it to one person you choose;</li>
+<li>make it in a form the guide, or a person you choose, presents for
+you while you sit with your people, or while you do not.</li>
+</ul>
+<p>Nobody will ever have to ask for one of these; all four are offered
+to everyone, the same way. And “I have nothing to declare this year” is
+a real and honored harvest too. A flat year, a tired year, or an
+unfinished piece has not failed anything.</p>
+<p>One more rule we hold for you. Afterwards people will want to talk to
+you about your piece, and <strong>you do not have to answer any question
+about it, from anyone, including an adult who means well.</strong> “I’d
+rather not say” is a complete answer that night, and the guide will back
+you on it in the room.</p>
+<p><strong>The flow:</strong></p>
+<p class="note"><em>Weeks 28-31 · Apr 10 - May 4 · the session break falls before
+this session (Apr 3-6), not inside it</em></p>
+<ul>
+<li><strong>Week 28 (open, re-thread).</strong> A re-thread after the
+break, then open with a witness beat <em>first</em>: before you turn to
+your own portrait, witness someone else’s story. Reflect a peer’s
+Chapter One back to them <strong>if that peer offers it to you</strong>,
+or sit with one of the year’s recordings of a real person telling their
+own life and reflect that teller’s thread back - to the guide, or to the
+room if you choose. Nobody interviews anyone this session; the one
+interview of the year was in the autumn, and it stays one. Nobody’s
+Chapter One is handed to a classmate by the guide. Pair this only where
+both learners have said yes, and the learner who is not in a pair that
+week witnesses a recorded life instead, which is equal rather than
+second. Done that way, being seen becomes reciprocal rather than
+performative. Then: what the Unveiling is, and the year it completes,
+and the four ways of being seen, named again as equal, so the choice is
+open the whole session. For most, the medium was chosen at the close of
+Session 6, so the making can begin on the first day; for anyone still
+choosing, the first week is the choosing, and that is not behind. It
+need not be a narrative.</li>
+<li><strong>Week 29 (deepen).</strong> Make the piece (the guide is
+coach, not critic - the piece is theirs). Sharing works-in-progress is
+ambient, whenever someone wants it, not a scheduled beat. Refining is
+part of making, not a separate pass. <em>(The portfolio was assembled in
+Session 6. Any remaining logistics live on the self-run days.)</em></li>
+<li><strong>Week 30 (apply).</strong> Finish the piece. Confirm each
+learner’s unveiling shape now, in the walk-in - the four were on the
+table from the first day, and this is the week the choice is made real,
+not first offered. Then the works-in-progress share
+<strong>becomes</strong> the dry run in the shape they chose: to the
+tribe, in the safety of the tribe, for those who chose it; with the one
+chosen person, or with the guide, for those who did not. Each is the
+same dry run, the rehearsal rather than a thing that precedes one.
+Prepare the exhibition together; hold any nerves warmly.</li>
+<li><strong>Week 31 (harvest).</strong> Final touches and final
+rehearsal early in the week, then the Unveiling feast midweek, an
+afternoon or evening with a real audience (families, the tribe), each
+learner unveiling as much as they choose. <strong>The year-close gets
+the last guided day, Thu May 4, to itself, not the feast’s last
+hour</strong> - the co-authoring review, the Log handoff (“it’s yours;
+it goes where you say; no copy kept”), and the closing minute at year
+scale. This is also the last honest place to ask <em>is this still
+yours?</em>, answered the same way as in December. Then Open
+Waters.</li>
+</ul>
+<p><strong>Things to say:</strong></p>
+<blockquote>
+<p>“Before you turn to your own portrait, witness someone else’s. If a
+friend offers you their Chapter One, reflect it back to them. A room
+where everyone has done some of the seeing is a safer room to be seen
+in.”</p>
+</blockquote>
+<blockquote>
+<p>“Your piece can be anything true to you - an image, a film, a song, a
+set of values, a practice. It doesn’t have to be a story.”</p>
+</blockquote>
+<blockquote>
+<p>“The tribe is your people. A mentor, a friend’s family who takes you
+in for the night - a chosen witness is honored exactly as much as
+anyone. You will not fall through this.”</p>
+</blockquote>
+<blockquote>
+<p>“This is the end of the first year of three. It’s allowed to be a
+little tender. The story continues - next year, we ask what’s worth
+solving.”</p>
+</blockquote>
+<p><strong>The year-close:</strong> On the last guided day, after the
+feast has had its own night, three acts. First, a co-authoring close:
+the learner reviews the year’s design <em>with</em> you, the design
+named not hidden - “here’s how this year was built, and why; tell me
+what to change for your next year.” The learner’s call on their own
+year, never a feedback form, and declinable like every other quest; a
+learner who doesn’t want to redesign the year has still closed it.
+Alongside it, put the whole short record of them on the table, unasked:
+attendance, pace, credit plan, any safety note. They could read it any
+day; this is the day you offer it. Second, the Captain’s Log ownership
+handoff: the Log is theirs; it goes where they say - home, or back to
+the one place here only they open for next year - and no copy is kept.
+That is the same whatever form the Log took: if any of it lives on a
+studio device or in a scribe’s hand, it goes to the learner and nothing
+stays behind. Third, the closing minute at year scale, below. The year
+ends on the learner owning their own record, not the studio archiving
+it.</p>
+<p><strong>The settle and the closing minute:</strong> The Unveiling
+turns a learner outward. Showing yourself to a room is its own kind of
+opening, so it needs its own private close. On the year-close day, after
+the feast, run the closing minute at the scale of the whole year, in its
+fixed words:</p>
+<blockquote>
+<p>“Before the next year opens, take your closing minute at the whole
+year’s scale. What did you meet this year? What do you carry back?
+What’s different in you now - even a little? ‘I don’t know yet’ is a
+real answer.”</p>
+</blockquote>
+<p>That is what brings a learner back from being on stage to being
+themselves. Then a real fallow stretch before the next year opens. Never
+start a new opening on a body still buzzing from the feast.</p>
+<p><strong>Watch-fors:</strong> Being seen is invitational, and being
+seen can be exposing, especially for the anxious or isolated learner.
+Offer the other three shapes as real roads, not as “share less”: unveil
+to the tribe only, or in a form you present for them, or to one chosen
+person - each equal, not a lesser path. The learner with no family in
+the room is the one most exposed by “show your people,” so name and hold
+them: the tribe <em>is</em> their people, and a chosen witness is
+honored equally, never as consolation. Do not let “families come” become
+a floor that learner falls through on the year’s most tender day. Hold
+the year’s close gently; this is a year-close, not a goodbye - the full
+Launch is a later year. Coach-not-therapist still applies; the piece can
+surface a lot.</p>
+<p><strong>What you’ll need:</strong> Materials for many mediums. The
+witness-beat setup (peer reflection by consent, or the year’s recordings
+of real people telling their lives). The feast planned like a real event
+with the inclusion floor (base provided, presence not consumption,
+allergen-safe). The exit ramp, named for the feast room and shown before
+families arrive - the same no-reason rule holds at a feast. The
+co-authoring review structure. The Log handoff.</p>
+<hr />
+<h1 id="part-4---closing-the-year">Part 4 - Closing the year</h1>
+<h2 id="the-unveiling-harvest">The Unveiling harvest</h2>
+<p>The Unveiling is the year’s culminating feast, and it deserves real
+weight and real warmth. It sits outside the daily morning grid - likely
+an afternoon or evening with families. Plan it like any studio feast,
+with the full inclusion floor: the base is always provided, no one
+watches a plate, everyone is allergen-safe, and presence matters more
+than what anyone brought. Each learner shows their “This Is Me” piece,
+their portfolio, and their Chapter One, as much as they choose to share.
+The whole point is being seen by your people in a room that is glad you
+exist.</p>
+<p>Remember the honored empty outcome, here as everywhere: a learner who
+feels flat, or exposed, or unfinished has not failed the harvest. “I
+have nothing to declare this year” is a real and honored harvest. The
+fallow field is part of the crop.</p>
+<h2 id="the-year-scale-closing-minute">The year-scale closing
+minute</h2>
+<p>The year opens with a felt beginning and closes with a public harvest
+- and a public harvest is itself an opening outward. So the year needs
+its private close, or the learner is left facing out with no way back
+in. It runs on the year-close day, the last guided day of Session 7,
+after the feast has had its own night. It is a naming, not a new
+ceremony: the practice they have run all year, put in their own hand at
+the year’s scale. The words are in Session 7 and they do not change.</p>
+<p>Then a real fallow stretch before the next year begins. Never walk a
+new year’s opening on a body still activated from the last one. The
+learner who is staying needs this between-years close as much as a
+graduating learner needs the Launch - it is the arc-scale version of the
+practice they have run all year, put in their own hand.</p>
+<h2 id="the-tail-of-the-year-open-waters">The tail of the year: Open
+Waters</h2>
+<p>The flex tail runs May 8 to May 25, the three weeks after Session 7
+closes on May 4. It is light structure, not a void: real-world
+expeditions, personal-project deep dives, high-school-credit close-out
+for anyone finishing the year’s plan, and genuine fallow - rest is a
+legitimate use of it. Name it to families as intentional: flex plus
+fallow, not “we’ll figure it out.” And the bridge into the next year is
+one sentence: <em>“You know your story now. Next year: what is worth
+solving?”</em></p>
+<hr />
+<p class="note"><em>“We evoke - we never extract.” - and that includes the guide, and
+everyone in the room.</em></p>
+
+
+</body></html>
