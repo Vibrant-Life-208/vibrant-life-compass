@@ -68,6 +68,23 @@ Wall §0 as the headline. The Ogilvy long-copy page: everything a parent asks fi
 
 Every claim was checked against the Origin book's Part 1 before it went on the page (the 9:00 to 1:00 morning, Tuesday and Thursday guide mornings, Monday and Wednesday own mornings with the guide at Tots until noon, the Log never read, the Growth Record and the credit exception, the referral posture).
 
+### The voice-tells audit, 21 October
+
+Run with `evoked-dev/scripts/voice-tells-audit.sh` over both the HTML sources and the text extracted from the rendered PDFs, so that nothing could hide behind an HTML entity. The two passes agreed exactly, which is the useful part: no em dash was written as `&mdash;` anywhere.
+
+| File | Hard fails | Soft flags |
+|---|---|---|
+| `The-Launch-Pad-Poster-v2.pdf` | 0 | 3 |
+| `The-Launch-Pad-Parent-Information-Poster-v2.pdf` | 0 | 1 |
+| `The-Launch-Pad-Story-Poster-StarMap.pdf` | 0 | 0 |
+| `2026-06-25-launch-pad-overview-one-pager.pdf` | 0 | 0 |
+
+No em dashes, no en dashes, no sycophancy markers, nothing from the slop-vocabulary list. Fifteen of the seventeen checks were clean on every file.
+
+**All four soft flags are the word "rather", and all four are false positives.** The hedging pattern is `[Rr]ather` as a bare word, which cannot tell a hedge from a comparative. The four uses are "in the plan rather than a thing we let slip", "we would rather you hear that from us", "if you'd rather not", and "we will say so plainly rather than keep a list warm". Every one of them sharpens a claim rather than softening it, which is the opposite of the thing the check exists to catch. Left alone deliberately; if a later pass flags them again, this is the answer.
+
+**Worth knowing about the scope.** None of these paths sit inside the enforced voice-discipline surface, which is `evoke-ideas/` and the two `evoked-dev` content directories. No pre-commit hook runs this script on `vibrant-life-compass`, so the audit is a thing someone has to choose to do. That is a gap rather than a decision, and it is worth a captain's call whether the family-facing tier should be inside a hook.
+
 ---
 
 ## 4. What is open, and who reads next
