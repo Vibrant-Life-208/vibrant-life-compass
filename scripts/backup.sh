@@ -49,7 +49,24 @@ BASE="$DIR/vlc-$STAMP.sql.gz"
 
 echo "Dumping database -> $BASE"
 # --no-owner / --no-privileges keep the dump portable to a fresh project on restore.
-pg_dump "$VLC_DB_URL" --no-owner --no-privileges | gzip > "$BASE"
+# Dump to a temp file FIRST so pg_dump's exit code is checked directly. A piped
+# `pg_dump | gzip` hides pg_dump failure behind gzip's success - that once wrote
+# an empty 20-byte "backup" after an auth failure and still reported complete.
+TMP="$DIR/.vlc-$STAMP.sql.part"
+if ! pg_dump "$VLC_DB_URL" --no-owner --no-privileges > "$TMP"; then
+  rm -f "$TMP"
+  echo "ERROR: pg_dump failed - NO backup was written. (Check VLC_DB_URL / password.)" >&2
+  exit 1
+fi
+# A real dump is many KB. Refuse to call an empty/tiny file a backup.
+BYTES=$(wc -c < "$TMP" | tr -d ' ')
+if [ "$BYTES" -lt 1000 ]; then
+  rm -f "$TMP"
+  echo "ERROR: dump was only ${BYTES} bytes - refusing to call this a backup." >&2
+  exit 1
+fi
+gzip -c "$TMP" > "$BASE"
+rm -f "$TMP"
 
 if [ -n "$VLC_BACKUP_PASSPHRASE" ]; then
   ENC="$BASE.enc"
