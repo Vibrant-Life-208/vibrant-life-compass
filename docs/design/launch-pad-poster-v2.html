@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Launch Pad - Poster v2 (Not a high school)</title>
+<style>
+  /* Letter portrait, built to the 1960 DDB page: picture on top, one headline,
+     three columns of plain copy, a small signature. Futura, like the originals. */
+  @page { size: 8.5in 11in; margin: 0; }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  .poster {
+    width: 8.5in; height: 11in; position: relative; overflow: hidden; box-sizing: border-box;
+    padding: 0.55in 0.6in 0.5in; background: #fff; color: #111;
+    font-family: "Futura", "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  .picture { height: 5.35in; display: flex; align-items: center; justify-content: center; }
+  .picture svg { width: 3.6in; height: 3.6in; display: block; }
+  h1 {
+    margin: 0.02in 0 0; font-size: 60px; line-height: 1; font-weight: 700; letter-spacing: -0.5px; color: #111;
+  }
+  .cols { column-count: 3; column-gap: 0.26in; margin-top: 0.22in; }
+  .cols p { margin: 0 0 0.11in; font-size: 12px; line-height: 1.42; font-weight: 500; }
+  .cols p:last-child { margin-bottom: 0; }
+  .sig { position: absolute; left: 0.6in; right: 0.6in; bottom: 0.42in; display: flex; justify-content: space-between; align-items: flex-end; }
+  .sig .mark { display: flex; align-items: center; gap: 8px; }
+  .sig .mark svg { width: 26px; height: 26px; }
+  .sig .mark b { white-space: nowrap; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; }
+  .sig .line { font-size: 10.5px; color: #333; text-align: right; line-height: 1.4; }
+  @media print { * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- The picture: the turning cycle, small, in a lot of white. -->
+  <div class="picture">
+    <svg viewBox="0 0 400 400" role="img" aria-label="A wheel of three turning parts: Origin, The Forge, The Helm. A small star sits just outside the wheel.">
+      <path d="M 200,60 A 140 140 0 0 1 321.24,270 L 271.01,241 A 82 82 0 0 0 200,118 Z" fill="#D98A2B"/>
+      <path d="M 321.24,270 A 140 140 0 0 1 78.76,270 L 128.99,241 A 82 82 0 0 0 271.01,241 Z" fill="#2A9D8F"/>
+      <path d="M 78.76,270 A 140 140 0 0 1 200,60 L 200,118 A 82 82 0 0 0 128.99,241 Z" fill="#5B5B8A"/>
+      <g fill="#fff" font-size="15" font-weight="700" letter-spacing="1.5" font-family="Futura, Avenir Next, Helvetica, sans-serif" text-anchor="middle">
+        <text transform="translate(296 144.5) rotate(60)" dy="5">ORIGIN</text>
+        <text x="200" y="316">THE FORGE</text>
+        <text transform="translate(104 144.5) rotate(-60)" dy="5">THE HELM</text>
+      </g>
+      <circle cx="200" cy="200" r="70" fill="#fff" stroke="#E7E1D8" stroke-width="1.5"/>
+      <text x="200" y="196" text-anchor="middle" fill="#6B6B6B" font-size="11" letter-spacing="1" font-family="Futura, Avenir Next, Helvetica, sans-serif">YOUR</text>
+      <text x="200" y="214" text-anchor="middle" fill="#111" font-size="16" font-weight="700" font-family="Futura, Avenir Next, Helvetica, sans-serif">Log</text>
+      <!-- the small star, off the wheel: the send-off belongs to the learner, not the calendar -->
+      <path d="M352 48 l4.2 9.1 10 1 -7.4 6.7 2 9.9 -8.8 -5.1 -8.8 5.1 2 -9.9 -7.4 -6.7 10 -1z" fill="#E2B23A"/>
+    </svg>
+  </div>
+
+  <h1>Not a high school.</h1>
+
+  <div class="cols">
+    <p>The Launch Pad is a three-year studio at Vibrant Life for learners aged 16 to 18. There are no grades, no rankings, and no deadlines the learner didn't set. Nobody here is sorted.</p>
+    <p>Two mornings a week the learners work with a guide. Two mornings they run themselves. Friday is never filled, on purpose, and that is in the plan rather than a thing we let slip.</p>
+    <p>The first year asks one question, <i>Who am I?</i> The second asks <i>What is worth solving?</i> The third asks <i>What do I do when there is no easy answer?</i> Each learner keeps a Log through all three years. It is theirs. No one reads it but them.</p>
+    <p>Here is what one guide can hold, and here is what she can't: it is one guide, there is no aide, and on guide mornings her baby is in the room. The room holds a handful of learners. We would rather you hear that from us than find it out.</p>
+    <p>The whole three years is printed, every page written so a sixteen-year-old can read it. Ask for a copy. Then come sit in the room one evening, try a morning yourselves, and decide. If you'd rather not, nothing changes between us.</p>
+  </div>
+
+  <div class="sig">
+    <div class="mark">
+      <svg viewBox="0 0 400 400" aria-hidden="true">
+        <path d="M 200,60 A 140 140 0 0 1 321.24,270 L 271.01,241 A 82 82 0 0 0 200,118 Z" fill="#D98A2B"/>
+        <path d="M 321.24,270 A 140 140 0 0 1 78.76,270 L 128.99,241 A 82 82 0 0 0 271.01,241 Z" fill="#2A9D8F"/>
+        <path d="M 78.76,270 A 140 140 0 0 1 200,60 L 200,118 A 82 82 0 0 0 128.99,241 Z" fill="#5B5B8A"/>
+      </svg>
+      <b>Vibrant Life &middot; The Launch Pad</b>
+    </div>
+    <div class="line">Opens August 2027, Boise. Erin Stanley, guide.<br>Ask at Vibrant Life for the books or an evening in the room.</div>
+  </div>
+
+</div>
+</body>
+</html>
