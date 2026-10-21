@@ -1,7 +1,13 @@
 # Launch Pad Year 1 - Session 3 "The Power of Choice" - Day by Day
 
-**Status:** v0.1 working draft (+ Ring-1 seeds 2026-08-28)
-**Dates:** Sep 27 - Oct 15, 2027 (weeks 7-9 of Origin)
+> **SUPERSEDED 2026-10-21. Do not plan from this file.** Its calendar is the invented three-week cadence that the 2026-10-16 week-structure repair corrected. Session 3 does not run Sep 27 - Oct 15, 2027; it runs **Nov 1 - Nov 18, 2027** and ends into Thanksgiving. The holiday named below (Indigenous Peoples' Day, Mon Oct 11) is not in this session at all; the two holidays that are in it are Election Day, Tue Nov 2, and Veterans Day, Thu Nov 11, both on guided mornings.
+>
+> **The canonical Session 3 is `docs/lesson-plans/origin-lesson-plan-book.md`, Part 3.** The detail - the fork bank, the story ladder, the guide-day grid - is in `docs/design/launch-pad-session-3-forks-and-stories-v0.1.md`. This file is kept for lineage only: the arc, the five-region tie, and the care point below were all carried forward into the book.
+>
+> *The other six session day-by-day files in this directory carry the same retired calendar and have not been marked. Named for the captain rather than edited here.*
+
+**Status:** v0.1 working draft, SUPERSEDED (+ Ring-1 seeds 2026-08-28)
+**Dates:** ~~Sep 27 - Oct 15, 2027 (weeks 7-9 of Origin)~~ retired; the real dates are Nov 1 - Nov 18, 2027 (weeks 10-12)
 **Companions:** Sessions 1-2 day-by-day; studio-year-plan v0.3; three-year spec
 
 ## The session at a glance

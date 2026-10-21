@@ -219,7 +219,48 @@ def post_process(body_html):
     return body_html
 
 
-def render(key):
+# ---------------------------------------------------------------- spiral mode
+# Geometry only. The design is untouched; what changes is where the paper is
+# punched. A spiral punch eats 10-12mm, so the binding edge needs a real gutter
+# and the page numbers have to move to the OUTSIDE edge where a thumb can find
+# them. Recto (:right) is bound on its left; verso (:left) is bound on its right.
+SPIRAL_CSS = """
+@page {{
+  margin: 20mm 16mm 17mm 30mm;
+  @top-center {{ content: none; }}
+  @bottom-center {{ content: none; }}
+}}
+@page :right {{
+  margin: 20mm 16mm 17mm 30mm;
+  @top-right {{ content: "{title}   ·   Launch Pad"; font-family: {sans}; font-size: 8pt;
+                letter-spacing: .14em; color: #C3B8A8; text-transform: uppercase; }}
+  @bottom-right {{ content: counter(page); font-family: {sans}; font-size: 9pt; color: #B9AE9E; }}
+}}
+@page :left {{
+  margin: 20mm 30mm 17mm 16mm;
+  @top-left {{ content: "{title}   ·   Launch Pad"; font-family: {sans}; font-size: 8pt;
+               letter-spacing: .14em; color: #C3B8A8; text-transform: uppercase; }}
+  @bottom-left {{ content: counter(page); font-family: {sans}; font-size: 9pt; color: #B9AE9E; }}
+}}
+@page cover {{ margin: 0; @top-right {{ content: none; }} @top-left {{ content: none; }}
+               @bottom-right {{ content: none; }} @bottom-left {{ content: none; }} }}
+.cover {{ padding: 0 26mm 0 36mm; }}   /* clear the punch on the cover too */
+@page glance {{ @top-right {{ content: none; }} @top-left {{ content: none; }} }}
+
+/* a working book that lies flat wants a place to write */
+.notespage {{ page-break-before: always; }}
+.notespage h2 {{ font-family: {sans}; font-size: 10pt; letter-spacing: .18em;
+                 text-transform: uppercase; color: {accent_dark}; border: none;
+                 margin: 0 0 8mm 0; padding: 0; }}
+.notespage .rule {{ border-bottom: 1px solid #DCD3C6; height: 9mm; }}
+.blankpage {{ page-break-before: always; height: 50vh; }}
+"""
+
+NOTES_PAGE = ('<section class="notespage"><h2>Notes</h2>'
+              + '<div class="rule"></div>' * 18 + "</section>")
+
+
+def render(key, spiral=False):
     cfg = BOOKS[key]
     md_text = pathlib.Path(cfg["md"]).read_text()
     subtitle, body_md = parse_front_and_body(md_text)
@@ -228,7 +269,18 @@ def render(key):
 
     css = CSS.format(accent=cfg["accent"], accent_dark=cfg["accent_dark"], tint=cfg["tint"],
                      title=cfg["title"], sans=SANS, serif=SERIF)
-    doc = f"""<!doctype html><html><head><meta charset="utf-8"><style>{css}</style></head><body>
+    if spiral:
+        css += SPIRAL_CSS.format(accent=cfg["accent"], accent_dark=cfg["accent_dark"],
+                                 title=cfg["title"], sans=SANS)
+
+    out = cfg["out"]
+    if spiral:
+        out = out.with_name(out.stem + "-SPIRAL" + out.suffix)
+
+    from weasyprint import HTML
+
+    def build(extra_tail=""):
+        doc = f"""<!doctype html><html><head><meta charset="utf-8"><style>{css}</style></head><body>
 <section class="cover">
   <div class="kicker">{html.escape(cfg["kicker"])}</div>
   <h1 class="ttl">{html.escape(cfg["title"])}</h1>
@@ -239,20 +291,33 @@ def render(key):
 </section>
 {glance}
 {body_html}
+{extra_tail}
 </body></html>"""
+        return doc, HTML(string=doc, base_url=str(HERE)).render()
+
+    tail = NOTES_PAGE if spiral else ""
+    doc, rendered = build(tail)
+
+    # A duplex spiral book wants an even leaf count, or the last sheet carries a
+    # stray recto with nothing on its back. Pad with one blank rather than let
+    # the print shop decide.
+    if spiral and len(rendered.pages) % 2:
+        tail += '<section class="blankpage"></section>'
+        doc, rendered = build(tail)
 
     # sanity: no em/en dashes should survive into the render
     bad = doc.count("—") + doc.count("–")
-    html_out = pathlib.Path(cfg["out"]).with_suffix(".html")
-    html_out.write_text(doc)
-
-    from weasyprint import HTML
-    HTML(string=doc, base_url=str(HERE)).write_pdf(str(cfg["out"]))
-    print(f"{key}: wrote {cfg['out'].name}  (em/en dashes in render: {bad})")
+    pathlib.Path(out).with_suffix(".html").write_text(doc)
+    rendered.write_pdf(str(out))
+    print(f"{key}: wrote {out.name}  ({len(rendered.pages)}pp, "
+          f"em/en dashes in render: {bad})")
 
 
 if __name__ == "__main__":
-    which = sys.argv[1] if len(sys.argv) > 1 else "origin"
+    args = [a for a in sys.argv[1:]]
+    spiral = "--spiral" in args
+    args = [a for a in args if not a.startswith("--")]
+    which = args[0] if args else "origin"
     keys = list(BOOKS) if which == "all" else [which]
     for k in keys:
-        render(k)
+        render(k, spiral=spiral)

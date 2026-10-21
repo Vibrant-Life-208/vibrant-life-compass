@@ -83,7 +83,7 @@ The Unveiling is a celebration, and being seen can be exposing - especially for 
 
 ---
 
-## After the year: Open Waters (Apr 10 - late May)
+## After the year: Open Waters (May 10 - May 25, 3 weeks)
 The flex tail: expeditions, personal-project deep dives, HS-credit close-out, and - for any graduating captains - the **Next Great Adventure** send-off. See studio-year-plan v0.3.
 
 **Bridge into Year 2 (The Forge):** *"You know your story now. Next year: what is worth solving?"*

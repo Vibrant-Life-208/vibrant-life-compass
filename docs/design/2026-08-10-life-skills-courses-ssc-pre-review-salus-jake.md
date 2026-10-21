@@ -257,4 +257,56 @@ Verified end-to-end: Discovery renders 9 steps (3×3) with its own arc/copy; the
 **Still binding, unchanged:** Wellness HOLD-FOR-HUMAN (the Discovery Wellness surface — no body content
 — is part of what the clinician reads); the consented real-learner walk gates *every* register,
 Discovery most of all (*eight is more vulnerable than sixteen*). Nothing here lifts the flag.
+
+---
+
+## Addendum 4 — Polaris ethical pass, 2026-10-04 (Prime Directive axis)
+
+*Convened by Ibn Khaldūn at Europa's direction; Polaris was the one named voice on the owed gate who had never read these courses. Salus and Jake attended to hand over this document, explicitly NOT to re-review — their own standing position forbids a second agent pass substituting for the real gates. Full minutes: `evoke-agents-backup/agents/meetings/2026/10/2026-10-04-polaris-ethical-review-four-life-skills-courses.md`.*
+
+**Verdict: no Prime Directive block in any of the four.** Polaris explicitly declined to author a third gate — *"a third gate authored by me today would not protect a child; it would protect my seat."* Two new conditions and one clarification, all attaching to gates that already exist.
+
+### P-ALL-1 — material-conditions parity (NEW CONDITION; copy, not architecture)
+
+Several Stage 1 steps assume a child who controls their own conditions. This is not a safety harm (Salus's axis) or a developmental mismatch (Jake's axis) — it is a **sorting mechanism**, which is why neither prior axis caught it:
+
+| Step | Silent assumption |
+|---|---|
+| Wellness 1.1 *"Sleep one night well — screens down early, lights low"* | A room you control |
+| Wellness 1.3 *"Get outside — a little green or open air"* | Green space safe to stand in |
+| Wellness 1.4 *"Eat something that nourishes you — no earning it"* | Food in the house |
+| Wellness 3.4 *"Belong to something — show up once"* | A group exists and is reachable |
+| Financial 1.2 *"Need vs want, one week"* | Money that is the child's; otherwise invites a child to audit their parents |
+
+> *Polaris:* "The child with a quiet bedroom and a full fridge completes Stage 1 and feels capable. The child sharing a room above a noisy street, whose family is deciding between food and rent, reads the same four steps and learns that wellbeing is for other people. We did not tell them that. The copy told them that, by assuming."
+
+**Fix shape:** a conditional clause in the same proven form as F-1 and W-1 — *"as well as your house lets you"*, *"from whatever is there."* The child with the least must be able to complete the step **honestly, not skip it.** Prime Directive 5 (*bridges, not sorting mechanisms*). Owner: Hoshi or Domus (voice). Both reviewers accepted: *Salus — "the fix here is copy, not architecture, which means it is cheap, which means there is no excuse."* *Jake — "a finding I should have made and did not."*
+
+### P-ALL-2 — cross-course firewall aggregate (NEW WALK-WATCH ITEM; attaches to C-ALL-1)
+
+**No firewall step changes.** All four hold individually, and for a named reason: the sharpest suspicion each teaches is turned *inward at the child's own temptation*, not outward at people. But all four carry a firewall step and three ask the child to turn it on themselves — so a child walking all four practises self-suspicion three times. Invisible to any single-course review, because no single course is the problem.
+
+**Watch at the walk:** does this child leave the *fourth* firewall lighter or heavier? The scrupulosity axis. *Jake: "scrupulosity in adolescence hides behind conscientiousness, which adults reward. A kid who is very good at Leadership 2.4 may be a kid who cannot stop running it."*
+
+### C-ALL-2 clarified for Discovery — a guide-script condition, not a code condition
+
+The surface is read-only, nothing persists, nothing counts, no step gates another — so structurally **there is nothing to skip.** Polaris: *"Nothing to comply with is not the same as a visible right to decline. C-ALL-2 is currently satisfied by absence rather than by design."*
+
+For a sixteen-year-old reading alone, absence suffices. For an eight-year-old in a studio with a guide present, **the pressure was never in the interface** — the child reads the guide's face and does the step because Rose is watching and Rose seems pleased. No code review closes that.
+
+**Therefore:** the guide must say the skip aloud, mean it, and be seen to be fine with it. Added to walk observation: not only *does the child skip*, but **does the child skip in front of the guide.** *Salus: "protection sits where the pressure lands, not in the fine print — moved out of the copy and into the room."*
+
+### Q3 register split (for the human reviewer's awareness)
+
+The wellness firewall's evidentiary basis was resolved 2026-09-28 (`evoke-agents-backup/agents/meetings/2026/08/2026-08-09-wellness-durable-wellbeing-RESEARCH-REPORT.md` §11) from *"tracking IS harmful (evidenced)"* to **consensus-plus-precaution** (AAP + Academy for Eating Disorders; the best systematic review draws no causal conclusion and names adolescents under-researched). Polaris's ruling on how that lands on a child:
+
+> "The child is not the audience for the epistemics, and collapsing the two audiences is the actual risk. A fourteen-year-old does not need to be told a systematic review drew no causal conclusion — that sentence, aimed at a child, *is* hedging. What the child needs is the commitment: *we will never ask you to count anything about your body, because you are not a project.* Flat. No citation. **And yet the discipline itself should be visible at the right register**, because *we are not certain and we are being careful with you anyway* is the precise antidote to the influencer's counterfeit certainty."
+
+Evidentiary reasoning stays in the adult report; the child-facing surface carries the commitment, not the citation.
+
+### Affirmation recorded at Polaris's insistence
+
+Discovery Wellness carrying **no body, number, or tracking content at all — not even to criticise it** (`js/pillars/life-skills.js`, `COURSES_DISCOVERY`): *"the finest piece of restraint in this entire pillar. It is a refusal to teach a child what to be afraid of. Most children's safety design cannot resist that temptation, because warning feels like protecting."*
+
+**Still binding, unchanged by this addendum:** Wellness **HOLD-FOR-HUMAN** (human trauma-informed clinician; reviewer identified per Europa 2026-09-28) and **C-ALL-1** the consented real-learner walk, joint and un-substitutable. The flag stays. This pass adds two conditions and sharpens what the walk watches; **it does not discharge either gate.**
 </content>

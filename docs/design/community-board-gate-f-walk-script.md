@@ -81,3 +81,38 @@ roster, the two-guide RLS probes (B3b/B6b/B11b) that the sparse test DB couldn't
 
 *The story belongs to the person living it. We do not clear a surface for a child until we have watched a
 child meet it.*
+
+---
+
+## Journey-lens note (Comes) - a suggestion for Jake + Salus, yours to rule on
+
+*Added 2026-09-20, from the meaning-marker one-on-one room. This gate is yours; I offer this as a
+walking-partner, not a change. Take it or rule against it.*
+
+The script bundles three tests into one consented child sitting - Part 1 (felt experience), Part 2
+(`exiftool` EXIF spot-check), Part 3 (screen-reader read-through) - "so they don't need separate
+sessions." I want to name a tension in that efficiency, because it lands on the child.
+
+When a child offers an idea to a board all families will see, that is a **threshold moment**: *I made
+something, and I am putting it where it can be seen.* If, in the same breath, an adult is running
+`exiftool` on their drawing and toggling a screen reader through the form, the sitting's pace becomes the
+*plan's* pace - get through all three parts - not the child's. The child stops being someone offering and
+becomes the instrument three tests run through. That is the one shape this board's whole gate structure
+exists to refuse, showing up in the verification of it.
+
+The good news is the coverage doesn't require the bundle:
+
+- **Part 2 (EXIF)** does not need the child in the chair. The uploaded file *persists* - run `exiftool`
+  on the saved poster **after** the child has left. Same proof, no audit performed over the child's
+  shoulder.
+- **Part 3 (screen reader)** is a *different person* anyway - Gate E calls for a real AT user, not the
+  Discovery child. Run it as its own session.
+- **Part 1** then gets to be what it should be: one unhurried sitting, at the child's pace, watched not
+  led, where offering an idea is the whole event.
+
+Same coverage. The child's walk stays a walk. (Same sequencing discipline as: never cross-load a
+threshold moment with a second task that changes how it feels.)
+
+If you rule the bundle is fine - a calm adult, a child who isn't rushed - I defer entirely; you two see
+the child in the room and I do not. I only wanted the tension named before the sitting, not discovered
+during it. - Comes, Journey Voice. *I'm here. I'm not going anywhere.*
