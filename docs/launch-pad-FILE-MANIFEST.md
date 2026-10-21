@@ -19,9 +19,9 @@ Two roots:
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/03-helm-year-2029-2030.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/10-launch-pad-three-lesson-plan-books.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/20-2026-06-25-launch-pad-overview-one-pager.pdf
-/Users/europa/Code/vibrant-life-compass/docs/portfolio/20-The-Launch-Pad-Story-for-Jenna.pdf
-/Users/europa/Code/vibrant-life-compass/docs/portfolio/20-The-Launch-Pad-Story-Poster-Families.pdf
-/Users/europa/Code/vibrant-life-compass/docs/portfolio/20-The-Launch-Pad-Story-Poster-Parents.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/20-family-note-PILOT-MORNING.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/20-The-Launch-Pad-Parent-Information-Poster-v2.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/20-The-Launch-Pad-Poster-v2.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/20-The-Launch-Pad-Story-Poster-StarMap.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/20-The-Launch-Pad-Story-Poster.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/30-site-walk-sheet.pdf
@@ -159,9 +159,13 @@ Needs pandoc and WeasyPrint. Paths for both are at the head of `build-portfolio.
 /Users/europa/Code/vibrant-life-compass/docs/design/2027-2028-launch-pad-five-region-dream-map.html
 /Users/europa/Code/vibrant-life-compass/docs/design/2027-2028-launch-pad-year-map.html
 /Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-poster-outcomes.html
+/Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-poster-parents-v2.html
 /Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-poster-startrek.html
+/Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-poster-v2.html
 /Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-poster.html
 /Users/europa/Code/vibrant-life-compass/docs/design/2026-06-25-launch-pad-overview-one-pager.pdf
+/Users/europa/Code/vibrant-life-compass/docs/design/The-Launch-Pad-Parent-Information-Poster-v2.pdf
+/Users/europa/Code/vibrant-life-compass/docs/design/The-Launch-Pad-Poster-v2.pdf
 /Users/europa/Code/vibrant-life-compass/docs/design/The-Launch-Pad-Story-for-Jenna.pdf
 /Users/europa/Code/vibrant-life-compass/docs/design/The-Launch-Pad-Story-Poster-Families.pdf
 /Users/europa/Code/vibrant-life-compass/docs/design/The-Launch-Pad-Story-Poster-Parents.pdf

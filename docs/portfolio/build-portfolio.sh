@@ -164,7 +164,10 @@ if [ "$SPIRAL" = "1" ]; then echo "done -> $OUT (spiral edition)"; exit 0; fi
 # 2026-10-21: the June Families and Parents posters came out of the list (wall item 4; see
 # design/2026-10-21-poster-re-evaluation-and-rebuild.md). The v2 pair replaces them. Their
 # source HTML renders with weasyprint directly: weasyprint design/launch-pad-poster-v2.html ...
-for p in The-Launch-Pad-Story-Poster.pdf The-Launch-Pad-Story-Poster-StarMap.pdf The-Launch-Pad-Poster-v2.pdf The-Launch-Pad-Parent-Information-Poster-v2.pdf 2026-06-25-launch-pad-overview-one-pager.pdf The-Launch-Pad-Story-for-Jenna.pdf; do
+# The Launch Pad Story deck came out of this list on the same grounds the same day: it carries
+# the same outcomes section, and it left the Drive folder on 20 October. Its source and its PDF
+# both stay in design/ for lineage; what stops is copying it into the family-shareable tier.
+for p in The-Launch-Pad-Story-Poster.pdf The-Launch-Pad-Story-Poster-StarMap.pdf The-Launch-Pad-Poster-v2.pdf The-Launch-Pad-Parent-Information-Poster-v2.pdf 2026-06-25-launch-pad-overview-one-pager.pdf; do
   [ -f "$D/$p" ] && cp "$D/$p" "$OUT/20-$p"
 done
 # The pilot-morning Family note - a consent instrument with signature lines, its own
