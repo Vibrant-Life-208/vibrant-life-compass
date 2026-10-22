@@ -3,6 +3,7 @@
 **Status:** v0.1 working draft, authored 2026-09-24 from the 8-voice fleet meeting (Jake Sisko, Naomi Wildman, Pavel Chekov, Kira Nerys, Ibn Khaldun, Comes, Accord, Cura). Written now; **first use after the pilot morning has been watched**; revised from the first real family conversation.
 **Companions:** `2026-06-24-launch-pad-three-year-story-cycle-v0.1.md` (the spine), `2027-2028-launch-pad-studio-year-plan-v0.3.md` (the operating plan), `launch-pad-STATUS-AND-HANDOFF.md` §5-6 (the one-page Family note and the access statement this composes with).
 **Minutes:** `evoke-agents-backup/agents/meetings/2026/09/2026-09-24-launch-pad-first-cohort-conversation-questionnaire.md`
+**Captain's revision, 2026-10-21.** Two changes to §3, made on Erin's reading of the conversation rather than by a circle, and recorded here so the next reader knows they did not come from the 2026-09-24 room. **One:** a sixth question group, *Why here, and what you would be leaving*. The set asked what a learner is curious about and what they want, and never once asked why this instead of the school they are in. That was a hole. **Two:** the taste is now built from the learner's own question by default, with the stock question as the fallback rather than the opening move. The reason is the same one: ten minutes should teach us about this learner, not demonstrate the programme at them. The out, and sign 3 with it, stays exactly where it was, inside the taste.
 
 ---
 
@@ -93,7 +94,9 @@ Signs 1-5 are the learner's. Signs 6-7 are the family's and the guide's. Sign 8 
 
 **The questions.** Below. Pick from them; do not run them all. The guide holds questions, not answers.
 
-**A taste.** Ten minutes of the real thing: one impossible question held Socratically ("Could one person change a system?" or one the learner brings), or one choice game from Session 3. The learner sees what a morning is like, and the guide sees whether the learner can say "I don't know" and whether they can disagree.
+**A taste, built from their question where there is one.** Ten minutes of the real thing, held Socratically. **Start from something the learner has already said they cannot stop thinking about**, and ask it back to them as the hard version of itself. If nothing has surfaced, or they would rather not hand theirs over, use a stock question ("Could one person change a system?") or one choice game from Session 3, and that is a fine morning too. Taking the stock question is never read as a sign of anything.
+
+The ten minutes has two jobs and the first is theirs: the learner sees what a morning is actually like before being asked to want one. The second is ours: the guide sees whether they can say "I don't know" and whether they can disagree, which no answer about the past will show.
 
 **The out.** Somewhere in the taste, the guide offers something the learner can decline right there: *"Here's a part of this you can say no to right now, and I'd like to see you do it if it isn't yours."* Sign 3 is read here, not in the answers.
 
@@ -109,6 +112,18 @@ The pass sentence is said once, at the start, so it does not have to be repeated
 - What did your family tell you this is?
 - What do you think it is?
 - What do you want to ask me?
+
+*Why here, and what you would be leaving*
+
+Ask these sideways and only as far as they open. A learner whose family brought them often has no answer yet, and "I don't know" is complete here too. Never ask "why do you want to be here?" cold: it lands as *justify yourself*, which is the one register this conversation exists to avoid. Never frame it against their school as a thing to criticise; a learner performing dissatisfaction tells you nothing, and it quietly casts us as the rescue.
+
+- What is school good at, for you? What is it bad at?
+- What do you want that you cannot get where you are now?
+- If nothing changed and you stayed where you are, what would that be like?
+- Who told you about this, and what did you think when you heard it?
+- Is there anything you would miss?
+
+**The last one carries the most.** A learner who can name what they would lose is choosing rather than escaping. A learner who says "nothing" is telling you something as well. Neither is a wrong answer and neither is a sign.
 
 *A live question (sign 1)*
 - What can't you stop thinking about?
