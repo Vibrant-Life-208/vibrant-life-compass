@@ -87,6 +87,27 @@ No em dashes, no en dashes, no sycophancy markers, nothing from the slop-vocabul
 
 ---
 
+## 3b. The art-directed rebuild, same day
+
+The captain's read on the first pair was that they were not artsy or eye-catching. That is a fair call and the fault was mine: I built to a theory about honest copy and treated the page itself as something to keep plain. The wall never asked for that. Item 9 names the vocabulary as **a star map and a cycle**, and item 10 adds the **brass-line design**, which is an invitation to make something beautiful rather than a instruction to make something austere.
+
+**Both treatments ship.** Each piece now exists twice, and the copy is identical across all four, so nothing promises an outcome in either.
+
+| | Brass | Night |
+|---|---|---|
+| Ground | Parchment, double rule frame | Deep indigo star field |
+| Display face | Big Caslon | Didot |
+| Small caps | Copperplate | Copperplate |
+| Best for | Handing over, photocopying, enlarging | A wall at an open evening |
+
+The parent sheet carries seven blocks of text, so the night version puts the drama in a dark masthead and drops to a cream reading panel at the fold. Seven blocks reversed out of a night field would be unreadable, and a poster that cannot be read is not a poster.
+
+**Sources are generated, not hand-written.** `design/poster-build.py` emits all four HTML files, so the geometry (tick rings, arcs, star fields) is computed rather than typed. Render with headless Chrome; weasyprint drops the gradients.
+
+Three things the first cut got wrong and this one fixes. The Helm's question is long enough to run off the page when set as a radial label, so the three questions now sit in a legible stack with colour dots tying them to the arcs. A label on the bottom of a circle only reads right side up on a counter-clockwise arc, which is why **THE FORGE** was upside down. And an `feTurbulence` grain filter, invisible at print size, rasterised to a **16MB** embedded bitmap in each brass PDF; removing it took the set from 33MB to 748KB, which also matters because the browser upload path caps at 10MB.
+
+---
+
 ## 4. What is open, and who reads next
 
 **Captain's calls**
