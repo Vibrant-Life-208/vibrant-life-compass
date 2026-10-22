@@ -30,7 +30,10 @@ Two roots:
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/20-The-Launch-Pad-Poster-Night.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/20-The-Launch-Pad-Story-Poster-StarMap.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/20-The-Launch-Pad-Story-Poster.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/20-a-day-on-a-page.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/20-family-note-PILOT-MORNING.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/20-letter-to-the-learner.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/20-six-promises-card.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/30-site-walk-sheet.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/31-pilot-morning-call-sheet.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/40-the-first-conversation.pdf
@@ -87,6 +90,7 @@ Needs pandoc and WeasyPrint. Paths for both are at the head of `build-portfolio.
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/build-portfolio.sh
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/draft-style.css
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/drive-start-here-v2.html
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/style-letter.css
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/style-onepager.css
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/style-spiral.css
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/style.css
@@ -200,7 +204,11 @@ Needs pandoc and WeasyPrint. Paths for both are at the head of `build-portfolio.
 ### Design notes
 ```
 /Users/europa/Code/vibrant-life-compass/docs/design/2026-10-21-poster-re-evaluation-and-rebuild.md
+/Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-a-day-on-a-page-v0.1.md
+/Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-guides-card-v0.1.md
+/Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-learner-refusals-card-v0.1.md
 /Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-letter-to-the-learner-v0.1.md
+/Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-three-reply-letters-v0.1.md
 ```
 
 ---
@@ -260,4 +268,4 @@ rule in `docs/build-file-manifest.py`, or let them sit here where they can be se
 
 ---
 
-*Written 2026-10-21 by `docs/build-file-manifest.py`. 126 files in scope.*
+*Written 2026-10-21 by `docs/build-file-manifest.py`. 134 files in scope.*
