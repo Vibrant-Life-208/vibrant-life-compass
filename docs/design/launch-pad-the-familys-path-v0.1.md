@@ -58,7 +58,7 @@ Status key: **HAVE** exists and is usable · **HAVE (cut)** exists but needs a f
 | Piece | Status | Notes |
 |---|---|---|
 | The evening, designed | **HAVE** | Promotion doc §3: the settle, a choice game, the Table, the refusals read aloud, no learners present |
-| **The run sheet** | **MISSING** | Designed but not written as something to hold. Accord owes the exhale read on it |
+| **The run sheet** | **DRAFT**, 2026-10-21 | Designed but not written as something to hold. Accord owes the exhale read on it |
 | The mode menu, handed to the learner | **HAVE** | Door doc §3.1. The learner chooses, so the learner receives it |
 | Low-sensory seat, written version of everything said | room property | Chekov's condition, built in rather than offered on request |
 
@@ -68,7 +68,7 @@ Status key: **HAVE** exists and is usable · **HAVE (cut)** exists but needs a f
 |---|---|---|
 | The learner conversation, shape and questions | **HAVE** | Door doc §3, questions rewritten direct 2026-09-26 |
 | The family conversation | **HAVE** | Door doc §4, including the three parent refusals |
-| **The guide's card** | **MISSING** | One page to hold in the room: the pass sentence, the shape, the questions, the eight fit signs marked yes, no or not seen. The second adult countersigns |
+| **The guide's card** | **HAVE**, 2026-10-21 | One page to hold in the room: the pass sentence, the shape, the questions, the eight fit signs marked yes, no or not seen. The second adult countersigns |
 
 ### Stage 5 - The week alone
 
@@ -109,7 +109,7 @@ Seven of the gaps above are ordinary writing. Three of them block the door.
 2. **The access statement.** Named as owed in three consecutive sittings. Chekov's condition is binding: no conversation before it exists, because "not a fit" enforced without it is disability screening nobody decided to do.
 3. **What happens if something happens to you.** A family committing a child to three years with a solo guide who is pregnant will ask this, and the honest answer today is a document that does not exist. The Successor Envelope is already P0-2, the first item on the handoff's founder list, to be authored while rested and co-signed. It is also the answer to the hardest question at the door.
 
-Then, in rough order of how soon a family will want them: the year calendar; the FAQ with a named owner for the dual-enrollment clock; the three reply letters; the guide's card; the evening run sheet. **A day on a page and the learner's refusals card were written 2026-10-21** and are no longer on this list.
+Then, in rough order of how soon a family will want them: the year calendar; the FAQ with a named owner for the dual-enrollment clock; the three reply letters; **Written 2026-10-21 and no longer on this list:** a day on a page, the learner's refusals card, the guide's card (`launch-pad-guides-card-v0.1`, double-sided), the three reply letters (`launch-pad-three-reply-letters-v0.1`), the evening run sheet (`-DRAFT`, the clock is proposed and Accord's exhale read is still owed) and the FAQ (`-PARTIAL`, four answers written, four not answerable). **The FAQ names what it cannot answer:** sports and the dual-enrollment owner are phone calls, the diploma question is Jenna's, and what happens if a family moves mid-year is a document nobody has written, the same shape as the withdrawal path the pilot note needed.
 
 ---
 

@@ -1,4 +1,4 @@
-**The conversation, on one page.** Carry this in. The full questions are in `2027-2028-launch-pad-first-cohort-conversation-v0.1.md` §3.3; this is what you hold while you are in the room.
+**The conversation, on one card. Print double-sided.** Front is how to run it, back is what you record. Carry it in. The full questions are in `2027-2028-launch-pad-first-cohort-conversation-v0.1.md` §3.3; this is what you hold while you are in the room.
 
 Learner \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ Date \_\_\_\_\_\_\_\_\_\_ Second adult \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
 
@@ -43,7 +43,7 @@ Somewhere inside the taste, hand them something to decline:
 
 ---
 
-### The signs. Yes, no, or not seen. No numbers. Never ranked.
+### Back of the card: the signs. Yes, no, or not seen. No numbers. Never ranked.
 
 | # | Sign | Y / N / not seen | One sentence of what was seen |
 |---|---|---|---|
