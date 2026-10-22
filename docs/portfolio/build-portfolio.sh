@@ -195,6 +195,18 @@ echo "built 20-family-note-PILOT-MORNING.pdf ($(pages "$OUT/20-family-note-PILOT
   -o "$OUT/20-letter-to-the-learner.pdf" 2> >(grep -v "Ignored" >&2 || true)
 echo "built 20-letter-to-the-learner.pdf ($(pages "$OUT/20-letter-to-the-learner.pdf")pp)"
 
+# A day on a page, and the learner's own copy of the six promises. Both are lifts
+# from the Origin book rather than new writing, so the words a family reads are the
+# same words the guide's book uses. Same print style as the letter.
+for pair in "launch-pad-a-day-on-a-page-v0.1|20-a-day-on-a-page|A day on a page" \
+            "launch-pad-learner-refusals-card-v0.1|20-six-promises-card|Six promises"; do
+  src="${pair%%|*}"; rest="${pair#*|}"; out="${rest%%|*}"; ttl="${rest#*|}"
+  "$PANDOC" "$D/$src.md" -s -f markdown-yaml_metadata_block --metadata title="$ttl" \
+    --css="$OUT/style-onepager.css" --css="$OUT/style-letter.css" --pdf-engine="$WEASY" \
+    -o "$OUT/$out.pdf" 2> >(grep -v "Ignored" >&2 || true)
+  echo "built $out.pdf ($(pages "$OUT/$out.pdf")pp)"
+done
+
 # The site walk sheet - a form to carry and fill in, its own print style
 "$PANDOC" "$D/launch-pad-site-walk-sheet-v0.1.md" -s -f markdown-yaml_metadata_block \
   --css="$OUT/walk-style.css" --pdf-engine="$WEASY" -o "$OUT/30-site-walk-sheet.pdf" 2> >(grep -v "Ignored" >&2 || true)

@@ -97,7 +97,7 @@ Status key: **HAVE** exists and is usable · **HAVE (cut)** exists but needs a f
 |---|---|---|
 | Captain's Log, 100 Dreams card, Year-Map, Weekly Plan pad, Five-Region map | **HAVE (spec)** | Session 1 materials list. Print and buy before Aug 16 |
 | The Two-Way Deal: the six refusals read as a promise, then the tribe co-writes its agreements | **HAVE** | Session 1 day-by-day, Day 1 |
-| **The learner's own copy of the six refusals, to keep** | **MISSING** | They exist as a Day-1 activity but not as an object the learner holds. "These are promises to you, and you can hold us to them" |
+| **The learner's own copy of the six refusals, to keep** | **HAVE**, 2026-10-21 | `launch-pad-learner-refusals-card-v0.1.md`. One page, the six and the seventh verbatim from the Origin book, plus where a no reaches and where it stops. Opens "These are promises to you. You can hold us to them" |
 
 ---
 
@@ -109,7 +109,7 @@ Seven of the gaps above are ordinary writing. Three of them block the door.
 2. **The access statement.** Named as owed in three consecutive sittings. Chekov's condition is binding: no conversation before it exists, because "not a fit" enforced without it is disability screening nobody decided to do.
 3. **What happens if something happens to you.** A family committing a child to three years with a solo guide who is pregnant will ask this, and the honest answer today is a document that does not exist. The Successor Envelope is already P0-2, the first item on the handoff's founder list, to be authored while rested and co-signed. It is also the answer to the hardest question at the door.
 
-Then, in rough order of how soon a family will want them: a day on a page; the year calendar; the FAQ with a named owner for the dual-enrollment clock; the three reply letters; the guide's card; the evening run sheet; the learner's refusals card.
+Then, in rough order of how soon a family will want them: the year calendar; the FAQ with a named owner for the dual-enrollment clock; the three reply letters; the guide's card; the evening run sheet. **A day on a page and the learner's refusals card were written 2026-10-21** and are no longer on this list.
 
 ---
 
