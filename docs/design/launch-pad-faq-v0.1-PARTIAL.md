@@ -31,8 +31,8 @@ The agreements record is the exception, and only if a Stop is ever reached. A St
 | Question a family will ask | What is missing |
 |---|---|
 | **Can my learner still play sports?** | Whether a Launch Pad learner can join a district team, a homeschool league, or neither, and under which rule. Nobody has checked Idaho's position or the district's. This is a phone call, not a writing problem |
-| **What if we move mid-year?** | There is no withdrawal-and-records answer written anywhere. What leaves with them, what does not, what is refunded, and what the Growth Record looks like at four months |
+| **What if we move mid-year?** | **Answerable once section 3 of `launch-pad-how-you-leave-v0.1.md` is settled.** That document now says what leaves with you and what does not. What it cannot say is whether the school's four-meeting withdrawal process applies to a Launch Pad family, which is Erin and Jenna, and what is refunded, which needs the price |
 | **Is there a diploma?** | Related to the credit answer above but not the same question, and the honest answer depends on what Vibrant Life as a school already does or does not issue. Jenna holds this one |
 | **Who owns the dual-enrollment clock?** | The family's-path document asks for "the FAQ with a named owner for the dual-enrollment clock." There is no name. Until there is, the college answer above has nobody standing behind it |
 
-**Two of the four are phone calls** (sports, dual enrollment). **One is a decision Jenna holds** (diploma). **One is a document nobody has written** (moving mid-year), and it is the same shape as the withdrawal path the pilot note needed.
+**Two of the four are phone calls** (sports, dual enrollment). **Two are decisions**, the diploma with Jenna and the withdrawal process with Erin and Jenna together. The document that was missing is now written; what is left inside it is the decision, not the writing.

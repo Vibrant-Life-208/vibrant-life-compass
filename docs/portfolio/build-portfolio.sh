@@ -207,6 +207,21 @@ for pair in "launch-pad-a-day-on-a-page-v0.1|20-a-day-on-a-page|A day on a page"
   echo "built $out.pdf ($(pages "$OUT/$out.pdf")pp)"
 done
 
+# The guide-facing door set, 50 onward. Not family tier: these carry working
+# notes, pending decisions and the names of people who owe reads. The 53 and 52
+# files keep PARTIAL and DRAFT in their names on purpose; neither is publishable.
+for pair in "launch-pad-guides-card-v0.1|50-guides-card|The guide's card" \
+            "launch-pad-three-reply-letters-v0.1|51-three-reply-letters|The three replies" \
+            "launch-pad-evening-run-sheet-v0.1-DRAFT|52-evening-run-sheet-DRAFT|The evening, a run sheet" \
+            "launch-pad-faq-v0.1-PARTIAL|53-faq-PARTIAL|Questions families ask" \
+            "launch-pad-how-you-leave-v0.1|54-how-you-leave|How you leave"; do
+  src="${pair%%|*}"; rest="${pair#*|}"; out="${rest%%|*}"; ttl="${rest#*|}"
+  "$PANDOC" "$D/$src.md" -s -f markdown-yaml_metadata_block --metadata title="$ttl" \
+    --css="$OUT/style-onepager.css" --css="$OUT/style-letter.css" --pdf-engine="$WEASY" \
+    -o "$OUT/$out.pdf" 2> >(grep -v "Ignored" >&2 || true)
+  echo "built $out.pdf ($(pages "$OUT/$out.pdf")pp)"
+done
+
 # The site walk sheet - a form to carry and fill in, its own print style
 "$PANDOC" "$D/launch-pad-site-walk-sheet-v0.1.md" -s -f markdown-yaml_metadata_block \
   --css="$OUT/walk-style.css" --pdf-engine="$WEASY" -o "$OUT/30-site-walk-sheet.pdf" 2> >(grep -v "Ignored" >&2 || true)
