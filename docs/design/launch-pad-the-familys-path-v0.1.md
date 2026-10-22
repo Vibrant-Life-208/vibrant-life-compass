@@ -35,6 +35,10 @@ Status key: **HAVE** exists and is usable · **HAVE (cut)** exists but needs a f
 
 | Piece | Status | Notes |
 |---|---|---|
+| The letter to the learner | **HAVE**, 2026-10-21 | `launch-pad-letter-to-the-learner-v0.1.md`, one page, travels with the Origin book. The only document in the set addressed to the sixteen-year-old rather than about them. Written to be refusable: it names who this is not for and says that staying where you are is a complete answer |
+
+| Piece | Status | Notes |
+|---|---|---|
 | The invitation letter, Erin's voice | **HAVE** | Promotion doc §5. Carries or points at all of Stage 0 |
 | Kira plain-language and interpreter read | owed | Standing condition |
 | Accord exhale read | owed | Standing condition |
@@ -105,7 +109,7 @@ Seven of the gaps above are ordinary writing. Three of them block the door.
 2. **The access statement.** Named as owed in three consecutive sittings. Chekov's condition is binding: no conversation before it exists, because "not a fit" enforced without it is disability screening nobody decided to do.
 3. **What happens if something happens to you.** A family committing a child to three years with a solo guide who is pregnant will ask this, and the honest answer today is a document that does not exist. The Successor Envelope is already P0-2, the first item on the handoff's founder list, to be authored while rested and co-signed. It is also the answer to the hardest question at the door.
 
-Then, in rough order of how soon a family will want them: a day on a page; the year calendar; the learner-facing page; the FAQ with a named owner for the dual-enrollment clock; the three reply letters; the guide's card; the evening run sheet; the learner's refusals card.
+Then, in rough order of how soon a family will want them: a day on a page; the year calendar; the FAQ with a named owner for the dual-enrollment clock; the three reply letters; the guide's card; the evening run sheet; the learner's refusals card.
 
 ---
 

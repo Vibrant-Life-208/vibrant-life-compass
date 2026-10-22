@@ -68,7 +68,7 @@ The strongest asset is the one most programmes would never hand over: **a parent
 
 ### 3. Two structural commitments that cost money or people
 
-A **second adult at every admission conversation**, so a learner's no is never said only to the person they would disappoint. And a **funded interpreter** where a household's first language is not English, with no learner ever interpreting their own admission conversation and no family member pressed into it.
+A **second adult at every admission conversation**, so a learner's no is never said only to the person they would disappoint. And **we pay for an interpreter** where a household's first language is not English, in whatever language they ask for, with no learner ever interpreting their own admission conversation and no family member pressed into it.
 
 ---
 

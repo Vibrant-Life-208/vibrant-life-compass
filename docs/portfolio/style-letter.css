@@ -1,0 +1,6 @@
+/* The learner letter. Rides on style-onepager.css and strips two things:
+   the title block, because the first line already says who the page is for and a
+   masthead makes a letter look like a form; and the folio, because this is one
+   sheet and "Page 1 of 1" is noise on a page handed to a sixteen-year-old. */
+header#title-block-header { display: none; }
+@page { @bottom-center { content: none; } }

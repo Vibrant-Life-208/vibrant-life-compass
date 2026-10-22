@@ -25,7 +25,7 @@
 - [ ] Audit the eleven present-tense promises in *What the room provides*. Three describe a room that does not exist: the quiet space, the large-print handouts, the equal alternative for every expedition
 - [ ] Build the exceeds-capacity referral list. Six phone calls, not architecture
 - [ ] Crisis numbers on the Ballast
-- [ ] Plain-language pass and the funded interpreter offer. The no-child-interpreter rule is now written into the door document §1.1
+- [ ] Plain-language pass, and the interpreter commitment costed and written in (we pay for the interpreter; wording changed from "funded interpreter" 2026-10-21). The no-child-interpreter rule is now written into the door document §1.1
 - [ ] Site walk, which also chooses the quiet space (a binding gate before Session 5)
 - [ ] Read the admissions timeline against the founder leave plan. **Recommendation on record: the admissions clock moves, not the leave plan. Not yet ratified**
 

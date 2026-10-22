@@ -186,6 +186,15 @@ done
   -o "$OUT/20-family-note-PILOT-MORNING.pdf" 2> >(grep -v "Ignored" >&2 || true)
 echo "built 20-family-note-PILOT-MORNING.pdf ($(pages "$OUT/20-family-note-PILOT-MORNING.pdf")pp)"
 
+# The letter to the learner - the one page in the whole set addressed to the
+# sixteen-year-old rather than about them. Rides on style-onepager.css with the
+# title block and folio stripped, so it reads as a letter and not a form.
+"$PANDOC" "$D/launch-pad-letter-to-the-learner-v0.1.md" -s -f markdown-yaml_metadata_block \
+  --metadata title="Letter to the learner" \
+  --css="$OUT/style-onepager.css" --css="$OUT/style-letter.css" --pdf-engine="$WEASY" \
+  -o "$OUT/20-letter-to-the-learner.pdf" 2> >(grep -v "Ignored" >&2 || true)
+echo "built 20-letter-to-the-learner.pdf ($(pages "$OUT/20-letter-to-the-learner.pdf")pp)"
+
 # The site walk sheet - a form to carry and fill in, its own print style
 "$PANDOC" "$D/launch-pad-site-walk-sheet-v0.1.md" -s -f markdown-yaml_metadata_block \
   --css="$OUT/walk-style.css" --pdf-engine="$WEASY" -o "$OUT/30-site-walk-sheet.pdf" 2> >(grep -v "Ignored" >&2 || true)
