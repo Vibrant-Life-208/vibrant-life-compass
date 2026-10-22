@@ -41,7 +41,12 @@ Two roots:
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/42-promotion-and-the-not-shown-wall.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/43-the-ballast-and-open-days.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/44-the-familys-path.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/50-guides-card.pdf
 /Users/europa/Code/vibrant-life-compass/docs/portfolio/50-jenna-the-door-agenda.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/51-three-reply-letters.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/52-evening-run-sheet-DRAFT.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/53-faq-PARTIAL.pdf
+/Users/europa/Code/vibrant-life-compass/docs/portfolio/54-how-you-leave.pdf
 ```
 
 ### Spiral-bindable copies
@@ -205,7 +210,10 @@ Needs pandoc and WeasyPrint. Paths for both are at the head of `build-portfolio.
 ```
 /Users/europa/Code/vibrant-life-compass/docs/design/2026-10-21-poster-re-evaluation-and-rebuild.md
 /Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-a-day-on-a-page-v0.1.md
+/Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-evening-run-sheet-v0.1-DRAFT.md
+/Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-faq-v0.1-PARTIAL.md
 /Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-guides-card-v0.1.md
+/Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-how-you-leave-v0.1.md
 /Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-learner-refusals-card-v0.1.md
 /Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-letter-to-the-learner-v0.1.md
 /Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-three-reply-letters-v0.1.md
@@ -233,6 +241,7 @@ Needs pandoc and WeasyPrint. Paths for both are at the head of `build-portfolio.
 /Users/europa/Code/evoke-agents-backup/agents/meetings/2026/09/2026-09-28-launch-pad-fresh-eyes-review-new-substrate.md
 /Users/europa/Code/evoke-agents-backup/agents/meetings/2026/10/2026-10-13-launch-pad-start-here-page-final-check.md
 /Users/europa/Code/evoke-agents-backup/agents/meetings/2026/10/2026-10-13-month-one-year-one-book-review.md
+/Users/europa/Code/evoke-agents-backup/agents/meetings/2026/10/2026-10-21-launch-pad-five-month-promotion-room.md
 ```
 ```
 /Users/europa/Code/evoke-agents-backup/agents/decision-logs/2026/09/2026-09-24-launch-pad-first-cohort-conversation-questionnaire.md
@@ -245,6 +254,7 @@ Needs pandoc and WeasyPrint. Paths for both are at the head of `build-portfolio.
 /Users/europa/Code/evoke-agents-backup/agents/decision-logs/2026/10/2026-10-19-forge-helm-plain-language-pass.md
 /Users/europa/Code/evoke-agents-backup/agents/decision-logs/2026/10/2026-10-19-forge-helm-re-cut-room.md
 /Users/europa/Code/evoke-agents-backup/agents/decision-logs/2026/10/2026-10-19-origin-part-3-alignment-read.md
+/Users/europa/Code/evoke-agents-backup/agents/decision-logs/2026/10/2026-10-21-launch-pad-five-month-promotion-room.md
 /Users/europa/Code/evoke-agents-backup/agents/decision-logs/2026/10/2026-10-21-session-3-forks-stories-and-the-grid.md
 ```
 ---
@@ -268,4 +278,4 @@ rule in `docs/build-file-manifest.py`, or let them sit here where they can be se
 
 ---
 
-*Written 2026-10-21 by `docs/build-file-manifest.py`. 134 files in scope.*
+*Written 2026-10-22 by `docs/build-file-manifest.py`. 142 files in scope.*
