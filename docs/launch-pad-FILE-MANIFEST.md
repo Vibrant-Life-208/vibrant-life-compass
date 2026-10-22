@@ -200,6 +200,7 @@ Needs pandoc and WeasyPrint. Paths for both are at the head of `build-portfolio.
 ### Design notes
 ```
 /Users/europa/Code/vibrant-life-compass/docs/design/2026-10-21-poster-re-evaluation-and-rebuild.md
+/Users/europa/Code/vibrant-life-compass/docs/design/launch-pad-letter-to-the-learner-v0.1.md
 ```
 
 ---
@@ -259,4 +260,4 @@ rule in `docs/build-file-manifest.py`, or let them sit here where they can be se
 
 ---
 
-*Written 2026-10-21 by `docs/build-file-manifest.py`. 125 files in scope.*
+*Written 2026-10-21 by `docs/build-file-manifest.py`. 126 files in scope.*
