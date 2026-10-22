@@ -81,6 +81,7 @@ build "The Origin Year" "Volume 1 - Launch Pad Year One, 2027-2028: Who am I?" \
   "$D/2027-2028-launch-pad-session-1-materials-list-v0.1.md" \
   "$D/2027-2028-launch-pad-session-2-day-by-day-v0.1.md" \
   "$D/2027-2028-launch-pad-session-3-day-by-day-v0.1.md" \
+  "$D/launch-pad-session-3-forks-and-stories-v0.1.md" \
   "$D/2027-2028-launch-pad-session-4-day-by-day-v0.1.md" \
   "$D/2027-2028-launch-pad-session-5-day-by-day-v0.1.md" \
   "$D/2027-2028-launch-pad-session-6-day-by-day-v0.1.md" \
